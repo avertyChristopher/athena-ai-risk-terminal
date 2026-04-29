@@ -129,7 +129,7 @@ credentials/
 # Python tooling
 # =========================
 poetry.lock
-# If you use Poetry seriously later, you can remove poetry.lock from gitignore.
+
 
 # =========================
 # Coverage / Testing
