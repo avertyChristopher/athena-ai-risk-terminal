@@ -1,0 +1,49 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: athena-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://athena:athena@postgres:5432/athena_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: athena-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+
+  postgres:
+    image: postgres:16
+    container_name: athena-postgres
+    environment:
+      - POSTGRES_USER=athena
+      - POSTGRES_PASSWORD=athena
+      - POSTGRES_DB=athena_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: athena-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres-data:
