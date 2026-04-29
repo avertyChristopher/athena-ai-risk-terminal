@@ -1,0 +1,146 @@
+# =========================
+# OS / System files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# IDE / Editors
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Keep VS Code recommendations if needed
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Python / Backend
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# FastAPI / backend logs
+*.log
+logs/
+
+# =========================
+# Node / Frontend
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite / React build
+frontend/dist/
+frontend/build/
+frontend/.vite/
+
+# TypeScript
+*.tsbuildinfo
+
+# =========================
+# Package managers
+# =========================
+.pnpm-store/
+
+# =========================
+# Database / Local storage
+# =========================
+*.sqlite
+*.sqlite3
+*.db
+postgres-data/
+pgdata/
+redis-data/
+
+# =========================
+# Docker
+# =========================
+.docker/
+docker-data/
+
+# =========================
+# Jupyter / Notebooks
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Data files
+# =========================
+data/raw/
+data/processed/
+data/cache/
+*.csv
+*.xlsx
+*.xls
+*.parquet
+
+# Keep sample data if needed
+!data/sample/
+!data/sample/**
+
+# =========================
+# Reports / Generated outputs
+# =========================
+outputs/
+reports/generated/
+*.pdf
+
+# =========================
+# Secrets / Keys
+# =========================
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+
+# =========================
+# Python tooling
+# =========================
+poetry.lock
+# If you use Poetry seriously later, you can remove poetry.lock from gitignore.
+
+# =========================
+# Coverage / Testing
+# =========================
+coverage/
+frontend/coverage/
+backend/coverage/
+
+# =========================
+# Temporary files
+# =========================
+tmp/
+temp/
+.cache/
