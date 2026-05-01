@@ -1116,6 +1116,9 @@ and which financial analysis is appropriate.
 
 
 
+
+
+
 ---
 ## 3. Stocks
 
@@ -1699,13 +1702,29 @@ A stock is not just a price on a screen.
 It is an ownership claim whose market value changes with expectations, risk and company performance.
 ```
 
+
+
+
+
+
+
+
 ---
+
 
 ## 4. ETFs
 
-An ETF, or exchange-traded fund, is a fund traded on an exchange like a stock.
+An ETF, or exchange-traded fund, is an investment fund traded on an exchange.
 
-An ETF usually tracks a basket of assets.
+ETF means:
+
+```text
+Exchange-Traded Fund
+```
+
+An ETF usually holds a basket of assets such as stocks, bonds, commodities or other securities.
+
+Instead of buying each asset individually, an investor can buy one ETF and get exposure to the whole basket.
 
 Examples:
 
@@ -1713,102 +1732,1288 @@ Examples:
 SPY = tracks the S&P 500
 QQQ = tracks the Nasdaq-100
 XIU = tracks Canadian large-cap equities
+GLD = tracks gold exposure
+TLT = tracks long-term US Treasury bonds
 ```
 
-ETFs are useful because they provide diversified exposure through one tradable instrument.
+ETFs are useful because they combine two ideas:
 
-### Why ETFs matter
+```text
+Diversification of a fund
+Tradability of a stock
+```
 
-ETFs are important because they can represent:
+This means an ETF can be bought and sold during the trading day, like a stock, while giving exposure to many assets at once.
 
-- equity market exposure;
-- sector exposure;
-- country exposure;
-- bond exposure;
-- commodity exposure;
-- currency exposure;
-- factor exposure.
+---
+
+### Why ETFs exist
+
+ETFs exist to give investors simple and efficient market exposure.
+
+Instead of buying 500 individual stocks to follow the S&P 500, an investor can buy one ETF that tracks the index.
 
 Example:
 
 ```text
-Buying SPY gives broad exposure to large US companies.
-Buying QQQ gives exposure to large Nasdaq-listed companies.
+Investor wants exposure to large US companies.
+Instead of buying hundreds of stocks,
+the investor buys SPY.
 ```
 
-### ETF analysis
+This makes ETFs useful for:
 
-For Athena, ETFs can be treated similarly to stocks from a market data perspective:
+```text
+Diversification
+Low-cost investing
+Passive investing
+Portfolio construction
+Sector allocation
+Country exposure
+Risk management
+```
+
+ETFs are often used by both individual investors and professional portfolio managers.
+
+---
+
+### ETF vs stock
+
+An ETF trades like a stock, but it is not the same thing as a stock.
+
+A stock represents ownership in one company.
+
+An ETF represents ownership in a fund that holds multiple assets.
+
+Simple comparison:
+
+```text
+Stock = exposure to one company
+ETF = exposure to a basket of assets
+```
+
+Example:
+
+```text
+AAPL = exposure to Apple only
+SPY = exposure to many large US companies
+```
+
+This distinction matters because an ETF is usually more diversified than a single stock.
+
+However, diversification depends on what the ETF holds.
+
+Example:
+
+```text
+A broad market ETF is diversified.
+A sector ETF may still be concentrated.
+A single-country ETF may carry country-specific risk.
+```
+
+---
+
+### Types of ETFs
+
+ETFs can provide different types of exposure.
+
+Common ETF categories include:
+
+```text
+Equity ETFs
+Bond ETFs
+Sector ETFs
+Commodity ETFs
+Currency ETFs
+International ETFs
+Factor ETFs
+Leveraged ETFs
+Inverse ETFs
+```
+
+### Equity ETFs
+
+Equity ETFs hold stocks.
+
+Example:
+
+```text
+SPY = large US companies
+QQQ = large Nasdaq-listed companies
+XIU = large Canadian companies
+```
+
+### Bond ETFs
+
+Bond ETFs hold fixed income instruments.
+
+Example:
+
+```text
+Government bond ETFs
+Corporate bond ETFs
+High-yield bond ETFs
+Short-term bond ETFs
+```
+
+### Sector ETFs
+
+Sector ETFs focus on one sector.
+
+Example:
+
+```text
+Technology ETF
+Energy ETF
+Financials ETF
+Healthcare ETF
+```
+
+### Commodity ETFs
+
+Commodity ETFs give exposure to commodities.
+
+Example:
+
+```text
+Gold ETF
+Oil ETF
+Silver ETF
+Natural gas ETF
+```
+
+Some commodity ETFs hold the physical commodity, while others use futures contracts.
+
+### Factor ETFs
+
+Factor ETFs target specific investment characteristics.
+
+Examples:
+
+```text
+Value
+Growth
+Momentum
+Quality
+Low volatility
+Dividend yield
+Small size
+```
+
+Factor investing is important in portfolio management because it links portfolio returns to specific risk or style exposures.
+
+---
+
+### Passive ETFs and active ETFs
+
+ETFs can be passive or active.
+
+### Passive ETF
+
+A passive ETF tries to track an index.
+
+Example:
+
+```text
+SPY tracks the S&P 500.
+QQQ tracks the Nasdaq-100.
+```
+
+The goal is not to beat the index.
+
+The goal is to replicate its performance as closely as possible.
+
+### Active ETF
+
+An active ETF is managed by portfolio managers who make investment decisions.
+
+The goal is usually to outperform a benchmark or achieve a specific investment objective.
+
+Simple comparison:
+
+```text
+Passive ETF = tracks an index
+Active ETF = manager makes active decisions
+```
+
+For CFA Level 1, the distinction between passive and active management is important.
+
+---
+
+### Net Asset Value
+
+The Net Asset Value, or NAV, represents the value of the ETF’s underlying holdings.
+
+Formula:
+
+```text
+NAV = value of fund assets - fund liabilities
+```
+
+On a per-share basis:
+
+```text
+NAV per share = net asset value / number of ETF shares outstanding
+```
+
+The ETF’s market price can be slightly different from its NAV.
+
+This creates two important concepts:
+
+```text
+Premium
+Discount
+```
+
+### Premium
+
+An ETF trades at a premium when its market price is above its NAV.
+
+```text
+ETF market price > NAV
+```
+
+### Discount
+
+An ETF trades at a discount when its market price is below its NAV.
+
+```text
+ETF market price < NAV
+```
+
+For large and liquid ETFs, the difference is usually small.
+
+For less liquid ETFs, the difference can be more important.
+
+---
+
+### Tracking error
+
+Tracking error measures how closely an ETF follows its benchmark.
+
+If an ETF is designed to track the S&P 500, its return should be close to the S&P 500 return.
+
+Example:
+
+```text
+Benchmark return = 10.00%
+ETF return       = 9.85%
+Difference       = -0.15%
+```
+
+Tracking error can come from:
+
+```text
+Management fees
+Trading costs
+Sampling methods
+Cash holdings
+Dividend timing
+Liquidity issues
+Currency effects
+```
+
+A low tracking error means the ETF is closely following its benchmark.
+
+A high tracking error means the ETF is not tracking the benchmark very well.
+
+---
+
+### Expense ratio
+
+The expense ratio is the annual fee charged by the ETF.
+
+Example:
+
+```text
+Expense ratio = 0.10%
+```
+
+This means the fund charges 0.10% per year of assets under management.
+
+Fees matter because they reduce investor returns over time.
+
+Simple idea:
+
+```text
+Lower fees usually improve long-term net performance,
+all else equal.
+```
+
+For passive ETFs, expense ratios are often an important comparison point.
+
+---
+
+### ETF liquidity
+
+ETF liquidity depends on two layers:
+
+```text
+Liquidity of the ETF shares
+Liquidity of the underlying holdings
+```
+
+The ETF itself may trade frequently, but the underlying assets also matter.
+
+Example:
+
+```text
+An ETF holding large US stocks is usually liquid.
+An ETF holding small emerging market bonds may be less liquid.
+```
+
+Important liquidity indicators include:
+
+```text
+Trading volume
+Bid-ask spread
+Assets under management
+Liquidity of holdings
+```
+
+A wide bid-ask spread can make trading more expensive.
+
+---
+
+### Benefits of ETFs
+
+ETFs have several advantages:
+
+```text
+Diversification
+Intraday trading
+Transparency
+Lower cost
+Easy access to markets
+Benchmark exposure
+Tax efficiency in some jurisdictions
+```
+
+Example:
+
+```text
+One ETF can give exposure to an entire equity market.
+```
+
+This makes ETFs useful for simple portfolio construction.
+
+---
+
+### Risks of ETFs
+
+ETFs also have risks.
+
+Important ETF risks include:
+
+```text
+Market risk
+Tracking error
+Liquidity risk
+Currency risk
+Concentration risk
+Counterparty risk
+Leverage risk
+```
+
+### Market risk
+
+If the assets inside the ETF fall, the ETF price will usually fall too.
+
+### Tracking error
+
+The ETF may not perfectly follow its benchmark.
+
+### Liquidity risk
+
+Some ETFs may be expensive to trade if volume is low or spreads are wide.
+
+### Currency risk
+
+An international ETF may hold assets in foreign currencies.
+
+### Concentration risk
+
+Some ETFs look diversified but are heavily exposed to a few companies, sectors or countries.
+
+### Leverage risk
+
+Leveraged ETFs use financial techniques to amplify returns.
+
+Example:
+
+```text
+2x leveraged ETF
+3x leveraged ETF
+```
+
+These products are more complex and can behave very differently over time.
+
+For Athena’s first version, leveraged ETFs should be treated carefully or excluded from the MVP.
+
+---
+
+### ETF data needed in Athena
+
+A clean ETF record may include:
 
 ```text
 symbol
 name
-price
-adjusted close
+asset_class
+asset_type
+currency
+exchange
+benchmark_index
+expense_ratio
+assets_under_management
+holdings_count
+issuer
+distribution_yield
+adjusted_close
 volume
-returns
-volatility
-correlation
+data_source
 ```
 
-However, ETFs also have an underlying composition. A more advanced version could analyze the holdings inside an ETF, but this is not required for the first version.
+Example:
+
+```text
+symbol: SPY
+name: SPDR S&P 500 ETF Trust
+asset_class: Equity
+asset_type: ETF
+currency: USD
+exchange: NYSE Arca
+benchmark_index: S&P 500
+issuer: State Street
+```
+
+For the first version of Athena, the most important ETF fields are:
+
+```text
+symbol
+name
+currency
+exchange
+benchmark_index
+adjusted_close
+volume
+expense_ratio
+```
+
+These fields are enough to calculate returns, volatility, liquidity indicators and benchmark comparison.
 
 ---
+
+### ETF analysis in Athena
+
+From a market data perspective, ETFs can be analyzed similarly to stocks.
+
+Athena can calculate:
+
+```text
+Daily returns
+Cumulative returns
+Annualized volatility
+Rolling volatility
+Maximum drawdown
+Correlation with other assets
+Benchmark comparison
+Liquidity indicators
+```
+
+However, an ETF also has an underlying composition.
+
+A more advanced version of Athena could analyze:
+
+```text
+Top holdings
+Sector exposure
+Country exposure
+Currency exposure
+Factor exposure
+Bond duration exposure
+Commodity exposure
+```
+
+This would make ETF analysis more powerful, but it is not required for the first MVP.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, remember that an ETF is a fund traded on an exchange.
+
+The most important ETF concepts are:
+
+```text
+Diversification
+Benchmark tracking
+Net Asset Value
+Premium and discount
+Tracking error
+Expense ratio
+Liquidity
+Passive vs active management
+```
+
+A simple memory rule:
+
+```text
+ETF = fund exposure + exchange trading
+```
+
+An ETF is useful because it gives investors access to a diversified basket through one tradable instrument.
+
+---
+
+### Athena implementation takeaway
+
+For Athena, ETFs are important because they allow the platform to analyze diversified market exposure with simple price data.
+
+The ETF module should support:
+
+```text
+ETF identification
+Benchmark mapping
+Historical price loading
+Return calculation
+Volatility calculation
+Tracking comparison
+Liquidity analysis
+Expense ratio display
+Data quality checks
+```
+
+ETFs are also useful for portfolio construction because they can represent broad market exposure.
+
+Example:
+
+```text
+SPY = US equity exposure
+QQQ = Nasdaq growth exposure
+XIU = Canadian equity exposure
+TLT = long-term US bond exposure
+GLD = gold exposure
+```
+
+This makes ETFs practical instruments for Athena’s first portfolio and risk analysis features.
+
+---
+
+### Mini revision questions
+
+1. What is an ETF?
+
+2. How is an ETF different from a stock?
+
+3. What is NAV?
+
+4. What does it mean when an ETF trades at a premium?
+
+5. What is tracking error?
+
+6. Why does the expense ratio matter?
+
+7. Why can ETF liquidity be different from stock liquidity?
+
+8. Why are ETFs useful for Athena?
+
+---
+
+### Mini answers
+
+1. An ETF is an exchange-traded fund that usually holds a basket of assets.
+
+2. A stock represents ownership in one company, while an ETF represents ownership in a fund holding multiple assets.
+
+3. NAV is the net value of the ETF’s underlying holdings after liabilities.
+
+4. An ETF trades at a premium when its market price is above its NAV.
+
+5. Tracking error measures how closely the ETF follows its benchmark.
+
+6. The expense ratio matters because fees reduce investor returns over time.
+
+7. ETF liquidity depends on both the ETF shares and the liquidity of the underlying holdings.
+
+8. ETFs are useful for Athena because they provide diversified exposure with market data that can be analyzed like stocks.
+
+---
+
+### Section summary
+
+An ETF is a fund traded on an exchange.
+
+It gives investors exposure to a basket of assets through one tradable instrument.
+
+ETFs can track equities, bonds, commodities, currencies, sectors, countries or investment factors.
+
+For CFA Level 1, ETFs are important because they connect diversification, passive investing, benchmarks, NAV, tracking error and fees.
+
+For Athena AI Risk Terminal, ETFs are important because they are practical instruments for portfolio analysis, volatility analysis and benchmark comparison.
+
+The key lesson is:
+
+```text
+An ETF is not just one asset.
+It is a tradable vehicle that represents exposure to a basket, index, sector, country or strategy.
+```
+
+
+
+
+
+
 
 ## 5. Market indices
 
 A market index measures the performance of a group of securities.
 
+It is designed to represent a market, a region, a sector, or a specific investment style.
+
 Examples:
 
 ```text
-S&P 500
-Nasdaq-100
-Dow Jones Industrial Average
-TSX Composite
-CAC 40
-FTSE 100
-Nikkei 225
+S&P 500 = large US companies
+Nasdaq-100 = large non-financial Nasdaq-listed companies
+Dow Jones Industrial Average = 30 large US companies
+TSX Composite = broad Canadian equity market
+CAC 40 = large French companies
+FTSE 100 = large UK companies
+Nikkei 225 = large Japanese companies
 ```
 
-An index is not always directly tradable, but ETFs and futures can track it.
+An index is not usually a security that investors buy directly.
 
-### Why indices matter
+Instead, investors can get exposure to an index through:
 
-Indices are used for:
-
-- measuring market performance;
-- comparing portfolios;
-- building benchmarks;
-- understanding sectors or regions;
-- tracking economic sentiment.
-
-### Index return
-
-An index return measures the percentage change in the index level.
+```text
+ETFs
+Index mutual funds
+Futures contracts
+Options on indices
+Structured products
+```
 
 Example:
 
 ```text
-Index level yesterday = 5000
-Index level today     = 5050
-
-Return = 5050 / 5000 - 1 = 1%
+An investor cannot directly buy the S&P 500 index itself.
+But the investor can buy an ETF that tracks the S&P 500.
 ```
 
-### Price return vs total return index
+---
 
-A price return index tracks price changes only.
+### Why market indices exist
 
-A total return index includes price changes plus income such as dividends.
+Market indices exist to summarize the performance of a group of securities.
 
-This distinction matters because long-term performance can look very different depending on whether income is included.
+Instead of looking at hundreds or thousands of individual stocks, investors can look at one index level.
+
+Example:
 
 ```text
-Price return index = price movement only
-Total return index = price movement + reinvested income
+If the S&P 500 rises by 1%,
+it suggests that large US stocks performed positively overall.
 ```
 
+Indices are useful because they provide a simple reference point for understanding market movements.
+
+They are commonly used for:
+
+```text
+Measuring market performance
+Comparing portfolio returns
+Creating benchmarks
+Tracking sectors
+Tracking countries
+Building passive investment products
+Understanding market sentiment
+```
+
+---
+
+### Index level
+
+An index level is the numerical value of an index.
+
+Example:
+
+```text
+S&P 500 level = 5,000
+```
+
+The level itself is not a price of one asset. It is a calculated value based on the prices of the securities included in the index.
+
+The index level becomes useful when it is compared over time.
+
+Example:
+
+```text
+Index yesterday = 5,000
+Index today     = 5,050
+```
+
+The index increased by:
+
+```text
+5,050 / 5,000 - 1 = 1%
+```
+
+So the index return is:
+
+```text
+1%
+```
+
+---
+
+### Index return
+
+An index return measures the percentage change in the index level over a period.
+
+Formula:
+
+```text
+Index return = Index level_t / Index level_{t-1} - 1
+```
+
+Example:
+
+```text
+Index level at start = 4,000
+Index level at end   = 4,400
+
+Index return = 4,400 / 4,000 - 1
+Index return = 10%
+```
+
+Index returns are useful because they show the performance of the market segment represented by the index.
+
+---
+
+### Price return index
+
+A price return index includes only price changes.
+
+It does not include dividends or other income paid by the securities in the index.
+
+Simple idea:
+
+```text
+Price return index = capital appreciation only
+```
+
+Example:
+
+```text
+If the stocks in an index rise in price,
+the price return index increases.
+```
+
+However, if those stocks pay dividends, the price return index does not fully reflect the investor’s total economic return.
+
+---
+
+### Total return index
+
+A total return index includes both price changes and reinvested income.
+
+Simple idea:
+
+```text
+Total return index = price movement + reinvested dividends
+```
+
+This is important because dividends can represent a significant part of long-term investment returns.
+
+Example:
+
+```text
+Price return index return = 7%
+Dividend contribution     = 2%
+
+Total return index return = 9%
+```
+
+For long-term performance analysis, total return indices are usually more complete than price return indices.
+
+---
+
+### Price return vs total return
+
+The difference between price return and total return matters.
+
+Simple comparison:
+
+```text
+Price return index:
+Tracks only price changes.
+
+Total return index:
+Tracks price changes and reinvested income.
+```
+
+Example:
+
+```text
+A stock index starts at 1,000.
+The stock prices increase to 1,080.
+The companies also pay dividends worth 20.
+```
+
+Price return:
+
+```text
+1,080 / 1,000 - 1 = 8%
+```
+
+Total return:
+
+```text
+(1,080 + 20) / 1,000 - 1 = 10%
+```
+
+The total return is higher because it includes income.
+
+---
+
+### Benchmark role
+
+A market index is often used as a benchmark.
+
+A benchmark is a reference used to evaluate investment performance.
+
+Example:
+
+```text
+Portfolio return = 8%
+S&P 500 return   = 10%
+```
+
+The portfolio made money, but it underperformed the benchmark.
+
+Another example:
+
+```text
+Portfolio return = -4%
+Benchmark return = -9%
+```
+
+The portfolio lost money, but it performed better than the benchmark.
+
+This is why performance should not be evaluated alone. It should be compared with a relevant reference.
+
+---
+
+### Choosing the right index
+
+The benchmark must match the investment strategy.
+
+Example:
+
+```text
+A Canadian equity portfolio should not be compared only with the Nasdaq-100.
+A US large-cap portfolio can be compared with the S&P 500.
+A French large-cap portfolio can be compared with the CAC 40.
+```
+
+A good benchmark should be:
+
+```text
+Relevant
+Transparent
+Measurable
+Consistent with the investment universe
+Representative of the portfolio strategy
+```
+
+If the benchmark is not appropriate, the performance comparison can be misleading.
+
+---
+
+### Index construction
+
+Indices can be constructed in different ways.
+
+The construction method affects how the index behaves.
+
+Common methods include:
+
+```text
+Price-weighted
+Market-cap-weighted
+Equal-weighted
+Factor-weighted
+```
+
+### Price-weighted index
+
+In a price-weighted index, stocks with higher share prices have more influence.
+
+Example:
+
+```text
+Stock A price = 300
+Stock B price = 50
+```
+
+Stock A has more impact on the index because its share price is higher.
+
+The Dow Jones Industrial Average is a famous example of a price-weighted index.
+
+### Market-cap-weighted index
+
+In a market-cap-weighted index, companies with larger market capitalization have more influence.
+
+Formula:
+
+```text
+Market capitalization = share price × shares outstanding
+```
+
+Example:
+
+```text
+Company A market cap = 2 trillion
+Company B market cap = 50 billion
+```
+
+Company A has a much larger weight in the index.
+
+The S&P 500 is a market-cap-weighted index.
+
+### Equal-weighted index
+
+In an equal-weighted index, every constituent has the same weight.
+
+Example:
+
+```text
+100 companies in the index
+Each company weight = 1%
+```
+
+This gives smaller companies more influence than they would have in a market-cap-weighted index.
+
+---
+
+### Constituents and weights
+
+The securities inside an index are called constituents.
+
+Example:
+
+```text
+Apple
+Microsoft
+Amazon
+Nvidia
+JPMorgan
+```
+
+Each constituent has a weight.
+
+The weight determines how much that security affects the index.
+
+Example:
+
+```text
+Stock A weight = 7%
+Stock B weight = 0.5%
+```
+
+A price move in Stock A will affect the index more than the same percentage move in Stock B.
+
+This is important because some indices may look diversified but still be heavily influenced by a few large companies.
+
+---
+
+### Rebalancing and reconstitution
+
+Indices are updated over time.
+
+Two important concepts are:
+
+```text
+Rebalancing
+Reconstitution
+```
+
+### Rebalancing
+
+Rebalancing adjusts the weights of existing index constituents.
+
+Example:
+
+```text
+A stock becomes too large relative to the index rules.
+The index provider adjusts the weights.
+```
+
+### Reconstitution
+
+Reconstitution changes the list of securities included in the index.
+
+Example:
+
+```text
+A company is removed from the index.
+Another company is added.
+```
+
+This helps keep the index aligned with its objective.
+
+---
+
+### Index concentration
+
+Index concentration means that a small number of securities represent a large part of the index.
+
+Example:
+
+```text
+Top 10 stocks = 35% of the index
+Remaining stocks = 65% of the index
+```
+
+A concentrated index may be more exposed to company-specific or sector-specific movements.
+
+This matters for risk analysis.
+
+Example:
+
+```text
+If a technology-heavy index falls,
+the decline may be driven mostly by a few large technology companies.
+```
+
+In Athena, concentration can help explain why an index or ETF is moving.
+
+---
+
+### Market indices and ETFs
+
+Many ETFs are designed to track indices.
+
+Example:
+
+```text
+SPY tracks the S&P 500.
+QQQ tracks the Nasdaq-100.
+XIU tracks Canadian large-cap equities.
+```
+
+The index defines the target exposure.
+
+The ETF is the tradable product.
+
+Simple distinction:
+
+```text
+Index = calculation of market performance
+ETF = tradable fund that can track the index
+```
+
+This distinction is important because the index itself is not usually directly tradable, while the ETF is.
+
+---
+
+### Market indices in Athena
+
+In Athena AI Risk Terminal, indices can be used in several ways.
+
+They can serve as:
+
+```text
+Benchmarks
+Market indicators
+Risk references
+Portfolio comparison tools
+ETF reference indices
+```
+
+Example use cases:
+
+```text
+Compare a portfolio against the S&P 500.
+Compare a Canadian stock against the TSX Composite.
+Compare a technology ETF against the Nasdaq-100.
+Measure whether a portfolio is more volatile than its benchmark.
+```
+
+Athena should store index information separately from tradable assets.
+
+Possible index record:
+
+```text
+index_symbol: SPX
+name: S&P 500 Index
+region: United States
+asset_class: Equity
+weighting_method: Market-cap-weighted
+return_type: Price return or total return
+currency: USD
+```
+
+---
+
+### Index data needed in Athena
+
+Important index fields may include:
+
+```text
+index_symbol
+index_name
+region
+country
+currency
+asset_class
+sector_focus
+weighting_method
+return_type
+constituents_count
+data_source
+```
+
+For the first version of Athena, the most important fields are:
+
+```text
+index_symbol
+index_name
+currency
+region
+return_type
+historical_index_level
+benchmark_mapping
+```
+
+These fields are enough to calculate index returns and compare assets or portfolios against a benchmark.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, market indices are important because they are used to measure and compare investment performance.
+
+Important concepts include:
+
+```text
+Index level
+Index return
+Benchmark
+Price return index
+Total return index
+Price-weighted index
+Market-cap-weighted index
+Equal-weighted index
+Constituents
+Weights
+Rebalancing
+Reconstitution
+```
+
+A simple memory rule:
+
+```text
+Index = market performance reference
+Benchmark = index used for comparison
+ETF = tradable product that can track an index
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, market indices are useful because they provide context.
+
+A return alone does not say enough.
+
+Example:
+
+```text
+Portfolio return = 6%
+```
+
+This becomes more meaningful when compared with:
+
+```text
+Benchmark return = 4%
+```
+
+or:
+
+```text
+Benchmark return = 10%
+```
+
+The same portfolio return can look strong or weak depending on the benchmark.
+
+Athena should use indices to support:
+
+```text
+Benchmark comparison
+Relative performance analysis
+Market context
+Portfolio evaluation
+ETF benchmark mapping
+Risk comparison
+```
+
+---
+
+### Mini revision questions
+
+1. What is a market index?
+
+2. Can investors usually buy an index directly?
+
+3. What is the difference between a price return index and a total return index?
+
+4. Why are indices used as benchmarks?
+
+5. What is a market-cap-weighted index?
+
+6. What is the difference between an index and an ETF?
+
+7. Why can index concentration matter?
+
+---
+
+### Mini answers
+
+1. A market index measures the performance of a group of securities.
+
+2. Usually no. Investors typically get exposure through ETFs, index funds, futures or other products.
+
+3. A price return index includes only price changes, while a total return index includes price changes and reinvested income.
+
+4. Indices are used as benchmarks because they provide a reference for evaluating performance.
+
+5. A market-cap-weighted index gives larger companies more influence based on their market capitalization.
+
+6. An index is a performance calculation. An ETF is a tradable fund that may track an index.
+
+7. Index concentration matters because a few large securities can drive much of the index’s performance and risk.
+
+---
+
+### Section summary
+
+A market index measures the performance of a group of securities.
+
+Indices help investors understand markets, compare portfolios and build benchmarks.
+
+For CFA Level 1, indices are important because they introduce benchmark comparison, index returns, weighting methods and the difference between price return and total return.
+
+For Athena AI Risk Terminal, indices are important because they provide context for portfolio and asset performance.
+
+The key lesson is:
+
+```text
+An index is a reference point.
+It helps explain whether performance is strong or weak relative to the market.
+```
 ---
 
 ## 6. Currencies
