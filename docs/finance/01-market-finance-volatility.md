@@ -20,6 +20,7 @@
 9. OHLCV data
 10. Adjusted close and corporate actions
 11. Volume
+12. Nominal vs real returns
 12. Price vs return
 13. Holding Period Return
 14. Simple returns
@@ -45,7 +46,6 @@
 34. Benchmark
 35. Index construction basics
 36. Market efficiency basics
-37. Nominal vs real returns
 38. Data quality
 39. Missing data
 40. Outliers
@@ -62,17 +62,30 @@
 
 ## 1. What is market finance?
 
-Market finance studies financial instruments traded on financial markets and how their prices evolve over time.
+Market finance is the part of finance that studies financial instruments traded on markets, how their prices are formed, how they evolve over time, and how investors use market information to make decisions.
 
-It focuses on questions such as:
+It focuses on traded assets such as:
 
-- What is the current price of an asset?
-- What makes the asset price move?
-- How much return did the asset generate?
-- How volatile is the asset?
+```text
+Stocks
+Bonds
+ETFs
+Currencies
+Commodities
+Derivatives
+Market indices
+```
+
+In simple terms, market finance tries to answer questions such as:
+
+- What is this asset?
+- What is its current market price?
+- How has its price changed over time?
+- What return did the asset generate?
+- How risky or volatile is the asset?
 - How liquid is the asset?
-- How does the asset behave compared with other assets?
-- How reliable is the market data used for analysis?
+- How does it behave compared with a benchmark?
+- How reliable is the data used for the analysis?
 
 In a financial platform such as Athena AI Risk Terminal, market finance is the base layer. Before calculating anything more advanced, the system needs clean asset data, clean price data and a correct understanding of returns.
 
@@ -90,13 +103,323 @@ Volatility, correlation and liquidity
 Market analysis
 ```
 
-Market finance is therefore not just about reading stock prices. It is about transforming raw market observations into useful financial information.
+Market finance is not only about observing prices. A price is just the starting point. The real financial analysis begins when prices are transformed into returns, volatility, correlations, risk measures and performance indicators.
+
+
+```text
+Asset identification
+        ↓
+Market data collection
+        ↓
+Price cleaning and validation
+        ↓
+Return calculation
+        ↓
+Volatility and risk measurement
+        ↓
+Benchmark comparison
+        ↓
+Investment or risk decision
+
+```
+
+### Why market finance matters
+
+Market finance matters because most investment decisions are based on market information.
+
+For example, an investor may want to know:
+- Should I buy this stock?
+- Is this ETF too volatile?
+- Is this portfolio more risky than the S&P 500?
+- Did this asset outperform its benchmark?
+- Is the recent price movement normal or extreme?
+- Is the asset liquid enough to trade?
+
+Without market finance, a financial platform would only display raw prices. With market finance, the platform can explain what those prices mean.
+
+### Price is not enough
+
+A beginner may look only at the price of an asset.
+
+Example:
+
+```text
+Stock A price = 200
+Stock B price = 20
+```
+
+This does not mean that Stock A is more expensive in an investment sense. It only means that one share of Stock A trades at a higher nominal price.
+
+To compare assets, analysts usually use returns instead of prices.
+
+Example:
+
+```text
+Stock A moves from 200 to 210.
+Stock B moves from 20 to 21.
+```
+
+Both assets generated:
+
+```text
+Return = 5%
+```
+Even though their prices are very different, their percentage performance is the same.
+
+This is why market finance relies heavily on returns, not only price levels.
+
+### Market finance and risk
+
+Market finance is closely connected to risk management.
+
+A financial asset can generate returns, but those returns are uncertain. The future price of a stock, ETF, currency, bond or commodity is never known with certainty.
+
+This uncertainty creates risk.
+
+In market finance, risk is often related to the possibility that asset prices move in an unfavorable direction. However, risk does not only mean losing money. It also refers to the uncertainty of future outcomes.
+
+For example:
+
+```text
+A stable asset may move by +0.2% or -0.2% per day.
+A risky asset may move by +5% or -5% per day.
+```
+
+The second asset is more uncertain because its possible outcomes are more dispersed.
+
+Common market-related risks include:
+- Equity price risk
+- Interest rate risk
+- Currency risk
+- Commodity price risk
+- Volatility risk
+- Liquidity risk
+- Correlation risk
+
+
+### Equity price risk
+
+Equity price risk is the risk that stock prices decrease.
+
+Example:
+
+```text
+An investor owns shares of Apple.
+If Apple stock falls from 200 to 180, the investor loses 10% before dividends.
+```
+This type of risk is central for portfolios containing stocks or equity ETFs.
+
+
+### Interest rate risk
+
+Interest rate risk is the risk that changes in interest rates affect the value of financial instruments.
+
+This is especially important for bonds.
+
+- When interest rates rise, existing bond prices usually fall.
+- When interest rates fall, existing bond prices usually rise.
+
+This relationship is a key foundation for fixed income analysis.
+
+
+
+### Currency risk
+
+Currency risk appears when an investor owns assets denominated in a foreign currency.
+
+Example:
+
+```text
+A Canadian investor buys a US stock.
+The stock is priced in USD.
+The investor reports wealth in CAD.
+```
+
+The final return depends on both:
+
+```text
+The return of the US stock
+The movement of USD/CAD
+```
+Even if the stock performs well in USD, the Canadian investor may earn a weaker return if the US dollar depreciates against the Canadian dollar.
+
+
+### Commodity price risk
+
+Commodity price risk is the risk that commodity prices change.
+
+Examples:
+
+```text
+Oil price risk
+Gold price risk
+Natural gas price risk
+Copper price risk
+Wheat price risk
+```
+
+This matters for investors, producers, consumers and companies exposed to commodity inputs.
+
+
+
+### Volatility risk
+
+Volatility risk is the risk that an asset becomes more unstable.
+
+A rise in volatility can affect:
+
+- Portfolio risk
+- Option prices
+- Margin requirements
+- Investor confidence
+- Risk limits
+
+For a risk terminal like Athena, volatility is one of the most important market indicators.
+
+
+### Liquidity risk
+
+Liquidity risk is the risk that an investor cannot buy or sell an asset quickly at a fair price.
+
+An asset may look attractive based on historical returns, but if it is illiquid, it may be difficult or expensive to trade.
+
+Signs of poor liquidity include:
+
+- Low trading volume
+- Wide bid-ask spread
+- Few market participants
+- Large price impact when trading
+
+
+### Correlation risk
+
+Correlation risk is the risk that assets move together more than expected.
+
+Diversification depends on assets not moving perfectly together.
+
+
+
+Example:
+```text
+A portfolio owns 10 different stocks.
+If all 10 stocks fall together during a crisis, diversification is weak.
+```
+This is why correlation is essential in portfolio risk analysis.
+
+### Market finance and CFA Level 1
+
+For CFA Level 1, market finance is important because it connects several major areas of the curriculum.
+
+The concepts in this document are especially related to:
+
+- Quantitative Methods
+- Equity Investments
+- Fixed Income
+- Derivatives
+- Portfolio Management
+- Alternative Investments
+- Economics
+
+### Connection with Quantitative Methods
+
+Market finance uses quantitative tools to transform prices into useful information.
+
+Important CFA-related concepts include:
+
+- Returns
+- Arithmetic mean
+- Geometric mean
+- Variance
+- Standard deviation
+- Correlation
+- Covariance
+- Probability distributions
+- Skewness
+- Kurtosis
+
+These tools help analysts measure performance and risk.
+
+
+### Connection with Equity Investments
+
+Equity analysis requires understanding stocks, indices, market data, benchmarks and market efficiency.
+
+Important concepts include:
+- Common stocks
+- Market indices
+- Price return indices
+- Total return indices
+- Market capitalization
+- Benchmarks
+- Market efficiency
+- Liquidity
+
+
+### Connection with Portfolio Management
+
+Portfolio management is based on the relationship between risk and return.
+
+Important concepts include:
+
+
+- Portfolio return
+- Portfolio risk
+- Diversification
+- Correlation
+- Benchmark comparison
+- Risk-adjusted performance
+- Asset allocation
+
+
+A portfolio is not evaluated only by its return. It must also be evaluated by the amount of risk taken to generate that return.
+
+### Connection with Derivatives
+
+Derivatives depend on underlying market assets.
+
+Examples:
+
+
+```text
+A stock option depends on a stock.
+An oil future depends on oil.
+A currency forward depends on an exchange rate.
+An interest rate swap depends on interest rates.
+```
+
+Market finance provides the underlying prices and volatility inputs needed for derivatives analysis.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ---
 
+
 ## 2. Main asset classes
 
-An asset class is a category of financial instruments with similar economic characteristics.
+An asset class is a group of financial instruments with similar economic characteristics.
+
+In simple terms, an asset class answers the question:
+
+```text
+What type of investment is this?
+```
 
 The main asset classes are:
 
@@ -110,154 +433,1271 @@ Cash and money market instruments
 Alternative investments
 ```
 
-This document introduces them from a market data perspective.
+Each asset class has its own return drivers, risks, market conventions and data requirements.
 
-### Equities
-
-Equities represent ownership in companies. A stock is an equity instrument.
+For Athena AI Risk Terminal, identifying the asset class correctly is important because the system should not analyze every instrument in the same way.
 
 Example:
 
 ```text
+- A stock is mainly analyzed through price returns, dividends and volatility.
+
+- A bond is mainly analyzed through interest rates, coupons, yield and duration.
+
+- A currency is analyzed through exchange rate movements.
+
+- An option is analyzed through the price of its underlying asset and volatility.
+```
+
+The asset class is therefore one of the first fields that Athena should store for every instrument.
+
+Example:
+
+```text
+symbol: AAPL
+name: Apple Inc.
+asset_class: Equity
+currency: USD
+exchange: NASDAQ
+```
+
+---
+
+### Why asset classes matter
+
+Asset classes matter because they help investors organize financial markets.
+
+They are useful for:
+
+- understanding what an instrument represents;
+- comparing similar investments;
+- building diversified portfolios;
+- measuring risk correctly;
+- selecting an appropriate benchmark;
+- choosing the right financial model;
+- designing clean market data structures.
+
+For example, an equity portfolio should not be evaluated with the same tools as a bond portfolio.
+
+A stock portfolio may focus on:
+
+```text
+Price returns
+Dividends
+Volatility
+Beta
+Sector exposure
+Market capitalization
+```
+
+A bond portfolio may focus on:
+
+```text
+Coupon income
+Yield
+Maturity
+Duration
+Credit quality
+Interest rate sensitivity
+```
+
+This is why the asset class is a basic but essential concept.
+
+---
+
+### Equities
+
+Equities represent ownership in companies.
+
+A stock is the most common equity instrument.
+
+When an investor buys a stock, the investor owns a small part of the company.
+
+Examples:
+
+```text
 AAPL = Apple Inc.
 MSFT = Microsoft Corporation
+RY.TO = Royal Bank of Canada
 ```
+
+Equity investors can earn returns from:
+
+```text
+Price appreciation
+Dividends
+```
+
+Example:
+
+```text
+An investor buys a stock at 100.
+The stock rises to 110.
+The company also pays a dividend of 2.
+
+The investor earns both a capital gain and dividend income.
+```
+
+Equities are generally considered growth-oriented assets. They can offer high long-term returns, but they can also be volatile.
+
+Typical equity data fields:
+
+```text
+Symbol
+Company name
+Exchange
+Currency
+Sector
+Industry
+Market price
+Adjusted close
+Volume
+Dividend yield
+Market capitalization
+```
+
+In Athena, equities are a natural starting point because stock price data is widely available and easy to use for return and volatility calculations.
+
+---
 
 ### Fixed income
 
-Fixed income instruments are debt instruments. A bond is the most common example.
+Fixed income instruments are debt instruments.
 
-Example:
+The most common example is a bond.
+
+When an investor buys a bond, the investor is lending money to an issuer.
+
+The issuer can be:
+
+```text
+A government
+A corporation
+A municipality
+A financial institution
+```
+
+Examples:
 
 ```text
 Government bond
 Corporate bond
 Treasury bill
+Municipal bond
 ```
+
+Fixed income investors can earn returns from:
+
+```text
+Coupon payments
+Price changes
+Return of principal at maturity
+```
+
+A bond usually has:
+
+```text
+Face value
+Coupon rate
+Maturity date
+Yield
+Issuer
+Credit quality
+```
+
+Simple example:
+
+```text
+A company issues a bond.
+The investor buys the bond.
+The company pays coupons.
+At maturity, the company repays the principal.
+```
+
+Fixed income is strongly affected by interest rates.
+
+Basic relationship:
+
+```text
+When interest rates rise, existing bond prices usually fall.
+When interest rates fall, existing bond prices usually rise.
+```
+
+In Athena, fixed income can be added after equities because bonds require more specific concepts such as yield, duration, maturity and credit risk.
+
+---
 
 ### Currencies
 
 Currencies are traded through exchange rates.
 
-Example:
+An exchange rate expresses the value of one currency in terms of another.
+
+Examples:
 
 ```text
 EUR/USD
 USD/CAD
+GBP/USD
+USD/JPY
 ```
+
+Example:
+
+```text
+USD/CAD = 1.35
+```
+
+This means:
+
+```text
+1 USD = 1.35 CAD
+```
+
+Currencies are important because many portfolios contain assets denominated in different currencies.
+
+Example:
+
+```text
+A Canadian investor buys a US stock.
+The stock is priced in USD.
+The investor measures wealth in CAD.
+```
+
+The investor is exposed to both:
+
+```text
+The stock return
+The exchange rate movement
+```
+
+Typical currency data fields:
+
+```text
+Currency pair
+Base currency
+Quote currency
+Exchange rate
+Date
+Data source
+```
+
+In Athena, currency fields are important even if full foreign exchange conversion is added later.
+
+At minimum, every asset should have a currency.
+
+---
 
 ### Commodities
 
-Commodities are physical goods traded on markets.
+Commodities are physical goods traded in financial markets.
 
-Example:
+Examples:
 
 ```text
 Oil
 Gold
+Natural gas
 Copper
 Wheat
+Corn
+Silver
 ```
 
-### Derivatives
+Commodities are often linked to the real economy because they are used in production, transportation, energy, food and industry.
 
-Derivatives are financial contracts whose value depends on an underlying asset.
+Commodity prices are influenced by:
+
+```text
+Supply
+Demand
+Inventories
+Weather
+Geopolitical events
+Transportation costs
+Global economic activity
+Currency movements
+```
+
+Commodity investors can get exposure through:
+
+```text
+Futures contracts
+Commodity ETFs
+Commodity-producing companies
+Commodity indices
+```
 
 Example:
 
 ```text
+An investor may buy a gold ETF instead of buying physical gold.
+```
+
+In Athena's first version, commodities can be represented through ETFs or simple historical price series.
+
+Direct commodity futures analysis can be added later because futures require additional concepts such as contract maturity and roll yield.
+
+---
+
+### Derivatives
+
+Derivatives are financial contracts whose value depends on another asset.
+
+The asset that determines the derivative's value is called the underlying asset.
+
+Examples of underlying assets:
+
+```text
+Stock
+Bond
+Currency
+Commodity
+Interest rate
+Market index
+```
+
+Common derivatives include:
+
+```text
 Options
 Futures
+Forwards
 Swaps
 ```
 
+Example:
+
+```text
+A call option on Apple depends on the price of Apple stock.
+A crude oil future depends on the price of oil.
+A currency forward depends on an exchange rate.
+```
+
+Derivatives are used for:
+
+```text
+Hedging
+Speculation
+Risk transfer
+Leverage
+Portfolio protection
+```
+
+For Athena, derivatives are important because they connect directly to risk management.
+
+However, derivatives are more complex than stocks or ETFs because they often require additional inputs.
+
+Example for an option:
+
+```text
+Underlying price
+Strike price
+Time to maturity
+Interest rate
+Volatility
+Option type
+```
+
+In Athena, derivatives can be added after the basic market data, return and volatility modules are stable.
+
+---
+
 ### Cash and money market instruments
 
-These are short-term, highly liquid instruments.
+Cash and money market instruments are short-term and usually highly liquid.
 
-Example:
+Examples:
 
 ```text
 Cash
 Treasury bills
 Commercial paper
+Certificates of deposit
+Money market funds
 ```
+
+These instruments are generally used for:
+
+```text
+Liquidity management
+Capital preservation
+Short-term investing
+Temporary cash allocation
+```
+
+They usually have lower risk and lower expected return than equities.
+
+A Treasury bill is a common example.
+
+Simple idea:
+
+```text
+An investor lends money to the government for a short period.
+The investor receives the principal back with a small return.
+```
+
+For Athena, cash and money market instruments are useful because portfolios often hold cash positions.
+
+Cash should not be ignored because it affects:
+
+```text
+Portfolio value
+Portfolio return
+Risk exposure
+Liquidity
+Asset allocation
+```
+
+---
 
 ### Alternative investments
 
-Alternative investments include assets outside traditional public stocks and bonds.
+Alternative investments are assets outside traditional public equities, bonds and cash.
 
-Example:
+Examples:
 
 ```text
 Private equity
 Real estate
 Hedge funds
 Infrastructure
+Private debt
+Venture capital
+Commodities
+Collectibles
 ```
 
-In Athena AI Risk Terminal, the first version can focus on equities and ETFs, then progressively support other asset types.
+Alternative investments often have different characteristics from traditional assets.
+
+They may be:
+
+```text
+Less liquid
+Less transparent
+Harder to value
+Less frequently priced
+More dependent on manager skill
+More complex in terms of risk
+```
+
+Example:
+
+```text
+A public stock may have a daily market price.
+A private real estate fund may only report value monthly or quarterly.
+```
+
+This creates a data challenge.
+
+In Athena, alternative investments should probably not be part of the first MVP unless they are represented through publicly traded ETFs or indices.
 
 ---
 
+### Traditional vs alternative asset classes
+
+A simple distinction is:
+
+```text
+Traditional asset classes:
+- Equities
+- Fixed income
+- Cash
+
+Alternative asset classes:
+- Private equity
+- Real estate
+- Hedge funds
+- Infrastructure
+- Commodities
+```
+
+This distinction is useful for CFA Level 1 because traditional assets are usually easier to price and trade, while alternative investments often introduce liquidity, valuation and transparency challenges.
+
+---
+
+### Asset class comparison
+
+A simple comparison:
+
+```text
+Equities:
+Ownership in companies.
+Main return sources: price appreciation and dividends.
+
+Fixed income:
+Debt issued by governments or companies.
+Main return sources: coupons and price changes.
+
+Currencies:
+Exchange rates between currencies.
+Main return source: currency appreciation or depreciation.
+
+Commodities:
+Physical goods traded in markets.
+Main return source: commodity price changes.
+
+Derivatives:
+Contracts based on underlying assets.
+Main return source: change in derivative value.
+
+Cash and money market:
+Short-term liquid instruments.
+Main return source: short-term interest.
+
+Alternative investments:
+Non-traditional assets.
+Main return sources depend on the specific asset type.
+```
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, the main point is to understand what each asset class represents.
+
+You should be able to identify:
+
+```text
+Who owns what?
+Who owes what?
+What creates the return?
+What creates the risk?
+How liquid is the asset?
+How easy is it to value?
+What market data is needed?
+```
+
+A simple memory rule:
+
+```text
+Equity = ownership
+Fixed income = lending
+Currency = exchange rate
+Commodity = physical good
+Derivative = contract based on another asset
+Cash = liquidity
+Alternative investment = non-traditional exposure
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, every asset should have a clear asset class.
+
+Possible asset model:
+
+```text
+Asset
+- symbol
+- name
+- asset_class
+- asset_type
+- currency
+- exchange
+- country
+- sector
+- data_source
+```
+
+Example:
+
+```text
+symbol: SPY
+name: SPDR S&P 500 ETF Trust
+asset_class: Equity
+asset_type: ETF
+currency: USD
+exchange: NYSE Arca
+country: United States
+```
+
+Another example:
+
+```text
+symbol: EUR/USD
+name: Euro / US Dollar
+asset_class: Currency
+asset_type: FX pair
+currency: USD
+exchange: FX market
+country: Global
+```
+
+The asset class can help Athena decide which analytics are relevant.
+
+Example:
+
+```text
+Equity → returns, volatility, beta, drawdown
+Bond → yield, duration, maturity, credit risk
+Currency → exchange rate return, FX exposure
+Commodity → spot price, futures price, commodity volatility
+Derivative → underlying, payoff, Greeks
+Cash → liquidity, short-term return
+```
+
+This keeps the system organized and avoids applying the wrong analysis to the wrong instrument.
+
+---
+
+### Mini revision questions
+
+1. What is an asset class?
+
+2. What is the difference between equities and fixed income?
+
+3. Why are currencies important in portfolio analysis?
+
+4. Why are derivatives different from stocks and bonds?
+
+5. Why can alternative investments be harder to analyze?
+
+6. Why should Athena store the asset class of each instrument?
+
+---
+
+### Mini answers
+
+1. An asset class is a group of financial instruments with similar economic characteristics.
+
+2. Equities represent ownership in a company, while fixed income represents lending money to an issuer.
+
+3. Currencies are important because foreign assets expose investors to exchange rate movements.
+
+4. Derivatives are different because their value depends on an underlying asset.
+
+5. Alternative investments can be harder to analyze because they may be illiquid, less transparent and less frequently priced.
+
+6. Athena should store the asset class because different instruments require different data, calculations and risk metrics.
+
+---
+
+### Section summary
+
+Asset classes organize financial markets into major categories.
+
+The main asset classes are:
+
+```text
+Equities
+Fixed income
+Currencies
+Commodities
+Derivatives
+Cash and money market instruments
+Alternative investments
+```
+
+Each asset class has different sources of return, different risks and different data requirements.
+
+For CFA Level 1, understanding asset classes is essential because it gives structure to the rest of investment analysis.
+
+For Athena AI Risk Terminal, asset classification is essential because the platform must know what type of instrument it is analyzing before applying calculations.
+
+The key lesson is:
+
+```text
+The asset class tells Athena what the instrument is,
+how it behaves,
+and which financial analysis is appropriate.
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
 ## 3. Stocks
 
 A stock represents ownership in a company.
 
-When someone buys a stock, they own a small part of the company. The stock price reflects the market's changing expectations about the company and its future.
+When an investor buys a stock, the investor becomes a shareholder. This means the investor owns a small part of the company and may benefit if the company grows in value.
 
-A stock price can move because of:
+Stocks are also called equities because they represent an ownership interest.
 
-- earnings results;
-- revenue growth;
-- interest rates;
-- economic news;
-- sector trends;
-- company-specific news;
-- investor sentiment;
-- market liquidity;
-- geopolitical events.
+Example:
 
-Example stock record:
+```text
+If a company has 1,000,000 shares outstanding
+and an investor owns 10,000 shares,
+
+the investor owns 1% of the company.
+```
+
+In practice, most investors do not buy stocks to control a company. They buy stocks to earn a return from price appreciation and, in some cases, dividends.
+
+---
+
+### Why companies issue stocks
+
+Companies issue stocks to raise capital.
+
+They can use this capital to:
+
+- grow the business;
+- invest in new projects;
+- hire employees;
+- repay debt;
+- acquire other companies;
+- fund research and development.
+
+When a company sells shares to investors for the first time on a public exchange, this is called an IPO.
+
+```text
+IPO = Initial Public Offering
+```
+
+After the IPO, the company’s shares can trade between investors on the secondary market.
+
+Important distinction:
+
+```text
+Primary market = the company sells new shares to investors.
+Secondary market = investors trade existing shares with each other.
+```
+
+Most stock market activity happens in the secondary market.
+
+---
+
+### How investors make money from stocks
+
+Stock investors can earn returns in two main ways:
+
+```text
+Capital gain
+Dividend income
+```
+
+### Capital gain
+
+A capital gain happens when the stock price increases.
+
+Example:
+
+```text
+Purchase price = 100
+Selling price  = 120
+
+Capital gain = 20
+Return = 20%
+```
+
+### Dividend income
+
+A dividend is a cash payment distributed by a company to shareholders.
+
+Example:
+
+```text
+Stock price = 100
+Annual dividend = 3
+
+Dividend yield = 3 / 100 = 3%
+```
+
+Not all companies pay dividends.
+
+Growth companies often reinvest profits into the business, while mature companies are more likely to pay dividends.
+
+---
+
+### Common stock and preferred stock
+
+There are two main types of stock:
+
+```text
+Common stock
+Preferred stock
+```
+
+### Common stock
+
+Common stock usually gives shareholders voting rights.
+
+Common shareholders may vote on important company matters, such as electing the board of directors.
+
+Common stockholders benefit if the company grows, but they also take more risk.
+
+If the company goes bankrupt, common shareholders are paid last.
+
+### Preferred stock
+
+Preferred stock usually has characteristics of both equity and fixed income.
+
+Preferred shareholders often receive fixed dividends and have priority over common shareholders for dividend payments.
+
+However, preferred shares usually have limited or no voting rights.
+
+Simple comparison:
+
+```text
+Common stock = more upside potential, more risk, voting rights.
+Preferred stock = more stable income, less upside, priority over common stock.
+```
+
+For Athena’s first version, common stocks are the most important.
+
+---
+
+### What makes a stock price move?
+
+A stock price changes because investors continuously update their expectations about the company.
+
+Important drivers include:
+
+```text
+Earnings results
+Revenue growth
+Profit margins
+Interest rates
+Economic conditions
+Industry trends
+Company news
+Investor sentiment
+Liquidity
+Geopolitical events
+```
+
+Example:
+
+```text
+If a company reports stronger earnings than expected,
+investors may become more optimistic,
+and the stock price may rise.
+```
+
+Another example:
+
+```text
+If interest rates rise,
+future company profits may be discounted at a higher rate,
+and stock prices may fall.
+```
+
+Stock prices are forward-looking. They often move because of expectations about the future, not only because of current results.
+
+---
+
+### Stock exchanges
+
+Stocks are usually traded on exchanges.
+
+Examples:
+
+```text
+NYSE
+NASDAQ
+Toronto Stock Exchange
+London Stock Exchange
+Euronext Paris
+Tokyo Stock Exchange
+```
+
+An exchange provides a regulated marketplace where buyers and sellers can trade securities.
+
+A stock record should include the exchange because the same company or similar tickers may exist in different markets.
+
+Example:
 
 ```text
 symbol: AAPL
 name: Apple Inc.
-asset_type: equity
-currency: USD
 exchange: NASDAQ
-sector: Technology
+currency: USD
 country: United States
 ```
 
-### Common stock metrics
+---
 
-Important stock-related fields include:
+### Ticker symbols
+
+A ticker symbol is a short code used to identify a traded security.
+
+Examples:
 
 ```text
-Market price
-Market capitalization
-Volume
-Dividend yield
-Sector
-Country
-Currency
-Exchange
+AAPL = Apple Inc.
+MSFT = Microsoft Corporation
+RY.TO = Royal Bank of Canada on the Toronto Stock Exchange
+AIR.PA = Airbus on Euronext Paris
 ```
+
+Ticker symbols are useful for market data systems because they make assets easier to search and identify.
+
+However, tickers must be handled carefully because formats can vary by exchange and data provider.
+
+---
+
+### Market capitalization
+
+Market capitalization, or market cap, measures the total market value of a company’s equity.
+
+Formula:
+
+```text
+Market capitalization = share price × shares outstanding
+```
+
+Example:
+
+```text
+Share price = 50
+Shares outstanding = 1,000,000
+
+Market cap = 50 × 1,000,000
+Market cap = 50,000,000
+```
+
+Market cap is often used to classify companies.
+
+Common categories:
+
+```text
+Large-cap
+Mid-cap
+Small-cap
+Micro-cap
+```
+
+Large-cap companies are usually more established. Small-cap companies may have more growth potential, but they can also be riskier and less liquid.
+
+---
+
+### Sector and industry
+
+Stocks are often grouped by sector and industry.
+
+Examples of sectors:
+
+```text
+Technology
+Financials
+Healthcare
+Energy
+Consumer staples
+Consumer discretionary
+Industrials
+Utilities
+Real estate
+Materials
+Communication services
+```
+
+Sector classification matters because companies in the same sector are often affected by similar economic forces.
+
+Example:
+
+```text
+Banks are strongly affected by interest rates and credit conditions.
+Energy companies are strongly affected by oil and gas prices.
+Technology companies are often affected by growth expectations and innovation cycles.
+```
+
+For Athena, sector information can help analyze portfolio exposure.
+
+Example:
+
+```text
+Portfolio exposure:
+Technology: 45%
+Financials: 20%
+Healthcare: 15%
+Energy: 10%
+Other: 10%
+```
+
+---
 
 ### Price vs value
 
-A stock price is what the market currently pays.  
-A stock value is an estimate of what the asset is worth.
+A stock price is the current market quote.
 
-These two are not always equal.
+A stock value is an estimate of what the stock should be worth based on analysis.
+
+They are not always equal.
 
 ```text
-Price = observable market quote
-Value = analytical estimate
+Price = what the market currently pays.
+Value = what an analyst estimates the stock is worth.
 ```
 
-Athena should store market prices but should also make it possible to calculate returns, volatility and other market behavior metrics from those prices.
+Example:
+
+```text
+Market price = 80
+Analyst estimated value = 100
+```
+
+The analyst may consider the stock undervalued.
+
+Another example:
+
+```text
+Market price = 120
+Analyst estimated value = 100
+```
+
+The analyst may consider the stock overvalued.
+
+This difference is central to active investing.
+
+---
+
+### Stock returns
+
+For Athena, the most important calculation is usually the stock return.
+
+Simple return formula:
+
+```text
+Return = Price_t / Price_{t-1} - 1
+```
+
+Example:
+
+```text
+Yesterday's price = 100
+Today's price     = 103
+
+Return = 103 / 100 - 1
+Return = 3%
+```
+
+For stocks, adjusted close is often preferred for return calculations because it accounts for dividends and stock splits.
+
+Practical rule:
+
+```text
+Use adjusted close for historical stock return calculations when available.
+```
+
+---
+
+### Stock risk
+
+Stocks can generate strong long-term returns, but they are risky.
+
+Important stock risks include:
+
+```text
+Business risk
+Market risk
+Liquidity risk
+Currency risk
+Sector risk
+Company-specific risk
+```
+
+### Business risk
+
+Business risk comes from the company itself.
+
+Example:
+
+```text
+Poor earnings
+Weak management
+Product failure
+Higher costs
+Lower demand
+```
+
+### Market risk
+
+Market risk affects the overall market.
+
+Example:
+
+```text
+A recession may cause many stocks to fall at the same time.
+```
+
+### Company-specific risk
+
+Company-specific risk affects one company directly.
+
+Example:
+
+```text
+A lawsuit, scandal, product recall or earnings miss.
+```
+
+This type of risk can often be reduced through diversification.
+
+---
+
+### Stock data needed in Athena
+
+A clean stock record may include:
+
+```text
+symbol
+name
+asset_class
+asset_type
+currency
+exchange
+country
+sector
+industry
+market_price
+adjusted_close
+volume
+market_cap
+dividend_yield
+data_source
+```
+
+Example:
+
+```text
+symbol: AAPL
+name: Apple Inc.
+asset_class: Equity
+asset_type: Common stock
+currency: USD
+exchange: NASDAQ
+country: United States
+sector: Technology
+industry: Consumer Electronics
+```
+
+For the first version of Athena, the most important fields are:
+
+```text
+symbol
+name
+currency
+exchange
+adjusted close
+volume
+sector
+```
+
+These fields are enough to calculate basic stock returns, volatility, liquidity indicators and sector exposure.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, remember that a stock represents ownership.
+
+The shareholder’s return can come from:
+
+```text
+Price appreciation
+Dividends
+```
+
+Important stock concepts include:
+
+```text
+Common stock
+Preferred stock
+Dividends
+Voting rights
+Market capitalization
+Sector classification
+Primary market
+Secondary market
+Price vs value
+```
+
+A simple memory rule:
+
+```text
+Stock = ownership + uncertain future cash flows + market price risk
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, stocks are a good first asset type because they are easy to represent with market data.
+
+The stock module should support:
+
+```text
+Asset identification
+Historical price loading
+Adjusted close handling
+Daily return calculation
+Volatility calculation
+Volume analysis
+Sector classification
+Benchmark comparison
+Data quality checks
+```
+
+The goal is not only to display the stock price.
+
+The goal is to transform stock market data into useful financial information.
+
+---
+
+### Mini revision questions
+
+1. What does a stock represent?
+
+2. What are the two main ways investors can earn returns from stocks?
+
+3. What is the difference between common stock and preferred stock?
+
+4. What is market capitalization?
+
+5. Why is adjusted close useful for stock return calculations?
+
+6. What is the difference between price and value?
+
+7. Why does sector classification matter?
+
+---
+
+### Mini answers
+
+1. A stock represents ownership in a company.
+
+2. Investors can earn returns from price appreciation and dividends.
+
+3. Common stock usually has voting rights and more upside potential. Preferred stock usually has priority for dividends but less upside.
+
+4. Market capitalization is the share price multiplied by the number of shares outstanding.
+
+5. Adjusted close is useful because it accounts for dividends and stock splits.
+
+6. Price is the current market quote. Value is an analytical estimate of what the stock is worth.
+
+7. Sector classification matters because companies in the same sector are often affected by similar economic forces.
+
+---
+
+### Section summary
+
+A stock is an ownership claim on a company.
+
+Stock investors can earn returns through price appreciation and dividends. Stock prices move because investors constantly update their expectations about the company’s future.
+
+For CFA Level 1, stocks are important because they introduce ownership, dividends, voting rights, market capitalization and equity risk.
+
+For Athena AI Risk Terminal, stocks are a key starting point because they provide clean use cases for price history, returns, volatility, liquidity and benchmark analysis.
+
+The key lesson is:
+
+```text
+A stock is not just a price on a screen.
+It is an ownership claim whose market value changes with expectations, risk and company performance.
+```
 
 ---
 
@@ -672,6 +2112,46 @@ Low volume can mean:
 In Athena, volume can be used as a simple liquidity indicator.
 
 ---
+
+
+## 37. Nominal vs real returns
+
+A nominal return is the return before adjusting for inflation.
+
+A real return is the return after adjusting for inflation.
+
+Approximate formula:
+
+```text
+Real return ≈ Nominal return - Inflation
+```
+
+More exact formula:
+
+```text
+Real return = (1 + nominal return) / (1 + inflation) - 1
+```
+
+### Example
+
+```text
+Nominal return = 8%
+Inflation      = 3%
+
+Approximate real return = 8% - 3% = 5%
+```
+
+### Why real returns matter
+
+Nominal gains do not always mean purchasing power increased.
+
+If inflation is high, a positive nominal return can still produce a weak real return.
+
+---
+
+
+
+
 
 ## 12. Price vs return
 
@@ -1702,40 +3182,7 @@ If it is difficult to beat the market, some investors choose to track the market
 
 ---
 
-## 37. Nominal vs real returns
 
-A nominal return is the return before adjusting for inflation.
-
-A real return is the return after adjusting for inflation.
-
-Approximate formula:
-
-```text
-Real return ≈ Nominal return - Inflation
-```
-
-More exact formula:
-
-```text
-Real return = (1 + nominal return) / (1 + inflation) - 1
-```
-
-### Example
-
-```text
-Nominal return = 8%
-Inflation      = 3%
-
-Approximate real return = 8% - 3% = 5%
-```
-
-### Why real returns matter
-
-Nominal gains do not always mean purchasing power increased.
-
-If inflation is high, a positive nominal return can still produce a weak real return.
-
----
 
 ## 38. Data quality
 
