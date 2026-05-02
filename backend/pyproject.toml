@@ -1,0 +1,19 @@
+[project]
+name = "athena-backend"
+version = "0.1.0"
+description = "Initial FastAPI foundation for Athena AI Risk Terminal."
+requires-python = ">=3.11"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

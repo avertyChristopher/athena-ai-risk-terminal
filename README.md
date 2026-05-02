@@ -1,69 +1,63 @@
 # Athena AI Risk Terminal
 
-Athena AI Risk Terminal is a bilingual AI-powered quantitative finance platform designed to connect front-office portfolio decisions with middle-office risk controls.
+Athena AI Risk Terminal is a bilingual quantitative finance and risk management platform designed around a clean full-stack architecture. This repository now contains the initial technical foundation described in `docs/architecture.md`: a FastAPI backend with thin routes and service boundaries, plus a React TypeScript frontend with an app shell, routing, and i18n.
 
-## Overview
+## Architecture Summary
 
-The goal of this project is to build a professional full-stack financial risk terminal combining software engineering, quantitative finance, AI-assisted analysis and risk management workflows.
+- Frontend: React + TypeScript + Vite application shell with routed feature placeholders.
+- Backend: FastAPI API with thin routes, service orchestration, repository placeholders, and domain packages reserved for pure quant logic.
+- Data services: PostgreSQL and Redis are provisioned through `docker-compose.yml` for future persistence and worker flows.
+- i18n: visible frontend labels live in `frontend/src/i18n/en.json` and `frontend/src/i18n/fr.json`.
 
-The platform will include:
-
-- Portfolio construction
-- Trade simulation
-- Performance analytics
-- VaR and Conditional VaR / Expected Shortfall
-- Volatility analytics
-- Black-Scholes option pricing
-- Greeks: Delta, Gamma, Vega, Theta, Rho
-- Yield curves and spot rates
-- Bond pricing
-- Stress testing
-- Limit monitoring
-- P&L attribution
-- Reconciliation
-- AI anomaly detection
-- AI-generated risk reports
-- RiskDNA explainable risk engine
-
-## Vision
-
-The project aims to simulate a mini institutional investment desk where a front-office trade idea can be transformed into measurable middle-office risk, P&L and compliance insights.
-
-## Documentation
-
-The complete project plan is available here:
-
-[Detailed Project Plan](docs/athena_detailed_plan.md)
-
-## Tech Stack
-
-Planned stack:
-
-- Frontend: React, TypeScript, Vite, Tailwind CSS
-- Backend: Python, FastAPI, Pydantic
-- Database: PostgreSQL
-- Cache / Jobs: Redis
-- Quant: pandas, NumPy, SciPy, scikit-learn, cvxpy
-- DevOps: Docker, GitHub Actions
-- AI: AI-assisted risk explanations and report generation
-
-## Project Status
-
-Project initialized.  
-Current phase: foundation and architecture setup.
-
-## Repository Structure
+## Project Structure
 
 ```text
 athena-ai-risk-terminal/
 ├── backend/
 ├── frontend/
 ├── docs/
-│   └── athena_detailed_plan.md
 ├── notebooks/
-└── README.md
+└── docker-compose.yml
 ```
 
+## Local Development
 
-## Author 
-Jonathan Gavriel Averty 
+### Backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Optional local services
+
+```bash
+docker compose up -d postgres redis
+```
+
+## Local URLs
+
+- Backend URL: `http://localhost:8000`
+- Backend health: `http://localhost:8000/api/health`
+- Backend API docs: `http://localhost:8000/docs`
+- Frontend URL: `http://localhost:5173`
+
+## Current Scope
+
+- Implemented: backend health endpoint, placeholder module routes, service/repository/domain scaffolding, frontend shell, sidebar navigation, reusable finance display components, and English/French translations.
+- Deferred intentionally: authentication, advanced database migrations, VaR/CVaR engines, Black-Scholes, rates analytics, RiskDNA scoring, report generation, and other finance-heavy logic beyond placeholders.
+
+## Documentation
+
+- Architecture: [docs/architecture.md](docs/architecture.md)
+- Detailed plan: [docs/athena_detailed_plan.md](docs/athena_detailed_plan.md)
+- Product specification: [docs/product-spec.md](docs/product-spec.md)

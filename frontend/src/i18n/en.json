@@ -1,0 +1,120 @@
+{
+  "app": {
+    "name": "Athena AI Risk Terminal",
+    "subtitle": "A quantitative finance and risk management platform for portfolio, trading, and control workflows."
+  },
+  "common": {
+    "platform": "Platform",
+    "primaryNavigation": "Primary navigation",
+    "language": "Language",
+    "english": "English",
+    "french": "French",
+    "environmentValue": "Development foundation with bilingual navigation and API connectivity.",
+    "placeholderTitle": "Foundation Ready",
+    "placeholderDescription": "This module has been scaffolded to match the architecture and is ready for future business logic, services, and domain calculations.",
+    "comingSoon": "Implementation comes next in the service and domain layers.",
+    "loading": "Loading",
+    "unavailable": "Unavailable",
+    "riskLevels": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "marketData": "Market Data",
+    "portfolioBuilder": "Portfolio Builder",
+    "tradeSimulator": "Trade Simulator",
+    "riskMonitor": "Risk Monitor",
+    "volatilityLab": "Volatility Lab",
+    "optionsPricingLab": "Options Pricing Lab",
+    "ratesLab": "Rates Lab",
+    "stressTesting": "Stress Testing",
+    "limitCenter": "Limit Center",
+    "pnlAttribution": "P&L Attribution",
+    "reconciliation": "Reconciliation",
+    "aiAnomalyCenter": "AI Anomaly Center",
+    "reportsCenter": "Reports Center",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Central overview for the initial Athena project foundation.",
+    "heroTitle": "Athena AI Risk Terminal",
+    "heroSubtitle": "A quantitative finance and risk management platform built for scalable front-office and middle-office workflows.",
+    "cards": {
+      "platformHealth": "Platform health",
+      "samplePnl": "Sample daily P&L",
+      "sampleVar": "Sample portfolio VaR",
+      "riskDna": "RiskDNA placeholder"
+    },
+    "descriptions": {
+      "platformHealth": "Health endpoint wiring between frontend and backend.",
+      "samplePnl": "Display component placeholder for formatted currency values.",
+      "sampleVar": "Display component placeholder for formatted percentage values.",
+      "riskDna": "AI explanation and scoring layer will connect here later."
+    },
+    "contentTitle": "Architecture-first foundation",
+    "contentBody": "The app shell, navigation, i18n, and API hook structure are ready for incremental feature development."
+  },
+  "pages": {
+    "marketData": {
+      "title": "Market Data",
+      "description": "Asset discovery, pricing feeds, and historical time series will be added here."
+    },
+    "portfolio": {
+      "title": "Portfolio Builder",
+      "description": "Portfolio construction and allocation workflows will be implemented on this page."
+    },
+    "tradeSimulator": {
+      "title": "Trade Simulator",
+      "description": "Trade simulation orchestration will connect position changes, risk checks, and approval context here."
+    },
+    "riskMonitor": {
+      "title": "Risk Monitor",
+      "description": "VaR, expected shortfall, and concentration monitoring will live in this module."
+    },
+    "volatilityLab": {
+      "title": "Volatility Lab",
+      "description": "Historical and rolling volatility analytics will be added in a later increment."
+    },
+    "optionsPricing": {
+      "title": "Options Pricing Lab",
+      "description": "Black-Scholes pricing, Greeks, and payoff analysis will be added here."
+    },
+    "ratesLab": {
+      "title": "Rates Lab",
+      "description": "Yield curve, bond pricing, and duration analytics will be exposed in this workspace."
+    },
+    "stressTesting": {
+      "title": "Stress Testing",
+      "description": "Scenario management and shock analysis will be layered onto this module later."
+    },
+    "limits": {
+      "title": "Limit Center",
+      "description": "Risk limits, threshold monitoring, and breach review tooling will appear here."
+    },
+    "pnl": {
+      "title": "P&L Attribution",
+      "description": "P&L decomposition and attribution workflows will be connected in a future milestone."
+    },
+    "reconciliation": {
+      "title": "Reconciliation",
+      "description": "Operational checks and exception management will be implemented here."
+    },
+    "aiAnomalies": {
+      "title": "AI Anomaly Center",
+      "description": "Explainable anomaly detection and AI-assisted commentary will connect to this area."
+    },
+    "reports": {
+      "title": "Reports Center",
+      "description": "Bilingual PDF and CSV reporting workflows will be built on top of this scaffold."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Application preferences and environment-level controls will be grouped here."
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "app": {
+    "name": "Athena AI Risk Terminal",
+    "subtitle": "Une plateforme de finance quantitative et de gestion du risque pour les flux de portefeuille, de trading et de contrôle."
+  },
+  "common": {
+    "platform": "Plateforme",
+    "primaryNavigation": "Navigation principale",
+    "language": "Langue",
+    "english": "Anglais",
+    "french": "Français",
+    "environmentValue": "Fondation de développement avec navigation bilingue et connectivité API.",
+    "placeholderTitle": "Fondation prête",
+    "placeholderDescription": "Ce module suit déjà l'architecture et il est prêt pour la logique métier, les services et les calculs de domaine à venir.",
+    "comingSoon": "L'implémentation viendra ensuite dans les couches service et domaine.",
+    "loading": "Chargement",
+    "unavailable": "Indisponible",
+    "riskLevels": {
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Élevé",
+      "critical": "Critique"
+    }
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "marketData": "Données de marché",
+    "portfolioBuilder": "Construction de portefeuille",
+    "tradeSimulator": "Simulateur de trade",
+    "riskMonitor": "Surveillance du risque",
+    "volatilityLab": "Laboratoire de volatilité",
+    "optionsPricingLab": "Laboratoire de pricing d'options",
+    "ratesLab": "Laboratoire des taux",
+    "stressTesting": "Tests de stress",
+    "limitCenter": "Centre des limites",
+    "pnlAttribution": "Attribution du P&L",
+    "reconciliation": "Rapprochement",
+    "aiAnomalyCenter": "Centre d'anomalies IA",
+    "reportsCenter": "Centre de rapports",
+    "settings": "Paramètres"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Vue centrale de la fondation initiale du projet Athena.",
+    "heroTitle": "Athena AI Risk Terminal",
+    "heroSubtitle": "Une plateforme de finance quantitative et de gestion du risque conçue pour des workflows front-office et middle-office évolutifs.",
+    "cards": {
+      "platformHealth": "Santé de la plateforme",
+      "samplePnl": "P&L quotidien exemple",
+      "sampleVar": "VaR portefeuille exemple",
+      "riskDna": "Espace réservé RiskDNA"
+    },
+    "descriptions": {
+      "platformHealth": "Connexion du point de santé entre le frontend et le backend.",
+      "samplePnl": "Composant d'affichage prêt pour les montants monétaires formatés.",
+      "sampleVar": "Composant d'affichage prêt pour les pourcentages formatés.",
+      "riskDna": "La couche d'explication IA et de scoring sera connectée ici plus tard."
+    },
+    "contentTitle": "Fondation guidée par l'architecture",
+    "contentBody": "Le shell applicatif, la navigation, l'i18n et la structure des hooks API sont prêts pour le développement incrémental des fonctionnalités."
+  },
+  "pages": {
+    "marketData": {
+      "title": "Données de marché",
+      "description": "La découverte d'actifs, les flux de prix et les séries historiques seront ajoutés ici."
+    },
+    "portfolio": {
+      "title": "Construction de portefeuille",
+      "description": "Les workflows de construction et d'allocation de portefeuille seront implémentés sur cette page."
+    },
+    "tradeSimulator": {
+      "title": "Simulateur de trade",
+      "description": "L'orchestration de simulation reliera ici les changements de positions, les contrôles de risque et le contexte d'approbation."
+    },
+    "riskMonitor": {
+      "title": "Surveillance du risque",
+      "description": "La VaR, l'expected shortfall et le suivi de concentration vivront dans ce module."
+    },
+    "volatilityLab": {
+      "title": "Laboratoire de volatilité",
+      "description": "Les analyses de volatilité historique et glissante seront ajoutées dans un incrément futur."
+    },
+    "optionsPricing": {
+      "title": "Laboratoire de pricing d'options",
+      "description": "Le pricing Black-Scholes, les Greeks et l'analyse des payoffs seront ajoutés ici."
+    },
+    "ratesLab": {
+      "title": "Laboratoire des taux",
+      "description": "La courbe de taux, le pricing obligataire et l'analyse de duration seront exposés dans cet espace."
+    },
+    "stressTesting": {
+      "title": "Tests de stress",
+      "description": "La gestion de scénarios et l'analyse de chocs seront ajoutées à ce module plus tard."
+    },
+    "limits": {
+      "title": "Centre des limites",
+      "description": "Les limites de risque, le suivi des seuils et la revue des dépassements apparaîtront ici."
+    },
+    "pnl": {
+      "title": "Attribution du P&L",
+      "description": "Les workflows de décomposition et d'attribution du P&L seront connectés dans un futur jalon."
+    },
+    "reconciliation": {
+      "title": "Rapprochement",
+      "description": "Les contrôles opérationnels et la gestion des exceptions seront implémentés ici."
+    },
+    "aiAnomalies": {
+      "title": "Centre d'anomalies IA",
+      "description": "La détection d'anomalies explicable et le commentaire assisté par IA seront reliés à cette zone."
+    },
+    "reports": {
+      "title": "Centre de rapports",
+      "description": "Les workflows de rapports bilingues PDF et CSV seront construits sur cette fondation."
+    },
+    "settings": {
+      "title": "Paramètres",
+      "description": "Les préférences applicatives et les contrôles d'environnement seront regroupés ici."
+    }
+  }
+}
