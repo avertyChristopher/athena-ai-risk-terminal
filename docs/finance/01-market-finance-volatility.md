@@ -21,31 +21,31 @@
 10. Adjusted close and corporate actions
 11. Volume
 12. Nominal vs real returns
-12. Price vs return
-13. Holding Period Return
-14. Simple returns
-15. Log returns
-16. Arithmetic vs geometric returns
-17. Total return
-18. Compounding and annualization
-19. Volatility
-20. Daily volatility
-21. Annualized volatility
-22. Rolling volatility
-23. Realized volatility
-24. Implied volatility
-25. Variance and standard deviation
-26. Return distributions
-27. Skewness and kurtosis
-28. Normal distribution and fat tails
-29. Correlation
-30. Covariance
-31. Liquidity
-32. Bid, ask and bid-ask spread
-33. Order types and market microstructure
-34. Benchmark
-35. Index construction basics
-36. Market efficiency basics
+13. Price vs return
+14. Holding Period Return
+15. Simple returns
+16. Log returns
+17. Arithmetic vs geometric returns
+18. Total return
+19. Compounding and annualization
+20. Volatility
+21. Daily volatility
+22. Annualized volatility
+23. Rolling volatility
+24. Realized volatility
+25. Implied volatility
+26. Variance and standard deviation
+27. Return distributions
+28. Skewness and kurtosis
+29. Normal distribution and fat tails
+30. Correlation
+31. Covariance
+32. Liquidity
+33. Bid, ask and bid-ask spread
+34. Order types and market microstructure
+35. Benchmark
+36. Index construction basics
+37. Market efficiency basics
 38. Data quality
 39. Missing data
 40. Outliers
@@ -6979,7 +6979,7 @@ If inflation is high, a positive nominal return can still produce a weak real re
 
 
 
-## 12. Nominal vs real returns
+## 13. Nominal vs real returns
 
 A nominal return is the return before adjusting for inflation.
 
@@ -7853,7 +7853,7 @@ Real return shows purchasing power growth.
 
 
 
-## 13. Holding Period Return
+## 14. Holding Period Return
 
 Holding Period Return, or HPR, measures the total return earned over a specific investment period.
 
@@ -8697,7 +8697,7 @@ not just the price change.
 
 
 
-## 14. Simple returns
+## 15. Simple returns
 
 A simple return measures the percentage change in the value of an asset between two points in time.
 
@@ -9420,7 +9420,7 @@ but they must be compounded over time and calculated from clean price data.
 
 
 
-## 15. Log returns
+## 16. Log returns
 
 Log returns use the natural logarithm to measure the return between two prices.
 
@@ -10184,7 +10184,7 @@ Log returns are easier to model.
 
 
 
-## 16. Arithmetic vs geometric returns
+## 17. Arithmetic vs geometric returns
 
 Returns can be averaged in different ways.
 
@@ -10982,7 +10982,7 @@ Geometric mean tells the compounded growth rate.
 
 
 
-## 17. Total return
+## 18. Total return
 
 Total return measures the full return earned from an investment.
 
@@ -11833,7 +11833,7 @@ Total return shows the full investment result.
 
 
 
-## 18. Compounding and annualization
+## 19. Compounding and annualization
 
 Compounding means that returns accumulate over time.
 
@@ -12957,7 +12957,7 @@ Volatility must be annualized using the square-root-of-time rule.
 
 
 
-## 19. Volatility
+## 20. Volatility
 
 Volatility measures how much returns move around their average.
 
@@ -13809,7 +13809,7 @@ but it helps measure uncertainty.
 
 
 
-## 20. Daily volatility
+## 21. Daily volatility
 
 Daily volatility measures how much an asset’s daily returns fluctuate.
 
@@ -14530,7 +14530,7 @@ It must be calculated from clean daily returns and clearly labeled.
 
 
 
-## 21. Annualized volatility
+## 22. Annualized volatility
 
 Annualized volatility converts daily volatility into a yearly measure.
 
@@ -14568,7 +14568,7 @@ Asset B is more volatile.
 
 ---
 
-## 22. Rolling volatility
+## 23. Rolling volatility
 
 Rolling volatility is calculated over a moving window.
 
@@ -14605,7 +14605,7 @@ Rolling volatility helps detect changing market conditions.
 
 ---
 
-## 23. Realized volatility
+## 24. Realized volatility
 
 Realized volatility is calculated from historical returns.
 
@@ -14633,7 +14633,7 @@ It is simple, transparent and easy to test.
 
 ---
 
-## 24. Implied volatility
+## 25. Implied volatility
 
 Implied volatility is extracted from market prices of options.
 
@@ -14659,7 +14659,7 @@ In Athena, implied volatility can be added later. The first version can start wi
 
 ---
 
-## 25. Variance and standard deviation
+## 26. Variance and standard deviation
 
 Variance and standard deviation are basic measures of dispersion.
 
@@ -14702,7 +14702,7 @@ This is easier to interpret than a variance of:
 
 ---
 
-## 26. Return distributions
+## 27. Return distributions
 
 A return distribution shows how returns are spread across possible outcomes.
 
@@ -14746,7 +14746,7 @@ The average is the same, but the experience is very different.
 
 ---
 
-## 27. Skewness and kurtosis
+## 28. Skewness and kurtosis
 
 Skewness and kurtosis describe the shape of a return distribution.
 
@@ -14781,7 +14781,7 @@ This means that average return and volatility do not tell the full story.
 
 ---
 
-## 28. Normal distribution and fat tails
+## 29. Normal distribution and fat tails
 
 The normal distribution is a common statistical model.
 
@@ -14814,7 +14814,7 @@ In Athena, market analytics should make it clear when a calculation assumes norm
 
 ---
 
-## 29. Correlation
+## 30. Correlation
 
 Correlation measures how two assets move together.
 
@@ -14840,7 +14840,7 @@ A portfolio with many assets is not necessarily diversified if all assets move t
 
 ---
 
-## 30. Covariance
+## 31. Covariance
 
 Covariance measures the joint movement of two assets.
 
@@ -14865,7 +14865,7 @@ Covariance is useful in portfolio calculations because it helps measure how asse
 
 ---
 
-## 31. Liquidity
+## 32. Liquidity
 
 Liquidity measures how easy it is to buy or sell an asset without strongly affecting its price.
 
@@ -14892,7 +14892,7 @@ Liquidity is especially important during stressed market conditions.
 
 ---
 
-## 32. Bid, ask and bid-ask spread
+## 33. Bid, ask and bid-ask spread
 
 The bid is the price buyers are willing to pay.
 
@@ -14927,7 +14927,7 @@ The spread is an implicit cost of trading.
 
 ---
 
-## 33. Order types and market microstructure
+## 34. Order types and market microstructure
 
 Market microstructure studies how trading actually happens in markets.
 
@@ -14990,7 +14990,7 @@ Slippage is more likely when liquidity is low or markets move quickly.
 
 ---
 
-## 34. Benchmark
+## 35. Benchmark
 
 A benchmark is a reference used to evaluate performance.
 
@@ -15037,7 +15037,7 @@ A good benchmark should be:
 
 ---
 
-## 35. Index construction basics
+## 36. Index construction basics
 
 Indices can be built in different ways.
 
@@ -15085,7 +15085,7 @@ This distinction is important for long-term analysis.
 
 ---
 
-## 36. Market efficiency basics
+## 37. Market efficiency basics
 
 Market efficiency describes how quickly and accurately market prices reflect information.
 
