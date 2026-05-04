@@ -9,6 +9,7 @@
 
 ## Table of Contents
 
+## Part I — Market finance foundations
 1. What is market finance?
 2. Main asset classes
 3. Stocks
@@ -16,6 +17,9 @@
 5. Market indices
 6. Currencies
 7. Commodities
+
+
+## Part II — Market data and return calculations
 8. Market data
 9. OHLCV data
 10. Adjusted close and corporate actions
@@ -28,6 +32,9 @@
 17. Arithmetic vs geometric returns
 18. Total return
 19. Compounding and annualization
+
+
+## Part III — Volatility, distributions and statistical risk
 20. Volatility
 21. Daily volatility
 22. Annualized volatility
@@ -40,12 +47,19 @@
 29. Normal distribution and fat tails
 30. Correlation
 31. Covariance
+
+## Part IV — Liquidity, execution, benchmarks and market behavior
 32. Liquidity
 33. Bid, ask and bid-ask spread
 34. Order types and market microstructure
 35. Benchmark
 36. Index construction basics
 37. Market efficiency basics
+
+
+
+
+## Part V — Data quality, Athena implementation and review
 38. Data quality
 39. Missing data
 40. Outliers
@@ -59,6 +73,11 @@
 48. Summary
 
 ---
+
+
+
+## Part I — Market finance foundations
+
 
 ## 1. What is market finance?
 
@@ -4653,6 +4672,7 @@ Its price reflects physical supply, demand, storage, delivery and market expecta
 
 
 
+## Part II — Market data and return calculations
 
 
 ## 8. Market data
@@ -12956,6 +12976,7 @@ Volatility must be annualized using the square-root-of-time rule.
 
 
 
+## Part III — Volatility, distributions and statistical risk
 
 ## 20. Volatility
 
@@ -23109,6 +23130,7 @@ but it is essential for calculating portfolio risk.
 
 
 
+## Part IV — Liquidity, execution, benchmarks and market behavior
 
 ## 32. Liquidity
 
@@ -29682,6 +29704,7 @@ making easy and consistent outperformance difficult.
 
 
 
+## Part V — Data quality, Athena implementation and review
 
 
 ## 38. Data quality
