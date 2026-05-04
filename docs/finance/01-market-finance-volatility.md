@@ -14532,30 +14532,154 @@ It must be calculated from clean daily returns and clearly labeled.
 
 ## 22. Annualized volatility
 
-Annualized volatility converts daily volatility into a yearly measure.
+Annualized volatility converts periodic volatility into a yearly measure.
 
-Formula:
+When volatility is calculated from daily returns, it is called daily volatility.  
+When it is converted to a yearly scale, it is called annualized volatility.
+
+Simple idea:
 
 ```text
-Annualized volatility = Daily volatility * sqrt(252)
+Daily volatility = short-term return instability
+Annualized volatility = yearly equivalent volatility
 ```
 
-Why 252?
+Annualized volatility is useful because it allows investors to compare assets using the same time horizon.
 
-Because there are approximately 252 trading days in a year.
+---
+
+### Formula
+
+For daily volatility, the standard formula is:
+
+```text
+Annualized volatility = Daily volatility × sqrt(252)
+```
+
+Where:
+
+```text
+252 = approximate number of trading days in one year
+sqrt(252) ≈ 15.87
+```
+
+So the formula can also be written as:
+
+```text
+Annualized volatility = Daily volatility × 15.87
+```
+
+---
+
+### Why 252?
+
+Financial markets are not open every day.
+
+A calendar year has about:
+
+```text
+365 calendar days
+```
+
+But stock markets are usually open around:
+
+```text
+252 trading days per year
+```
+
+Weekends and market holidays are excluded.
+
+That is why daily market volatility is usually annualized using:
+
+```text
+sqrt(252)
+```
+
+---
 
 ### Example
 
+Suppose an asset has:
+
 ```text
 Daily volatility = 1%
+```
 
-Annualized volatility = 1% * sqrt(252)
+Annualized volatility:
+
+```text
+Annualized volatility = 1% × sqrt(252)
+Annualized volatility = 1% × 15.87
 Annualized volatility ≈ 15.87%
 ```
 
+This means the asset has an estimated yearly volatility of approximately:
+
+```text
+15.87%
+```
+
+---
+
+### Interpretation
+
+If an asset has:
+
+```text
+Annualized volatility = 20%
+```
+
+A simplified interpretation is:
+
+```text
+The asset’s yearly returns have historically fluctuated around their average by about 20%.
+```
+
+This does not mean the asset will lose 20%.
+
+It also does not mean the asset will move exactly 20% every year.
+
+It means the asset has a yearly risk estimate based on the dispersion of returns.
+
+Simple idea:
+
+```text
+Annualized volatility measures yearly uncertainty, not guaranteed loss.
+```
+
+---
+
 ### Why annualized volatility matters
 
-Annualized volatility makes it easier to compare assets over a common horizon.
+Annualized volatility matters because it makes risk comparisons easier.
+
+Daily volatility numbers are useful, but they are not always intuitive for investors.
+
+Example:
+
+```text
+Asset A daily volatility = 0.75%
+Asset B daily volatility = 2.00%
+```
+
+These numbers can be compared, but annualized volatility is easier to understand in portfolio and risk reports.
+
+Annualized:
+
+```text
+Asset A annualized volatility = 0.75% × sqrt(252) ≈ 11.91%
+Asset B annualized volatility = 2.00% × sqrt(252) ≈ 31.75%
+```
+
+Now the risk difference is clearer.
+
+Asset B is much more volatile on a yearly scale.
+
+---
+
+### Comparing assets
+
+Annualized volatility allows analysts to compare different assets on the same basis.
 
 Example:
 
@@ -14566,58 +14690,1523 @@ Asset B annualized volatility = 35%
 
 Asset B is more volatile.
 
+This means Asset B has historically shown larger return fluctuations than Asset A.
+
+However, higher volatility does not automatically mean a better or worse investment.
+
+The investor must compare volatility with expected return.
+
+Example:
+
+```text
+Asset A:
+Expected return = 8%
+Annualized volatility = 12%
+
+Asset B:
+Expected return = 8%
+Annualized volatility = 35%
+```
+
+Both assets have the same expected return, but Asset B has much higher risk.
+
+Asset B may be less attractive if it does not compensate the investor for the extra volatility.
+
 ---
 
-## 23. Rolling volatility
+### Annualized volatility vs annualized return
 
-Rolling volatility is calculated over a moving window.
+Annualized volatility and annualized return are not calculated the same way.
+
+Annualized return uses compounding.
+
+Example:
+
+```text
+Annualized return = (Ending value / Beginning value)^(1 / years) - 1
+```
+
+Annualized volatility uses the square-root-of-time rule.
+
+Example:
+
+```text
+Annualized volatility = Daily volatility × sqrt(252)
+```
+
+Simple comparison:
+
+```text
+Returns compound over time.
+Volatility scales with the square root of time.
+```
+
+This is one of the most important distinctions in market risk analysis.
+
+---
+
+### Why volatility uses the square root of time
+
+Volatility is based on standard deviation.
+
+Standard deviation is the square root of variance.
+
+Under simplifying assumptions, variance increases proportionally with time.
+
+Simple logic:
+
+```text
+Daily variance × 252 = annual variance
+```
+
+Because volatility is the square root of variance:
+
+```text
+Annualized volatility = sqrt(daily variance × 252)
+```
+
+This becomes:
+
+```text
+Annualized volatility = Daily volatility × sqrt(252)
+```
+
+This rule assumes that daily returns are independent and have stable variance.
+
+In real markets, this assumption is not perfect, but it is widely used in finance.
+
+---
+
+### Annualization factors
+
+The annualization factor depends on the data frequency.
+
+Common examples:
+
+```text
+Daily volatility    → multiply by sqrt(252)
+Weekly volatility   → multiply by sqrt(52)
+Monthly volatility  → multiply by sqrt(12)
+Quarterly volatility → multiply by sqrt(4)
+```
+
+Example:
+
+```text
+Monthly volatility = 4%
+```
+
+Annualized volatility:
+
+```text
+Annualized volatility = 4% × sqrt(12)
+Annualized volatility ≈ 13.86%
+```
+
+Athena must know the data frequency before annualizing volatility.
+
+---
+
+### Common mistake
+
+A common beginner mistake is to multiply daily volatility by 252.
+
+Wrong:
+
+```text
+Annualized volatility = Daily volatility × 252
+```
+
+Correct:
+
+```text
+Annualized volatility = Daily volatility × sqrt(252)
+```
+
+Example:
+
+```text
+Daily volatility = 1%
+```
+
+Wrong calculation:
+
+```text
+1% × 252 = 252%
+```
+
+Correct calculation:
+
+```text
+1% × sqrt(252) ≈ 15.87%
+```
+
+The wrong result massively overstates volatility.
+
+---
+
+### Annualized volatility and risk comparison
+
+Annualized volatility is commonly used in professional finance because it puts risk on a standard yearly scale.
+
+It helps compare:
+
+```text
+Stocks
+ETFs
+Indices
+Portfolios
+Funds
+Strategies
+Benchmarks
+```
+
+Example:
+
+```text
+Portfolio annualized volatility = 14%
+Benchmark annualized volatility = 18%
+```
+
+The portfolio has been less volatile than the benchmark.
+
+This may be positive if the portfolio also achieved competitive returns.
+
+---
+
+### Annualized volatility and portfolio analysis
+
+Annualized volatility is useful for portfolio risk analysis.
+
+Example:
+
+```text
+Portfolio A:
+Annualized return = 9%
+Annualized volatility = 10%
+
+Portfolio B:
+Annualized return = 9%
+Annualized volatility = 25%
+```
+
+Both portfolios have the same annualized return.
+
+But Portfolio A achieved the return with less volatility.
+
+This makes Portfolio A more attractive from a risk-adjusted perspective.
+
+This logic prepares later metrics such as:
+
+```text
+Sharpe ratio
+Information ratio
+Risk-adjusted return
+```
+
+---
+
+### Annualized volatility and investment style
+
+Different investments usually have different volatility levels.
+
+General examples:
+
+```text
+Money market instruments: low volatility
+Government bonds: low to moderate volatility
+Large-cap equity indices: moderate volatility
+Single stocks: moderate to high volatility
+Small-cap stocks: higher volatility
+Commodities: often high volatility
+Leveraged ETFs: very high volatility
+Crypto assets: very high volatility
+```
+
+These are general tendencies, not fixed rules.
+
+Volatility can change over time depending on market conditions.
+
+---
+
+### Annualized volatility and market regimes
+
+Annualized volatility can change significantly across market regimes.
+
+Example:
+
+```text
+Calm market:
+Annualized volatility = 10%
+
+Stress market:
+Annualized volatility = 35%
+```
+
+This means the asset became much more unstable during the stress period.
+
+For Athena, comparing volatility across time can help identify changes in market conditions.
+
+---
+
+### Annualized volatility and rolling windows
+
+Annualized volatility is often calculated over rolling windows.
 
 Common windows:
 
 ```text
-20 days
-60 days
-252 days
+20 trading days
+60 trading days
+252 trading days
 ```
 
-### Example
-
-A 20-day rolling volatility uses the most recent 20 daily returns.
-
-Then the window moves forward one day, and the calculation is repeated.
-
-### Why rolling volatility matters
-
-Volatility changes over time.
-
-A calm asset can become volatile during market stress.  
-A volatile asset can become calmer after uncertainty decreases.
-
-Rolling volatility helps detect changing market conditions.
-
-### Practical interpretation
+Example:
 
 ```text
-20-day volatility = short-term behavior
-60-day volatility = medium-term behavior
-252-day volatility = one-year behavior
+20-day annualized volatility = short-term risk estimate
+60-day annualized volatility = medium-term risk estimate
+252-day annualized volatility = one-year risk estimate
+```
+
+A rolling annualized volatility chart can show whether risk is rising or falling over time.
+
+---
+
+### Annualized volatility and sample size
+
+Annualized volatility is more reliable when calculated from enough data.
+
+Example:
+
+```text
+Volatility based on 5 daily returns = weak estimate
+Volatility based on 252 daily returns = more stable estimate
+```
+
+A very short sample can be misleading.
+
+Example:
+
+```text
+A stock had three calm days.
+This does not prove that the stock is low-risk.
+```
+
+Athena should display the number of observations used in the calculation.
+
+---
+
+### Annualized volatility and assumptions
+
+The square-root-of-time rule relies on simplifying assumptions.
+
+Important assumptions include:
+
+```text
+Returns are independent
+Return variance is stable
+The return distribution does not change dramatically
+There are no major structural breaks
+```
+
+In real markets, these assumptions can fail.
+
+Examples:
+
+```text
+Volatility clustering
+Market crises
+Liquidity shocks
+Earnings announcements
+Regime changes
+```
+
+This does not make annualized volatility useless.
+
+It means the result should be interpreted as an estimate, not as a certainty.
+
+---
+
+### Annualized volatility in Athena
+
+Athena should calculate annualized volatility from a clean return series.
+
+Basic workflow:
+
+```text
+Clean price series
+      ↓
+Daily returns
+      ↓
+Daily volatility
+      ↓
+Annualized volatility
+```
+
+Example output:
+
+```text
+Asset: AAPL
+Return type: simple return
+Price field: adjusted close
+Window: 252 trading days
+Daily volatility: 1.20%
+Annualized volatility: 19.05%
+Annualization factor: sqrt(252)
+```
+
+This is clear because the user can see:
+
+```text
+What data was used
+What window was used
+What formula was used
+Whether the result is daily or annualized
 ```
 
 ---
 
+### Data needed in Athena
+
+To calculate annualized volatility, Athena needs:
+
+```text
+Asset identifier
+Clean price series
+Return series
+Return type
+Data frequency
+Volatility window
+Annualization factor
+Start date
+End date
+Currency
+Price field used
+```
+
+Example:
+
+```text
+symbol: SPY
+return_type: simple_return
+price_field_used: adjusted_close
+frequency: daily
+window: 252
+annualization_factor: sqrt(252)
+```
+
+Without the frequency, Athena cannot annualize correctly.
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Multiplying daily volatility by 252
+Comparing daily volatility with annualized volatility
+Ignoring the data frequency
+Using the wrong annualization factor
+Using too few observations
+Assuming annualized volatility is a guaranteed future outcome
+Confusing volatility with loss
+Forgetting to mention the calculation window
+```
+
+Example of unclear output:
+
+```text
+Volatility = 18%
+```
+
+Better output:
+
+```text
+Annualized volatility = 18%
+Window = 252 daily returns
+Annualization factor = sqrt(252)
+Return type = simple return
+Price field = adjusted close
+```
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, annualized volatility is important because it standardizes risk over a yearly horizon.
+
+Important concepts include:
+
+```text
+Daily volatility
+Annualized volatility
+Standard deviation
+Square-root-of-time rule
+Trading days
+Risk comparison
+Data frequency
+Volatility estimation
+```
+
+The key formula is:
+
+```text
+Annualized volatility = Daily volatility × sqrt(252)
+```
+
+A simple memory rule:
+
+```text
+Daily volatility becomes annualized volatility by multiplying by the square root of the number of trading periods in a year.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, annualized volatility should be one of the core risk metrics.
+
+The volatility module should support:
+
+```text
+Daily volatility calculation
+Annualized volatility calculation
+Frequency-aware annualization
+Window selection
+Rolling annualized volatility
+Benchmark volatility comparison
+Portfolio volatility extension
+Clear methodology labels
+Warnings for short samples
+```
+
+Athena should always make the annualization method transparent.
+
+The user should know whether the number is daily, weekly, monthly or annualized.
+
+---
+
+### Mini revision questions
+
+1. What does annualized volatility measure?
+
+2. How do you annualize daily volatility?
+
+3. Why do we use 252 for daily market data?
+
+4. Why do we multiply by sqrt(252) instead of 252?
+
+5. What is the annualized volatility if daily volatility is 1%?
+
+6. Why is annualized volatility useful for comparing assets?
+
+7. Why does Athena need to know the data frequency?
+
+8. Why should annualized volatility be interpreted as an estimate?
+
+---
+
+### Mini answers
+
+1. Annualized volatility measures return instability expressed on a yearly scale.
+
+2. Use: annualized volatility = daily volatility × sqrt(252).
+
+3. Because there are approximately 252 trading days in a year.
+
+4. Because volatility is based on standard deviation, and standard deviation scales with the square root of time.
+
+5. Approximately 15.87%.
+
+6. It puts assets on the same yearly risk scale.
+
+7. Athena needs the data frequency to choose the correct annualization factor.
+
+8. It is an estimate because it relies on assumptions that may not always hold in real markets.
+
+---
+
+### Section summary
+
+Annualized volatility converts periodic volatility into a yearly risk measure.
+
+For daily data, the standard formula is:
+
+```text
+Annualized volatility = Daily volatility × sqrt(252)
+```
+
+For CFA Level 1, this section is important because it explains how risk is standardized across time horizons.
+
+For Athena AI Risk Terminal, annualized volatility is essential for comparing assets, portfolios and benchmarks on the same risk scale.
+
+The key lesson is:
+
+```text
+Returns annualize through compounding.
+Volatility annualizes through the square-root-of-time rule.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 23. Rolling volatility
+
+Rolling volatility measures how volatility changes over time.
+
+It is calculated over a moving window of returns.
+
+Simple idea:
+
+```text
+Rolling volatility = volatility calculated repeatedly through time
+```
+
+Instead of calculating one volatility number for the whole period, rolling volatility calculates many volatility values.
+
+Each value uses the most recent observations in the chosen window.
+
+Common windows include:
+
+```text
+20 trading days
+60 trading days
+252 trading days
+```
+
+---
+
+### Why rolling volatility matters
+
+Volatility is not constant.
+
+An asset can be calm during one period and unstable during another period.
+
+Example:
+
+```text
+Normal market period:
+Returns are small and stable.
+
+Stress market period:
+Returns become large and unpredictable.
+```
+
+Rolling volatility helps detect these changes.
+
+It answers questions such as:
+
+```text
+Is the asset becoming more volatile?
+Is the asset becoming calmer?
+Did market risk increase recently?
+Is current volatility higher than normal?
+```
+
+This makes rolling volatility useful for risk monitoring.
+
+---
+
+### How rolling volatility works
+
+A rolling volatility calculation uses a fixed window.
+
+Example:
+
+```text
+20-day rolling volatility
+```
+
+This means Athena uses the most recent 20 daily returns to calculate volatility.
+
+Then the window moves forward by one day.
+
+Example:
+
+```text
+First calculation:
+Day 1 to Day 20
+
+Second calculation:
+Day 2 to Day 21
+
+Third calculation:
+Day 3 to Day 22
+```
+
+Each window produces one volatility value.
+
+The result is a time series of volatility values.
+
+---
+
+### Simple example
+
+Suppose Athena calculates 5-day rolling volatility.
+
+```text
+Day 1 return
+Day 2 return
+Day 3 return
+Day 4 return
+Day 5 return
+```
+
+These five returns produce the first volatility estimate.
+
+Then the window moves forward:
+
+```text
+Day 2 return
+Day 3 return
+Day 4 return
+Day 5 return
+Day 6 return
+```
+
+This produces the second volatility estimate.
+
+The calculation continues through the dataset.
+
+Simple idea:
+
+```text
+Old observation leaves the window.
+New observation enters the window.
+Volatility is recalculated.
+```
+
+---
+
+### Rolling window
+
+A rolling window is the number of observations used in each calculation.
+
+Examples:
+
+```text
+20-day window = uses 20 daily returns
+60-day window = uses 60 daily returns
+252-day window = uses 252 daily returns
+```
+
+The choice of window affects the result.
+
+A short window reacts quickly.
+
+A long window reacts more slowly.
+
+---
+
+### 20-day rolling volatility
+
+A 20-day rolling volatility is a short-term volatility measure.
+
+It uses approximately one month of trading days.
+
+Simple interpretation:
+
+```text
+20-day rolling volatility = recent short-term risk
+```
+
+It is useful for detecting sudden changes in market conditions.
+
+Example:
+
+```text
+20-day rolling volatility rises sharply after earnings news.
+```
+
+Because the window is short, it reacts quickly to recent shocks.
+
+However, it can also be noisy.
+
+---
+
+### 60-day rolling volatility
+
+A 60-day rolling volatility is a medium-term volatility measure.
+
+It uses approximately three months of trading days.
+
+Simple interpretation:
+
+```text
+60-day rolling volatility = medium-term risk
+```
+
+It is less noisy than a 20-day window but still reacts to changing conditions.
+
+It can be useful for monitoring quarterly risk trends.
+
+---
+
+### 252-day rolling volatility
+
+A 252-day rolling volatility is a longer-term volatility measure.
+
+It uses approximately one year of trading days.
+
+Simple interpretation:
+
+```text
+252-day rolling volatility = one-year historical risk
+```
+
+It is more stable than shorter windows.
+
+However, it reacts more slowly to recent changes.
+
+Example:
+
+```text
+A market shock may quickly affect 20-day volatility,
+but 252-day volatility may rise more gradually.
+```
+
+---
+
+### Short window vs long window
+
+The window length creates a tradeoff.
+
+Short windows are more responsive.
+
+Long windows are more stable.
+
+Simple comparison:
+
+```text
+Short window:
+Reacts quickly but can be noisy.
+
+Long window:
+More stable but reacts slowly.
+```
+
+Example:
+
+```text
+20-day volatility = good for recent stress detection
+252-day volatility = good for long-term risk context
+```
+
+Athena can show multiple windows to give a more complete view.
+
+---
+
+### Rolling volatility and annualization
+
+Rolling volatility is often annualized.
+
+For daily returns, the process is:
+
+```text
+1. Calculate standard deviation inside the rolling window.
+2. Multiply by sqrt(252).
+```
+
+Formula:
+
+```text
+Rolling annualized volatility = rolling daily volatility × sqrt(252)
+```
+
+Example:
+
+```text
+20-day daily rolling volatility = 1.50%
+```
+
+Annualized:
+
+```text
+20-day annualized rolling volatility = 1.50% × sqrt(252)
+20-day annualized rolling volatility ≈ 23.81%
+```
+
+The result should be labeled clearly.
+
+Example:
+
+```text
+20-day annualized rolling volatility
+```
+
+This tells the user both the window and the annualization status.
+
+---
+
+### Rolling volatility chart
+
+Rolling volatility is often displayed as a line chart.
+
+The chart shows how risk changes through time.
+
+Example interpretation:
+
+```text
+Rising rolling volatility = risk is increasing
+Falling rolling volatility = risk is decreasing
+Stable rolling volatility = risk is relatively steady
+```
+
+A rolling volatility chart can help identify:
+
+```text
+Market stress periods
+Volatility spikes
+Calm periods
+Risk regime changes
+Post-crisis normalization
+```
+
+This is very useful for Athena’s frontend.
+
+---
+
+### Volatility spike
+
+A volatility spike happens when rolling volatility rises sharply.
+
+Example:
+
+```text
+20-day annualized volatility moves from 12% to 35%
+```
+
+This may happen because of:
+
+```text
+Earnings shock
+Interest rate surprise
+Inflation surprise
+Geopolitical event
+Liquidity crisis
+Market crash
+Company-specific news
+```
+
+A volatility spike is not automatically bad, but it tells the user that the asset has become more unstable.
+
+Athena can flag volatility spikes as risk warnings.
+
+---
+
+### Volatility regime
+
+A volatility regime describes the general level of market volatility.
+
+Common regimes:
+
+```text
+Low volatility regime
+Normal volatility regime
+High volatility regime
+Crisis volatility regime
+```
+
+Rolling volatility helps identify these regimes.
+
+Example:
+
+```text
+Annualized rolling volatility below 10% = low volatility
+Annualized rolling volatility around 15% to 25% = normal or moderate
+Annualized rolling volatility above 30% = high
+```
+
+The exact thresholds depend on the asset class.
+
+A 30% volatility may be high for a broad equity index, but more normal for a single high-growth stock.
+
+---
+
+### Rolling volatility and asset comparison
+
+Rolling volatility can compare risk across assets through time.
+
+Example:
+
+```text
+Asset A 20-day volatility = 15%
+Asset B 20-day volatility = 35%
+```
+
+Asset B is more volatile over the recent window.
+
+But this comparison should use the same methodology:
+
+```text
+Same return type
+Same window
+Same frequency
+Same annualization method
+Same date range
+```
+
+Otherwise, the comparison may be misleading.
+
+---
+
+### Rolling volatility and benchmark comparison
+
+Rolling volatility is useful for comparing an asset or portfolio against a benchmark.
+
+Example:
+
+```text
+Portfolio 60-day volatility = 14%
+Benchmark 60-day volatility = 18%
+```
+
+The portfolio was less volatile than its benchmark over the same rolling window.
+
+Another example:
+
+```text
+Portfolio 60-day volatility = 25%
+Benchmark 60-day volatility = 18%
+```
+
+The portfolio was more volatile than its benchmark.
+
+This helps evaluate whether the portfolio is taking more or less risk than the reference market.
+
+---
+
+### Rolling volatility and risk monitoring
+
+Rolling volatility is useful for monitoring risk limits.
+
+Example:
+
+```text
+Risk limit:
+Portfolio annualized volatility should stay below 20%.
+```
+
+Athena can calculate rolling volatility and warn the user if the limit is breached.
+
+Example warning:
+
+```text
+Portfolio 60-day annualized volatility increased to 24%.
+Risk limit exceeded.
+```
+
+This makes rolling volatility useful for middle-office and risk management workflows.
+
+---
+
+### Rolling volatility and market stress
+
+Rolling volatility often rises during market stress.
+
+Example:
+
+```text
+Before stress:
+20-day annualized volatility = 12%
+
+During stress:
+20-day annualized volatility = 45%
+```
+
+This tells the user that daily returns have become much more unstable.
+
+Rolling volatility can therefore act as an early warning signal.
+
+However, it is still based on historical returns.
+
+It shows what has happened recently, not what will happen with certainty.
+
+---
+
+### Rolling volatility and lag
+
+Rolling volatility can lag behind sudden events.
+
+Because it uses historical observations, it may take time to fully reflect a new risk regime.
+
+Example:
+
+```text
+A major market shock happens today.
+The rolling window still contains many calm days from before the shock.
+```
+
+The volatility estimate may rise gradually as more high-volatility days enter the window.
+
+This is especially true for long windows such as 252 days.
+
+Simple idea:
+
+```text
+Rolling volatility reacts with a delay,
+especially when the window is long.
+```
+
+---
+
+### Rolling volatility and window choice
+
+The correct window depends on the analysis goal.
+
+Example:
+
+```text
+Short-term trader:
+May prefer 20-day volatility.
+
+Portfolio manager:
+May prefer 60-day or 252-day volatility.
+
+Risk manager:
+May monitor several windows at once.
+```
+
+A good Athena dashboard can show:
+
+```text
+20-day rolling volatility
+60-day rolling volatility
+252-day rolling volatility
+```
+
+This gives the user short-term, medium-term and long-term views of risk.
+
+---
+
+### Rolling volatility and data quality
+
+Rolling volatility is sensitive to data quality problems.
+
+Possible issues include:
+
+```text
+Missing prices
+Wrong prices
+Duplicate dates
+Outliers
+Unadjusted corporate actions
+Incorrect return calculations
+Wrong frequency
+```
+
+Example:
+
+```text
+A stock split is not adjusted correctly.
+```
+
+This can create a false extreme return.
+
+That false return can produce a large artificial volatility spike.
+
+Athena should validate price and return data before calculating rolling volatility.
+
+---
+
+### Rolling volatility data needed in Athena
+
+To calculate rolling volatility, Athena needs:
+
+```text
+Asset identifier
+Clean price series
+Return series
+Return type
+Rolling window size
+Data frequency
+Annualization factor
+Start date
+End date
+Price field used
+Currency
+```
+
+Example:
+
+```text
+symbol: AAPL
+return_type: simple_return
+price_field_used: adjusted_close
+frequency: daily
+window: 20 trading days
+annualization_factor: sqrt(252)
+```
+
+The output should make the methodology clear.
+
+---
+
+### Rolling volatility in Athena
+
+Athena can use rolling volatility to support:
+
+```text
+Risk monitoring
+Market regime detection
+Volatility charts
+Portfolio risk dashboards
+Benchmark risk comparison
+Volatility spike warnings
+Risk limit monitoring
+Stress period analysis
+```
+
+Example output:
+
+```text
+Asset: AAPL
+Window: 20 trading days
+Return type: simple return
+Price field: adjusted close
+Annualized rolling volatility today: 24.50%
+Previous value: 18.20%
+Change: +6.30 percentage points
+```
+
+This helps the user understand not only the current volatility level, but also how it changed.
+
+---
+
+### Frontend display idea
+
+A useful Athena frontend component could be:
+
+```text
+RollingVolatilityChart
+```
+
+It could display:
+
+```text
+20-day annualized volatility
+60-day annualized volatility
+252-day annualized volatility
+Benchmark rolling volatility
+Volatility spike markers
+```
+
+Possible user insight:
+
+```text
+The asset’s short-term volatility is rising faster than its long-term volatility.
+```
+
+This can indicate a recent increase in market uncertainty.
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Forgetting to specify the rolling window
+Comparing different window lengths directly
+Mixing daily and monthly volatility
+Forgetting to annualize when comparing yearly risk
+Using too few observations
+Ignoring data quality problems
+Assuming rolling volatility predicts the future perfectly
+Confusing rolling volatility with realized future volatility
+```
+
+Example of unclear output:
+
+```text
+Rolling volatility = 22%
+```
+
+Better output:
+
+```text
+20-day annualized rolling volatility = 22%
+Return type = simple return
+Price field = adjusted close
+Frequency = daily
+```
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, rolling volatility is useful because it shows that risk is not constant over time.
+
+Important concepts include:
+
+```text
+Moving window
+Volatility window
+Historical volatility
+Annualized volatility
+Short-term risk
+Medium-term risk
+Long-term risk
+Market regimes
+Risk monitoring
+```
+
+A simple memory rule:
+
+```text
+Rolling volatility shows how volatility evolves through time.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, rolling volatility should be a core chart-based risk metric.
+
+The volatility module should support:
+
+```text
+Rolling window selection
+20-day rolling volatility
+60-day rolling volatility
+252-day rolling volatility
+Annualized rolling volatility
+Benchmark comparison
+Volatility spike detection
+Risk warnings
+Clear methodology labels
+```
+
+Athena should make volatility dynamic, not static.
+
+The user should be able to see whether risk is rising, falling or stable.
+
+---
+
+### Mini revision questions
+
+1. What is rolling volatility?
+
+2. What does a 20-day rolling volatility use?
+
+3. Why is rolling volatility useful?
+
+4. What is the difference between a short window and a long window?
+
+5. Why is rolling volatility often annualized?
+
+6. Why can rolling volatility lag behind sudden market events?
+
+7. Why should Athena show the window used?
+
+8. What can a volatility spike indicate?
+
+---
+
+### Mini answers
+
+1. Rolling volatility is volatility calculated repeatedly over a moving window of returns.
+
+2. It uses the most recent 20 daily returns.
+
+3. It is useful because volatility changes over time and rolling volatility helps detect changing risk conditions.
+
+4. A short window reacts quickly but is noisy. A long window is more stable but reacts slowly.
+
+5. It is annualized to express risk on a common yearly scale.
+
+6. It can lag because the window still contains older observations from before the event.
+
+7. Athena should show the window because 20-day, 60-day and 252-day volatility have different meanings.
+
+8. A volatility spike can indicate a sudden increase in market uncertainty, stress or abnormal price movement.
+
+---
+
+### Section summary
+
+Rolling volatility measures how volatility changes over time.
+
+It is calculated over a moving window, such as 20, 60 or 252 trading days.
+
+For CFA Level 1, rolling volatility helps reinforce that risk is dynamic and can change across market regimes.
+
+For Athena AI Risk Terminal, rolling volatility is useful for risk monitoring, volatility charts, benchmark comparison and stress detection.
+
+The key lesson is:
+
+```text
+Rolling volatility turns volatility from one static number into a time series of changing risk.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 24. Realized volatility
 
-Realized volatility is calculated from historical returns.
+Realized volatility is volatility calculated from historical returns.
 
-It answers:
+It answers the question:
 
 ```text
 How volatile was the asset in the past?
 ```
 
-It is backward-looking.
+Realized volatility is backward-looking because it uses returns that have already happened.
 
-Realized volatility can be calculated over different windows:
+Simple idea:
+
+```text
+Realized volatility = observed historical volatility
+```
+
+It does not predict the future with certainty.  
+It measures how much the asset actually moved over a past period.
+
+---
+
+### Why realized volatility matters
+
+Realized volatility matters because it gives a concrete measure of past market risk.
+
+It is based on observed price behavior, not forecasts.
+
+It helps answer questions such as:
+
+```text
+How unstable was this asset recently?
+Was the asset more volatile this month than last month?
+Did volatility increase during a market stress period?
+How risky was this asset compared with its benchmark?
+```
+
+For Athena AI Risk Terminal, realized volatility is useful because it is transparent, testable and easy to explain.
+
+---
+
+### Basic calculation logic
+
+Realized volatility is usually calculated in three steps:
+
+```text
+1. Collect historical prices
+2. Convert prices into returns
+3. Calculate the standard deviation of returns
+```
+
+Basic workflow:
+
+```text
+Historical prices
+      ↓
+Historical returns
+      ↓
+Standard deviation
+      ↓
+Realized volatility
+```
+
+If the volatility is annualized, an additional step is added:
+
+```text
+Daily realized volatility × sqrt(252)
+```
+
+---
+
+### Simple example
+
+Suppose Athena has the following prices:
+
+```text
+Date        Price
+Day 0       100
+Day 1       102
+Day 2       101
+Day 3       105
+```
+
+First, calculate daily returns:
+
+```text
+Day 1 return = 102 / 100 - 1 = 2.00%
+Day 2 return = 101 / 102 - 1 ≈ -0.98%
+Day 3 return = 105 / 101 - 1 ≈ 3.96%
+```
+
+Then calculate the standard deviation of these returns.
+
+That standard deviation is the realized volatility over the selected period.
+
+---
+
+### Realized volatility is backward-looking
+
+Realized volatility only uses past data.
+
+Example:
+
+```text
+20-day realized volatility
+```
+
+means:
+
+```text
+Volatility calculated using the last 20 daily returns.
+```
+
+It tells us what happened during those 20 days.
+
+It does not guarantee that the next 20 days will have the same volatility.
+
+Simple distinction:
+
+```text
+Realized volatility = what happened
+Expected volatility = what may happen
+```
+
+---
+
+### Common realized volatility windows
+
+Realized volatility can be calculated over different windows.
+
+Common examples:
 
 ```text
 20-day realized volatility
@@ -14625,43 +16214,1500 @@ Realized volatility can be calculated over different windows:
 252-day realized volatility
 ```
 
-### Use case
+Each window has a different interpretation.
 
-Realized volatility is useful when the system needs a volatility estimate based only on observed price behavior.
+```text
+20-day realized volatility = recent short-term volatility
+60-day realized volatility = medium-term volatility
+252-day realized volatility = one-year historical volatility
+```
 
-It is simple, transparent and easy to test.
+The window should always be shown clearly.
 
 ---
+
+### 20-day realized volatility
+
+A 20-day realized volatility uses approximately one month of daily returns.
+
+It is useful for short-term risk analysis.
+
+Example:
+
+```text
+20-day realized volatility increased from 12% to 28%.
+```
+
+This may indicate that the asset has recently become much more unstable.
+
+Because the window is short, the measure reacts quickly to recent market shocks.
+
+However, it can also be noisy.
+
+---
+
+### 60-day realized volatility
+
+A 60-day realized volatility uses approximately three months of daily returns.
+
+It is useful for medium-term risk analysis.
+
+It is less noisy than a 20-day measure, but it still reacts to changing market conditions.
+
+Example:
+
+```text
+60-day realized volatility = 18%
+```
+
+This gives a broader view of recent risk than the 20-day measure.
+
+---
+
+### 252-day realized volatility
+
+A 252-day realized volatility uses approximately one year of daily returns.
+
+It is useful for long-term historical risk analysis.
+
+Example:
+
+```text
+252-day realized volatility = 22%
+```
+
+This means the asset’s volatility over the last year was approximately 22% on an annualized basis, if the result is annualized.
+
+A 252-day window is more stable, but it reacts slowly to recent shocks.
+
+---
+
+### Realized volatility vs rolling volatility
+
+Realized volatility and rolling volatility are closely related.
+
+Realized volatility is a volatility estimate calculated from historical returns.
+
+Rolling volatility is realized volatility calculated repeatedly through time.
+
+Simple comparison:
+
+```text
+Realized volatility = one historical volatility estimate
+Rolling volatility = a time series of historical volatility estimates
+```
+
+Example:
+
+```text
+252-day realized volatility today = one number
+252-day rolling volatility = one number for each date over time
+```
+
+In Athena, rolling volatility can be built from repeated realized volatility calculations.
+
+---
+
+### Realized volatility vs implied volatility
+
+Realized volatility is calculated from historical returns.
+
+Implied volatility is extracted from option prices.
+
+Simple comparison:
+
+```text
+Realized volatility = based on past price movements
+Implied volatility = based on option market expectations
+```
+
+Realized volatility answers:
+
+```text
+How volatile was the asset?
+```
+
+Implied volatility answers:
+
+```text
+How volatile does the options market expect the asset to be?
+```
+
+For Athena’s first version, realized volatility is easier to implement because it only requires historical prices.
+
+Implied volatility can be added later in the derivatives module.
+
+---
+
+### Realized volatility and annualization
+
+Realized volatility is often annualized.
+
+If realized volatility is calculated from daily returns, the formula is:
+
+```text
+Annualized realized volatility = Daily realized volatility × sqrt(252)
+```
+
+Example:
+
+```text
+Daily realized volatility = 1.20%
+```
+
+Annualized:
+
+```text
+Annualized realized volatility = 1.20% × sqrt(252)
+Annualized realized volatility ≈ 19.05%
+```
+
+The result should be labeled clearly:
+
+```text
+252-day annualized realized volatility = 19.05%
+```
+
+This tells the user the window and the annualization method.
+
+---
+
+### Realized volatility and asset comparison
+
+Realized volatility can compare the historical risk of different assets.
+
+Example:
+
+```text
+Asset A realized volatility = 15%
+Asset B realized volatility = 35%
+```
+
+Asset B was more volatile over the selected period.
+
+However, the comparison is only valid if both calculations use the same methodology:
+
+```text
+Same return type
+Same window
+Same frequency
+Same annualization method
+Same date range
+```
+
+Otherwise, the comparison can be misleading.
+
+---
+
+### Realized volatility and benchmark comparison
+
+Realized volatility is useful for comparing an asset or portfolio with a benchmark.
+
+Example:
+
+```text
+Portfolio realized volatility = 14%
+Benchmark realized volatility = 20%
+```
+
+The portfolio was less volatile than the benchmark.
+
+Another example:
+
+```text
+Portfolio realized volatility = 28%
+Benchmark realized volatility = 18%
+```
+
+The portfolio was more volatile than the benchmark.
+
+This helps evaluate whether the portfolio took more or less risk than the reference market.
+
+---
+
+### Realized volatility and market regimes
+
+Realized volatility can help identify market regimes.
+
+Examples:
+
+```text
+Low realized volatility = calm market
+High realized volatility = stressed market
+Rising realized volatility = risk increasing
+Falling realized volatility = risk decreasing
+```
+
+Example:
+
+```text
+20-day realized volatility = 45%
+252-day realized volatility = 18%
+```
+
+This may suggest that the asset has recently entered a much more volatile period.
+
+Athena can use this comparison to detect short-term stress.
+
+---
+
+### Realized volatility is not a perfect forecast
+
+Realized volatility is useful, but it has limitations.
+
+It is based on the past.
+
+The future may be different.
+
+Example:
+
+```text
+An asset had low volatility for the last 252 days.
+Tomorrow, unexpected news causes a large price move.
+```
+
+The historical realized volatility did not predict that shock.
+
+Simple idea:
+
+```text
+Realized volatility is evidence from the past, not a guarantee about the future.
+```
+
+---
+
+### Realized volatility and sample size
+
+The reliability of realized volatility depends on the number of observations.
+
+Example:
+
+```text
+5 daily returns = weak estimate
+20 daily returns = short-term estimate
+252 daily returns = more stable estimate
+```
+
+A very short window may react quickly, but it can be noisy.
+
+A long window is more stable, but it may hide recent changes.
+
+Athena should show the number of observations used.
+
+---
+
+### Realized volatility and data quality
+
+Realized volatility is very sensitive to bad data.
+
+Possible issues include:
+
+```text
+Missing prices
+Duplicate dates
+Wrong prices
+Unadjusted stock splits
+Outliers
+Stale prices
+Wrong currency
+Incorrect return calculation
+```
+
+Example:
+
+```text
+A stock split is not adjusted correctly.
+```
+
+This may create a false extreme return.
+
+That false return can artificially increase realized volatility.
+
+Athena should validate price data before calculating realized volatility.
+
+---
+
+### Realized volatility data needed in Athena
+
+To calculate realized volatility, Athena needs:
+
+```text
+Asset identifier
+Clean historical price series
+Return series
+Return type
+Start date
+End date
+Window size
+Data frequency
+Annualization factor
+Price field used
+Currency
+Data source
+```
+
+Example:
+
+```text
+symbol: AAPL
+price_field_used: adjusted_close
+return_type: simple_return
+frequency: daily
+window: 252 trading days
+annualization_factor: sqrt(252)
+```
+
+This makes the calculation reproducible and transparent.
+
+---
+
+### Realized volatility in Athena
+
+Athena can use realized volatility to support:
+
+```text
+Asset risk analysis
+Portfolio risk analysis
+Benchmark comparison
+Volatility regime detection
+Risk dashboards
+Historical risk reports
+Stress period comparison
+```
+
+Example output:
+
+```text
+Asset: AAPL
+Window: 252 trading days
+Return type: simple return
+Price field: adjusted close
+Daily realized volatility: 1.20%
+Annualized realized volatility: 19.05%
+```
+
+This is useful because it explains both the result and the methodology.
+
+---
+
+### Realized volatility labels in Athena
+
+Athena should avoid unclear labels.
+
+Bad label:
+
+```text
+Volatility = 19%
+```
+
+Better label:
+
+```text
+252-day annualized realized volatility = 19%
+Return type = simple return
+Price field = adjusted close
+Frequency = daily
+Annualization factor = sqrt(252)
+```
+
+This makes the result professional and easier to trust.
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Thinking realized volatility predicts the future perfectly
+Using prices instead of returns
+Forgetting to annualize
+Using the wrong annualization factor
+Comparing different windows
+Ignoring data quality problems
+Using too few observations
+Confusing realized volatility with implied volatility
+Confusing volatility with loss
+```
+
+Example mistake:
+
+```text
+Realized volatility was low last year,
+so the asset cannot be risky this year.
+```
+
+This is wrong.
+
+Past volatility can inform risk analysis, but it does not eliminate future uncertainty.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, realized volatility is important because it connects historical returns, standard deviation and risk measurement.
+
+Important concepts include:
+
+```text
+Historical returns
+Observed volatility
+Backward-looking risk
+Standard deviation
+Volatility window
+Annualization
+Comparison with expected or implied volatility
+```
+
+A simple memory rule:
+
+```text
+Realized volatility measures how much the asset actually moved in the past.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, realized volatility should be one of the first volatility metrics implemented.
+
+The volatility module should support:
+
+```text
+Historical return calculation
+Daily realized volatility
+Annualized realized volatility
+Window selection
+Benchmark comparison
+Portfolio realized volatility
+Data quality checks
+Clear methodology labels
+```
+
+Realized volatility is valuable because it is simple, transparent and easy to test.
+
+It can become the foundation for more advanced risk metrics later.
+
+---
+
+### Mini revision questions
+
+1. What is realized volatility?
+
+2. Is realized volatility backward-looking or forward-looking?
+
+3. What data is needed to calculate realized volatility?
+
+4. What does 20-day realized volatility mean?
+
+5. What is the difference between realized volatility and implied volatility?
+
+6. Why is realized volatility useful in Athena?
+
+7. Why can bad price data distort realized volatility?
+
+8. Why should Athena show the window used?
+
+---
+
+### Mini answers
+
+1. Realized volatility is volatility calculated from historical returns.
+
+2. It is backward-looking because it uses past data.
+
+3. It needs a clean historical price series and a return series.
+
+4. It means volatility calculated using the most recent 20 daily returns.
+
+5. Realized volatility is based on past returns, while implied volatility is extracted from option prices and reflects market expectations.
+
+6. It is useful because it provides a simple, transparent and testable measure of historical risk.
+
+7. Bad price data can create false returns, which can artificially increase or decrease volatility.
+
+8. Athena should show the window because 20-day, 60-day and 252-day volatility have different meanings.
+
+---
+
+### Section summary
+
+Realized volatility measures how volatile an asset was in the past.
+
+It is calculated from historical returns and can be measured over different windows such as 20, 60 or 252 trading days.
+
+For CFA Level 1, realized volatility is important because it reinforces the idea of historical risk measurement using return dispersion.
+
+For Athena AI Risk Terminal, realized volatility is a core risk metric because it is transparent, testable and based on observed market behavior.
+
+The key lesson is:
+
+```text
+Realized volatility tells us how much an asset actually moved in the past.
+It is useful for risk analysis,
+but it is not a guarantee of future volatility.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 25. Implied volatility
 
-Implied volatility is extracted from market prices of options.
+Implied volatility is the volatility implied by the market price of an option.
 
-It reflects the volatility that the market appears to expect in the future.
+It is not calculated directly from historical returns.
 
-### Realized vs implied volatility
+Instead, it is extracted from option prices using an option pricing model.
+
+Simple idea:
 
 ```text
-Realized volatility = based on historical returns
-Implied volatility  = implied by option prices
+Implied volatility = volatility estimate embedded in option prices
 ```
 
-Realized volatility looks backward.  
-Implied volatility looks forward through market expectations.
-
-### Why implied volatility matters
-
-Implied volatility can rise even if realized volatility has not yet increased.
-
-This can happen when investors expect future uncertainty.
-
-In Athena, implied volatility can be added later. The first version can start with realized volatility.
+It reflects how much volatility the options market appears to expect in the future.
 
 ---
 
+### Why implied volatility exists
+
+An option price depends on several inputs.
+
+For a basic option model, important inputs include:
+
+```text
+Underlying asset price
+Strike price
+Time to maturity
+Risk-free interest rate
+Dividend yield
+Volatility
+Option type
+```
+
+Most of these inputs are directly observable or known.
+
+Example:
+
+```text
+Underlying price = current stock price
+Strike price = contract specification
+Time to maturity = expiration date
+Risk-free rate = market interest rate
+Option type = call or put
+```
+
+Volatility is different.
+
+Future volatility is unknown.
+
+So the market price of the option can be used to infer the volatility assumption that investors are pricing in.
+
+That inferred volatility is called implied volatility.
+
+---
+
+### Basic intuition
+
+Suppose an option is expensive.
+
+One possible reason is that the market expects the underlying asset to move a lot before expiration.
+
+Large expected movements make options more valuable.
+
+Therefore:
+
+```text
+Higher option price → higher implied volatility
+Lower option price → lower implied volatility
+```
+
+This relationship is not the only factor in option pricing, but it is one of the most important.
+
+---
+
+### Implied volatility and option prices
+
+Options become more valuable when expected volatility increases.
+
+Why?
+
+Because an option benefits from the possibility of large price movements.
+
+For a call option:
+
+```text
+Large upward movement can create value.
+```
+
+For a put option:
+
+```text
+Large downward movement can create value.
+```
+
+The buyer of an option has limited downside but potential upside from large movements.
+
+Because of this, higher expected volatility usually increases both call and put option prices.
+
+Simple idea:
+
+```text
+More expected movement = more valuable optionality
+```
+
+---
+
+### Realized volatility vs implied volatility
+
+Realized volatility is calculated from historical returns.
+
+Implied volatility is extracted from option prices.
+
+Simple comparison:
+
+```text
+Realized volatility = based on past price movements
+Implied volatility = based on current option prices
+```
+
+Realized volatility answers:
+
+```text
+How volatile was the asset in the past?
+```
+
+Implied volatility answers:
+
+```text
+How much volatility is the options market pricing for the future?
+```
+
+Important distinction:
+
+```text
+Realized volatility is backward-looking.
+Implied volatility is forward-looking.
+```
+
+However, implied volatility is not a perfect forecast.
+
+It is a market-implied estimate that can include risk premiums, supply and demand effects, and investor fear.
+
+---
+
+### Example
+
+Suppose a stock has been calm recently.
+
+```text
+20-day realized volatility = 12%
+```
+
+But the company will announce earnings next week.
+
+Options traders may expect a large price move.
+
+As a result:
+
+```text
+Implied volatility = 35%
+```
+
+This means the options market is pricing much more future uncertainty than what was observed in recent historical returns.
+
+This can happen before:
+
+```text
+Earnings announcements
+Central bank decisions
+Inflation reports
+Product launches
+Regulatory decisions
+Geopolitical events
+```
+
+---
+
+### Why implied volatility can rise
+
+Implied volatility can rise even before the underlying asset moves.
+
+This happens because option prices can change when investors expect future uncertainty.
+
+Example:
+
+```text
+A stock is stable today.
+But important news is expected tomorrow.
+```
+
+Even if the stock price does not move today, option prices may increase.
+
+This increases implied volatility.
+
+Simple idea:
+
+```text
+Implied volatility can move before realized volatility changes.
+```
+
+This is why implied volatility is useful as a forward-looking market signal.
+
+---
+
+### Implied volatility and uncertainty
+
+Implied volatility is often interpreted as a market measure of uncertainty.
+
+Higher implied volatility usually means the market expects larger future price movements.
+
+Lower implied volatility usually means the market expects calmer future price movements.
+
+Example:
+
+```text
+Low implied volatility:
+Market expects relatively calm movement.
+
+High implied volatility:
+Market expects larger movement or greater uncertainty.
+```
+
+But implied volatility does not tell the direction of the expected move.
+
+It only tells the expected magnitude of movement.
+
+Important distinction:
+
+```text
+Implied volatility indicates expected movement size.
+It does not indicate expected direction.
+```
+
+---
+
+### Implied volatility does not predict direction
+
+A common beginner mistake is to think:
+
+```text
+High implied volatility means the stock will go down.
+```
+
+This is not necessarily true.
+
+High implied volatility means the market expects a larger move.
+
+The move could be:
+
+```text
+Up
+Down
+Both directions over time
+```
+
+Example:
+
+```text
+Before earnings, implied volatility rises.
+```
+
+The market may expect a large move, but it may not know whether the earnings reaction will be positive or negative.
+
+Simple rule:
+
+```text
+Volatility is about magnitude, not direction.
+```
+
+---
+
+### Implied volatility and fear
+
+Implied volatility often rises when investors become nervous.
+
+During market stress, investors may buy put options for protection.
+
+This can increase option prices and raise implied volatility.
+
+Example:
+
+```text
+Market stress increases.
+Investors buy downside protection.
+Put option demand rises.
+Option prices rise.
+Implied volatility rises.
+```
+
+This is why implied volatility is sometimes associated with market fear.
+
+However, the interpretation depends on the asset and option market.
+
+---
+
+### Implied volatility and VIX
+
+The VIX is a well-known measure of implied volatility for the US equity market.
+
+It is often called the market’s “fear gauge”.
+
+The VIX is based on S&P 500 index options.
+
+Simple idea:
+
+```text
+VIX = market-implied volatility estimate from S&P 500 options
+```
+
+A high VIX usually indicates higher expected market volatility.
+
+A low VIX usually indicates calmer market expectations.
+
+For Athena, VIX-like indicators can later be used as market stress indicators.
+
+---
+
+### Implied volatility and time to maturity
+
+Options have expiration dates.
+
+Implied volatility can differ across maturities.
+
+Example:
+
+```text
+1-week implied volatility = 40%
+3-month implied volatility = 25%
+1-year implied volatility = 20%
+```
+
+This means the market expects near-term uncertainty to be higher than long-term uncertainty.
+
+This often happens before major events.
+
+The pattern of implied volatility across maturities is called the volatility term structure.
+
+Simple idea:
+
+```text
+Volatility term structure = implied volatility across different expirations
+```
+
+This is an advanced topic, but it is useful for derivatives and risk analysis.
+
+---
+
+### Implied volatility smile and skew
+
+Implied volatility can also differ across strike prices.
+
+In theory, some simple models assume one volatility number for all strikes.
+
+In practice, different option strikes often have different implied volatilities.
+
+This creates shapes called:
+
+```text
+Volatility smile
+Volatility skew
+```
+
+### Volatility smile
+
+A volatility smile happens when options far from the current price have higher implied volatility than options near the current price.
+
+### Volatility skew
+
+A volatility skew happens when implied volatility is higher on one side of the strike range.
+
+For equity markets, downside put options often have higher implied volatility because investors demand protection against crashes.
+
+This topic is more advanced, but Athena can later use it in derivatives analytics.
+
+---
+
+### Implied volatility and option moneyness
+
+Moneyness describes the relationship between the underlying price and the option strike price.
+
+Common categories:
+
+```text
+In the money
+At the money
+Out of the money
+```
+
+Implied volatility is often compared using at-the-money options because they are usually liquid and informative.
+
+Example:
+
+```text
+At-the-money implied volatility = commonly used reference volatility
+```
+
+For a first implementation, Athena could start with at-the-money implied volatility if options data is available.
+
+---
+
+### Implied volatility and annualization
+
+Implied volatility is usually quoted as an annualized number.
+
+Example:
+
+```text
+Implied volatility = 25%
+```
+
+This usually means:
+
+```text
+Annualized implied volatility = 25%
+```
+
+This makes implied volatility comparable with annualized realized volatility.
+
+Example:
+
+```text
+252-day realized volatility = 18%
+Implied volatility = 25%
+```
+
+The options market is pricing more future volatility than the asset realized historically over the selected period.
+
+---
+
+### Implied volatility vs expected return
+
+Implied volatility does not directly tell expected return.
+
+It tells expected uncertainty.
+
+Example:
+
+```text
+Implied volatility = 40%
+```
+
+This does not mean:
+
+```text
+Expected return = 40%
+```
+
+It means the options market is pricing a high level of expected movement.
+
+A high-volatility asset can still have poor returns.
+
+A low-volatility asset can still produce positive returns.
+
+Simple distinction:
+
+```text
+Expected return = expected direction and compensation
+Implied volatility = expected movement size
+```
+
+---
+
+### Implied volatility and risk premium
+
+Implied volatility is often higher than future realized volatility.
+
+One reason is the volatility risk premium.
+
+Investors may be willing to pay for protection against large moves.
+
+Option sellers may demand compensation for taking that risk.
+
+Simple idea:
+
+```text
+Implied volatility can include a risk premium.
+```
+
+This means implied volatility is not a pure forecast.
+
+It may reflect:
+
+```text
+Expected future volatility
+Investor fear
+Demand for protection
+Option market liquidity
+Risk premiums
+Supply and demand imbalances
+```
+
+This is important for advanced interpretation.
+
+---
+
+### Implied volatility and realized volatility comparison
+
+Comparing implied volatility with realized volatility can be useful.
+
+Example:
+
+```text
+Realized volatility = 15%
+Implied volatility = 25%
+```
+
+This may suggest that the market expects future volatility to be higher than recent historical volatility.
+
+Another example:
+
+```text
+Realized volatility = 30%
+Implied volatility = 20%
+```
+
+This may suggest that recent volatility was high, but the options market expects calmer conditions ahead.
+
+However, this comparison must be interpreted carefully.
+
+The realized volatility window and the implied volatility maturity should be consistent.
+
+Example:
+
+```text
+Compare 30-day implied volatility with 30-day realized volatility.
+```
+
+---
+
+### Implied volatility use cases
+
+Implied volatility is useful for:
+
+```text
+Option pricing
+Risk monitoring
+Market stress analysis
+Event risk analysis
+Volatility trading
+Hedging decisions
+Comparing market expectations with historical behavior
+```
+
+Example use case:
+
+```text
+Before earnings, implied volatility rises sharply.
+Athena flags that the market is pricing a large expected move.
+```
+
+Another use case:
+
+```text
+Implied volatility is much higher than realized volatility.
+Athena highlights that options are pricing elevated future uncertainty.
+```
+
+---
+
+### Implied volatility and options strategy
+
+Option traders use implied volatility to evaluate whether options look expensive or cheap.
+
+Example:
+
+```text
+High implied volatility:
+Options may be expensive.
+
+Low implied volatility:
+Options may be cheaper.
+```
+
+This does not mean high implied volatility is always bad or low implied volatility is always good.
+
+The key question is:
+
+```text
+Will future realized volatility be higher or lower than implied volatility?
+```
+
+If future realized volatility is higher than implied volatility, option buyers may benefit.
+
+If future realized volatility is lower than implied volatility, option sellers may benefit.
+
+This is an advanced idea, but it is central to volatility trading.
+
+---
+
+### Implied volatility data needed in Athena
+
+To analyze implied volatility, Athena may need options market data.
+
+Important fields include:
+
+```text
+underlying_symbol
+option_symbol
+option_type
+strike_price
+expiration_date
+option_market_price
+underlying_price
+risk_free_rate
+dividend_yield
+implied_volatility
+bid
+ask
+volume
+open_interest
+data_source
+timestamp
+```
+
+Example:
+
+```text
+underlying_symbol: AAPL
+option_type: Call
+strike_price: 180
+expiration_date: 2026-06-19
+option_market_price: 8.50
+implied_volatility: 28%
+```
+
+This data is more complex than simple stock price data.
+
+That is why implied volatility can be added after the first market data and realized volatility modules are stable.
+
+---
+
+### Implied volatility in Athena
+
+For Athena AI Risk Terminal, implied volatility can support advanced risk and derivatives features.
+
+Possible use cases:
+
+```text
+Compare realized volatility and implied volatility
+Display option-implied market expectations
+Detect event risk
+Monitor volatility regimes
+Support option pricing
+Support Greeks calculation
+Support derivatives dashboards
+Track VIX-like indicators
+```
+
+Example output:
+
+```text
+Underlying: AAPL
+30-day realized volatility: 18%
+30-day implied volatility: 32%
+Difference: +14 percentage points
+Interpretation: options market is pricing higher future uncertainty than recent historical volatility
+```
+
+This would help users understand market expectations.
+
+---
+
+### MVP approach
+
+For Athena’s first version, implied volatility does not need to be implemented immediately.
+
+The MVP can start with:
+
+```text
+Historical prices
+Simple returns
+Log returns
+Realized volatility
+Rolling volatility
+Annualized volatility
+```
+
+Implied volatility can be added later when Athena supports:
+
+```text
+Options data
+Option pricing models
+Greeks
+Volatility surfaces
+Derivatives risk
+```
+
+This is a good implementation order because realized volatility is easier to compute and test.
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Thinking implied volatility is calculated from historical returns
+Thinking implied volatility predicts direction
+Thinking high implied volatility always means the asset will fall
+Comparing implied volatility with realized volatility over inconsistent horizons
+Ignoring option maturity
+Ignoring option strike
+Ignoring bid-ask spreads in options
+Assuming implied volatility is a perfect forecast
+Confusing implied volatility with expected return
+```
+
+Example mistake:
+
+```text
+Implied volatility is 30%, so the stock should return 30%.
+```
+
+This is wrong.
+
+Implied volatility measures expected movement, not expected return.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, implied volatility is important mainly as a derivatives and risk concept.
+
+Important ideas include:
+
+```text
+Option prices
+Expected volatility
+Forward-looking market expectations
+Realized vs implied volatility
+Volatility and option value
+Maturity
+Strike price
+Market uncertainty
+```
+
+A simple memory rule:
+
+```text
+Realized volatility comes from past returns.
+Implied volatility comes from option prices.
+```
+
+Another important rule:
+
+```text
+Implied volatility measures expected movement, not expected direction.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, implied volatility should be treated as an advanced feature.
+
+The derivatives module can later support:
+
+```text
+Options data ingestion
+Implied volatility display
+Realized vs implied volatility comparison
+Volatility term structure
+Volatility smile and skew
+Option pricing
+Greeks calculation
+Volatility risk monitoring
+```
+
+The first version should focus on realized volatility because it only requires historical price data.
+
+Implied volatility becomes valuable once Athena starts analyzing options and derivatives.
+
+---
+
+### Mini revision questions
+
+1. What is implied volatility?
+
+2. Is implied volatility calculated from historical returns?
+
+3. What type of market data is used to extract implied volatility?
+
+4. What is the difference between realized volatility and implied volatility?
+
+5. Does high implied volatility predict the direction of the asset price?
+
+6. Why can implied volatility rise before a major event?
+
+7. Why is implied volatility important for options?
+
+8. Why should Athena implement realized volatility before implied volatility?
+
+---
+
+### Mini answers
+
+1. Implied volatility is the volatility implied by option market prices.
+
+2. No. It is extracted from option prices using an option pricing model.
+
+3. Option market data is used, including option price, strike, maturity and underlying price.
+
+4. Realized volatility is based on past returns, while implied volatility is based on option prices and market expectations.
+
+5. No. Implied volatility measures expected movement size, not direction.
+
+6. It can rise because investors expect greater uncertainty or larger future price movements.
+
+7. It is important because volatility is one of the key inputs that affects option prices.
+
+8. Athena should implement realized volatility first because it is simpler, transparent and only requires historical price data.
+
+---
+
+### Section summary
+
+Implied volatility is the volatility level embedded in option prices.
+
+It is forward-looking because it reflects the volatility that the options market appears to price for the future.
+
+For CFA Level 1, implied volatility is important because it connects options, market expectations, uncertainty and risk.
+
+For Athena AI Risk Terminal, implied volatility is an advanced feature that can later support options analytics, Greeks, volatility surfaces and derivatives risk monitoring.
+
+The key lesson is:
+
+```text
+Realized volatility tells what happened.
+Implied volatility tells what the options market is pricing.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 26. Variance and standard deviation
 
-Variance and standard deviation are basic measures of dispersion.
+Variance and standard deviation are measures of dispersion.
+
+They explain how far returns are from their average.
+
+Simple idea:
+
+```text
+Dispersion = how spread out the returns are
+```
+
+If returns are close to their average, dispersion is low.
+
+If returns are far from their average, dispersion is high.
+
+In finance, dispersion matters because it helps measure risk and uncertainty.
+
+---
+
+### Why dispersion matters
+
+Two assets can have the same average return but very different risk.
+
+Example:
+
+```text
+Asset A returns:
+4%, 5%, 6%
+
+Asset B returns:
+-10%, 5%, 20%
+```
+
+Both assets may have a similar average return.
+
+But Asset B is much more unstable.
+
+This instability is measured by variance and standard deviation.
+
+Simple idea:
+
+```text
+Average return tells the center.
+Variance and standard deviation tell the spread.
+```
+
+---
+
+### Mean return
+
+Before calculating variance or standard deviation, we need the mean return.
+
+The mean return is the average return.
+
+Formula:
+
+```text
+Mean return = (R1 + R2 + ... + Rn) / n
+```
+
+Example:
+
+```text
+Returns:
+2%, 4%, 6%
+```
+
+Calculation:
+
+```text
+Mean return = (2% + 4% + 6%) / 3
+Mean return = 12% / 3
+Mean return = 4%
+```
+
+The mean return is:
+
+```text
+4%
+```
+
+Variance and standard deviation measure how far each return is from this mean.
+
+---
 
 ### Variance
 
@@ -14673,49 +17719,866 @@ Conceptually:
 Variance = average squared distance from the mean return
 ```
 
-### Standard deviation
+The word “squared” is important.
 
-Standard deviation is the square root of variance.
-
-```text
-Standard deviation = sqrt(variance)
-```
-
-In finance, standard deviation of returns is commonly called volatility.
-
-### Why standard deviation is easier to interpret
-
-Variance is expressed in squared units.  
-Standard deviation is expressed in the same unit as returns.
+Each deviation from the mean is squared so that negative and positive deviations do not cancel each other out.
 
 Example:
+
+```text
+Return above the mean = positive deviation
+Return below the mean = negative deviation
+```
+
+If deviations were simply added together, they could cancel out.
+
+Squaring solves that problem.
+
+---
+
+### Variance intuition
+
+Suppose the average return is:
+
+```text
+Mean return = 4%
+```
+
+And one return is:
+
+```text
+Return = 6%
+```
+
+Deviation from the mean:
+
+```text
+6% - 4% = 2%
+```
+
+Another return is:
+
+```text
+Return = 2%
+```
+
+Deviation from the mean:
+
+```text
+2% - 4% = -2%
+```
+
+Both returns are equally far from the mean.
+
+The squared deviations are positive in both cases.
+
+```text
+(2%)²
+(-2%)²
+```
+
+This is why variance captures distance from the average, not direction.
+
+---
+
+### Population variance
+
+Population variance is used when the data represents the full population.
+
+Formula:
+
+```text
+Population variance = [(R1 - mean)^2 + (R2 - mean)^2 + ... + (Rn - mean)^2] / n
+```
+
+Where:
+
+```text
+R = return
+mean = average return
+n = number of observations
+```
+
+Population variance divides by:
+
+```text
+n
+```
+
+This is used when all relevant observations are included.
+
+---
+
+### Sample variance
+
+Sample variance is used when the data is a sample from a larger population.
+
+Formula:
+
+```text
+Sample variance = [(R1 - mean)^2 + (R2 - mean)^2 + ... + (Rn - mean)^2] / (n - 1)
+```
+
+Sample variance divides by:
+
+```text
+n - 1
+```
+
+This adjustment is used because a sample may underestimate the true population variance.
+
+For CFA Level 1, the distinction between population variance and sample variance is important.
+
+Simple rule:
+
+```text
+Population variance divides by n.
+Sample variance divides by n - 1.
+```
+
+---
+
+### Variance example
+
+Suppose we have three returns:
+
+```text
+Return 1 = 2%
+Return 2 = 4%
+Return 3 = 6%
+```
+
+First, calculate the mean:
+
+```text
+Mean = (2% + 4% + 6%) / 3
+Mean = 4%
+```
+
+Now calculate deviations from the mean:
+
+```text
+2% - 4% = -2%
+4% - 4% = 0%
+6% - 4% = 2%
+```
+
+Square the deviations:
+
+```text
+(-2%)² = 0.0004
+0%²    = 0.0000
+2%²    = 0.0004
+```
+
+Population variance:
+
+```text
+Variance = (0.0004 + 0.0000 + 0.0004) / 3
+Variance = 0.0008 / 3
+Variance = 0.0002667
+```
+
+The variance is:
+
+```text
+0.0002667
+```
+
+---
+
+### Why variance is hard to interpret
+
+Variance is useful mathematically, but it is not always easy to interpret.
+
+The reason is that variance is expressed in squared units.
+
+Example:
+
+```text
+Returns are measured in %
+Variance is measured in squared %
+```
+
+This makes variance less intuitive for most users.
+
+Example:
+
+```text
+Variance = 0.0004
+```
+
+This number is mathematically useful, but it is not as easy to understand as:
 
 ```text
 Standard deviation = 2%
 ```
 
-This is easier to interpret than a variance of:
+This is why finance usually reports standard deviation instead of variance.
+
+---
+
+### Standard deviation
+
+Standard deviation is the square root of variance.
+
+Formula:
 
 ```text
-0.0004
+Standard deviation = sqrt(variance)
+```
+
+Standard deviation is easier to interpret because it is expressed in the same unit as returns.
+
+Example:
+
+```text
+Variance = 0.0004
+```
+
+Then:
+
+```text
+Standard deviation = sqrt(0.0004)
+Standard deviation = 0.02
+Standard deviation = 2%
+```
+
+This means returns typically move around their average by about 2%, under a simplified interpretation.
+
+---
+
+### Standard deviation example
+
+Using the previous variance:
+
+```text
+Variance = 0.0002667
+```
+
+Standard deviation:
+
+```text
+Standard deviation = sqrt(0.0002667)
+Standard deviation ≈ 0.0163
+Standard deviation ≈ 1.63%
+```
+
+So the returns have a standard deviation of approximately:
+
+```text
+1.63%
+```
+
+This is easier to interpret than the variance.
+
+---
+
+### Standard deviation and volatility
+
+In finance, the standard deviation of returns is commonly called volatility.
+
+Simple relationship:
+
+```text
+Volatility = standard deviation of returns
+```
+
+Example:
+
+```text
+Daily standard deviation of returns = 1%
+Daily volatility = 1%
+```
+
+If the standard deviation of daily returns is high, the asset is volatile.
+
+If the standard deviation of daily returns is low, the asset is stable.
+
+---
+
+### Low standard deviation
+
+A low standard deviation means returns are close to their average.
+
+Example:
+
+```text
+Returns:
+0.1%, 0.2%, 0.0%, -0.1%, 0.1%
+```
+
+These returns are stable.
+
+The standard deviation will be low.
+
+Interpretation:
+
+```text
+The asset has low return dispersion.
 ```
 
 ---
 
+### High standard deviation
+
+A high standard deviation means returns are far from their average.
+
+Example:
+
+```text
+Returns:
+5%, -6%, 4%, -7%, 6%
+```
+
+These returns move strongly.
+
+The standard deviation will be high.
+
+Interpretation:
+
+```text
+The asset has high return dispersion.
+```
+
+In finance, this usually means higher volatility.
+
+---
+
+### Variance vs standard deviation
+
+Variance and standard deviation are closely related, but they are used differently.
+
+Simple comparison:
+
+```text
+Variance:
+Mathematically useful, but harder to interpret.
+
+Standard deviation:
+Easier to interpret because it uses the same unit as returns.
+```
+
+Example:
+
+```text
+Variance = 0.0004
+Standard deviation = 2%
+```
+
+For dashboards, reports and user explanations, standard deviation is usually better.
+
+For mathematical models, variance is often useful.
+
+---
+
+### Sample standard deviation
+
+Sample standard deviation is the square root of sample variance.
+
+Formula:
+
+```text
+Sample standard deviation = sqrt(sample variance)
+```
+
+This is commonly used when historical returns are treated as a sample.
+
+Example:
+
+```text
+Historical daily returns over 252 days
+```
+
+These 252 returns are usually treated as a sample of possible return behavior.
+
+In that case, sample standard deviation is often appropriate.
+
+---
+
+### Population vs sample in practice
+
+The difference between population and sample matters most when the dataset is small.
+
+Example:
+
+```text
+Only 5 returns available
+```
+
+The difference between dividing by `n` and `n - 1` can be meaningful.
+
+With a large dataset, the difference becomes smaller.
+
+Example:
+
+```text
+252 daily returns
+```
+
+The difference between dividing by 252 and 251 is small, but the methodology should still be documented.
+
+Athena should clearly choose one method and apply it consistently.
+
+---
+
+### Variance and portfolio risk
+
+Variance is very important in portfolio theory.
+
+Portfolio risk depends on:
+
+```text
+Individual asset variances
+Covariances between assets
+Portfolio weights
+```
+
+This means portfolio variance is not just the weighted average of individual variances.
+
+Correlation and covariance matter.
+
+Simple idea:
+
+```text
+Portfolio risk depends on how assets move individually and together.
+```
+
+This concept becomes important in portfolio management and diversification.
+
+---
+
+### Standard deviation and risk comparison
+
+Standard deviation helps compare the risk of assets.
+
+Example:
+
+```text
+Asset A annualized standard deviation = 12%
+Asset B annualized standard deviation = 30%
+```
+
+Asset B has more return dispersion.
+
+This means Asset B is more volatile.
+
+However, higher volatility is not automatically bad.
+
+The investor must compare risk with expected return.
+
+Example:
+
+```text
+Asset A return = 8%, volatility = 12%
+Asset B return = 8%, volatility = 30%
+```
+
+Asset B has the same return but much more risk.
+
+---
+
+### Standard deviation and normal distribution
+
+Standard deviation is often used with the normal distribution.
+
+If returns were normally distributed, standard deviation would help estimate the probability of different outcomes.
+
+For a normal distribution:
+
+```text
+About 68% of observations fall within 1 standard deviation of the mean.
+About 95% fall within 2 standard deviations.
+About 99.7% fall within 3 standard deviations.
+```
+
+However, financial returns are not always normal.
+
+They often have:
+
+```text
+Fat tails
+Skewness
+Extreme events
+Volatility clustering
+```
+
+So standard deviation is useful, but it does not capture all forms of risk.
+
+---
+
+### Limitation of standard deviation
+
+Standard deviation treats upside and downside movements equally.
+
+Example:
+
+```text
+Return = +5%
+Return = -5%
+```
+
+Both can increase standard deviation.
+
+But investors usually care more about downside risk than upside movement.
+
+This is a limitation.
+
+Simple idea:
+
+```text
+Standard deviation measures total dispersion, not only downside risk.
+```
+
+This is why other risk metrics may also be useful, such as:
+
+```text
+Downside deviation
+Maximum drawdown
+Value at Risk
+Conditional Value at Risk
+```
+
+For Athena, standard deviation is a foundation, but not the only risk metric.
+
+---
+
+### Variance and standard deviation data needed in Athena
+
+To calculate variance and standard deviation, Athena needs:
+
+```text
+Asset identifier
+Clean return series
+Return type
+Date range
+Frequency
+Mean return
+Number of observations
+Population or sample method
+Price field used
+Currency
+```
+
+Example:
+
+```text
+symbol: AAPL
+return_type: simple_return
+frequency: daily
+number_of_observations: 252
+variance_method: sample
+price_field_used: adjusted_close
+```
+
+This makes the calculation reproducible.
+
+---
+
+### Variance and standard deviation in Athena
+
+Athena can use variance and standard deviation to support:
+
+```text
+Volatility calculation
+Risk comparison
+Portfolio risk analysis
+Benchmark risk comparison
+Rolling volatility
+Return distribution analysis
+Risk-adjusted performance
+```
+
+Example output:
+
+```text
+Asset: AAPL
+Window: 252 daily returns
+Mean daily return: 0.05%
+Sample variance: 0.000144
+Daily standard deviation: 1.20%
+Annualized volatility: 19.05%
+```
+
+This output is useful because it shows the path from return data to volatility.
+
+---
+
+### Calculation transparency in Athena
+
+Athena should label variance and standard deviation clearly.
+
+Bad label:
+
+```text
+Risk = 0.000144
+```
+
+Better label:
+
+```text
+Sample variance of daily returns = 0.000144
+Daily standard deviation = 1.20%
+Annualized volatility = 19.05%
+Window = 252 trading days
+```
+
+The second version is much easier to understand.
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Confusing variance and standard deviation
+Forgetting that variance is in squared units
+Calculating volatility from prices instead of returns
+Using population variance when sample variance is intended
+Ignoring the number of observations
+Comparing daily standard deviation with annualized standard deviation
+Assuming standard deviation captures all risk
+Forgetting that upside moves also increase standard deviation
+```
+
+Example mistake:
+
+```text
+Variance = 0.0004, so volatility = 0.04%
+```
+
+Correct calculation:
+
+```text
+Standard deviation = sqrt(0.0004)
+Standard deviation = 0.02
+Standard deviation = 2%
+```
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, variance and standard deviation are essential quantitative concepts.
+
+Important ideas include:
+
+```text
+Mean return
+Deviation from the mean
+Squared deviation
+Variance
+Standard deviation
+Sample variance
+Population variance
+Volatility
+Dispersion
+Risk measurement
+```
+
+Important formulas:
+
+```text
+Variance = average squared deviation from the mean
+```
+
+```text
+Standard deviation = sqrt(variance)
+```
+
+Simple memory rule:
+
+```text
+Variance measures squared dispersion.
+Standard deviation converts dispersion back into return units.
+```
+
+Another important rule:
+
+```text
+In finance, standard deviation of returns is commonly used as volatility.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, variance and standard deviation should be implemented as core statistical functions.
+
+The analytics module should support:
+
+```text
+Mean return calculation
+Sample variance calculation
+Population variance calculation
+Standard deviation calculation
+Daily volatility calculation
+Annualized volatility calculation
+Window selection
+Method labeling
+Data validation
+```
+
+Athena should use standard deviation as the main user-facing volatility measure.
+
+Variance can be stored or displayed for technical users, but standard deviation is easier for most users to understand.
+
+---
+
+### Mini revision questions
+
+1. What does variance measure?
+
+2. What does standard deviation measure?
+
+3. How are variance and standard deviation related?
+
+4. Why is standard deviation easier to interpret than variance?
+
+5. In finance, what is the standard deviation of returns commonly called?
+
+6. What is the difference between population variance and sample variance?
+
+7. Why should volatility be calculated from returns instead of prices?
+
+8. What is one limitation of standard deviation as a risk measure?
+
+---
+
+### Mini answers
+
+1. Variance measures the average squared deviation from the mean.
+
+2. Standard deviation measures dispersion in the same unit as returns.
+
+3. Standard deviation is the square root of variance.
+
+4. It is easier to interpret because it is expressed in the same unit as returns.
+
+5. It is commonly called volatility.
+
+6. Population variance divides by n, while sample variance divides by n - 1.
+
+7. Returns are used because they make assets comparable in percentage terms.
+
+8. Standard deviation treats upside and downside movements equally, even though investors usually care more about downside risk.
+
+---
+
+### Section summary
+
+Variance and standard deviation measure how spread out returns are around their average.
+
+Variance is mathematically useful but harder to interpret because it is expressed in squared units.
+
+Standard deviation is easier to interpret because it is expressed in the same unit as returns.
+
+For CFA Level 1, these concepts are essential because they form the foundation of volatility and risk measurement.
+
+For Athena AI Risk Terminal, standard deviation is a core input for volatility, rolling volatility, benchmark comparison and portfolio risk analysis.
+
+The key lesson is:
+
+```text
+Variance measures squared dispersion.
+Standard deviation translates that dispersion into a usable volatility measure.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 27. Return distributions
 
-A return distribution shows how returns are spread across possible outcomes.
+A return distribution shows how returns are spread across different possible outcomes.
 
-It can show:
+It helps answer the question:
 
-- average return;
-- volatility;
-- extreme losses;
-- extreme gains;
-- asymmetry;
-- tail behavior.
+```text
+What kinds of returns did the asset produce, and how often?
+```
 
-### Example
+A return distribution can show:
+
+```text
+Average return
+Volatility
+Extreme losses
+Extreme gains
+Asymmetry
+Tail behavior
+Frequency of outcomes
+```
+
+Simple idea:
+
+```text
+Return distribution = the shape of historical returns
+```
+
+Looking only at one number, such as average return, is not enough.
+
+The distribution shows the full pattern of returns.
+
+---
+
+### Why return distributions matter
+
+Return distributions matter because two assets can have the same average return but very different risk profiles.
+
+Example:
+
+```text
+Asset A:
+Average return = 5%
+Returns are stable.
+
+Asset B:
+Average return = 5%
+Returns are very volatile.
+```
+
+The average return is the same.
+
+But the investor experience is very different.
+
+Asset A may feel stable and predictable.  
+Asset B may have large gains and large losses.
+
+Simple idea:
+
+```text
+The average tells the center.
+The distribution tells the full story.
+```
+
+---
+
+### Basic example
 
 A return distribution may show that most daily returns are between:
 
@@ -14729,122 +18592,3637 @@ but occasionally returns may be:
 -5% or +6%
 ```
 
-### Why distributions matter
+This tells us that normal daily movements are small, but extreme events sometimes happen.
 
-Looking only at average return is not enough.
+A good risk system should care about both:
 
-Two assets can have the same average return but very different risk profiles.
+```text
+Normal behavior
+Extreme behavior
+```
+
+Extreme returns are especially important for risk management.
+
+---
+
+### What a return distribution can show
+
+A return distribution can help analyze:
+
+```text
+Where returns are centered
+How spread out returns are
+How often losses occur
+How often gains occur
+How extreme the worst losses are
+Whether the distribution is symmetric
+Whether the distribution has fat tails
+```
+
+This makes distributions useful for understanding both performance and risk.
+
+---
+
+### Mean of the distribution
+
+The mean is the average return.
 
 Example:
 
 ```text
-Asset A average return = 5%, stable
-Asset B average return = 5%, very volatile
+Returns:
+2%, 4%, 6%
 ```
 
-The average is the same, but the experience is very different.
+Mean:
+
+```text
+Mean = (2% + 4% + 6%) / 3
+Mean = 4%
+```
+
+The mean tells us the center of the distribution.
+
+But it does not tell us how risky the returns are.
+
+Example:
+
+```text
+Asset A returns:
+4%, 4%, 4%
+
+Asset B returns:
+-10%, 4%, 22%
+```
+
+Both can have the same mean, but Asset B is much more dispersed.
 
 ---
 
-## 28. Skewness and kurtosis
+### Dispersion of the distribution
 
-Skewness and kurtosis describe the shape of a return distribution.
+Dispersion means how spread out the returns are.
 
-### Skewness
-
-Skewness measures asymmetry.
+Low dispersion:
 
 ```text
-Positive skewness = more extreme positive outcomes
-Negative skewness = more extreme negative outcomes
+Returns are close to the mean.
 ```
 
-Negative skewness is important because it may indicate large downside events.
-
-### Kurtosis
-
-Kurtosis measures the weight of the tails of a distribution.
-
-High kurtosis means extreme events occur more often than expected under a normal distribution.
-
-### Why they matter
-
-Financial returns often show:
+High dispersion:
 
 ```text
-fat tails
-asymmetry
-large extreme events
+Returns are far from the mean.
 ```
 
-This means that average return and volatility do not tell the full story.
+Standard deviation is a common measure of dispersion.
+
+Simple relationship:
+
+```text
+High dispersion = high volatility
+Low dispersion = low volatility
+```
+
+For Athena, the distribution gives a visual explanation of volatility.
 
 ---
 
-## 29. Normal distribution and fat tails
+### Shape of the distribution
+
+The shape of the distribution matters.
+
+A distribution can be:
+
+```text
+Symmetric
+Skewed
+Fat-tailed
+Narrow
+Wide
+```
+
+Each shape gives different information about risk.
+
+Example:
+
+```text
+Narrow distribution:
+Returns are stable.
+
+Wide distribution:
+Returns are more uncertain.
+```
+
+A wide distribution usually means higher volatility.
+
+---
+
+### Symmetric distribution
+
+A symmetric distribution has similar behavior on both sides of the mean.
+
+Simple idea:
+
+```text
+Positive and negative deviations are balanced.
+```
+
+Example:
+
+```text
+Returns around the mean:
+-2%, -1%, 0%, +1%, +2%
+```
+
+This distribution is roughly balanced.
+
+In practice, financial returns are often not perfectly symmetric.
+
+---
+
+### Skewed distribution
+
+A skewed distribution is not balanced.
+
+It has more extreme outcomes on one side.
+
+There are two main types:
+
+```text
+Positive skewness
+Negative skewness
+```
+
+### Positive skewness
+
+Positive skewness means the distribution has more extreme positive outcomes.
+
+Example:
+
+```text
+Most returns are small,
+but there are occasional large gains.
+```
+
+### Negative skewness
+
+Negative skewness means the distribution has more extreme negative outcomes.
+
+Example:
+
+```text
+Most returns are normal,
+but there are occasional large losses.
+```
+
+Negative skewness is important in risk management because investors usually care strongly about large downside events.
+
+---
+
+### Tails of the distribution
+
+The tails are the far left and far right parts of the distribution.
+
+```text
+Left tail = extreme negative returns
+Right tail = extreme positive returns
+```
+
+Example:
+
+```text
+Left tail:
+-8%, -10%, -15%
+
+Right tail:
++8%, +10%, +15%
+```
+
+The tails matter because they show rare but important events.
+
+In risk management, the left tail is especially important because it represents large losses.
+
+---
+
+### Fat tails
+
+A distribution has fat tails when extreme events happen more often than expected under a normal distribution.
+
+Simple idea:
+
+```text
+Fat tails = more extreme events than a normal model would suggest
+```
+
+Example:
+
+```text
+A normal model may suggest that -8% daily returns are extremely rare.
+But in real financial markets, large losses may happen more often than the model predicts.
+```
+
+This matters because models that ignore fat tails may underestimate risk.
+
+---
+
+### Return distribution and normal distribution
 
 The normal distribution is a common statistical model.
 
 It is symmetric and described by:
 
 ```text
-mean
-standard deviation
+Mean
+Standard deviation
 ```
 
 However, financial returns are often not perfectly normal.
 
-### Normal distribution limitation
-
-A normal distribution can underestimate extreme events.
-
-In markets, large losses and large gains can happen more often than a normal model suggests.
-
-This phenomenon is often called:
+They may show:
 
 ```text
-fat tails
+Skewness
+Fat tails
+Extreme events
+Volatility clustering
 ```
 
-### Practical implication
+Simple warning:
 
-Models based only on normal assumptions should be used carefully.
+```text
+Normal distribution assumptions are useful,
+but they should not be accepted blindly.
+```
 
-In Athena, market analytics should make it clear when a calculation assumes normality and when it uses historical data directly.
+This is important for CFA Level 1 and for Athena’s risk engine.
 
 ---
+
+### Histogram
+
+A histogram is a common way to display a return distribution.
+
+It groups returns into ranges called bins.
+
+Example bins:
+
+```text
+Less than -5%
+-5% to -3%
+-3% to -1%
+-1% to +1%
++1% to +3%
++3% to +5%
+More than +5%
+```
+
+The histogram shows how many returns fall into each range.
+
+Example interpretation:
+
+```text
+Most returns are between -1% and +1%.
+A few returns are below -5%.
+A few returns are above +5%.
+```
+
+This gives a visual view of risk and return behavior.
+
+---
+
+### Return distribution example
+
+Suppose an asset has the following daily returns:
+
+```text
+-1.0%
++0.5%
++0.8%
+-0.3%
++0.2%
+-4.5%
++1.1%
++0.4%
++5.2%
+-0.6%
+```
+
+Most returns are small.
+
+But there are two larger moves:
+
+```text
+-4.5%
++5.2%
+```
+
+The distribution would show a concentration near zero and some observations in the tails.
+
+This tells us the asset is usually calm but can occasionally move strongly.
+
+---
+
+### Distribution vs single metric
+
+A single metric can hide important details.
+
+Example:
+
+```text
+Average return = 0.5%
+```
+
+This number does not show whether returns were:
+
+```text
+Stable
+Highly volatile
+Skewed
+Affected by extreme losses
+Affected by extreme gains
+```
+
+A return distribution gives more context.
+
+Simple idea:
+
+```text
+One number summarizes.
+A distribution explains.
+```
+
+---
+
+### Distribution and risk
+
+Return distributions are central to risk analysis.
+
+They help identify:
+
+```text
+Probability of losses
+Size of extreme losses
+Downside asymmetry
+Tail risk
+Volatility patterns
+```
+
+Example:
+
+```text
+An asset with frequent small gains but rare huge losses
+may look attractive on average,
+but can be dangerous.
+```
+
+This type of risk may not be visible from average return alone.
+
+---
+
+### Downside risk
+
+Downside risk focuses on negative outcomes.
+
+In a return distribution, downside risk is mainly visible in the left side of the distribution.
+
+Important questions:
+
+```text
+How often are returns negative?
+How large are the worst losses?
+How fat is the left tail?
+Is the distribution negatively skewed?
+```
+
+For Athena, downside risk can later connect to:
+
+```text
+Value at Risk
+Conditional Value at Risk
+Maximum drawdown
+Stress testing
+```
+
+---
+
+### Return distribution and VaR
+
+Value at Risk, or VaR, is linked to the return distribution.
+
+VaR focuses on the left tail of the distribution.
+
+Simple idea:
+
+```text
+VaR estimates a loss threshold at a chosen confidence level.
+```
+
+Example:
+
+```text
+5% daily VaR = -3%
+```
+
+This means that, based on the model or historical distribution, losses worse than 3% are expected only 5% of the time.
+
+This is covered later in the risk management documentation, but the foundation starts with understanding return distributions.
+
+---
+
+### Return distribution and CVaR
+
+Conditional Value at Risk, or CVaR, also depends on the left tail.
+
+CVaR looks beyond the VaR threshold.
+
+Simple idea:
+
+```text
+VaR asks: where does the bad tail start?
+CVaR asks: how bad are losses once we are in the bad tail?
+```
+
+This is why understanding the full return distribution is important for advanced risk metrics.
+
+---
+
+### Distribution and time horizon
+
+Return distributions depend on the time horizon.
+
+Examples:
+
+```text
+Daily return distribution
+Weekly return distribution
+Monthly return distribution
+Annual return distribution
+```
+
+A daily distribution may show many small returns.
+
+A monthly distribution may show larger movements.
+
+Athena should not mix different return frequencies in the same distribution unless the methodology is clear.
+
+Practical rule:
+
+```text
+Compare distributions only when return frequency is consistent.
+```
+
+---
+
+### Distribution and asset class
+
+Different asset classes can have different return distributions.
+
+Examples:
+
+```text
+Large equity index:
+Usually moderate daily volatility.
+
+Single growth stock:
+Often wider distribution.
+
+Commodity:
+May have large price swings.
+
+Bond fund:
+Usually narrower distribution, depending on duration and credit risk.
+
+Leveraged ETF:
+Very wide distribution.
+```
+
+This is useful for comparing risk across assets.
+
+---
+
+### Distribution and outliers
+
+Outliers are extreme observations.
+
+In a return distribution, outliers appear in the tails.
+
+Example:
+
+```text
+Normal daily returns:
+-1% to +1%
+
+Outlier:
+-12%
+```
+
+An outlier can be:
+
+```text
+A real market event
+A data error
+```
+
+Athena should flag outliers before using them blindly.
+
+It should not automatically delete them because extreme returns may be real and important for risk analysis.
+
+---
+
+### Distribution and data quality
+
+Return distributions are sensitive to data quality problems.
+
+Possible issues include:
+
+```text
+Missing prices
+Wrong prices
+Unadjusted corporate actions
+Duplicate dates
+Incorrect currency conversion
+Stale prices
+Bad outlier handling
+```
+
+Example:
+
+```text
+A stock split is not adjusted.
+```
+
+This can create a false extreme negative return.
+
+That false return would distort the distribution and make the asset look riskier than it really was.
+
+Athena should validate data before building return distributions.
+
+---
+
+### Return distribution data needed in Athena
+
+To build a return distribution, Athena needs:
+
+```text
+Asset identifier
+Clean price series
+Return series
+Return type
+Date range
+Frequency
+Price field used
+Currency
+Number of observations
+```
+
+Example:
+
+```text
+symbol: AAPL
+return_type: simple_return
+frequency: daily
+date_range: 2021-01-01 to 2026-01-01
+price_field_used: adjusted_close
+number_of_observations: 1,260
+```
+
+This makes the distribution transparent and reproducible.
+
+---
+
+### Return distribution in Athena
+
+Athena can use return distributions to support:
+
+```text
+Return histogram
+Volatility analysis
+Tail risk analysis
+Outlier detection
+Skewness calculation
+Kurtosis calculation
+VaR and CVaR foundations
+Asset comparison
+Benchmark comparison
+```
+
+Example output:
+
+```text
+Asset: AAPL
+Return type: simple daily returns
+Average daily return: 0.05%
+Daily volatility: 1.20%
+Worst daily return: -7.50%
+Best daily return: +6.80%
+Skewness: negative
+Tail behavior: fat left tail warning
+```
+
+This gives a much richer view than average return alone.
+
+---
+
+### Frontend display idea
+
+A useful Athena frontend component could be:
+
+```text
+ReturnDistributionChart
+```
+
+It could display:
+
+```text
+Histogram of returns
+Mean return marker
+Zero return line
+Worst return marker
+Best return marker
+Normal distribution overlay
+Tail risk warnings
+```
+
+This would help users visually understand risk.
+
+Example insight:
+
+```text
+Most returns are small, but the left tail contains several large negative observations.
+```
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Looking only at average return
+Ignoring volatility
+Ignoring extreme losses
+Assuming returns are normally distributed
+Ignoring skewness
+Ignoring fat tails
+Removing outliers automatically
+Mixing daily and monthly returns
+Using unclean price data
+Ignoring the number of observations
+```
+
+Example mistake:
+
+```text
+Asset A and Asset B both have a 5% average return,
+so they are equally risky.
+```
+
+This is wrong.
+
+They may have very different return distributions.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, return distributions are important because they connect return, risk and probability.
+
+Important concepts include:
+
+```text
+Mean
+Variance
+Standard deviation
+Skewness
+Kurtosis
+Normal distribution
+Fat tails
+Tail risk
+Downside risk
+Outliers
+```
+
+A simple memory rule:
+
+```text
+The mean tells the center.
+The standard deviation tells the spread.
+Skewness tells the asymmetry.
+Kurtosis tells the tail heaviness.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, return distributions should be used to move beyond simple average returns.
+
+The analytics module should support:
+
+```text
+Return distribution chart
+Histogram calculation
+Mean return
+Standard deviation
+Worst and best returns
+Skewness
+Kurtosis
+Tail risk indicators
+Outlier warnings
+Data quality checks
+```
+
+The goal is to help users understand the full behavior of returns, not only one summary number.
+
+---
+
+### Mini revision questions
+
+1. What is a return distribution?
+
+2. Why is average return alone not enough?
+
+3. What does the left tail of a return distribution represent?
+
+4. What does the right tail represent?
+
+5. What are fat tails?
+
+6. Why can two assets with the same average return have different risk?
+
+7. Why should Athena validate data before building a return distribution?
+
+8. How can a histogram help users understand returns?
+
+---
+
+### Mini answers
+
+1. A return distribution shows how returns are spread across possible outcomes.
+
+2. Average return alone does not show volatility, extreme losses, skewness or tail behavior.
+
+3. The left tail represents extreme negative returns.
+
+4. The right tail represents extreme positive returns.
+
+5. Fat tails mean extreme events occur more often than expected under a normal distribution.
+
+6. They can have different volatility, skewness and tail risk even if the average return is the same.
+
+7. Bad data can create false extreme returns and distort the distribution.
+
+8. A histogram visually shows how often returns fall into different ranges.
+
+---
+
+### Section summary
+
+A return distribution shows the full pattern of returns.
+
+It helps analyze average return, volatility, extreme outcomes, skewness and tail behavior.
+
+For CFA Level 1, return distributions are important because they connect probability, risk, standard deviation, skewness, kurtosis and normality.
+
+For Athena AI Risk Terminal, return distributions are useful for dashboards, tail risk analysis, outlier detection and future VaR/CVaR calculations.
+
+The key lesson is:
+
+```text
+Average return is only the center.
+The return distribution shows the full risk profile.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 28. Skewness and kurtosis
+
+Skewness and kurtosis describe the shape of a return distribution.
+
+They help answer questions that average return and volatility cannot fully answer.
+
+Simple idea:
+
+```text
+Mean = center of the distribution
+Volatility = spread of the distribution
+Skewness = asymmetry of the distribution
+Kurtosis = tail heaviness of the distribution
+```
+
+These measures are important because financial returns are often not perfectly normal.
+
+They may show:
+
+```text
+Asymmetry
+Fat tails
+Extreme gains
+Extreme losses
+Crash risk
+```
+
+This means that average return and volatility do not tell the full story.
+
+---
+
+### Why shape matters
+
+Two assets can have the same average return and the same volatility, but different distribution shapes.
+
+Example:
+
+```text
+Asset A:
+Average return = 5%
+Volatility = 15%
+Distribution is balanced.
+
+Asset B:
+Average return = 5%
+Volatility = 15%
+Distribution has rare but severe losses.
+```
+
+Both assets look similar if we only use average return and volatility.
+
+But Asset B may be more dangerous because of its downside tail risk.
+
+This is why skewness and kurtosis are useful.
+
+---
+
+### Skewness
+
+Skewness measures asymmetry in a distribution.
+
+A distribution is symmetric when the left side and right side are balanced.
+
+A distribution is skewed when one side has more extreme outcomes than the other.
+
+Simple idea:
+
+```text
+Skewness = direction of extreme outcomes
+```
+
+There are three basic cases:
+
+```text
+Zero skewness
+Positive skewness
+Negative skewness
+```
+
+---
+
+### Zero skewness
+
+Zero skewness means the distribution is approximately symmetric.
+
+Simple idea:
+
+```text
+Positive and negative deviations are balanced.
+```
+
+Example:
+
+```text
+Returns:
+-3%, -2%, -1%, 0%, +1%, +2%, +3%
+```
+
+The distribution is balanced around the center.
+
+In this case, extreme positive and extreme negative outcomes are similar.
+
+A normal distribution has zero skewness.
+
+---
+
+### Positive skewness
+
+Positive skewness means the distribution has a longer or heavier right tail.
+
+Simple idea:
+
+```text
+Positive skewness = more extreme positive outcomes
+```
+
+Example:
+
+```text
+Most returns are small or moderate,
+but there are occasional very large gains.
+```
+
+Example return pattern:
+
+```text
+-2%, -1%, 0%, +1%, +2%, +15%
+```
+
+The large positive return creates a right tail.
+
+This may be attractive to some investors because there is potential for large upside.
+
+Simple interpretation:
+
+```text
+Positive skewness = upside tail
+```
+
+---
+
+### Negative skewness
+
+Negative skewness means the distribution has a longer or heavier left tail.
+
+Simple idea:
+
+```text
+Negative skewness = more extreme negative outcomes
+```
+
+Example:
+
+```text
+Most returns are small or moderate,
+but there are occasional very large losses.
+```
+
+Example return pattern:
+
+```text
+-15%, -2%, -1%, 0%, +1%, +2%
+```
+
+The large negative return creates a left tail.
+
+Negative skewness is especially important in risk management because investors usually care strongly about large downside events.
+
+Simple interpretation:
+
+```text
+Negative skewness = downside tail
+```
+
+---
+
+### Why negative skewness matters
+
+Negative skewness can indicate crash risk.
+
+An investment may look stable most of the time, but occasionally experience large losses.
+
+Example:
+
+```text
+Strategy return pattern:
++1%, +1%, +1%, +1%, -20%
+```
+
+The average return may still look acceptable before the large loss occurs.
+
+But the distribution has important downside risk.
+
+This type of pattern is dangerous because it can create a false sense of stability.
+
+Simple idea:
+
+```text
+Small frequent gains can hide rare large losses.
+```
+
+---
+
+### Skewness and investor preference
+
+Many investors prefer positive skewness.
+
+Why?
+
+Because positive skewness offers the possibility of large upside outcomes.
+
+Many investors dislike negative skewness.
+
+Why?
+
+Because negative skewness means rare but severe losses may occur.
+
+Simple comparison:
+
+```text
+Positive skewness:
+Occasional large gains.
+
+Negative skewness:
+Occasional large losses.
+```
+
+For portfolio risk analysis, negative skewness is usually more concerning.
+
+---
+
+### Skewness example
+
+Suppose two assets have similar average returns.
+
+```text
+Asset A returns:
+-2%, -1%, 0%, +1%, +2%, +3%
+
+Asset B returns:
+-10%, -1%, 0%, +1%, +2%, +3%
+```
+
+Asset B has a more negative tail because of the -10% return.
+
+Its skewness is more negative.
+
+This means Asset B has more downside asymmetry.
+
+---
+
+### Kurtosis
+
+Kurtosis measures the heaviness of the tails of a distribution.
+
+Simple idea:
+
+```text
+Kurtosis = how much extreme outcomes matter
+```
+
+High kurtosis means extreme events occur more often than they would under a normal distribution.
+
+Low kurtosis means extreme events are less frequent.
+
+In finance, kurtosis is important because markets often experience extreme events more frequently than simple normal models suggest.
+
+---
+
+### Tails of a distribution
+
+The tails are the far ends of the distribution.
+
+```text
+Left tail = extreme negative returns
+Right tail = extreme positive returns
+```
+
+Example:
+
+```text
+Left tail:
+-8%, -12%, -20%
+
+Right tail:
++8%, +12%, +20%
+```
+
+Kurtosis focuses on how heavy these tails are.
+
+A distribution with heavy tails has more extreme outcomes.
+
+---
+
+### Normal kurtosis and excess kurtosis
+
+A normal distribution has kurtosis equal to:
+
+```text
+3
+```
+
+Excess kurtosis compares a distribution’s kurtosis to the normal distribution.
+
+Formula:
+
+```text
+Excess kurtosis = kurtosis - 3
+```
+
+For a normal distribution:
+
+```text
+Excess kurtosis = 3 - 3
+Excess kurtosis = 0
+```
+
+Simple interpretation:
+
+```text
+Excess kurtosis = 0 means normal-like tail heaviness.
+Positive excess kurtosis means heavier tails than normal.
+Negative excess kurtosis means lighter tails than normal.
+```
+
+This distinction matters because some sources report kurtosis, while others report excess kurtosis.
+
+Athena should label which measure is being used.
+
+---
+
+### High kurtosis
+
+High kurtosis means the distribution has heavy tails.
+
+Simple idea:
+
+```text
+High kurtosis = more extreme events
+```
+
+Example:
+
+```text
+Most returns are normal,
+but occasionally returns are extremely large or extremely negative.
+```
+
+A high-kurtosis distribution may have many small normal observations and a few very large outliers.
+
+In finance, high kurtosis is important because it can indicate tail risk.
+
+---
+
+### Low kurtosis
+
+Low kurtosis means the distribution has lighter tails.
+
+Simple idea:
+
+```text
+Low kurtosis = fewer extreme events
+```
+
+Returns are more concentrated and less likely to produce extreme outliers.
+
+However, low kurtosis does not mean there is no risk.
+
+It only means extreme tail events were less frequent in the observed sample.
+
+---
+
+### Fat tails
+
+Fat tails are closely related to high kurtosis.
+
+A distribution has fat tails when extreme outcomes occur more often than expected under a normal distribution.
+
+Example:
+
+```text
+Normal model expectation:
+Very large daily losses should be extremely rare.
+
+Real market behavior:
+Large daily losses happen more often than the normal model suggests.
+```
+
+This is a major issue in risk management.
+
+Models that assume normal returns may underestimate large losses.
+
+---
+
+### Skewness vs kurtosis
+
+Skewness and kurtosis measure different things.
+
+Simple comparison:
+
+```text
+Skewness = asymmetry
+Kurtosis = tail heaviness
+```
+
+Example:
+
+```text
+Negative skewness:
+The left tail is heavier than the right tail.
+
+High kurtosis:
+Both tails may contain more extreme outcomes.
+```
+
+A distribution can have:
+
+```text
+High kurtosis with little skewness
+Negative skewness with moderate kurtosis
+Both negative skewness and high kurtosis
+```
+
+The most dangerous case for risk management is often:
+
+```text
+Negative skewness + high kurtosis
+```
+
+This means the distribution has large downside events and heavy tails.
+
+---
+
+### Example: normal-looking returns with hidden tail risk
+
+Suppose a strategy has these returns:
+
+```text
++0.5%, +0.4%, +0.6%, +0.5%, +0.4%, -8.0%
+```
+
+Most returns look stable.
+
+But one large loss changes the risk profile.
+
+This strategy may have:
+
+```text
+Negative skewness
+High kurtosis
+```
+
+The average return and volatility may not fully capture the danger of the large left-tail event.
+
+This is why distribution shape matters.
+
+---
+
+### Why financial returns are often not normal
+
+Financial returns often differ from the normal distribution.
+
+They may show:
+
+```text
+Fat tails
+Skewness
+Volatility clustering
+Sudden jumps
+Market crashes
+Liquidity shocks
+```
+
+Reasons include:
+
+```text
+Investor behavior
+Leverage
+Liquidity constraints
+News shocks
+Earnings surprises
+Central bank decisions
+Geopolitical events
+Forced selling
+```
+
+Because of this, normal distribution assumptions must be used carefully.
+
+---
+
+### Skewness and downside risk
+
+Skewness is especially useful for downside risk analysis.
+
+Negative skewness can show that large losses are more important than large gains.
+
+Example:
+
+```text
+Asset A:
+Skewness = +0.5
+
+Asset B:
+Skewness = -1.2
+```
+
+Asset B has more downside asymmetry.
+
+This may be a warning sign for investors who care about large losses.
+
+For Athena, skewness can help identify assets or strategies with hidden crash risk.
+
+---
+
+### Kurtosis and tail risk
+
+Kurtosis helps identify tail risk.
+
+A high-kurtosis asset may have more extreme outcomes than volatility alone suggests.
+
+Example:
+
+```text
+Asset A:
+Volatility = 15%
+Kurtosis = normal-like
+
+Asset B:
+Volatility = 15%
+Kurtosis = high
+```
+
+Both assets have the same volatility.
+
+But Asset B may have more extreme returns.
+
+This means Asset B may be riskier than it appears if we only look at standard deviation.
+
+---
+
+### Skewness, kurtosis and VaR
+
+Skewness and kurtosis are important for Value at Risk.
+
+If returns are assumed to be normal, VaR may underestimate risk when the distribution has:
+
+```text
+Negative skewness
+High kurtosis
+Fat tails
+```
+
+Example:
+
+```text
+A normal model may estimate a small probability of a large loss.
+But if returns have fat tails, large losses may occur more often.
+```
+
+This is why distribution shape matters before building VaR and CVaR models.
+
+---
+
+### Skewness, kurtosis and CVaR
+
+Conditional Value at Risk, or CVaR, focuses on losses beyond the VaR threshold.
+
+If a return distribution has a heavy left tail, CVaR can become much worse.
+
+Simple idea:
+
+```text
+VaR asks where the bad tail begins.
+CVaR asks how bad the tail is after that point.
+```
+
+Negative skewness and high kurtosis can both make CVaR more severe.
+
+This connects skewness and kurtosis directly to Athena’s future risk management modules.
+
+---
+
+### Interpreting skewness values
+
+Skewness values are usually interpreted qualitatively.
+
+Example:
+
+```text
+Skewness near 0:
+Distribution is roughly symmetric.
+
+Positive skewness:
+Right tail is more important.
+
+Negative skewness:
+Left tail is more important.
+```
+
+A very negative skewness can be a warning sign.
+
+Example:
+
+```text
+Skewness = -2.0
+```
+
+This may indicate significant downside asymmetry.
+
+However, interpretation depends on the asset class, sample size and data quality.
+
+---
+
+### Interpreting kurtosis values
+
+Kurtosis can be interpreted relative to the normal distribution.
+
+If using regular kurtosis:
+
+```text
+Kurtosis = 3 means normal-like tails.
+Kurtosis > 3 means heavier tails.
+Kurtosis < 3 means lighter tails.
+```
+
+If using excess kurtosis:
+
+```text
+Excess kurtosis = 0 means normal-like tails.
+Excess kurtosis > 0 means heavier tails.
+Excess kurtosis < 0 means lighter tails.
+```
+
+Athena should clearly state whether it displays kurtosis or excess kurtosis.
+
+---
+
+### Data quality issues
+
+Skewness and kurtosis are very sensitive to outliers and bad data.
+
+Possible issues include:
+
+```text
+Incorrect prices
+Unadjusted stock splits
+Missing values
+Duplicate dates
+Wrong currency conversion
+Stale prices
+Extreme data errors
+```
+
+Example:
+
+```text
+A stock split is not adjusted correctly.
+```
+
+This can create a false extreme return.
+
+That false return may produce:
+
+```text
+Artificial negative skewness
+Artificial high kurtosis
+```
+
+Athena should validate returns before calculating distribution shape metrics.
+
+---
+
+### Sample size problem
+
+Skewness and kurtosis require enough observations to be meaningful.
+
+Example:
+
+```text
+10 daily returns = weak estimate
+252 daily returns = better estimate
+5 years of daily returns = stronger estimate
+```
+
+With small samples, one extreme observation can dominate the result.
+
+Athena should show the number of observations used.
+
+Example:
+
+```text
+Skewness calculated from 30 daily returns
+```
+
+This is less reliable than:
+
+```text
+Skewness calculated from 1,260 daily returns
+```
+
+---
+
+### Skewness and kurtosis data needed in Athena
+
+To calculate skewness and kurtosis, Athena needs:
+
+```text
+Asset identifier
+Clean return series
+Return type
+Date range
+Frequency
+Number of observations
+Price field used
+Currency
+Data source
+```
+
+Example:
+
+```text
+symbol: AAPL
+return_type: simple_return
+frequency: daily
+date_range: 2021-01-01 to 2026-01-01
+price_field_used: adjusted_close
+number_of_observations: 1,260
+```
+
+This makes the result transparent and reproducible.
+
+---
+
+### Skewness and kurtosis in Athena
+
+Athena can use skewness and kurtosis to support:
+
+```text
+Return distribution analysis
+Tail risk detection
+Downside risk warnings
+VaR and CVaR preparation
+Outlier detection
+Risk dashboards
+Asset comparison
+Benchmark comparison
+```
+
+Example output:
+
+```text
+Asset: AAPL
+Return type: simple daily returns
+Skewness: -0.85
+Excess kurtosis: 4.20
+Interpretation: distribution shows downside asymmetry and fat tails
+```
+
+This gives the user more information than volatility alone.
+
+---
+
+### Frontend display idea
+
+A useful Athena frontend component could be:
+
+```text
+DistributionShapeCard
+```
+
+It could display:
+
+```text
+Skewness value
+Kurtosis value
+Tail risk warning
+Normal distribution comparison
+Number of observations
+Return frequency
+```
+
+Example user insight:
+
+```text
+This asset has negative skewness, meaning its extreme returns are more concentrated on the downside.
+```
+
+Another insight:
+
+```text
+This asset has high excess kurtosis, meaning extreme returns occurred more often than expected under a normal distribution.
+```
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Thinking volatility tells the full risk story
+Ignoring skewness
+Ignoring kurtosis
+Assuming all return distributions are normal
+Confusing skewness with volatility
+Confusing kurtosis with volatility
+Forgetting that high kurtosis means more extreme events
+Ignoring sample size
+Using dirty return data
+Not distinguishing kurtosis from excess kurtosis
+```
+
+Example mistake:
+
+```text
+Two assets have the same volatility, so they have the same risk.
+```
+
+This is incomplete.
+
+One asset may have more negative skewness or heavier tails.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, skewness and kurtosis are important because they describe the shape of a distribution beyond mean and standard deviation.
+
+Important concepts include:
+
+```text
+Symmetry
+Asymmetry
+Positive skewness
+Negative skewness
+Tail risk
+Kurtosis
+Excess kurtosis
+Fat tails
+Normal distribution
+Extreme events
+```
+
+Simple memory rule:
+
+```text
+Skewness tells which side has the tail.
+Kurtosis tells how heavy the tails are.
+```
+
+Another useful rule:
+
+```text
+Negative skewness is about downside asymmetry.
+High kurtosis is about extreme outcomes.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, skewness and kurtosis should be part of the return distribution analytics module.
+
+The analytics module should support:
+
+```text
+Skewness calculation
+Kurtosis calculation
+Excess kurtosis calculation
+Distribution shape interpretation
+Tail risk warning
+Normal distribution comparison
+Outlier flagging
+Sample size display
+Data quality checks
+```
+
+Athena should not rely only on volatility to describe risk.
+
+The platform should help users understand whether returns are symmetric, skewed or fat-tailed.
+
+---
+
+### Mini revision questions
+
+1. What does skewness measure?
+
+2. What does positive skewness mean?
+
+3. What does negative skewness mean?
+
+4. Why is negative skewness important in risk management?
+
+5. What does kurtosis measure?
+
+6. What are fat tails?
+
+7. What is excess kurtosis?
+
+8. Why are skewness and kurtosis useful in Athena?
+
+---
+
+### Mini answers
+
+1. Skewness measures the asymmetry of a distribution.
+
+2. Positive skewness means the distribution has more extreme positive outcomes.
+
+3. Negative skewness means the distribution has more extreme negative outcomes.
+
+4. Negative skewness is important because it may indicate large downside events or crash risk.
+
+5. Kurtosis measures the heaviness of the tails of a distribution.
+
+6. Fat tails mean extreme events occur more often than expected under a normal distribution.
+
+7. Excess kurtosis is kurtosis minus 3, so a normal distribution has excess kurtosis of 0.
+
+8. They are useful because they help Athena detect asymmetry, tail risk and extreme-event behavior beyond volatility.
+
+---
+
+### Section summary
+
+Skewness and kurtosis describe the shape of a return distribution.
+
+Skewness measures asymmetry.
+
+Kurtosis measures tail heaviness.
+
+For CFA Level 1, these concepts are important because financial returns are often not perfectly normal.
+
+For Athena AI Risk Terminal, skewness and kurtosis are useful for identifying downside asymmetry, fat tails and hidden tail risk.
+
+The key lesson is:
+
+```text
+Volatility tells how spread out returns are.
+Skewness tells whether extreme outcomes lean left or right.
+Kurtosis tells whether extreme outcomes happen more often than expected.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 29. Normal distribution and fat tails
+
+The normal distribution is one of the most common statistical models in finance.
+
+It is often used to model returns, risk and uncertainty.
+
+A normal distribution is described by two main parameters:
+
+```text
+Mean
+Standard deviation
+```
+
+The mean tells where the distribution is centered.
+
+The standard deviation tells how spread out the observations are.
+
+Simple idea:
+
+```text
+Normal distribution = symmetric bell-shaped distribution
+```
+
+However, financial returns are often not perfectly normal.
+
+They may show:
+
+```text
+Fat tails
+Skewness
+Extreme events
+Volatility clustering
+Market crashes
+```
+
+This matters because models based only on normal assumptions can underestimate risk.
+
+---
+
+### What is a normal distribution?
+
+A normal distribution is a symmetric bell-shaped distribution.
+
+It has most observations near the average and fewer observations far away from the average.
+
+Simple visual idea:
+
+```text
+Most outcomes are near the center.
+Extreme outcomes are rare.
+```
+
+In a normal distribution:
+
+```text
+Mean = center of the distribution
+Standard deviation = spread around the mean
+```
+
+A normal distribution is useful because it is simple, mathematically convenient and widely understood.
+
+---
+
+### Symmetry
+
+A normal distribution is symmetric.
+
+This means the left side and the right side have the same shape.
+
+Simple idea:
+
+```text
+Positive deviations and negative deviations are balanced.
+```
+
+Example:
+
+```text
+A return of +2% and a return of -2%
+are equally far from the mean if the mean is 0%.
+```
+
+In a perfectly normal distribution, extreme gains and extreme losses are equally likely if they are the same distance from the mean.
+
+In real financial markets, this symmetry often does not hold perfectly.
+
+---
+
+### The 68-95-99.7 rule
+
+For a normal distribution, there is a useful rule:
+
+```text
+About 68% of observations fall within 1 standard deviation of the mean.
+About 95% fall within 2 standard deviations.
+About 99.7% fall within 3 standard deviations.
+```
+
+Example:
+
+```text
+Mean return = 0%
+Standard deviation = 1%
+```
+
+Then, under a normal distribution:
+
+```text
+About 68% of returns are between -1% and +1%.
+About 95% of returns are between -2% and +2%.
+About 99.7% of returns are between -3% and +3%.
+```
+
+This rule is useful, but it depends on the normality assumption.
+
+---
+
+### Why the normal distribution is useful
+
+The normal distribution is useful because it makes risk easier to model.
+
+It helps analysts estimate:
+
+```text
+Expected ranges of returns
+Probability of extreme outcomes
+Standard deviation bands
+Confidence intervals
+Risk estimates
+```
+
+Example:
+
+```text
+If returns are normally distributed,
+an analyst can estimate how unusual a -3% daily return is.
+```
+
+This is why the normal distribution appears frequently in finance, statistics and risk management.
+
+---
+
+### Normal distribution in finance
+
+In finance, the normal distribution is sometimes used to approximate returns.
+
+Example:
+
+```text
+Daily stock returns may be modeled as approximately normal.
+```
+
+This can be useful for simple models.
+
+However, it is only an approximation.
+
+Real market returns often behave differently from a perfect normal distribution.
+
+The problem is not that the normal distribution is useless.
+
+The problem is that it can be too simple for real markets.
+
+---
+
+### Normal distribution limitation
+
+The main limitation is that the normal distribution can underestimate extreme events.
+
+Under a normal distribution, very large losses should be extremely rare.
+
+But in financial markets, large losses often happen more frequently than a normal model suggests.
+
+Simple idea:
+
+```text
+Normal model says extreme events are very rare.
+Markets show extreme events happen more often.
+```
+
+This difference is called fat tails.
+
+---
+
+### What are fat tails?
+
+Fat tails mean that extreme outcomes occur more often than expected under a normal distribution.
+
+The tails are the far left and far right parts of the return distribution.
+
+```text
+Left tail = extreme negative returns
+Right tail = extreme positive returns
+```
+
+A fat-tailed distribution has more observations in the tails.
+
+Simple idea:
+
+```text
+Fat tails = more extreme gains and losses than a normal model predicts
+```
+
+For risk management, the left tail is especially important because it represents large losses.
+
+---
+
+### Fat tail example
+
+Suppose a normal model suggests that a daily loss worse than -5% should be extremely rare.
+
+But historical market data shows several daily losses below -5%.
+
+This means the actual return distribution may have a fat left tail.
+
+Example:
+
+```text
+Normal model expectation:
+Very large daily losses should almost never happen.
+
+Market reality:
+Large daily losses happen more often than expected.
+```
+
+This matters because risk models may underestimate losses if they assume normality blindly.
+
+---
+
+### Normal tails vs fat tails
+
+A normal distribution has thin tails.
+
+A fat-tailed distribution has heavier tails.
+
+Simple comparison:
+
+```text
+Normal tails:
+Extreme returns are very rare.
+
+Fat tails:
+Extreme returns are less rare than the normal model suggests.
+```
+
+Example:
+
+```text
+Normal distribution:
+Most returns are near the mean.
+Very few returns are extremely far away.
+
+Fat-tailed distribution:
+Most returns may still be near the mean,
+but extreme returns happen more often.
+```
+
+This is one reason why financial risk can be larger than simple models suggest.
+
+---
+
+### Why financial returns have fat tails
+
+Financial returns can have fat tails because markets are affected by sudden and extreme events.
+
+Examples:
+
+```text
+Financial crises
+Interest rate shocks
+Inflation surprises
+Earnings shocks
+Liquidity crises
+Geopolitical events
+Bank failures
+Forced selling
+Leverage unwinding
+Policy announcements
+```
+
+These events can create large price moves that are much bigger than normal daily fluctuations.
+
+Markets are also influenced by human behavior.
+
+Fear, panic and forced liquidation can amplify price movements.
+
+---
+
+### Fat tails and market crashes
+
+Market crashes are one of the clearest examples of fat-tail risk.
+
+In calm periods, daily returns may appear stable.
+
+But during a crisis, returns can become extreme.
+
+Example:
+
+```text
+Normal daily movement:
+-1% to +1%
+
+Crisis daily movement:
+-8%, -10%, or worse
+```
+
+A model that assumes normality may treat these moves as almost impossible.
+
+But real markets show that they can happen.
+
+This is why fat tails are central to risk management.
+
+---
+
+### Normal distribution and VaR
+
+Value at Risk, or VaR, is sometimes calculated using a normal distribution assumption.
+
+This is called a parametric or variance-covariance VaR approach.
+
+Simple idea:
+
+```text
+Normal VaR uses mean and standard deviation to estimate loss thresholds.
+```
+
+This can be simple and fast.
+
+However, if returns have fat tails, normal VaR may underestimate extreme losses.
+
+Example:
+
+```text
+Normal VaR may say large losses are very unlikely.
+Historical data may show large losses happen more often.
+```
+
+This is why Athena should clearly show when a risk metric assumes normality.
+
+---
+
+### Normal distribution and CVaR
+
+Conditional Value at Risk, or CVaR, focuses on losses beyond the VaR threshold.
+
+If a distribution has fat tails, CVaR can be much worse than a normal model suggests.
+
+Simple idea:
+
+```text
+Fat tails make the bad tail more dangerous.
+```
+
+Example:
+
+```text
+VaR tells where the loss threshold begins.
+CVaR tells how severe losses are beyond that threshold.
+```
+
+If the left tail is fat, losses beyond VaR can be very large.
+
+This is why fat tails matter for advanced Athena risk modules.
+
+---
+
+### Normal distribution and skewness
+
+A normal distribution has zero skewness.
+
+This means it is symmetric.
+
+Financial returns may have positive or negative skewness.
+
+Negative skewness is especially important because it means the left tail is more extreme.
+
+Simple comparison:
+
+```text
+Normal distribution:
+Balanced left and right tails.
+
+Negatively skewed distribution:
+More extreme negative outcomes.
+```
+
+A negatively skewed and fat-tailed distribution can be much riskier than a normal distribution with the same mean and standard deviation.
+
+---
+
+### Normal distribution and kurtosis
+
+A normal distribution has kurtosis of 3.
+
+If using excess kurtosis, a normal distribution has:
+
+```text
+Excess kurtosis = 0
+```
+
+High kurtosis means heavier tails.
+
+Simple idea:
+
+```text
+High kurtosis = more extreme events
+```
+
+Financial returns often have positive excess kurtosis.
+
+This means they can have more extreme outcomes than a normal distribution.
+
+For Athena, kurtosis can help detect whether the normality assumption may be weak.
+
+---
+
+### Normal assumption vs historical data
+
+There are two broad ways to analyze risk.
+
+```text
+Model-based approach
+Historical-data approach
+```
+
+### Model-based approach
+
+A model-based approach may assume returns follow a normal distribution.
+
+Example:
+
+```text
+Use mean and standard deviation to estimate probabilities.
+```
+
+This is simple and efficient.
+
+But it may underestimate fat-tail risk.
+
+### Historical-data approach
+
+A historical-data approach uses actual historical returns directly.
+
+Example:
+
+```text
+Look at the worst 5% of historical returns.
+```
+
+This can capture past extreme events.
+
+But it assumes the past sample is relevant for the future.
+
+Both approaches have strengths and weaknesses.
+
+---
+
+### Why normality should be checked
+
+Before relying on a normal model, analysts should check whether returns look approximately normal.
+
+They can examine:
+
+```text
+Histogram of returns
+Skewness
+Kurtosis
+Extreme observations
+Normal distribution overlay
+Q-Q plot
+Tail behavior
+```
+
+If returns show strong skewness or fat tails, the normal assumption may be weak.
+
+Athena can help by showing distribution diagnostics.
+
+---
+
+### Normal distribution overlay
+
+A useful visual method is to compare the actual return distribution with a normal distribution.
+
+Example:
+
+```text
+Actual return histogram
+Normal distribution curve with same mean and standard deviation
+```
+
+If the actual histogram has more extreme observations than the normal curve, this suggests fat tails.
+
+This is useful because users can visually see whether the normal model fits the data well.
+
+---
+
+### Practical example
+
+Suppose an asset has:
+
+```text
+Mean daily return = 0.05%
+Daily volatility = 1.00%
+```
+
+Under a normal distribution, most returns should be near:
+
+```text
+-2% to +2%
+```
+
+But suppose the actual data contains several returns such as:
+
+```text
+-6%
+-8%
++7%
+```
+
+This suggests that the asset has more extreme returns than the normal distribution would imply.
+
+The asset may have fat tails.
+
+---
+
+### Fat tails and risk underestimation
+
+Fat tails can cause risk models to underestimate losses.
+
+Example:
+
+```text
+Model assumes normal returns.
+Model estimates low probability of -10% daily loss.
+Market data shows -10% daily losses happened several times.
+```
+
+The model is too optimistic.
+
+This can lead to:
+
+```text
+Underestimated VaR
+Underestimated CVaR
+Underestimated stress loss
+Too much leverage
+Poor risk limits
+False sense of security
+```
+
+For Athena, this is a critical risk management lesson.
+
+---
+
+### Normal distribution is still useful
+
+The normal distribution should not be rejected completely.
+
+It is still useful for:
+
+```text
+Basic statistical intuition
+Simple risk models
+Teaching mean and standard deviation
+Approximate calculations
+Benchmarking against actual distributions
+```
+
+The key is to use it carefully.
+
+Simple rule:
+
+```text
+Normal distribution is a useful starting point,
+not a complete description of financial markets.
+```
+
+---
+
+### Data quality and fat tails
+
+Not every extreme return is a true market event.
+
+Some extreme observations can come from data errors.
+
+Examples:
+
+```text
+Wrong price
+Missing price stored as zero
+Unadjusted stock split
+Incorrect currency conversion
+Duplicate records
+Bad timestamp alignment
+```
+
+Athena should flag extreme observations and investigate whether they are real or data errors.
+
+Important rule:
+
+```text
+Do not automatically delete tail observations.
+First determine whether they are real market events or data problems.
+```
+
+Extreme events are important for risk analysis when they are real.
+
+---
+
+### Normal distribution and Athena
+
+Athena should support both normal-based analytics and historical analytics.
+
+Possible normal-based analytics:
+
+```text
+Normal distribution overlay
+Parametric VaR
+Standard deviation bands
+Probability estimates
+```
+
+Possible historical analytics:
+
+```text
+Historical return distribution
+Historical VaR
+Historical CVaR
+Worst historical returns
+Tail event detection
+```
+
+The platform should clearly label the method used.
+
+Example:
+
+```text
+VaR method: normal assumption
+```
+
+or:
+
+```text
+VaR method: historical simulation
+```
+
+This transparency is important for professional risk analysis.
+
+---
+
+### Normality warnings in Athena
+
+Athena can display warnings when returns appear far from normal.
+
+Example warnings:
+
+```text
+Return distribution shows negative skewness.
+Return distribution shows high excess kurtosis.
+Extreme left-tail observations detected.
+Normal model may underestimate tail risk.
+```
+
+These warnings help users avoid blindly trusting simple models.
+
+---
+
+### Data needed in Athena
+
+To analyze normality and fat tails, Athena needs:
+
+```text
+Clean return series
+Return frequency
+Date range
+Mean return
+Standard deviation
+Skewness
+Kurtosis
+Number of observations
+Outlier flags
+Price field used
+Data source
+```
+
+Example:
+
+```text
+symbol: SPY
+return_type: simple daily returns
+date_range: 2021-01-01 to 2026-01-01
+mean_daily_return: 0.04%
+daily_volatility: 1.10%
+skewness: -0.70
+excess_kurtosis: 3.80
+```
+
+This allows Athena to describe whether returns look normal or fat-tailed.
+
+---
+
+### Frontend display idea
+
+A useful Athena frontend component could be:
+
+```text
+ReturnDistributionNormalityPanel
+```
+
+It could display:
+
+```text
+Return histogram
+Normal distribution overlay
+Mean marker
+Standard deviation bands
+Skewness
+Excess kurtosis
+Tail risk warnings
+Worst historical returns
+```
+
+Example user insight:
+
+```text
+This asset has heavier tails than a normal distribution, meaning extreme returns occurred more often than a normal model would predict.
+```
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Assuming all returns are normally distributed
+Ignoring fat tails
+Ignoring skewness
+Thinking standard deviation captures all risk
+Deleting extreme returns automatically
+Confusing data errors with real tail events
+Using normal VaR without checking distribution shape
+Believing normal models predict crises accurately
+Ignoring sample size
+```
+
+Example mistake:
+
+```text
+The model says this loss should almost never happen,
+so it cannot happen.
+```
+
+This is dangerous.
+
+Markets can produce extreme events more often than simple models suggest.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, the normal distribution is important because it provides a foundation for probability, standard deviation and risk analysis.
+
+However, financial returns often differ from the normal distribution.
+
+Important concepts include:
+
+```text
+Normal distribution
+Mean
+Standard deviation
+Symmetry
+68-95-99.7 rule
+Skewness
+Kurtosis
+Excess kurtosis
+Fat tails
+Tail risk
+Extreme events
+```
+
+A simple memory rule:
+
+```text
+Normal distribution is symmetric and convenient.
+Financial returns often have fat tails and extreme events.
+```
+
+Another important rule:
+
+```text
+Normal models can underestimate tail risk.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, normal distribution assumptions should be explicit.
+
+The analytics module should support:
+
+```text
+Return histogram
+Normal distribution overlay
+Skewness calculation
+Kurtosis calculation
+Fat-tail detection
+Tail risk warnings
+Historical distribution analysis
+Normal-based model labels
+Historical method labels
+```
+
+Athena should help users understand when normal assumptions are being used and when historical data is being used directly.
+
+The goal is to avoid a false sense of precision in risk analysis.
+
+---
+
+### Mini revision questions
+
+1. What are the two main parameters of a normal distribution?
+
+2. What does it mean for a distribution to be symmetric?
+
+3. What are fat tails?
+
+4. Why can the normal distribution underestimate market risk?
+
+5. What does the left tail of a return distribution represent?
+
+6. Why is high kurtosis important?
+
+7. Why should Athena label normal-based models clearly?
+
+8. Why should extreme returns not be deleted automatically?
+
+---
+
+### Mini answers
+
+1. The two main parameters are mean and standard deviation.
+
+2. Symmetry means the left and right sides of the distribution are balanced.
+
+3. Fat tails mean extreme outcomes occur more often than expected under a normal distribution.
+
+4. It can underestimate risk because real markets often have more extreme losses and gains than the normal model predicts.
+
+5. The left tail represents extreme negative returns.
+
+6. High kurtosis is important because it indicates heavier tails and more extreme events.
+
+7. Athena should label normal-based models clearly so users know when a calculation depends on a normality assumption.
+
+8. Extreme returns may be real market events, so they should be investigated before being removed.
+
+---
+
+### Section summary
+
+The normal distribution is a symmetric bell-shaped model described by mean and standard deviation.
+
+It is useful, but financial returns are often not perfectly normal.
+
+They may have fat tails, skewness and extreme events.
+
+For CFA Level 1, this section is important because it connects probability, standard deviation, skewness, kurtosis and risk.
+
+For Athena AI Risk Terminal, normality assumptions must be transparent because models based only on normal distributions can underestimate extreme losses.
+
+The key lesson is:
+
+```text
+Normal distribution is a useful model,
+but financial returns often have fat tails.
+Risk systems must not ignore extreme events.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 30. Correlation
 
 Correlation measures how two assets move together.
 
-It ranges from -1 to +1.
+It helps answer the question:
 
 ```text
-+1  = assets move perfectly together
- 0  = no clear linear relationship
--1  = assets move perfectly in opposite directions
+Do these two assets tend to move in the same direction, in opposite directions, or independently?
 ```
 
-### Example
+Correlation ranges from:
 
-If AAPL and MSFT often rise and fall together, their correlation is likely positive.
+```text
+-1 to +1
+```
 
-If one asset tends to rise when another falls, their correlation may be negative.
+The interpretation is:
 
-### Why correlation matters
+```text
++1  = perfect positive correlation
+ 0  = no clear linear relationship
+-1  = perfect negative correlation
+```
 
-Correlation helps understand diversification.
+Simple idea:
 
-A portfolio with many assets is not necessarily diversified if all assets move together.
+```text
+Correlation = co-movement between two return series
+```
+
+In finance, correlation is usually calculated using returns, not prices.
 
 ---
 
+### Why correlation matters
+
+Correlation matters because it is central to diversification.
+
+A portfolio can contain many assets and still be poorly diversified if all assets move together.
+
+Example:
+
+```text
+A portfolio owns 20 technology stocks.
+If all 20 stocks rise and fall together,
+the portfolio may still be highly concentrated in one type of risk.
+```
+
+Diversification is stronger when assets do not move perfectly together.
+
+Simple idea:
+
+```text
+Diversification depends on correlation, not only the number of assets.
+```
+
+---
+
+### Positive correlation
+
+Positive correlation means two assets tend to move in the same direction.
+
+Example:
+
+```text
+Asset A rises.
+Asset B also tends to rise.
+
+Asset A falls.
+Asset B also tends to fall.
+```
+
+If two assets have a correlation close to +1, they move very similarly.
+
+Example:
+
+```text
+Correlation = +0.90
+```
+
+This means the two assets have a strong positive relationship.
+
+They do not move perfectly together, but their returns are usually closely related.
+
+---
+
+### Negative correlation
+
+Negative correlation means two assets tend to move in opposite directions.
+
+Example:
+
+```text
+Asset A rises.
+Asset B tends to fall.
+
+Asset A falls.
+Asset B tends to rise.
+```
+
+If two assets have a correlation close to -1, they move in strongly opposite directions.
+
+Example:
+
+```text
+Correlation = -0.80
+```
+
+This means the two assets often move in opposite directions.
+
+Negative correlation can be useful for hedging and risk reduction.
+
+---
+
+### Zero correlation
+
+A correlation near zero means there is no clear linear relationship between the two assets.
+
+Example:
+
+```text
+Correlation = 0.02
+```
+
+This does not mean the assets never move together.
+
+It means there is no strong linear pattern in their returns.
+
+Simple interpretation:
+
+```text
+Correlation near zero = weak linear co-movement
+```
+
+This can help diversification because one asset’s movement does not strongly explain the other asset’s movement.
+
+---
+
+### Correlation uses returns
+
+Correlation should usually be calculated using returns, not raw prices.
+
+Why?
+
+Because prices can trend over time and may create misleading relationships.
+
+Example:
+
+```text
+Stock A price rises over five years.
+Stock B price also rises over five years.
+```
+
+This does not necessarily mean their short-term returns are strongly related.
+
+For market risk, the important question is:
+
+```text
+Do their returns move together?
+```
+
+Athena should calculate correlation from return series.
+
+---
+
+### Correlation formula intuition
+
+The exact formula uses covariance and standard deviations.
+
+Conceptually:
+
+```text
+Correlation = standardized co-movement between two return series
+```
+
+More specifically:
+
+```text
+Correlation = covariance(asset A returns, asset B returns) / (standard deviation A × standard deviation B)
+```
+
+The result is standardized between:
+
+```text
+-1 and +1
+```
+
+This makes correlation easier to interpret than covariance.
+
+---
+
+### Correlation vs covariance
+
+Correlation and covariance are related, but they are not the same.
+
+Simple comparison:
+
+```text
+Covariance:
+Measures joint movement, but depends on the scale of returns.
+
+Correlation:
+Measures joint movement on a standardized scale from -1 to +1.
+```
+
+Because correlation is standardized, it is easier to read.
+
+Example:
+
+```text
+Correlation = +0.75
+```
+
+This is immediately understandable as a strong positive relationship.
+
+Covariance values are harder to interpret directly.
+
+---
+
+### Correlation and diversification
+
+Diversification works better when assets are not perfectly correlated.
+
+Example:
+
+```text
+Asset A return = +5%
+Asset B return = -2%
+```
+
+If Asset B does not always move with Asset A, it can help reduce portfolio volatility.
+
+A portfolio with low or negative correlations may have lower risk than a portfolio where all assets move together.
+
+Simple idea:
+
+```text
+Low correlation can reduce portfolio risk.
+```
+
+This is one of the most important lessons in portfolio management.
+
+---
+
+### Perfect positive correlation
+
+Perfect positive correlation means:
+
+```text
+Correlation = +1
+```
+
+The two assets move perfectly together in a linear way.
+
+Example:
+
+```text
+When Asset A increases by a certain amount,
+Asset B increases proportionally.
+
+When Asset A decreases,
+Asset B decreases proportionally.
+```
+
+In this case, combining the two assets gives little diversification benefit.
+
+Simple interpretation:
+
+```text
+Perfect positive correlation = no meaningful diversification benefit between the two assets.
+```
+
+---
+
+### Perfect negative correlation
+
+Perfect negative correlation means:
+
+```text
+Correlation = -1
+```
+
+The two assets move perfectly in opposite directions.
+
+Example:
+
+```text
+When Asset A rises,
+Asset B falls in a perfectly offsetting way.
+```
+
+This can create strong risk reduction.
+
+In theory, if assets are combined with the right weights, perfect negative correlation can eliminate some risk.
+
+In practice, perfect negative correlation is rare.
+
+---
+
+### Correlation near zero
+
+Correlation near zero means the assets do not have a clear linear relationship.
+
+Example:
+
+```text
+Correlation = 0.05
+```
+
+This can provide diversification benefits because the assets are not strongly linked.
+
+However, zero correlation does not mean there is no relationship at all.
+
+It only means there is no strong linear relationship.
+
+There may still be non-linear relationships or crisis-period relationships.
+
+---
+
+### Correlation example
+
+Suppose two stocks have daily returns.
+
+```text
+AAPL daily returns:
++1%, -2%, +1.5%, +0.5%
+
+MSFT daily returns:
++0.8%, -1.7%, +1.2%, +0.4%
+```
+
+These returns move in similar directions.
+
+The correlation is likely positive.
+
+Another example:
+
+```text
+Asset A returns:
++2%, +1%, -1%, -2%
+
+Asset B returns:
+-1.5%, -0.8%, +0.9%, +1.7%
+```
+
+These returns often move in opposite directions.
+
+The correlation is likely negative.
+
+---
+
+### Correlation matrix
+
+A correlation matrix shows correlations between several assets.
+
+Example:
+
+```text
+          AAPL   MSFT   Gold   Bonds
+AAPL      1.00   0.75   0.10   -0.20
+MSFT      0.75   1.00   0.05   -0.15
+Gold      0.10   0.05   1.00    0.25
+Bonds    -0.20  -0.15   0.25    1.00
+```
+
+The diagonal is always:
+
+```text
+1.00
+```
+
+because each asset is perfectly correlated with itself.
+
+Correlation matrices are useful for portfolio analysis because they show how assets interact.
+
+---
+
+### Correlation and portfolio risk
+
+Portfolio risk depends on:
+
+```text
+Asset weights
+Individual asset volatility
+Correlations between assets
+```
+
+This means that portfolio risk is not just the average of individual risks.
+
+Example:
+
+```text
+Two risky assets may create a less risky portfolio
+if their correlation is low.
+```
+
+This is one of the foundations of modern portfolio theory.
+
+Simple idea:
+
+```text
+Portfolio risk depends on how assets move together.
+```
+
+---
+
+### Correlation and crisis periods
+
+Correlation can change during market stress.
+
+Assets that appear weakly correlated in normal periods may become highly correlated during crises.
+
+Example:
+
+```text
+Normal market:
+Many assets move differently.
+
+Crisis market:
+Many risky assets fall together.
+```
+
+This is important because diversification may be weaker exactly when investors need it most.
+
+Simple warning:
+
+```text
+Correlation is not constant.
+```
+
+Athena should eventually allow users to compare correlations across different periods.
+
+---
+
+### Rolling correlation
+
+Rolling correlation measures how correlation changes over time.
+
+Example:
+
+```text
+60-day rolling correlation between AAPL and MSFT
+```
+
+This means Athena calculates the correlation using the most recent 60 daily returns, then moves the window forward.
+
+Rolling correlation can show whether two assets are becoming more or less related.
+
+Example:
+
+```text
+Correlation rises from 0.40 to 0.85.
+```
+
+This means diversification between the two assets may have decreased.
+
+---
+
+### Correlation and asset classes
+
+Different asset classes may have different correlations.
+
+Examples:
+
+```text
+Stocks and stocks:
+Often positively correlated, especially within the same sector.
+
+Stocks and government bonds:
+Sometimes lower or negative correlation, depending on the period.
+
+Stocks and commodities:
+Can vary depending on inflation, growth and supply shocks.
+
+Currencies:
+Depend on macroeconomic and interest rate relationships.
+```
+
+Correlations are not fixed.
+
+They depend on market regimes, economic conditions and investor behavior.
+
+---
+
+### Correlation and sector exposure
+
+Stocks in the same sector often have positive correlation.
+
+Example:
+
+```text
+AAPL and MSFT are both large technology-related companies.
+Their returns may often move together.
+```
+
+Banks may also move together because they are affected by similar drivers:
+
+```text
+Interest rates
+Credit conditions
+Economic growth
+Regulation
+```
+
+For Athena, sector exposure can help explain why some assets are highly correlated.
+
+---
+
+### Correlation and benchmarks
+
+Correlation with a benchmark can show how closely an asset or portfolio behaves like the market.
+
+Example:
+
+```text
+Portfolio correlation with S&P 500 = 0.95
+```
+
+This means the portfolio behaves very similarly to the S&P 500.
+
+Another example:
+
+```text
+Portfolio correlation with S&P 500 = 0.30
+```
+
+This means the portfolio is less closely linked to the S&P 500.
+
+This is useful for understanding active risk and diversification.
+
+---
+
+### Correlation is not causation
+
+A very important rule:
+
+```text
+Correlation does not prove causation.
+```
+
+If two assets move together, it does not automatically mean one asset causes the other to move.
+
+Example:
+
+```text
+Two stocks may both rise because the whole market rises.
+```
+
+The relationship may be caused by a third factor.
+
+Possible common drivers:
+
+```text
+Interest rates
+Market sentiment
+Sector news
+Economic growth
+Inflation expectations
+Liquidity conditions
+```
+
+Athena should present correlation as a relationship, not as proof of cause.
+
+---
+
+### Correlation limitations
+
+Correlation is useful, but it has limitations.
+
+Important limitations include:
+
+```text
+Correlation measures linear relationships only.
+Correlation can change over time.
+Correlation can increase during crises.
+Correlation can be distorted by outliers.
+Correlation depends on the chosen time period.
+Correlation does not prove causation.
+```
+
+This means correlation should be interpreted carefully.
+
+It is a powerful tool, but it is not a complete risk model by itself.
+
+---
+
+### Data quality issues
+
+Correlation is sensitive to data quality.
+
+Possible issues include:
+
+```text
+Missing returns
+Different trading calendars
+Stale prices
+Wrong currency conversion
+Outliers
+Unadjusted corporate actions
+Mismatched dates
+Different frequencies
+```
+
+Example:
+
+```text
+Asset A has daily data.
+Asset B has weekly data.
+```
+
+These should not be directly correlated without proper alignment.
+
+Athena should align dates and frequencies before calculating correlation.
+
+---
+
+### Correlation data needed in Athena
+
+To calculate correlation, Athena needs:
+
+```text
+Two or more clean return series
+Same date range
+Same frequency
+Aligned dates
+Return type
+Currency consistency
+Price field used
+Number of observations
+```
+
+Example:
+
+```text
+asset_1: AAPL
+asset_2: MSFT
+return_type: simple_return
+frequency: daily
+date_range: 2024-01-01 to 2026-01-01
+observations: 502
+```
+
+This makes the correlation result reproducible.
+
+---
+
+### Correlation in Athena
+
+Athena can use correlation to support:
+
+```text
+Portfolio diversification analysis
+Correlation matrix
+Benchmark relationship analysis
+Sector co-movement analysis
+Rolling correlation charts
+Risk concentration detection
+Portfolio construction
+```
+
+Example output:
+
+```text
+Asset 1: AAPL
+Asset 2: MSFT
+Correlation: 0.76
+Date range: 2024-01-01 to 2026-01-01
+Frequency: daily returns
+Interpretation: strong positive co-movement
+```
+
+This helps the user understand whether two assets provide diversification.
+
+---
+
+### Frontend display idea
+
+A useful Athena frontend component could be:
+
+```text
+CorrelationMatrix
+```
+
+It could display:
+
+```text
+Asset-by-asset correlations
+Color-coded correlation levels
+Benchmark correlation
+Rolling correlation option
+Date range selector
+Return frequency selector
+```
+
+Another useful component:
+
+```text
+RollingCorrelationChart
+```
+
+This could show how the relationship between two assets changes over time.
+
+---
+
+### Correlation interpretation guide
+
+A simple guide:
+
+```text
++0.80 to +1.00:
+Very strong positive correlation
+
++0.50 to +0.80:
+Strong positive correlation
+
++0.20 to +0.50:
+Moderate positive correlation
+
+-0.20 to +0.20:
+Weak or no linear correlation
+
+-0.50 to -0.20:
+Moderate negative correlation
+
+-0.80 to -0.50:
+Strong negative correlation
+
+-1.00 to -0.80:
+Very strong negative correlation
+```
+
+These thresholds are only practical guidelines.
+
+They should not be treated as absolute rules.
+
+Interpretation depends on the asset class, time period and market regime.
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Thinking many assets automatically means diversification
+Calculating correlation from prices instead of returns
+Ignoring the time period used
+Ignoring crisis-period correlation changes
+Confusing correlation with causation
+Comparing correlations calculated with different frequencies
+Ignoring currency effects
+Ignoring outliers
+Assuming correlation is stable forever
+```
+
+Example mistake:
+
+```text
+A portfolio has 30 stocks, so it must be diversified.
+```
+
+This is not necessarily true.
+
+If all 30 stocks are highly correlated, diversification may be weak.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, correlation is essential for portfolio management.
+
+Important concepts include:
+
+```text
+Co-movement
+Positive correlation
+Negative correlation
+Zero correlation
+Diversification
+Portfolio risk
+Correlation matrix
+Covariance
+Linear relationship
+Correlation is not causation
+```
+
+The key range is:
+
+```text
+-1 ≤ correlation ≤ +1
+```
+
+A simple memory rule:
+
+```text
+Correlation measures how assets move together.
+Diversification improves when correlations are lower.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, correlation should be part of the portfolio analytics module.
+
+The analytics module should support:
+
+```text
+Pairwise correlation calculation
+Correlation matrix generation
+Rolling correlation
+Benchmark correlation
+Sector correlation
+Date alignment
+Frequency consistency
+Return type labeling
+Data quality checks
+```
+
+Athena should help users understand whether a portfolio is truly diversified.
+
+The goal is not only to count assets, but to measure how their returns move together.
+
+---
+
+### Mini revision questions
+
+1. What does correlation measure?
+
+2. What is the range of correlation?
+
+3. What does a correlation of +1 mean?
+
+4. What does a correlation of -1 mean?
+
+5. Why is correlation important for diversification?
+
+6. Why should correlation be calculated from returns instead of prices?
+
+7. What is a correlation matrix?
+
+8. Why does correlation not prove causation?
+
+---
+
+### Mini answers
+
+1. Correlation measures how two assets move together.
+
+2. Correlation ranges from -1 to +1.
+
+3. A correlation of +1 means the assets move perfectly together in a linear way.
+
+4. A correlation of -1 means the assets move perfectly in opposite directions.
+
+5. Correlation is important because diversification is stronger when assets do not move perfectly together.
+
+6. Returns are used because they measure comparable percentage movements and avoid misleading price trends.
+
+7. A correlation matrix shows pairwise correlations between several assets.
+
+8. Correlation does not prove causation because two assets may move together due to another common factor.
+
+---
+
+### Section summary
+
+Correlation measures how two assets move together.
+
+It ranges from -1 to +1 and is central to diversification and portfolio risk analysis.
+
+For CFA Level 1, correlation is essential because it explains why combining assets can reduce portfolio risk.
+
+For Athena AI Risk Terminal, correlation is useful for portfolio construction, benchmark comparison, risk concentration detection and diversification analysis.
+
+The key lesson is:
+
+```text
+Diversification is not about owning many assets.
+It is about owning assets that do not all move together.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 31. Covariance
 
-Covariance measures the joint movement of two assets.
+Covariance measures how two assets move together.
 
-Basic interpretation:
+It shows whether the returns of two assets tend to move in the same direction or in opposite directions.
+
+Simple idea:
+
+```text
+Covariance = joint movement between two return series
+```
+
+Covariance is important because portfolio risk does not depend only on the risk of each individual asset.
+
+It also depends on how assets move together.
+
+---
+
+### Basic interpretation
+
+Covariance can be positive, negative or close to zero.
 
 ```text
 Positive covariance = assets tend to move in the same direction
@@ -14852,86 +22230,2920 @@ Negative covariance = assets tend to move in opposite directions
 Near zero covariance = weak joint movement
 ```
 
-### Covariance vs correlation
+Example:
 
-Covariance depends on the scale of returns.  
-Correlation is standardized between -1 and +1.
+```text
+If Asset A often rises when Asset B rises,
+their covariance is likely positive.
+```
 
-Because of this, correlation is usually easier to interpret.
+Another example:
 
-### Use in finance
-
-Covariance is useful in portfolio calculations because it helps measure how assets contribute to total portfolio variability.
+```text
+If Asset A often rises when Asset B falls,
+their covariance may be negative.
+```
 
 ---
+
+### Positive covariance
+
+Positive covariance means two assets tend to move in the same direction.
+
+Example:
+
+```text
+Asset A return is above its average.
+Asset B return is also above its average.
+```
+
+or:
+
+```text
+Asset A return is below its average.
+Asset B return is also below its average.
+```
+
+This creates positive joint movement.
+
+Simple interpretation:
+
+```text
+Positive covariance = assets move together
+```
+
+Positive covariance can reduce diversification benefits because the assets may rise and fall at the same time.
+
+---
+
+### Negative covariance
+
+Negative covariance means two assets tend to move in opposite directions.
+
+Example:
+
+```text
+Asset A return is above its average.
+Asset B return is below its average.
+```
+
+or:
+
+```text
+Asset A return is below its average.
+Asset B return is above its average.
+```
+
+This creates negative joint movement.
+
+Simple interpretation:
+
+```text
+Negative covariance = assets move opposite to each other
+```
+
+Negative covariance can improve diversification because one asset may help offset the movement of another.
+
+---
+
+### Near-zero covariance
+
+Near-zero covariance means there is weak joint movement between the two assets.
+
+Example:
+
+```text
+Asset A moves independently from Asset B.
+```
+
+This does not mean there is no relationship at all.
+
+It means that, based on the observed data, there is little linear joint movement.
+
+Simple interpretation:
+
+```text
+Near-zero covariance = weak linear co-movement
+```
+
+---
+
+### Covariance uses returns
+
+Covariance should usually be calculated from returns, not prices.
+
+Why?
+
+Because portfolio risk is based on how asset returns move together.
+
+Example:
+
+```text
+AAPL price and MSFT price may both trend upward over time.
+```
+
+But the real risk question is:
+
+```text
+Do AAPL returns and MSFT returns move together day by day?
+```
+
+For Athena, covariance should be calculated using clean return series.
+
+---
+
+### Covariance formula intuition
+
+Covariance compares deviations from average returns.
+
+For each asset, we compare its return with its mean return.
+
+Simple idea:
+
+```text
+Deviation = return - average return
+```
+
+Then covariance looks at whether deviations for two assets move together.
+
+Conceptually:
+
+```text
+Covariance = average product of deviations from the mean
+```
+
+If both assets are above their average at the same time, the product is positive.
+
+If both assets are below their average at the same time, the product is also positive.
+
+If one asset is above its average while the other is below its average, the product is negative.
+
+---
+
+### Simple covariance logic
+
+Suppose we compare Asset A and Asset B.
+
+```text
+Case 1:
+Asset A above average
+Asset B above average
+Product of deviations = positive
+
+Case 2:
+Asset A below average
+Asset B below average
+Product of deviations = positive
+
+Case 3:
+Asset A above average
+Asset B below average
+Product of deviations = negative
+
+Case 4:
+Asset A below average
+Asset B above average
+Product of deviations = negative
+```
+
+If the positive products dominate, covariance is positive.
+
+If the negative products dominate, covariance is negative.
+
+---
+
+### Covariance formula
+
+A common sample covariance formula is:
+
+```text
+Covariance(A, B) = Σ[(RA_i - mean_A)(RB_i - mean_B)] / (n - 1)
+```
+
+Where:
+
+```text
+RA_i = return of Asset A at time i
+RB_i = return of Asset B at time i
+mean_A = average return of Asset A
+mean_B = average return of Asset B
+n = number of observations
+```
+
+The population version divides by:
+
+```text
+n
+```
+
+The sample version divides by:
+
+```text
+n - 1
+```
+
+For historical market data, sample covariance is commonly used.
+
+---
+
+### Small example
+
+Suppose two assets have the following returns:
+
+```text
+Asset A returns:
++2%, 0%, -2%
+
+Asset B returns:
++3%, 0%, -3%
+```
+
+Both assets move in the same direction.
+
+When Asset A is above average, Asset B is also above average.
+
+When Asset A is below average, Asset B is also below average.
+
+The covariance will be positive.
+
+Simple interpretation:
+
+```text
+The assets tend to move together.
+```
+
+---
+
+### Negative covariance example
+
+Suppose two assets have these returns:
+
+```text
+Asset A returns:
++2%, 0%, -2%
+
+Asset B returns:
+-3%, 0%, +3%
+```
+
+When Asset A is above average, Asset B is below average.
+
+When Asset A is below average, Asset B is above average.
+
+The covariance will be negative.
+
+Simple interpretation:
+
+```text
+The assets tend to move in opposite directions.
+```
+
+---
+
+### Covariance vs correlation
+
+Covariance and correlation are related, but they are not the same.
+
+```text
+Covariance = raw joint movement
+Correlation = standardized joint movement
+```
+
+Covariance depends on the scale of returns.
+
+Correlation standardizes covariance so the result is always between:
+
+```text
+-1 and +1
+```
+
+This is why correlation is usually easier to interpret.
+
+---
+
+### Why covariance is harder to interpret
+
+Covariance does not have a fixed range.
+
+It can be:
+
+```text
+Positive
+Negative
+Small
+Large
+```
+
+But the size depends on the scale of returns.
+
+Example:
+
+```text
+Covariance = 0.00012
+```
+
+This number is mathematically useful, but not very intuitive.
+
+By contrast:
+
+```text
+Correlation = 0.75
+```
+
+is easier to interpret because it means strong positive co-movement.
+
+---
+
+### Relationship between covariance and correlation
+
+Correlation is calculated from covariance.
+
+Formula:
+
+```text
+Correlation(A, B) = Covariance(A, B) / (Standard deviation of A × Standard deviation of B)
+```
+
+This means:
+
+```text
+Correlation standardizes covariance by the volatility of both assets.
+```
+
+Simple idea:
+
+```text
+Covariance tells joint movement.
+Correlation makes joint movement easier to compare.
+```
+
+---
+
+### Why covariance matters in portfolio risk
+
+Covariance is essential in portfolio risk calculations.
+
+A portfolio’s risk depends on:
+
+```text
+Asset weights
+Individual asset variances
+Covariances between assets
+```
+
+This means portfolio volatility is not just the weighted average of individual volatilities.
+
+The way assets move together matters.
+
+Simple idea:
+
+```text
+Portfolio risk depends on both individual risk and joint movement.
+```
+
+---
+
+### Two-asset portfolio variance
+
+For a portfolio with two assets, the variance formula is:
+
+```text
+Portfolio variance =
+(wA^2 × variance_A)
++ (wB^2 × variance_B)
++ (2 × wA × wB × covariance_AB)
+```
+
+Where:
+
+```text
+wA = weight of Asset A
+wB = weight of Asset B
+variance_A = variance of Asset A returns
+variance_B = variance of Asset B returns
+covariance_AB = covariance between Asset A and Asset B returns
+```
+
+The covariance term is important because it captures how the two assets interact.
+
+---
+
+### Interpretation of the covariance term
+
+The covariance term can increase or reduce portfolio risk.
+
+If covariance is positive:
+
+```text
+The covariance term increases portfolio variance.
+```
+
+If covariance is negative:
+
+```text
+The covariance term reduces portfolio variance.
+```
+
+If covariance is near zero:
+
+```text
+The covariance term has limited effect.
+```
+
+This is why assets with low or negative covariance can improve diversification.
+
+---
+
+### Diversification effect
+
+Covariance explains why diversification can reduce risk.
+
+Example:
+
+```text
+Asset A is risky.
+Asset B is risky.
+But they do not move perfectly together.
+```
+
+The portfolio may be less risky than holding only one asset.
+
+This happens because losses in one asset may be partly offset by gains or smaller losses in another asset.
+
+Simple idea:
+
+```text
+Low covariance can reduce portfolio volatility.
+```
+
+---
+
+### Covariance matrix
+
+A covariance matrix shows the covariances between several assets.
+
+Example:
+
+```text
+          AAPL      MSFT      Gold
+AAPL      Var A     Cov AM    Cov AG
+MSFT      Cov MA    Var M     Cov MG
+Gold      Cov GA    Cov GM    Var G
+```
+
+The diagonal contains variances.
+
+The off-diagonal values contain covariances.
+
+Simple interpretation:
+
+```text
+Diagonal = individual asset variance
+Off-diagonal = joint movement between assets
+```
+
+Covariance matrices are very important in portfolio optimization.
+
+---
+
+### Covariance matrix example
+
+A simplified covariance matrix may look like this:
+
+```text
+          AAPL      MSFT      Gold
+AAPL      0.0004    0.0003    0.0000
+MSFT      0.0003    0.0005   -0.0001
+Gold      0.0000   -0.0001    0.0002
+```
+
+Interpretation:
+
+```text
+AAPL and MSFT have positive covariance.
+MSFT and Gold have slightly negative covariance.
+AAPL and Gold have near-zero covariance.
+```
+
+This suggests that Gold may provide more diversification benefit than MSFT in this simplified example.
+
+---
+
+### Covariance and optimization
+
+Portfolio optimization often uses covariance.
+
+A common goal is to find asset weights that balance return and risk.
+
+The optimizer needs:
+
+```text
+Expected returns
+Variances
+Covariances
+Portfolio constraints
+```
+
+Covariance tells the optimizer how assets interact.
+
+Without covariance, the optimizer cannot properly estimate portfolio risk.
+
+This is why covariance is a core input in quantitative portfolio management.
+
+---
+
+### Covariance and risk concentration
+
+Covariance can reveal hidden risk concentration.
+
+Example:
+
+```text
+A portfolio has many different stocks.
+But most stocks have high positive covariance with each other.
+```
+
+The portfolio may still be exposed to the same market risk.
+
+Simple warning:
+
+```text
+Many assets do not guarantee diversification if their returns move together.
+```
+
+Athena can use covariance and correlation to detect this type of concentration.
+
+---
+
+### Covariance and changing markets
+
+Covariance is not constant.
+
+It can change over time.
+
+Example:
+
+```text
+During calm markets:
+Assets may have moderate covariance.
+
+During crises:
+Risky assets may move together more strongly.
+```
+
+This means historical covariance may not fully represent future covariance.
+
+Athena can later support rolling covariance to show how joint movement changes over time.
+
+---
+
+### Rolling covariance
+
+Rolling covariance calculates covariance over a moving window.
+
+Example:
+
+```text
+60-day rolling covariance between AAPL and MSFT
+```
+
+This means Athena calculates covariance using the most recent 60 daily returns, then moves the window forward.
+
+Rolling covariance can show whether assets are becoming more or less connected.
+
+This can be useful for risk monitoring.
+
+---
+
+### Covariance and data quality
+
+Covariance is sensitive to data quality problems.
+
+Possible issues include:
+
+```text
+Missing returns
+Different trading calendars
+Unaligned dates
+Different return frequencies
+Outliers
+Wrong currency conversion
+Unadjusted corporate actions
+Stale prices
+```
+
+Example:
+
+```text
+Asset A has a return on Monday.
+Asset B has no return on Monday.
+```
+
+Athena must align dates correctly before calculating covariance.
+
+Otherwise, the covariance may be wrong.
+
+---
+
+### Data needed in Athena
+
+To calculate covariance, Athena needs:
+
+```text
+Two clean return series
+Same date range
+Same frequency
+Aligned dates
+Return type
+Number of observations
+Currency consistency
+Price field used
+Sample or population method
+```
+
+Example:
+
+```text
+asset_1: AAPL
+asset_2: MSFT
+return_type: simple_return
+frequency: daily
+date_range: 2024-01-01 to 2026-01-01
+method: sample covariance
+observations: 502
+```
+
+This makes the calculation transparent and reproducible.
+
+---
+
+### Covariance in Athena
+
+Athena can use covariance to support:
+
+```text
+Portfolio variance calculation
+Portfolio volatility calculation
+Covariance matrix generation
+Portfolio optimization
+Risk contribution analysis
+Diversification analysis
+Benchmark risk comparison
+```
+
+Example output:
+
+```text
+Asset 1: AAPL
+Asset 2: MSFT
+Sample covariance: 0.0003
+Date range: 2024-01-01 to 2026-01-01
+Frequency: daily returns
+Return type: simple return
+```
+
+For user-facing dashboards, Athena may show correlation more prominently because it is easier to interpret.
+
+For portfolio calculations, Athena should still compute covariance internally.
+
+---
+
+### Frontend display idea
+
+A useful Athena frontend component could be:
+
+```text
+CovarianceMatrix
+```
+
+It could show:
+
+```text
+Asset variances on the diagonal
+Asset covariances off the diagonal
+Date range
+Return frequency
+Method used
+```
+
+However, for most users, a correlation matrix may be easier to understand.
+
+A practical approach:
+
+```text
+Show correlation matrix by default.
+Make covariance matrix available in advanced analytics.
+```
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Confusing covariance with correlation
+Thinking covariance is always between -1 and +1
+Calculating covariance from prices instead of returns
+Ignoring date alignment
+Ignoring different frequencies
+Forgetting that covariance depends on scale
+Assuming covariance is stable over time
+Ignoring covariance in portfolio risk
+```
+
+Example mistake:
+
+```text
+Covariance = 0.0003, so the assets are weakly related.
+```
+
+This conclusion may be incomplete.
+
+The covariance number must be interpreted relative to the volatilities of the two assets.
+
+Correlation is usually better for direct interpretation.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, covariance is important because it is a foundation of portfolio risk.
+
+Important concepts include:
+
+```text
+Joint movement
+Positive covariance
+Negative covariance
+Near-zero covariance
+Variance
+Standard deviation
+Correlation
+Portfolio variance
+Diversification
+Covariance matrix
+```
+
+A simple memory rule:
+
+```text
+Covariance measures whether two assets move together.
+Correlation standardizes that movement between -1 and +1.
+```
+
+Another important rule:
+
+```text
+Covariance is essential for calculating portfolio risk.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, covariance should be implemented as a core portfolio analytics function.
+
+The analytics module should support:
+
+```text
+Pairwise covariance calculation
+Covariance matrix generation
+Sample covariance
+Population covariance
+Date alignment
+Return frequency consistency
+Portfolio variance calculation
+Portfolio volatility calculation
+Clear methodology labels
+```
+
+Covariance may be less intuitive than correlation, but it is essential for portfolio mathematics.
+
+Athena should use covariance internally for risk calculations and show correlation when the goal is user-friendly interpretation.
+
+---
+
+### Mini revision questions
+
+1. What does covariance measure?
+
+2. What does positive covariance mean?
+
+3. What does negative covariance mean?
+
+4. Why is correlation easier to interpret than covariance?
+
+5. How are covariance and correlation related?
+
+6. Why is covariance important for portfolio risk?
+
+7. What is a covariance matrix?
+
+8. Why should Athena align dates before calculating covariance?
+
+---
+
+### Mini answers
+
+1. Covariance measures the joint movement of two assets’ returns.
+
+2. Positive covariance means the assets tend to move in the same direction.
+
+3. Negative covariance means the assets tend to move in opposite directions.
+
+4. Correlation is easier to interpret because it is standardized between -1 and +1.
+
+5. Correlation equals covariance divided by the product of the two assets’ standard deviations.
+
+6. Covariance is important because portfolio risk depends on how assets move together.
+
+7. A covariance matrix shows variances and covariances for a group of assets.
+
+8. Athena should align dates because covariance requires returns from the same time periods.
+
+---
+
+### Section summary
+
+Covariance measures how two assets move together.
+
+Positive covariance means assets tend to move in the same direction.
+
+Negative covariance means they tend to move in opposite directions.
+
+For CFA Level 1, covariance is important because it supports portfolio variance, diversification and correlation.
+
+For Athena AI Risk Terminal, covariance is essential for portfolio risk calculations and optimization.
+
+The key lesson is:
+
+```text
+Covariance is harder to interpret than correlation,
+but it is essential for calculating portfolio risk.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 32. Liquidity
 
 Liquidity measures how easy it is to buy or sell an asset without strongly affecting its price.
 
-A liquid asset usually has:
+Simple idea:
 
-- high trading volume;
-- many buyers and sellers;
-- narrow bid-ask spread;
-- fast execution.
+```text
+Liquidity = ease of trading
+```
 
-An illiquid asset may have:
+A liquid asset can be traded quickly, with low transaction costs and limited price impact.
 
-- low volume;
-- few market participants;
-- wide bid-ask spread;
-- high transaction costs;
-- large price impact.
-
-### Why liquidity matters
-
-An asset can look attractive based on price history but be difficult to trade in practice.
-
-Liquidity is especially important during stressed market conditions.
+An illiquid asset is harder to trade. Buying or selling it may take more time, cost more money, or move the market price significantly.
 
 ---
 
-## 33. Bid, ask and bid-ask spread
+### Liquid asset
 
-The bid is the price buyers are willing to pay.
-
-The ask is the price sellers are willing to accept.
+A liquid asset usually has:
 
 ```text
-Bid = price offered by buyers
-Ask = price requested by sellers
+High trading volume
+Many buyers and sellers
+Narrow bid-ask spread
+Fast execution
+Deep order book
+Low transaction costs
+Small price impact
 ```
 
-The bid-ask spread is:
+Example:
+
+```text
+A large ETF tracking the S&P 500 is usually liquid.
+```
+
+This means an investor can usually buy or sell it quickly without moving the price much.
+
+---
+
+### Illiquid asset
+
+An illiquid asset may have:
+
+```text
+Low trading volume
+Few market participants
+Wide bid-ask spread
+Slow execution
+High transaction costs
+Large price impact
+Limited available quotes
+```
+
+Example:
+
+```text
+A small-cap stock with low trading volume may be illiquid.
+```
+
+If an investor tries to sell a large position, the price may fall significantly because there are not enough buyers at the current price.
+
+---
+
+### Why liquidity matters
+
+Liquidity matters because market prices are not enough.
+
+An asset may look attractive on a chart, but it may be difficult to trade in practice.
+
+Example:
+
+```text
+Asset return looks strong.
+Volatility looks acceptable.
+But trading volume is very low.
+```
+
+This creates a practical problem:
+
+```text
+Can the investor actually enter or exit the position at a fair price?
+```
+
+In real markets, the ability to trade matters as much as the theoretical return.
+
+---
+
+### Liquidity and transaction costs
+
+Illiquidity creates transaction costs.
+
+Important transaction costs include:
+
+```text
+Bid-ask spread
+Brokerage commissions
+Market impact
+Slippage
+Taxes
+Foreign exchange costs
+```
+
+Even if explicit commissions are low, the investor may still pay implicit costs through the bid-ask spread and price impact.
+
+Simple idea:
+
+```text
+Illiquidity makes trading more expensive.
+```
+
+---
+
+### Bid-ask spread and liquidity
+
+The bid-ask spread is one of the most important liquidity indicators.
+
+```text
+Bid = price buyers are willing to pay
+Ask = price sellers are willing to accept
+Spread = Ask - Bid
+```
+
+A narrow spread usually means better liquidity.
+
+A wide spread usually means weaker liquidity.
+
+Example:
+
+```text
+Bid = 99.99
+Ask = 100.01
+Spread = 0.02
+```
+
+This is a narrow spread.
+
+Another example:
+
+```text
+Bid = 98.00
+Ask = 102.00
+Spread = 4.00
+```
+
+This is a wide spread.
+
+The wider spread makes trading more expensive.
+
+---
+
+### Volume and liquidity
+
+Volume is another basic liquidity indicator.
+
+High volume often means the asset is actively traded.
+
+Example:
+
+```text
+Daily volume = 50,000,000 shares
+```
+
+This suggests strong trading activity.
+
+Low volume can signal weak liquidity.
+
+Example:
+
+```text
+Daily volume = 5,000 shares
+```
+
+This may make it harder to buy or sell a large position.
+
+However, volume alone is not enough.
+
+A complete liquidity analysis should also consider:
+
+```text
+Bid-ask spread
+Order book depth
+Trade size
+Market impact
+Trading frequency
+```
+
+---
+
+### Market depth
+
+Market depth measures how much buying and selling interest exists at different price levels.
+
+A deep market has many orders close to the current price.
+
+Example:
+
+```text
+Many buyers and sellers are available near the current market price.
+```
+
+A shallow market has few orders.
+
+Example:
+
+```text
+Only a small number of shares are available near the current price.
+```
+
+In a shallow market, a large order can move the price significantly.
+
+Simple idea:
+
+```text
+Market depth tells how much can be traded before the price moves.
+```
+
+---
+
+### Price impact
+
+Price impact is the effect of a trade on the market price.
+
+Example:
+
+```text
+Current price = 100
+Investor sells a large position
+Price falls to 97
+```
+
+The trade had a negative price impact.
+
+Large trades in illiquid assets can move prices more than large trades in liquid assets.
+
+Simple comparison:
+
+```text
+Liquid asset:
+Large trade has small price impact.
+
+Illiquid asset:
+Large trade has large price impact.
+```
+
+For risk management, price impact matters because the theoretical market price may not be the price the investor can actually get.
+
+---
+
+### Slippage
+
+Slippage is the difference between the expected execution price and the actual execution price.
+
+Example:
+
+```text
+Expected selling price = 100
+Actual selling price = 99.50
+```
+
+Slippage:
+
+```text
+Slippage = 99.50 - 100
+Slippage = -0.50
+```
+
+Slippage is more likely when:
+
+```text
+Liquidity is low
+Markets move quickly
+Order size is large
+Bid-ask spreads are wide
+Volatility is high
+```
+
+Simple idea:
+
+```text
+Slippage is the cost of not getting the expected price.
+```
+
+---
+
+### Liquidity during normal markets
+
+During normal market conditions, many assets may appear liquid.
+
+Example:
+
+```text
+High volume
+Narrow spreads
+Fast execution
+Stable market depth
+```
+
+Investors may assume they can always trade easily.
+
+However, liquidity can change.
+
+An asset that is liquid today may become less liquid during market stress.
+
+---
+
+### Liquidity during market stress
+
+Liquidity is especially important during stressed market conditions.
+
+During stress, many investors may want to sell at the same time.
+
+This can create:
+
+```text
+Wider bid-ask spreads
+Lower market depth
+Higher slippage
+Larger price impact
+Forced selling
+Temporary market dislocations
+```
+
+Example:
+
+```text
+A bond ETF may trade normally during calm periods.
+During a crisis, selling pressure may rise and spreads may widen.
+```
+
+Liquidity risk often becomes most visible when investors need liquidity the most.
+
+---
+
+### Liquidity risk
+
+Liquidity risk is the risk that an investor cannot buy or sell an asset quickly at a fair price.
+
+There are two important forms:
+
+```text
+Market liquidity risk
+Funding liquidity risk
+```
+
+### Market liquidity risk
+
+Market liquidity risk is the risk that an asset cannot be traded easily without affecting its price.
+
+Example:
+
+```text
+An investor wants to sell a small-cap stock,
+but there are not enough buyers.
+```
+
+### Funding liquidity risk
+
+Funding liquidity risk is the risk that an investor or institution cannot obtain cash or financing when needed.
+
+Example:
+
+```text
+A fund needs cash to meet redemptions,
+but its assets are hard to sell quickly.
+```
+
+For Athena’s market finance module, market liquidity risk is the main focus.
+
+---
+
+### Liquidity and asset classes
+
+Liquidity differs across asset classes.
+
+General examples:
+
+```text
+Major currencies:
+Usually very liquid.
+
+Large-cap stocks:
+Usually liquid.
+
+Major equity ETFs:
+Usually liquid.
+
+Government bonds:
+Often liquid, especially for major issuers.
+
+Small-cap stocks:
+Can be less liquid.
+
+Corporate bonds:
+Can be less liquid than government bonds.
+
+Private equity:
+Very illiquid.
+
+Real estate:
+Illiquid compared with public securities.
+```
+
+These are general tendencies, not fixed rules.
+
+Liquidity depends on the instrument, market conditions and trade size.
+
+---
+
+### Liquidity and trade size
+
+Liquidity depends on the size of the trade.
+
+Example:
+
+```text
+Buying 100 shares of a large-cap stock may be easy.
+Buying 5,000,000 shares may move the market.
+```
+
+An asset can be liquid for small trades but less liquid for large institutional trades.
+
+Simple idea:
+
+```text
+Liquidity is relative to order size.
+```
+
+This is important for portfolio managers because large portfolios cannot always trade at displayed market prices.
+
+---
+
+### Liquidity and valuation
+
+Illiquidity can affect valuation.
+
+An asset may have an estimated value, but if it cannot be sold quickly, its practical value may be lower.
+
+Example:
+
+```text
+Estimated fair value = 100
+Price available for immediate sale = 95
+```
+
+This difference reflects liquidity pressure.
+
+In stressed markets, prices may fall because investors demand compensation for holding less liquid assets.
+
+---
+
+### Liquidity premium
+
+A liquidity premium is extra expected return required by investors for holding less liquid assets.
+
+Simple idea:
+
+```text
+Less liquid asset → investors may demand higher expected return
+```
+
+Example:
+
+```text
+A private investment may need to offer higher expected returns
+because investors cannot sell it easily.
+```
+
+This concept is important in asset pricing and portfolio management.
+
+---
+
+### Liquidity and risk management
+
+Liquidity is a key risk management concept.
+
+A portfolio may look safe based on volatility, but liquidity can create hidden risk.
+
+Example:
+
+```text
+Portfolio volatility = moderate
+But many assets are illiquid
+```
+
+During a crisis, the portfolio may be difficult to rebalance or liquidate.
+
+This can create larger losses than expected.
+
+Simple warning:
+
+```text
+Low volatility does not always mean low liquidity risk.
+```
+
+---
+
+### Liquidity indicators
+
+Common liquidity indicators include:
+
+```text
+Trading volume
+Average daily volume
+Dollar volume
+Bid-ask spread
+Relative spread
+Market depth
+Turnover
+Days to liquidate
+Open interest for derivatives
+```
+
+For Athena’s first version, useful indicators include:
+
+```text
+Volume
+Dollar volume
+Average daily volume
+Bid-ask spread
+Relative volume
+Liquidity warning flag
+```
+
+These are easier to implement with basic market data.
+
+---
+
+### Dollar volume
+
+Dollar volume measures the monetary value traded.
+
+Formula:
+
+```text
+Dollar volume = price × volume
+```
+
+Example:
+
+```text
+Price = 50
+Volume = 2,000,000 shares
+```
+
+Calculation:
+
+```text
+Dollar volume = 50 × 2,000,000
+Dollar volume = 100,000,000
+```
+
+Dollar volume is useful because share volume alone can be misleading.
+
+Example:
+
+```text
+1,000,000 shares at 5 dollars = 5,000,000 dollars traded
+1,000,000 shares at 500 dollars = 500,000,000 dollars traded
+```
+
+The share volume is the same, but the traded value is very different.
+
+---
+
+### Relative spread
+
+Relative spread expresses the bid-ask spread as a percentage of the mid-price.
+
+Formula:
+
+```text
+Relative spread = (Ask - Bid) / Mid-price
+```
+
+Where:
+
+```text
+Mid-price = (Bid + Ask) / 2
+```
+
+Example:
+
+```text
+Bid = 99
+Ask = 101
+Mid-price = 100
+Spread = 2
+```
+
+Relative spread:
+
+```text
+Relative spread = 2 / 100
+Relative spread = 2%
+```
+
+Relative spread makes it easier to compare assets with different price levels.
+
+---
+
+### Days to liquidate
+
+Days to liquidate estimates how long it may take to sell a position based on trading volume.
+
+Simple formula:
+
+```text
+Days to liquidate = position size / average daily volume
+```
+
+Example:
+
+```text
+Position size = 1,000,000 shares
+Average daily volume = 250,000 shares
+```
+
+Calculation:
+
+```text
+Days to liquidate = 1,000,000 / 250,000
+Days to liquidate = 4 days
+```
+
+This is a simplified estimate.
+
+In practice, selling a large position may take longer if the investor wants to avoid moving the market price.
+
+---
+
+### Liquidity and ETFs
+
+ETF liquidity has two layers:
+
+```text
+Liquidity of ETF shares
+Liquidity of underlying holdings
+```
+
+An ETF may trade on an exchange, but the liquidity of its underlying assets still matters.
+
+Example:
+
+```text
+An ETF holding large US stocks is usually liquid.
+An ETF holding emerging market bonds may have more liquidity risk.
+```
+
+For Athena, ETF liquidity should consider both trading volume and the nature of the underlying exposure when available.
+
+---
+
+### Liquidity and derivatives
+
+For derivatives, liquidity may be measured using:
+
+```text
+Trading volume
+Open interest
+Bid-ask spread
+Market depth
+```
+
+Open interest measures the number of outstanding contracts.
+
+Example:
+
+```text
+High open interest may indicate active participation in an options or futures market.
+```
+
+For Athena’s first version, derivatives liquidity can be added later.
+
+---
+
+### Data quality issues
+
+Liquidity analysis depends on reliable data.
+
+Possible data issues include:
+
+```text
+Missing volume
+Missing bid or ask
+Negative volume
+Zero volume on active trading days
+Stale quotes
+Incorrect exchange data
+Outlier spreads
+Wrong currency
+Mismatched timestamps
+```
+
+Example:
+
+```text
+Bid = 105
+Ask = 100
+```
+
+This is suspicious because the bid should normally be lower than or equal to the ask.
+
+Athena should flag this as a data quality issue.
+
+---
+
+### Liquidity data needed in Athena
+
+To analyze liquidity, Athena may need:
+
+```text
+Asset identifier
+Date or timestamp
+Volume
+Average daily volume
+Price
+Dollar volume
+Bid
+Ask
+Bid-ask spread
+Relative spread
+Exchange
+Currency
+Data source
+```
+
+Example:
+
+```text
+symbol: AAPL
+date: 2026-04-29
+close: 180
+volume: 50,000,000
+dollar_volume: 9,000,000,000
+bid: 179.99
+ask: 180.01
+spread: 0.02
+currency: USD
+exchange: NASDAQ
+```
+
+This allows Athena to build simple liquidity indicators.
+
+---
+
+### Liquidity in Athena
+
+Athena can use liquidity analysis to support:
+
+```text
+Asset liquidity scoring
+Trading cost estimation
+Liquidity warnings
+Portfolio liquidity analysis
+Risk dashboards
+Market stress monitoring
+Position sizing support
+```
+
+Example output:
+
+```text
+Asset: AAPL
+Average daily volume: 50,000,000 shares
+Dollar volume: 9,000,000,000 USD
+Bid-ask spread: 0.02
+Liquidity signal: High
+```
+
+Another example:
+
+```text
+Asset: SmallCapXYZ
+Average daily volume: 15,000 shares
+Bid-ask spread: 3.50%
+Liquidity signal: Weak
+Warning: trading this asset may involve high transaction costs
+```
+
+---
+
+### Liquidity score idea
+
+Athena could create a simple liquidity score using indicators such as:
+
+```text
+Average daily volume
+Dollar volume
+Bid-ask spread
+Relative spread
+Days to liquidate
+```
+
+Example:
+
+```text
+Liquidity score:
+High
+Medium
+Low
+```
+
+This would make liquidity easier to understand for users.
+
+However, the score should be transparent.
+
+Athena should explain why an asset is classified as liquid or illiquid.
+
+---
+
+### Liquidity and portfolio construction
+
+Liquidity should influence portfolio construction.
+
+A portfolio with many illiquid assets may be difficult to rebalance.
+
+Example:
+
+```text
+The portfolio needs to reduce risk quickly.
+But several positions cannot be sold without large price impact.
+```
+
+This can create operational and market risk.
+
+Portfolio managers must consider:
+
+```text
+Position size
+Asset liquidity
+Redemption risk
+Market stress scenarios
+Rebalancing needs
+```
+
+For Athena, liquidity can later become part of portfolio risk monitoring.
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Thinking high return means good investment without checking liquidity
+Using volume alone as the only liquidity measure
+Ignoring bid-ask spread
+Ignoring trade size
+Forgetting liquidity can disappear during stress
+Assuming ETF liquidity is always perfect
+Ignoring market impact
+Ignoring stale prices
+Comparing assets without considering dollar volume
+```
+
+Example mistake:
+
+```text
+This asset gained 20%, so it is attractive.
+```
+
+Better question:
+
+```text
+Can the investor actually buy or sell it at a fair price?
+```
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, liquidity is important because it affects transaction costs, risk and investment suitability.
+
+Important concepts include:
+
+```text
+Market liquidity
+Trading volume
+Bid-ask spread
+Transaction costs
+Market impact
+Slippage
+Liquidity risk
+Liquidity premium
+Ease of trading
+```
+
+A simple memory rule:
+
+```text
+Liquidity measures how easily an asset can be traded without large cost or price impact.
+```
+
+Another important rule:
+
+```text
+Liquidity often becomes most valuable during market stress.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, liquidity should be part of the market analytics module.
+
+The liquidity module should support:
+
+```text
+Volume analysis
+Average daily volume
+Dollar volume
+Bid-ask spread
+Relative spread
+Liquidity warnings
+Data quality checks
+Portfolio liquidity extension
+```
+
+Athena should not only show whether an asset has good historical returns.
+
+It should also show whether the asset is realistically tradable.
+
+---
+
+### Mini revision questions
+
+1. What does liquidity measure?
+
+2. What are common signs of a liquid asset?
+
+3. What are common signs of an illiquid asset?
+
+4. Why does liquidity matter during market stress?
+
+5. What is the bid-ask spread?
+
+6. What is slippage?
+
+7. Why can volume alone be an incomplete liquidity measure?
+
+8. Why should Athena include liquidity indicators?
+
+---
+
+### Mini answers
+
+1. Liquidity measures how easy it is to buy or sell an asset without strongly affecting its price.
+
+2. A liquid asset usually has high volume, many buyers and sellers, narrow spreads and fast execution.
+
+3. An illiquid asset may have low volume, few participants, wide spreads and large price impact.
+
+4. Liquidity matters during stress because many investors may want to sell at the same time, causing spreads and price impact to increase.
+
+5. The bid-ask spread is the difference between the ask price and the bid price.
+
+6. Slippage is the difference between the expected execution price and the actual execution price.
+
+7. Volume alone is incomplete because liquidity also depends on spreads, depth, trade size and market impact.
+
+8. Athena should include liquidity indicators because an asset can look attractive but be difficult or expensive to trade.
+
+---
+
+### Section summary
+
+Liquidity measures the ease of trading an asset.
+
+A liquid asset can usually be bought or sold quickly with low transaction costs and limited price impact.
+
+An illiquid asset may be difficult or expensive to trade.
+
+For CFA Level 1, liquidity is important because it affects transaction costs, risk and investment suitability.
+
+For Athena AI Risk Terminal, liquidity is important because risk analysis should consider not only returns and volatility, but also whether an asset can realistically be traded.
+
+The key lesson is:
+
+```text
+An asset is not only risky because its price moves.
+It can also be risky because it is hard to trade.
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 33. Bid, ask and bid-ask spread
+
+The bid, ask and bid-ask spread are basic concepts in market trading.
+
+They help explain how buying and selling actually happen in a market.
+
+Simple idea:
+
+```text
+Bid = price buyers are willing to pay
+Ask = price sellers are willing to accept
+Spread = difference between ask and bid
+```
+
+These concepts are important because the market price shown on a screen is not always the exact price at which an investor can trade.
+
+---
+
+### Bid price
+
+The bid is the highest price that buyers are currently willing to pay for an asset.
+
+Example:
+
+```text
+Bid = 99.95
+```
+
+This means buyers are willing to buy the asset at:
+
+```text
+99.95
+```
+
+If an investor wants to sell immediately, they may sell at the bid price.
+
+Simple idea:
+
+```text
+The bid is the price available to a seller.
+```
+
+---
+
+### Ask price
+
+The ask is the lowest price that sellers are currently willing to accept for an asset.
+
+Example:
+
+```text
+Ask = 100.05
+```
+
+This means sellers are willing to sell the asset at:
+
+```text
+100.05
+```
+
+If an investor wants to buy immediately, they may buy at the ask price.
+
+Simple idea:
+
+```text
+The ask is the price available to a buyer.
+```
+
+---
+
+### Bid-ask spread
+
+The bid-ask spread is the difference between the ask price and the bid price.
+
+Formula:
 
 ```text
 Spread = Ask - Bid
 ```
 
-### Example
+Example:
 
 ```text
 Bid = 99.95
 Ask = 100.05
 
+Spread = 100.05 - 99.95
 Spread = 0.10
 ```
 
-### Interpretation
+The spread is:
 
-A small spread usually indicates good liquidity.  
-A large spread usually indicates higher trading cost.
+```text
+0.10
+```
 
-The spread is an implicit cost of trading.
+This spread represents an implicit trading cost.
 
 ---
 
+### Why bid and ask are different
+
+The bid and ask are different because buyers and sellers do not always agree on the exact price.
+
+Buyers want to buy at the lowest possible price.
+
+Sellers want to sell at the highest possible price.
+
+The market exists between these two forces.
+
+Simple idea:
+
+```text
+Buyers prefer lower prices.
+Sellers prefer higher prices.
+The spread is the gap between them.
+```
+
+In liquid markets, this gap is usually small.
+
+In illiquid markets, this gap can be large.
+
+---
+
+### Mid-price
+
+The mid-price is the average of the bid and ask.
+
+Formula:
+
+```text
+Mid-price = (Bid + Ask) / 2
+```
+
+Example:
+
+```text
+Bid = 99.95
+Ask = 100.05
+```
+
+Calculation:
+
+```text
+Mid-price = (99.95 + 100.05) / 2
+Mid-price = 100.00
+```
+
+The mid-price is often used as a reference price.
+
+However, investors usually cannot buy or sell exactly at the mid-price unless an order is matched there.
+
+---
+
+### Spread as a trading cost
+
+The bid-ask spread is an implicit cost of trading.
+
+Example:
+
+```text
+Bid = 99.95
+Ask = 100.05
+```
+
+If an investor buys immediately, they may pay:
+
+```text
+100.05
+```
+
+If the investor immediately sells, they may receive:
+
+```text
+99.95
+```
+
+The difference is:
+
+```text
+0.10
+```
+
+This means the investor loses money from crossing the spread.
+
+Simple idea:
+
+```text
+Buying happens near the ask.
+Selling happens near the bid.
+The spread is a cost of immediacy.
+```
+
+---
+
+### Round-trip cost
+
+A round-trip trade means buying and then selling.
+
+If an investor buys at the ask and sells at the bid, the spread reduces the return.
+
+Example:
+
+```text
+Buy price = 100.05
+Sell price = 99.95
+```
+
+Loss from spread:
+
+```text
+99.95 / 100.05 - 1 ≈ -0.10%
+```
+
+Even if the market does not move, the investor loses because of the spread.
+
+This is why spread matters for trading costs.
+
+---
+
+### Narrow spread
+
+A narrow spread usually indicates good liquidity.
+
+Example:
+
+```text
+Bid = 100.00
+Ask = 100.01
+
+Spread = 0.01
+```
+
+This means buyers and sellers are very close in price.
+
+Narrow spreads are common in:
+
+```text
+Large-cap stocks
+Major ETFs
+Major currency pairs
+Highly traded futures
+```
+
+A narrow spread usually means trading is cheaper and easier.
+
+---
+
+### Wide spread
+
+A wide spread usually indicates weaker liquidity or higher uncertainty.
+
+Example:
+
+```text
+Bid = 98.00
+Ask = 102.00
+
+Spread = 4.00
+```
+
+This means buyers and sellers are far apart.
+
+Wide spreads can happen when:
+
+```text
+Trading volume is low
+Market uncertainty is high
+The asset is illiquid
+News is expected
+Market makers demand more compensation
+Volatility is high
+```
+
+A wide spread makes trading more expensive.
+
+---
+
+### Absolute spread
+
+The absolute spread is the simple difference between ask and bid.
+
+Formula:
+
+```text
+Absolute spread = Ask - Bid
+```
+
+Example:
+
+```text
+Bid = 99.95
+Ask = 100.05
+
+Absolute spread = 0.10
+```
+
+This is easy to calculate.
+
+However, absolute spread can be hard to compare across assets with different price levels.
+
+---
+
+### Relative spread
+
+The relative spread expresses the spread as a percentage of the mid-price.
+
+Formula:
+
+```text
+Relative spread = (Ask - Bid) / Mid-price
+```
+
+Where:
+
+```text
+Mid-price = (Bid + Ask) / 2
+```
+
+Example:
+
+```text
+Bid = 99.95
+Ask = 100.05
+Mid-price = 100.00
+Spread = 0.10
+```
+
+Calculation:
+
+```text
+Relative spread = 0.10 / 100.00
+Relative spread = 0.10%
+```
+
+Relative spread is useful because it makes spreads comparable across assets.
+
+---
+
+### Why relative spread matters
+
+Absolute spread can be misleading.
+
+Example:
+
+```text
+Asset A:
+Bid = 99.95
+Ask = 100.05
+Spread = 0.10
+
+Asset B:
+Bid = 9.95
+Ask = 10.05
+Spread = 0.10
+```
+
+Both assets have the same absolute spread.
+
+But the relative spread is different.
+
+Asset A:
+
+```text
+Relative spread = 0.10 / 100.00 = 0.10%
+```
+
+Asset B:
+
+```text
+Relative spread = 0.10 / 10.00 = 1.00%
+```
+
+Asset B is more expensive to trade in percentage terms.
+
+---
+
+### Bid-ask spread and liquidity
+
+The bid-ask spread is one of the most important liquidity indicators.
+
+Simple relationship:
+
+```text
+Small spread = better liquidity
+Large spread = weaker liquidity
+```
+
+A small spread suggests that buyers and sellers agree closely on the asset’s value.
+
+A large spread suggests more uncertainty, lower activity or higher trading cost.
+
+For Athena, bid-ask spread can be used as a practical liquidity signal.
+
+---
+
+### Bid-ask spread and volatility
+
+Spreads often widen when volatility increases.
+
+Why?
+
+Because market makers and liquidity providers face more risk when prices move quickly.
+
+Example:
+
+```text
+Normal period:
+Bid = 99.99
+Ask = 100.01
+
+Stress period:
+Bid = 99.50
+Ask = 100.50
+```
+
+The spread widens during stress.
+
+Simple idea:
+
+```text
+Higher uncertainty can increase trading costs.
+```
+
+This is why liquidity and volatility are connected.
+
+---
+
+### Bid-ask spread and market stress
+
+During market stress, spreads can become much wider.
+
+This can happen because:
+
+```text
+Buyers disappear
+Sellers become aggressive
+Market makers reduce liquidity
+Uncertainty increases
+Volatility rises
+Order books become thinner
+```
+
+Example:
+
+```text
+A bond ETF may trade with a narrow spread in normal conditions.
+During a crisis, its spread may widen significantly.
+```
+
+This makes trading more expensive exactly when investors may need liquidity.
+
+---
+
+### Bid-ask spread and order type
+
+The spread matters differently depending on the order type.
+
+### Market order
+
+A market order executes immediately at the best available price.
+
+If buying, it usually executes at the ask.
+
+If selling, it usually executes at the bid.
+
+Simple idea:
+
+```text
+Market order = fast execution, but pays the spread
+```
+
+### Limit order
+
+A limit order sets a maximum buying price or minimum selling price.
+
+It may avoid crossing the spread.
+
+But execution is not guaranteed.
+
+Simple idea:
+
+```text
+Limit order = price control, but uncertain execution
+```
+
+---
+
+### Example with market order
+
+Suppose:
+
+```text
+Bid = 99.95
+Ask = 100.05
+```
+
+If an investor places a market buy order:
+
+```text
+Execution price ≈ 100.05
+```
+
+If an investor places a market sell order:
+
+```text
+Execution price ≈ 99.95
+```
+
+The investor pays for immediate execution through the spread.
+
+---
+
+### Example with limit order
+
+Suppose:
+
+```text
+Bid = 99.95
+Ask = 100.05
+```
+
+An investor places a limit buy order at:
+
+```text
+100.00
+```
+
+This order may execute if a seller is willing to sell at 100.00.
+
+But it may not execute immediately.
+
+Simple tradeoff:
+
+```text
+Market order = execution certainty
+Limit order = price certainty
+```
+
+---
+
+### Bid-ask spread and slippage
+
+The bid-ask spread is related to slippage.
+
+Slippage is the difference between the expected execution price and the actual execution price.
+
+Example:
+
+```text
+Expected buy price = 100.05
+Actual buy price = 100.20
+```
+
+Slippage:
+
+```text
+100.20 - 100.05 = 0.15
+```
+
+Slippage can happen when:
+
+```text
+Markets move quickly
+Order size is large
+Liquidity is low
+The bid-ask spread is wide
+The order book is shallow
+```
+
+Spread is one trading cost.  
+Slippage is another possible execution cost.
+
+---
+
+### Bid-ask spread and trade size
+
+The displayed bid and ask may only be available for a limited quantity.
+
+Example:
+
+```text
+Ask = 100.05 for 500 shares
+```
+
+If an investor wants to buy 10,000 shares, the full order may execute at higher prices.
+
+This means the real execution cost can be larger than the quoted spread.
+
+Simple idea:
+
+```text
+The displayed spread does not always show the full cost of a large trade.
+```
+
+For large portfolios, market depth also matters.
+
+---
+
+### Bid size and ask size
+
+Bid size and ask size show how much quantity is available at the bid and ask.
+
+Example:
+
+```text
+Bid = 99.95
+Bid size = 1,000 shares
+
+Ask = 100.05
+Ask size = 800 shares
+```
+
+This means:
+
+```text
+Buyers are willing to buy 1,000 shares at 99.95.
+Sellers are willing to sell 800 shares at 100.05.
+```
+
+Bid size and ask size help measure market depth.
+
+---
+
+### Bid-ask spread and ETFs
+
+ETF spreads are important because ETFs trade on exchanges.
+
+A liquid ETF usually has:
+
+```text
+High trading volume
+Narrow bid-ask spread
+Active market makers
+Liquid underlying holdings
+```
+
+An ETF with a wide spread may be more expensive to trade.
+
+Example:
+
+```text
+Large S&P 500 ETF:
+Spread may be very narrow.
+
+Niche ETF:
+Spread may be wider.
+```
+
+For Athena, ETF liquidity analysis should include bid-ask spread when available.
+
+---
+
+### Bid-ask spread and bonds
+
+Bonds often trade less transparently than stocks.
+
+Some bonds may have wider spreads because they are less frequently traded.
+
+Example:
+
+```text
+Government bonds:
+Often more liquid.
+
+Small corporate bonds:
+May have wider spreads.
+```
+
+This matters because bond prices shown in a system may not always represent easy execution prices.
+
+For a later Athena fixed-income module, bid-ask spread can be important for bond liquidity analysis.
+
+---
+
+### Bid-ask spread data needed in Athena
+
+To analyze bid-ask spread, Athena needs:
+
+```text
+Asset identifier
+Timestamp
+Bid price
+Ask price
+Bid size
+Ask size
+Mid-price
+Absolute spread
+Relative spread
+Currency
+Exchange
+Data source
+```
+
+Example:
+
+```text
+symbol: AAPL
+timestamp: 2026-04-29 10:30:00
+bid: 179.99
+ask: 180.01
+mid_price: 180.00
+absolute_spread: 0.02
+relative_spread: 0.0111%
+currency: USD
+exchange: NASDAQ
+```
+
+This allows Athena to calculate and display trading cost indicators.
+
+---
+
+### Bid-ask spread in Athena
+
+Athena can use bid-ask spread to support:
+
+```text
+Liquidity analysis
+Trading cost estimation
+Execution risk analysis
+Market stress monitoring
+ETF liquidity comparison
+Asset quality warnings
+Portfolio liquidity dashboards
+```
+
+Example output:
+
+```text
+Asset: AAPL
+Bid: 179.99
+Ask: 180.01
+Mid-price: 180.00
+Absolute spread: 0.02
+Relative spread: 0.0111%
+Liquidity signal: Strong
+```
+
+Another example:
+
+```text
+Asset: SmallCapXYZ
+Bid: 9.50
+Ask: 10.50
+Mid-price: 10.00
+Absolute spread: 1.00
+Relative spread: 10.00%
+Liquidity signal: Weak
+Warning: trading costs may be high
+```
+
+---
+
+### Data quality checks
+
+Bid and ask data must be validated.
+
+Possible issues include:
+
+```text
+Missing bid
+Missing ask
+Bid greater than ask
+Zero bid
+Zero ask
+Negative bid or ask
+Stale quotes
+Incorrect timestamps
+Wrong currency
+Outlier spreads
+```
+
+Example problem:
+
+```text
+Bid = 105
+Ask = 100
+```
+
+This is suspicious because the bid is higher than the ask.
+
+Athena should flag it as a data quality issue.
+
+---
+
+### Common beginner mistakes
+
+Common mistakes include:
+
+```text
+Thinking the last price is always the price you can trade at
+Ignoring the bid-ask spread
+Thinking a small absolute spread is always cheap
+Ignoring relative spread
+Ignoring trade size
+Ignoring bid size and ask size
+Using market orders without considering spread
+Forgetting spreads widen during stress
+```
+
+Example mistake:
+
+```text
+The asset price is 100, so I can buy and sell at exactly 100.
+```
+
+This is not always true.
+
+The actual buy price may be closer to the ask, and the sell price may be closer to the bid.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, bid, ask and spread are important because they explain trading costs and market liquidity.
+
+Important concepts include:
+
+```text
+Bid price
+Ask price
+Bid-ask spread
+Mid-price
+Liquidity
+Transaction cost
+Market order
+Limit order
+Slippage
+Relative spread
+```
+
+A simple memory rule:
+
+```text
+Buyers pay the ask.
+Sellers receive the bid.
+The spread is the cost of immediacy.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, bid-ask spread should be part of liquidity analytics.
+
+The liquidity module should support:
+
+```text
+Bid and ask storage
+Mid-price calculation
+Absolute spread calculation
+Relative spread calculation
+Bid and ask validation
+Liquidity warning generation
+Trading cost display
+Market stress spread monitoring
+```
+
+Athena should help users understand that market price is not the same as execution price.
+
+The goal is to make liquidity and transaction costs visible.
+
+---
+
+### Mini revision questions
+
+1. What is the bid price?
+
+2. What is the ask price?
+
+3. What is the bid-ask spread?
+
+4. Why is the spread an implicit trading cost?
+
+5. What is the mid-price?
+
+6. Why is relative spread useful?
+
+7. Why can spreads widen during market stress?
+
+8. Why should Athena validate bid and ask data?
+
+---
+
+### Mini answers
+
+1. The bid is the price buyers are willing to pay.
+
+2. The ask is the price sellers are willing to accept.
+
+3. The bid-ask spread is the difference between the ask and the bid.
+
+4. It is a cost because immediate buyers usually pay the ask, while immediate sellers receive the bid.
+
+5. The mid-price is the average of the bid and ask.
+
+6. Relative spread expresses the spread as a percentage of price, making assets easier to compare.
+
+7. Spreads can widen because volatility, uncertainty and liquidity risk increase.
+
+8. Athena should validate bid and ask data because missing, stale or impossible quotes can distort liquidity analysis.
+
+---
+
+### Section summary
+
+The bid is the price buyers are willing to pay.
+
+The ask is the price sellers are willing to accept.
+
+The bid-ask spread is the difference between them and represents an implicit trading cost.
+
+For CFA Level 1, this section is important because it connects market prices, liquidity, transaction costs and execution.
+
+For Athena AI Risk Terminal, bid-ask spread is useful for liquidity analysis, trading cost estimation and market stress monitoring.
+
+The key lesson is:
+
+```text
+The market price is not always the execution price.
+The bid-ask spread shows the cost of trading immediately.
+```
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 34. Order types and market microstructure
 
-Market microstructure studies how trading actually happens in markets.
+Market microstructure studies how trading actually happens in financial markets.
 
-Basic order types include:
+It focuses on the real process behind buying and selling financial instruments.
+
+In simple terms, market microstructure tries to answer questions such as:
+
+```text
+How are orders submitted?
+How are buyers and sellers matched?
+How is the execution price determined?
+Why can the execution price differ from the expected price?
+How do bid, ask, volume and liquidity affect trading?
+```
+
+A beginner may think that trading is simple:
+
+```text
+Click buy
+Receive the asset
+```
+
+But in reality, every trade depends on market liquidity, order type, order book depth, bid-ask spread, execution speed and market conditions.
+
+For Athena AI Risk Terminal, market microstructure matters because execution quality can affect real portfolio performance.
+
+A theoretical portfolio return may look good, but if the asset is difficult or expensive to trade, the real return can be lower.
+
+Simple idea:
+
+```text
+Market price is not always the same as execution price.
+```
+
+---
+
+### Why market microstructure matters
+
+Market microstructure matters because investors do not trade in a perfect world.
+
+In practice, trading can involve:
+
+```text
+Bid-ask spreads
+Slippage
+Low liquidity
+Partial execution
+Delayed execution
+Market impact
+Transaction costs
+```
+
+Example:
+
+```text
+Expected purchase price = 100
+Actual execution price  = 100.50
+```
+
+The investor paid more than expected.
+
+This difference may look small, but it can become important for:
+
+```text
+Large trades
+Illiquid assets
+High-frequency strategies
+Short-term trading
+Risk management
+Portfolio rebalancing
+```
+
+For a risk platform, ignoring execution conditions can create unrealistic analysis.
+
+---
+
+### Basic order types
+
+The most common order types are:
 
 ```text
 Market order
@@ -14940,81 +25152,1916 @@ Stop order
 Stop-limit order
 ```
 
+Each order type gives a different balance between:
+
+```text
+Speed
+Price control
+Execution certainty
+Execution risk
+```
+
+Simple comparison:
+
+```text
+Market order = priority is execution speed
+Limit order = priority is price control
+Stop order = priority is activation after a trigger
+Stop-limit order = priority is trigger + price control
+```
+
+---
+
 ### Market order
 
 A market order executes immediately at the best available price.
 
-Advantage:
+It tells the broker or trading system:
 
 ```text
-Fast execution
+Buy or sell now at the best available market price.
 ```
 
-Disadvantage:
+Example:
 
 ```text
-Execution price is uncertain
+Investor wants to buy 100 shares of AAPL.
+Investor submits a market order.
+The order executes immediately at the best available ask price.
 ```
+
+For a buy order, the execution usually happens at the ask price.
+
+For a sell order, the execution usually happens at the bid price.
+
+Simple rule:
+
+```text
+Buy market order → executed near the ask
+Sell market order → executed near the bid
+```
+
+---
+
+### Advantage of a market order
+
+The main advantage of a market order is fast execution.
+
+```text
+Advantage = fast execution
+```
+
+This is useful when the investor wants to enter or exit a position quickly.
+
+Example:
+
+```text
+A risk manager needs to reduce exposure quickly during a market shock.
+A market order may be used because execution speed matters more than exact price.
+```
+
+---
+
+### Disadvantage of a market order
+
+The main disadvantage is that the execution price is uncertain.
+
+```text
+Disadvantage = execution price is uncertain
+```
+
+The investor does not control the exact price.
+
+Example:
+
+```text
+Expected price = 50.00
+Actual execution price = 50.20
+```
+
+The difference can happen because the market moved or because there was not enough liquidity at the expected price.
+
+Market orders are riskier when:
+
+```text
+Liquidity is low
+Bid-ask spread is wide
+Market volatility is high
+Order size is large
+Markets are moving quickly
+```
+
+---
 
 ### Limit order
 
-A limit order sets a maximum buying price or minimum selling price.
+A limit order sets a maximum buying price or a minimum selling price.
 
-Advantage:
-
-```text
-Price control
-```
-
-Disadvantage:
+It tells the trading system:
 
 ```text
-Execution is not guaranteed
+Execute only at my limit price or better.
 ```
+
+For a buy limit order, the investor sets the maximum price they are willing to pay.
+
+For a sell limit order, the investor sets the minimum price they are willing to accept.
+
+Example:
+
+```text
+Current stock price = 100
+
+Investor places a buy limit order at 98.
+The order will execute only if the stock can be bought at 98 or lower.
+```
+
+Another example:
+
+```text
+Current stock price = 100
+
+Investor places a sell limit order at 105.
+The order will execute only if the stock can be sold at 105 or higher.
+```
+
+---
+
+### Advantage of a limit order
+
+The main advantage of a limit order is price control.
+
+```text
+Advantage = price control
+```
+
+The investor avoids paying more than the chosen buy price or selling below the chosen sell price.
+
+This is useful when:
+
+```text
+The investor wants a specific entry price
+The asset is illiquid
+The bid-ask spread is wide
+The investor wants to avoid poor execution
+```
+
+---
+
+### Disadvantage of a limit order
+
+The main disadvantage is that execution is not guaranteed.
+
+```text
+Disadvantage = execution is not guaranteed
+```
+
+Example:
+
+```text
+Current price = 100
+Buy limit price = 98
+
+If the market never falls to 98,
+the order will not execute.
+```
+
+This means the investor may miss the trade.
+
+Simple idea:
+
+```text
+Limit order gives price control,
+but sacrifices execution certainty.
+```
+
+---
 
 ### Stop order
 
 A stop order becomes active when a specified stop price is reached.
 
-It is often used for risk control or trade automation.
+It is often used for:
+
+```text
+Risk control
+Trade automation
+Loss limitation
+Trend-following strategies
+```
+
+A stop order is not active immediately.
+
+It waits until the market reaches a trigger price.
+
+Example:
+
+```text
+Investor owns a stock at 100.
+Investor places a stop sell order at 90.
+
+If the price falls to 90,
+the stop order becomes active.
+```
+
+A stop order is commonly used as a stop-loss order.
+
+---
+
+### Stop-loss order
+
+A stop-loss order is designed to limit losses.
+
+Example:
+
+```text
+Purchase price = 100
+Stop-loss price = 90
+```
+
+If the stock falls to 90, the stop order is triggered.
+
+The goal is to avoid a larger loss if the price continues falling.
+
+Simple idea:
+
+```text
+Stop-loss = automatic exit when the price moves against the investor
+```
+
+However, a stop-loss does not guarantee the exact exit price.
+
+If the market moves quickly, the execution price may be lower than the stop price.
+
+Example:
+
+```text
+Stop price = 90
+Actual execution price = 88
+```
+
+This can happen during fast markets or low liquidity periods.
+
+---
+
+### Stop-buy order
+
+A stop-buy order can be used to enter a position after the price rises above a certain level.
+
+Example:
+
+```text
+Current price = 100
+Stop-buy price = 105
+```
+
+If the price reaches 105, the buy order becomes active.
+
+This may be used by traders who want confirmation that the price is moving upward before entering the position.
+
+Simple idea:
+
+```text
+Stop-buy order = buy only after the price breaks above a chosen level
+```
+
+---
+
+### Stop-limit order
+
+A stop-limit order combines a stop trigger with a limit price.
+
+It has two prices:
+
+```text
+Stop price
+Limit price
+```
+
+The stop price activates the order.
+
+The limit price controls the worst acceptable execution price.
+
+Example:
+
+```text
+Investor owns a stock.
+
+Stop price = 90
+Limit price = 89
+```
+
+If the stock reaches 90, the order becomes active.
+
+But the sell order will execute only at 89 or better.
+
+---
+
+### Advantage of a stop-limit order
+
+The main advantage is that it provides both automation and price control.
+
+```text
+Advantage = trigger + price control
+```
+
+The investor avoids selling far below the chosen limit price.
+
+This can be useful in volatile markets.
+
+---
+
+### Disadvantage of a stop-limit order
+
+The main disadvantage is that execution is not guaranteed.
+
+```text
+Disadvantage = the order may not execute
+```
+
+Example:
+
+```text
+Stop price = 90
+Limit price = 89
+
+The market falls quickly from 90 to 85.
+```
+
+The order is triggered, but it may not execute because the price moved below the limit price.
+
+Simple idea:
+
+```text
+Stop-limit order controls price,
+but may fail to exit the position.
+```
+
+---
+
+### Market order vs limit order
+
+The main difference between a market order and a limit order is the trade-off between execution speed and price control.
+
+```text
+Market order:
+- High execution probability
+- Low price control
+
+Limit order:
+- High price control
+- Lower execution probability
+```
+
+Example:
+
+```text
+Market order:
+I want to buy now.
+
+Limit order:
+I want to buy only at this price or better.
+```
+
+A market order is usually better when speed matters.
+
+A limit order is usually better when price matters.
+
+---
+
+### Stop order vs stop-limit order
+
+A stop order and a stop-limit order are both activated by a trigger price.
+
+The difference is what happens after the trigger.
+
+```text
+Stop order:
+After trigger, it becomes a market order.
+
+Stop-limit order:
+After trigger, it becomes a limit order.
+```
+
+Simple comparison:
+
+```text
+Stop order = better chance of execution, worse price control
+Stop-limit order = better price control, worse execution certainty
+```
+
+---
+
+### Order book
+
+The order book is the list of buy and sell orders waiting in the market.
+
+It usually contains:
+
+```text
+Bid prices
+Ask prices
+Quantities available at each price
+```
+
+Example:
+
+```text
+Buy orders:
+99.90 for 500 shares
+99.80 for 1,000 shares
+99.70 for 700 shares
+
+Sell orders:
+100.10 for 400 shares
+100.20 for 900 shares
+100.30 for 1,200 shares
+```
+
+The highest bid and the lowest ask form the best available prices.
+
+```text
+Best bid = highest price buyers are willing to pay
+Best ask = lowest price sellers are willing to accept
+```
+
+---
+
+### Order book depth
+
+Order book depth refers to the quantity available at different price levels.
+
+A deep order book has many orders and large quantities available.
+
+A shallow order book has few orders and small quantities available.
+
+Simple comparison:
+
+```text
+Deep order book = easier to trade large size
+Shallow order book = harder to trade large size
+```
+
+Depth matters because a large order may consume several price levels.
+
+Example:
+
+```text
+Best ask = 100.00 for 100 shares
+Next ask = 100.20 for 200 shares
+Next ask = 100.50 for 500 shares
+```
+
+If an investor wants to buy 600 shares, the full order may not execute at 100.00.
+
+The average execution price may be higher.
+
+---
 
 ### Slippage
 
-Slippage is the difference between expected execution price and actual execution price.
+Slippage is the difference between the expected execution price and the actual execution price.
+
+Formula:
 
 ```text
 Slippage = actual execution price - expected execution price
 ```
 
-Slippage is more likely when liquidity is low or markets move quickly.
+For a buy order, positive slippage usually means the investor paid more than expected.
+
+Example:
+
+```text
+Expected execution price = 100.00
+Actual execution price   = 100.30
+
+Slippage = 100.30 - 100.00
+Slippage = 0.30
+```
+
+For a sell order, slippage can happen when the investor sells for less than expected.
+
+Example:
+
+```text
+Expected selling price = 100.00
+Actual selling price   = 99.70
+
+Slippage = 99.70 - 100.00
+Slippage = -0.30
+```
+
+Simple idea:
+
+```text
+Slippage measures execution surprise.
+```
 
 ---
+
+### Why slippage happens
+
+Slippage is more likely when:
+
+```text
+Liquidity is low
+Bid-ask spread is wide
+Market volatility is high
+The order is large
+The market moves quickly
+There is not enough depth in the order book
+```
+
+Example:
+
+```text
+A stock has low volume.
+The investor submits a large market buy order.
+The order consumes several ask levels.
+The final average price is higher than expected.
+```
+
+Slippage is an important real-world trading cost.
+
+It may not appear directly as a fee, but it reduces performance.
+
+---
+
+### Market impact
+
+Market impact happens when the trade itself moves the price.
+
+This is especially important for large orders.
+
+Example:
+
+```text
+An investor wants to buy a large quantity of an illiquid stock.
+The buying pressure pushes the price upward.
+```
+
+The investor may end up paying more because their own order affected the market.
+
+Simple idea:
+
+```text
+Market impact = price movement caused by the trade itself
+```
+
+Market impact is usually higher when:
+
+```text
+The order is large relative to normal volume
+The asset is illiquid
+The order book is shallow
+The market is stressed
+```
+
+---
+
+### Transaction costs
+
+Transaction costs are the costs associated with trading.
+
+They can include:
+
+```text
+Brokerage commissions
+Bid-ask spread
+Slippage
+Market impact
+Exchange fees
+Taxes
+```
+
+Some costs are explicit.
+
+Example:
+
+```text
+Commission = visible fee
+```
+
+Some costs are implicit.
+
+Example:
+
+```text
+Bid-ask spread and slippage = hidden trading costs
+```
+
+For portfolio analysis, transaction costs matter because they reduce net returns.
+
+Simple idea:
+
+```text
+Gross return is before trading costs.
+Net return is after trading costs.
+```
+
+---
+
+### Liquidity and execution quality
+
+Liquidity affects execution quality.
+
+A liquid asset usually has:
+
+```text
+High trading volume
+Tight bid-ask spread
+Deep order book
+Many buyers and sellers
+Low market impact
+```
+
+An illiquid asset may have:
+
+```text
+Low trading volume
+Wide bid-ask spread
+Shallow order book
+Few market participants
+High market impact
+```
+
+This means that two assets with the same historical return may not be equally attractive.
+
+Example:
+
+```text
+Asset A return = 10%, liquid
+Asset B return = 10%, illiquid
+```
+
+Asset B may be harder and more expensive to trade.
+
+---
+
+### Simple execution example
+
+Assume the order book shows:
+
+```text
+Ask price  Quantity
+100.00     100 shares
+100.10     200 shares
+100.30     300 shares
+```
+
+An investor submits a market buy order for 500 shares.
+
+The execution may be:
+
+```text
+100 shares at 100.00
+200 shares at 100.10
+200 shares at 100.30
+```
+
+Average execution price:
+
+```text
+Average price = (100 × 100.00 + 200 × 100.10 + 200 × 100.30) / 500
+Average price = 100.16
+```
+
+Even if the best ask was 100.00, the investor paid an average price of 100.16.
+
+This is why order book depth matters.
+
+---
+
+### Order type comparison
+
+A simple comparison:
+
+```text
+Market order:
+Fast execution, uncertain price.
+
+Limit order:
+Controlled price, uncertain execution.
+
+Stop order:
+Triggered by a price level, then executed like a market order.
+
+Stop-limit order:
+Triggered by a price level, then executed only at the limit price or better.
+```
+
+Another way to remember:
+
+```text
+Market order = execute now
+Limit order = execute at my price
+Stop order = activate after a trigger
+Stop-limit order = activate after a trigger, but respect my price limit
+```
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, order types and market microstructure are important because they explain how trades are actually executed.
+
+Important concepts include:
+
+```text
+Market order
+Limit order
+Stop order
+Stop-limit order
+Bid price
+Ask price
+Bid-ask spread
+Order book
+Market depth
+Slippage
+Market impact
+Transaction costs
+Liquidity
+```
+
+A simple memory rule:
+
+```text
+Trading is not only about what asset to buy.
+It is also about how the trade is executed.
+```
+
+A good investment idea can lose value if execution is poor.
+
+---
+
+### Athena implementation takeaway
+
+For Athena, order types and market microstructure can support better risk and portfolio analysis.
+
+In the first version, Athena does not need to execute real trades.
+
+However, it should understand the concepts because they affect realistic performance.
+
+Possible Athena features:
+
+```text
+Display bid and ask prices
+Calculate bid-ask spread
+Flag low-liquidity assets
+Estimate simple slippage
+Track trading volume
+Show liquidity warnings
+Compare theoretical price and execution price
+```
+
+Possible market microstructure fields:
+
+```text
+symbol
+bid_price
+ask_price
+last_price
+bid_ask_spread
+volume
+average_volume
+order_size
+estimated_slippage
+liquidity_score
+timestamp
+data_source
+```
+
+Example liquidity warning:
+
+```text
+Warning:
+This asset has low volume and a wide bid-ask spread.
+Execution costs may be high.
+```
+
+This would make Athena more realistic because it would not treat all assets as equally easy to trade.
+
+---
+
+### Mini revision questions
+
+1. What does market microstructure study?
+
+2. What is the main advantage of a market order?
+
+3. What is the main disadvantage of a market order?
+
+4. What is the main advantage of a limit order?
+
+5. Why is execution not guaranteed with a limit order?
+
+6. What is a stop order used for?
+
+7. What is the difference between a stop order and a stop-limit order?
+
+8. What is slippage?
+
+9. Why does order book depth matter?
+
+10. Why is liquidity important for execution quality?
+
+---
+
+### Mini answers
+
+1. Market microstructure studies how trading actually happens in markets.
+
+2. The main advantage of a market order is fast execution.
+
+3. The main disadvantage is that the execution price is uncertain.
+
+4. The main advantage of a limit order is price control.
+
+5. Execution is not guaranteed because the market may never reach the limit price.
+
+6. A stop order is used to activate a trade when a specific price level is reached.
+
+7. A stop order becomes a market order after the trigger, while a stop-limit order becomes a limit order.
+
+8. Slippage is the difference between the expected execution price and the actual execution price.
+
+9. Order book depth matters because large orders may execute across several price levels.
+
+10. Liquidity is important because liquid assets are usually cheaper and easier to trade.
+
+---
+
+### Section summary
+
+Market microstructure explains how trades are executed in real markets.
+
+The main order types are market orders, limit orders, stop orders and stop-limit orders.
+
+Each order type has a different trade-off between speed, price control and execution certainty.
+
+For CFA Level 1, this section is important because it connects liquidity, bid-ask spreads, slippage and transaction costs.
+
+For Athena AI Risk Terminal, market microstructure matters because real portfolio performance depends not only on market prices, but also on execution quality.
+
+The key lesson is:
+
+```text
+A trade is not only a decision to buy or sell.
+It is also an execution process with costs, risks and uncertainty.
+```
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 35. Benchmark
 
 A benchmark is a reference used to evaluate performance.
 
-Examples:
+It gives context to an asset, a portfolio or an investment strategy.
+
+In simple terms, a benchmark helps answer the question:
+
+```text
+Did the investment perform well compared with an appropriate reference?
+```
+
+Examples of common benchmarks include:
 
 ```text
 S&P 500
 Nasdaq-100
 TSX Composite
 CAC 40
+FTSE 100
+MSCI World
+Bloomberg US Aggregate Bond Index
 ```
+
+A benchmark is not just a random market index.
+
+It should represent the investment universe, risk profile and strategy being evaluated.
+
+Simple idea:
+
+```text
+Performance without a benchmark is incomplete.
+```
+
+---
 
 ### Why benchmarks matter
 
-Performance needs context.
+Benchmarks matter because performance needs context.
+
+A return number alone does not say enough.
 
 Example:
 
 ```text
 Portfolio return = +8%
-Benchmark return = +12%
 ```
 
-The portfolio made money but underperformed.
+At first, this looks positive.
+
+But the interpretation changes when compared with a benchmark.
+
+Example:
+
+```text
+Portfolio return  = +8%
+Benchmark return  = +12%
+```
+
+The portfolio made money, but it underperformed the benchmark.
+
+This means the manager or strategy did worse than the relevant market reference.
+
+Another example:
+
+```text
+Portfolio return  = -3%
+Benchmark return  = -10%
+```
+
+The portfolio lost money, but it outperformed the benchmark.
+
+This means the portfolio protected capital better than the reference market.
+
+Simple idea:
+
+```text
+Absolute performance = performance by itself
+Relative performance = performance compared with a benchmark
+```
+
+Professional investors usually care about both.
+
+---
+
+### Absolute performance vs relative performance
+
+Absolute performance measures the return of an investment by itself.
+
+Example:
+
+```text
+Portfolio return = +7%
+```
+
+This tells us the portfolio increased in value.
+
+Relative performance compares the portfolio return with a benchmark return.
+
+Formula:
+
+```text
+Relative performance = portfolio return - benchmark return
+```
+
+Example:
+
+```text
+Portfolio return = +7%
+Benchmark return = +5%
+
+Relative performance = +7% - +5%
+Relative performance = +2%
+```
+
+The portfolio outperformed the benchmark by 2 percentage points.
+
+Another example:
+
+```text
+Portfolio return = +7%
+Benchmark return = +10%
+
+Relative performance = +7% - +10%
+Relative performance = -3%
+```
+
+The portfolio underperformed the benchmark by 3 percentage points.
+
+---
+
+### Outperformance and underperformance
+
+Outperformance happens when an investment performs better than its benchmark.
+
+```text
+Portfolio return > Benchmark return
+```
+
+Example:
+
+```text
+Portfolio return = +11%
+Benchmark return = +8%
+
+Outperformance = +3%
+```
+
+Underperformance happens when an investment performs worse than its benchmark.
+
+```text
+Portfolio return < Benchmark return
+```
+
+Example:
+
+```text
+Portfolio return = +6%
+Benchmark return = +9%
+
+Underperformance = -3%
+```
+
+Outperformance does not always mean the portfolio made money.
+
+Example:
+
+```text
+Portfolio return = -4%
+Benchmark return = -9%
+```
+
+The portfolio lost money, but it still outperformed because it lost less than the benchmark.
+
+Simple idea:
+
+```text
+Outperformance means better than the benchmark,
+not necessarily positive return.
+```
+
+---
+
+### Benchmark selection
+
+Benchmark selection is important because the wrong benchmark can create misleading conclusions.
+
+A good benchmark should be:
+
+```text
+Relevant
+Investable or representative
+Transparent
+Consistent with the strategy
+Appropriate for the asset universe
+Measurable
+Clearly defined
+```
+
+---
+
+### Relevant benchmark
+
+A benchmark should be relevant to the portfolio or strategy.
+
+Example:
+
+```text
+A US large-cap equity portfolio
+should be compared with a US large-cap equity benchmark.
+```
+
+A relevant benchmark should reflect the type of assets being analyzed.
+
+Good example:
+
+```text
+US large-cap equity portfolio → S&P 500
+Canadian equity portfolio → TSX Composite
+French large-cap equity portfolio → CAC 40
+Global equity portfolio → MSCI World
+```
+
+Bad example:
+
+```text
+Canadian bank stock portfolio → Nasdaq-100
+```
+
+This benchmark would not be appropriate because the Nasdaq-100 is heavily focused on large non-financial Nasdaq-listed companies, especially technology and growth stocks.
+
+The comparison would be misleading.
+
+---
+
+### Investable or representative benchmark
+
+A benchmark should be investable or at least representative.
+
+Investable means that an investor can reasonably gain exposure to the benchmark.
+
+Example:
+
+```text
+An ETF can track the S&P 500.
+```
+
+This makes the S&P 500 an investable benchmark for US large-cap equity exposure.
+
+Representative means that the benchmark accurately reflects the market or strategy being evaluated.
+
+Example:
+
+```text
+A broad Canadian equity index can represent the Canadian equity market.
+```
+
+A benchmark does not always need to be directly tradable, but it should represent the investment universe clearly.
+
+---
+
+### Transparent benchmark
+
+A benchmark should be transparent.
+
+This means the investor should understand:
+
+```text
+What assets are included
+How the benchmark is calculated
+How constituents are weighted
+How often it is rebalanced
+What region, sector or style it represents
+```
+
+If a benchmark is not transparent, it is difficult to know whether the comparison is fair.
+
+Example:
+
+```text
+A black-box benchmark with unclear rules is not ideal.
+```
+
+For Athena AI Risk Terminal, transparency matters because the user should understand why a benchmark was selected.
+
+---
+
+### Consistent with the strategy
+
+A benchmark should match the investment strategy.
+
+Example:
+
+```text
+A value equity strategy should be compared with a value-oriented benchmark.
+A growth equity strategy should be compared with a growth-oriented benchmark.
+A bond portfolio should be compared with a fixed income benchmark.
+```
+
+If the strategy is conservative, the benchmark should not be extremely aggressive.
+
+If the strategy focuses on technology stocks, the benchmark should reflect technology or growth exposure.
+
+Simple idea:
+
+```text
+The benchmark must match what the strategy is trying to do.
+```
+
+---
+
+### Appropriate for the asset universe
+
+The asset universe is the set of assets that the portfolio or strategy is allowed to invest in.
+
+Example:
+
+```text
+US stocks
+Canadian stocks
+Global bonds
+Emerging market equities
+European large-cap stocks
+```
+
+A benchmark should be appropriate for this universe.
+
+Example:
+
+```text
+Portfolio universe = Canadian equities
+Appropriate benchmark = TSX Composite or another Canadian equity index
+```
+
+Bad example:
+
+```text
+Portfolio universe = Canadian equities
+Benchmark = S&P 500
+```
+
+The S&P 500 may be useful as global market context, but it is not the best primary benchmark for a Canadian equity strategy.
+
+---
+
+### Benchmark examples by asset class
+
+Different asset classes require different benchmarks.
+
+Examples:
+
+```text
+US large-cap equities:
+S&P 500
+
+US technology or growth equities:
+Nasdaq-100
+
+Canadian equities:
+TSX Composite
+
+French large-cap equities:
+CAC 40
+
+Global developed market equities:
+MSCI World
+
+Emerging market equities:
+MSCI Emerging Markets
+
+US investment-grade bonds:
+Bloomberg US Aggregate Bond Index
+
+Short-term cash or money market:
+Treasury bill rate or money market index
+```
+
+The key point is that benchmark choice depends on what is being measured.
+
+---
+
+### Equity benchmarks
+
+Equity benchmarks are used to evaluate stock portfolios or equity strategies.
+
+Examples:
+
+```text
+S&P 500
+Nasdaq-100
+Dow Jones Industrial Average
+Russell 1000
+Russell 2000
+TSX Composite
+CAC 40
+FTSE 100
+MSCI World
+MSCI Emerging Markets
+```
+
+Equity benchmarks can represent:
+
+```text
+A country
+A region
+A sector
+A market capitalization segment
+An investment style
+A factor exposure
+```
+
+Example:
+
+```text
+Small-cap US equity portfolio → Russell 2000
+Large-cap US equity portfolio → S&P 500
+Global developed equity portfolio → MSCI World
+```
+
+---
+
+### Fixed income benchmarks
+
+Fixed income benchmarks are used to evaluate bond portfolios.
+
+Examples:
+
+```text
+Bloomberg US Aggregate Bond Index
+Bloomberg Global Aggregate Bond Index
+Government bond indices
+Corporate bond indices
+High-yield bond indices
+Treasury bill indices
+```
+
+Bond benchmarks are more complex than equity benchmarks because bonds have additional characteristics.
+
+Important fixed income benchmark dimensions include:
+
+```text
+Maturity
+Duration
+Credit quality
+Issuer type
+Currency
+Interest rate exposure
+```
+
+Example:
+
+```text
+A short-term government bond portfolio
+should not be compared with a long-term corporate bond benchmark.
+```
+
+The interest rate risk and credit risk would not match.
+
+---
+
+### Cash benchmark
+
+Cash or short-term portfolios may use a money market benchmark.
+
+Examples:
+
+```text
+Treasury bill rate
+Overnight rate
+Money market index
+Short-term government bill index
+```
+
+A cash benchmark is useful when the goal is capital preservation and liquidity.
+
+Example:
+
+```text
+Portfolio return = 4.2%
+Cash benchmark = 3.8%
+```
+
+The portfolio earned slightly more than cash.
+
+This can help evaluate whether extra risk was rewarded.
+
+---
+
+### Custom benchmark
+
+Sometimes a portfolio does not fit one simple index.
+
+In that case, a custom benchmark can be created.
+
+A custom benchmark combines several benchmarks with weights.
+
+Example:
+
+```text
+60% S&P 500
+40% Bloomberg US Aggregate Bond Index
+```
+
+This could be used for a balanced portfolio with 60% equities and 40% bonds.
+
+Another example:
+
+```text
+40% S&P 500
+30% MSCI World ex USA
+20% Bloomberg Global Aggregate Bond Index
+10% Treasury bills
+```
+
+Custom benchmarks are useful for multi-asset portfolios.
+
+Simple idea:
+
+```text
+Custom benchmark = weighted reference portfolio
+```
+
+---
+
+### Benchmark return
+
+Benchmark return measures the percentage change in the benchmark over a period.
+
+Formula:
+
+```text
+Benchmark return = Benchmark value_t / Benchmark value_{t-1} - 1
+```
+
+Example:
+
+```text
+Benchmark value at start = 4,000
+Benchmark value at end   = 4,400
+
+Benchmark return = 4,400 / 4,000 - 1
+Benchmark return = 10%
+```
+
+Athena can calculate benchmark returns using historical index levels or ETF prices if the benchmark is represented by a tradable ETF.
+
+---
+
+### Excess return
+
+Excess return is the return above the benchmark.
+
+Formula:
+
+```text
+Excess return = portfolio return - benchmark return
+```
+
+Example:
+
+```text
+Portfolio return = 12%
+Benchmark return = 9%
+
+Excess return = 12% - 9%
+Excess return = 3%
+```
+
+A positive excess return means the portfolio outperformed.
+
+A negative excess return means the portfolio underperformed.
+
+In portfolio management, excess return is very important because it measures value added relative to the reference.
+
+---
+
+### Active return
+
+Active return is another term often used for return relative to the benchmark.
+
+Formula:
+
+```text
+Active return = portfolio return - benchmark return
+```
+
+Example:
+
+```text
+Portfolio return = 6%
+Benchmark return = 8%
+
+Active return = -2%
+```
+
+The portfolio had a negative active return.
+
+Simple idea:
+
+```text
+Active return measures how different the result is from the benchmark.
+```
+
+For active managers, active return is a key performance indicator.
+
+---
+
+### Tracking error
+
+Tracking error measures how much the portfolio's returns deviate from the benchmark's returns over time.
+
+Simple idea:
+
+```text
+Tracking error = volatility of active returns
+```
+
+Example:
+
+```text
+Day 1 active return = +0.2%
+Day 2 active return = -0.1%
+Day 3 active return = +0.4%
+Day 4 active return = -0.3%
+```
+
+Tracking error measures the variability of these active returns.
+
+A low tracking error means the portfolio behaves similarly to the benchmark.
+
+A high tracking error means the portfolio behaves differently from the benchmark.
+
+This matters because a portfolio can outperform the benchmark but with much higher risk.
+
+---
+
+### Information ratio
+
+The information ratio measures excess return per unit of active risk.
+
+Formula:
+
+```text
+Information ratio = active return / tracking error
+```
+
+Simple idea:
+
+```text
+Information ratio = reward for taking benchmark-relative risk
+```
+
+Example:
+
+```text
+Active return = 4%
+Tracking error = 8%
+
+Information ratio = 4% / 8%
+Information ratio = 0.50
+```
+
+A higher information ratio generally means the manager generated more excess return for each unit of benchmark-relative risk.
+
+For Athena, the information ratio can be useful later when the platform includes performance analytics.
+
+---
+
+### Benchmark risk
+
+A benchmark also has risk.
+
+It can have:
+
+```text
+Volatility
+Drawdowns
+Sector concentration
+Currency exposure
+Interest rate exposure
+Credit exposure
+Liquidity risk
+```
+
+Example:
+
+```text
+Nasdaq-100 may have high technology exposure.
+TSX Composite may have significant financials and energy exposure.
+MSCI World may have large US equity exposure.
+```
+
+This means that selecting a benchmark also means selecting a risk reference.
+
+A benchmark is not neutral.
+
+It represents a specific market exposure.
+
+---
+
+### Benchmark mismatch
+
+Benchmark mismatch happens when the benchmark does not match the portfolio.
+
+Example:
+
+```text
+Portfolio = Canadian dividend stocks
+Benchmark = Nasdaq-100
+```
+
+This is a mismatch because the benchmark has a different region, sector exposure and investment style.
+
+Another example:
+
+```text
+Portfolio = short-term bonds
+Benchmark = long-term bond index
+```
+
+This is a mismatch because the interest rate risk is different.
+
+Benchmark mismatch can make performance analysis unfair.
+
+A portfolio may look good or bad only because the comparison is wrong.
+
+---
+
+### Benchmark and risk-adjusted performance
+
+Benchmarks are also useful for risk-adjusted performance.
+
+A portfolio should not be judged only by return.
+
+Example:
+
+```text
+Portfolio A return = 10%
+Portfolio B return = 10%
+```
+
+They look equal.
+
+But if:
+
+```text
+Portfolio A volatility = 8%
+Portfolio B volatility = 20%
+```
+
+Portfolio A produced the same return with less risk.
+
+Benchmark comparison can be combined with risk measures such as:
+
+```text
+Volatility
+Beta
+Tracking error
+Information ratio
+Sharpe ratio
+Maximum drawdown
+```
+
+This gives a more complete view of performance.
+
+---
+
+### Benchmark in portfolio reporting
+
+In professional portfolio reports, benchmark comparison is common.
+
+A report may show:
+
+```text
+Portfolio return
+Benchmark return
+Excess return
+Portfolio volatility
+Benchmark volatility
+Tracking error
+Information ratio
+Maximum drawdown
+Sector weights vs benchmark
+Currency exposure vs benchmark
+```
+
+Example:
+
+```text
+Portfolio technology weight = 35%
+Benchmark technology weight = 28%
+
+Active technology weight = +7%
+```
+
+This means the portfolio is overweight technology compared with the benchmark.
+
+Benchmark reporting helps explain where performance and risk came from.
+
+---
+
+### Benchmark and active management
+
+Active management tries to outperform a benchmark.
+
+An active manager may choose securities or weights different from the benchmark.
+
+Example:
+
+```text
+Benchmark weight in technology = 25%
+Portfolio weight in technology = 35%
+```
+
+The manager is overweight technology.
+
+If technology performs well, this may help performance.
+
+If technology performs poorly, this may hurt performance.
+
+Simple idea:
+
+```text
+Active management = intentional difference from the benchmark
+```
+
+These differences create active risk.
+
+---
+
+### Benchmark and passive management
+
+Passive management tries to track a benchmark.
+
+Example:
+
+```text
+An S&P 500 ETF tries to replicate the S&P 500.
+```
+
+The goal is not to beat the benchmark.
+
+The goal is to match it as closely as possible.
+
+For passive strategies, important metrics include:
+
+```text
+Tracking difference
+Tracking error
+Expense ratio
+Liquidity
+Replication quality
+```
+
+Simple idea:
+
+```text
+Passive management = follow the benchmark
+Active management = beat the benchmark
+```
+
+---
+
+### Benchmark and ETFs
+
+Many ETFs are built around benchmarks.
+
+Example:
+
+```text
+SPY tracks the S&P 500
+QQQ tracks the Nasdaq-100
+XIU tracks Canadian large-cap equities
+```
+
+The benchmark defines the ETF's target exposure.
+
+The ETF is the tradable product.
+
+Simple distinction:
+
+```text
+Benchmark/index = reference calculation
+ETF = tradable instrument tracking that reference
+```
+
+This is important for Athena because a benchmark can be represented in two ways:
+
+```text
+As an index level
+As a benchmark ETF proxy
+```
+
+For example, if direct index data is not available, Athena may use an ETF as a practical proxy.
+
+---
+
+### Benchmark data needed in Athena
+
+A clean benchmark record may include:
+
+```text
+benchmark_id
+benchmark_name
+benchmark_symbol
+asset_class
+region
+country
+currency
+benchmark_type
+weighting_method
+return_type
+data_source
+is_tradable_proxy
+proxy_symbol
+```
+
+Example:
+
+```text
+benchmark_id: SP500
+benchmark_name: S&P 500
+benchmark_symbol: SPX
+asset_class: Equity
+region: United States
+currency: USD
+benchmark_type: Large-cap equity index
+weighting_method: Market-cap-weighted
+return_type: Price return or total return
+data_source: Market data provider
+is_tradable_proxy: false
+proxy_symbol: SPY
+```
+
+For Athena's first version, the most important fields are:
+
+```text
+benchmark_name
+benchmark_symbol
+asset_class
+currency
+region
+historical_values
+proxy_symbol
+```
+
+---
+
+### Benchmark mapping in Athena
+
+Benchmark mapping means assigning the right benchmark to each asset, ETF or portfolio.
+
+Example:
+
+```text
+AAPL → S&P 500 or Nasdaq-100
+RY.TO → TSX Composite
+AIR.PA → CAC 40 or STOXX Europe 600
+SPY → S&P 500
+QQQ → Nasdaq-100
+```
+
+For portfolios, benchmark mapping may depend on the portfolio strategy.
+
+Example:
+
+```text
+US equity portfolio → S&P 500
+Global equity portfolio → MSCI World
+Balanced portfolio → custom 60/40 benchmark
+```
+
+Athena should allow benchmark mapping because the same asset can be analyzed against different references depending on the use case.
+
+---
+
+### Possible Athena features
+
+Athena AI Risk Terminal could use benchmarks to support:
+
+```text
+Portfolio vs benchmark return comparison
+Asset vs benchmark comparison
+Excess return calculation
+Tracking error calculation
+Information ratio calculation
+Benchmark volatility comparison
+Benchmark drawdown comparison
+Sector exposure vs benchmark
+Currency exposure vs benchmark
+Benchmark selection warnings
+```
+
+Example warning:
+
+```text
+Warning:
+The selected benchmark may not match the portfolio's asset universe.
+Portfolio region: Canada
+Benchmark region: United States
+```
+
+This would help prevent misleading analysis.
+
+---
+
+### Simple benchmark comparison example
+
+Assume:
+
+```text
+Portfolio return = 8%
+Benchmark return = 12%
+```
+
+Then:
+
+```text
+Excess return = 8% - 12%
+Excess return = -4%
+```
+
+The portfolio underperformed by 4 percentage points.
 
 Another example:
 
@@ -15023,35 +27070,542 @@ Portfolio return = -3%
 Benchmark return = -10%
 ```
 
-The portfolio lost money but outperformed the benchmark.
+Then:
 
-### Benchmark selection
+```text
+Excess return = -3% - (-10%)
+Excess return = +7%
+```
 
-A good benchmark should be:
-
-- relevant;
-- investable or representative;
-- transparent;
-- consistent with the strategy;
-- appropriate for the asset universe.
+The portfolio outperformed by 7 percentage points, even though the return was negative.
 
 ---
+
+### Good benchmark vs bad benchmark
+
+Good benchmark example:
+
+```text
+Portfolio:
+Canadian large-cap equity stocks
+
+Benchmark:
+TSX Composite
+```
+
+Why it is good:
+
+```text
+Same country
+Same broad asset class
+Representative of Canadian equities
+Relevant for comparison
+```
+
+Bad benchmark example:
+
+```text
+Portfolio:
+Canadian large-cap equity stocks
+
+Benchmark:
+Nasdaq-100
+```
+
+Why it is weak:
+
+```text
+Different country
+Different sector exposure
+Different currency
+Different investment universe
+```
+
+The comparison may still be interesting as market context, but it should not be the primary benchmark.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, benchmarks are important because they provide context for performance evaluation.
+
+Important concepts include:
+
+```text
+Benchmark
+Absolute return
+Relative return
+Excess return
+Active return
+Outperformance
+Underperformance
+Tracking error
+Information ratio
+Benchmark selection
+Benchmark mismatch
+Active management
+Passive management
+```
+
+A simple memory rule:
+
+```text
+Benchmark = reference used to judge performance
+```
+
+Another useful rule:
+
+```text
+Positive return does not always mean good performance.
+Negative return does not always mean bad relative performance.
+```
+
+The benchmark determines the context.
+
+---
+
+### Athena implementation takeaway
+
+For Athena, benchmarks are essential for meaningful performance and risk analysis.
+
+A portfolio return alone is incomplete.
+
+Athena should compare assets and portfolios with relevant benchmarks to show:
+
+```text
+Whether the investment outperformed or underperformed
+How much excess return was generated
+Whether the benchmark is appropriate
+How much active risk was taken
+How portfolio exposures differ from the benchmark
+```
+
+Possible backend calculations:
+
+```text
+benchmark_return
+portfolio_return
+excess_return
+tracking_error
+information_ratio
+benchmark_volatility
+relative_drawdown
+```
+
+Possible frontend components:
+
+```text
+Portfolio vs Benchmark chart
+Excess Return card
+Benchmark Selection panel
+Tracking Error card
+Information Ratio card
+Sector vs Benchmark exposure chart
+Currency vs Benchmark exposure chart
+```
+
+The goal is to make performance analysis more professional and realistic.
+
+---
+
+### Mini revision questions
+
+1. What is a benchmark?
+
+2. Why does performance need context?
+
+3. What is the difference between absolute performance and relative performance?
+
+4. What does it mean to outperform a benchmark?
+
+5. What does it mean to underperform a benchmark?
+
+6. What are the characteristics of a good benchmark?
+
+7. Why is benchmark selection important?
+
+8. What is excess return?
+
+9. What is tracking error?
+
+10. What is the difference between active and passive management?
+
+11. Why can benchmark mismatch be dangerous?
+
+12. Why are benchmarks useful for Athena?
+
+---
+
+### Mini answers
+
+1. A benchmark is a reference used to evaluate performance.
+
+2. Performance needs context because a return can look good or bad depending on the market reference.
+
+3. Absolute performance is the return by itself. Relative performance compares the return with a benchmark.
+
+4. Outperforming means earning a higher return than the benchmark.
+
+5. Underperforming means earning a lower return than the benchmark.
+
+6. A good benchmark should be relevant, representative or investable, transparent, consistent with the strategy and appropriate for the asset universe.
+
+7. Benchmark selection is important because the wrong benchmark can make performance analysis misleading.
+
+8. Excess return is the portfolio return minus the benchmark return.
+
+9. Tracking error measures how much the portfolio's returns deviate from the benchmark's returns over time.
+
+10. Active management tries to outperform a benchmark, while passive management tries to track a benchmark.
+
+11. Benchmark mismatch is dangerous because it can create unfair or misleading conclusions.
+
+12. Benchmarks are useful for Athena because they allow portfolio and asset performance to be evaluated in context.
+
+---
+
+### Section summary
+
+A benchmark is a reference used to evaluate performance.
+
+It gives meaning to returns by comparing them with an appropriate market or strategy reference.
+
+For CFA Level 1, benchmarks are important because they connect performance evaluation, active management, passive management, excess return and tracking error.
+
+For Athena AI Risk Terminal, benchmarks are essential because the platform should not only show whether a portfolio made money, but also whether it performed well compared with the right reference.
+
+The key lesson is:
+
+```text
+Performance without a benchmark has no context.
+A benchmark turns raw return into meaningful performance analysis.
+```
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 36. Index construction basics
 
 Indices can be built in different ways.
 
-The construction method affects index behavior.
+The construction method affects how the index behaves, which securities have the most influence, and how investors should interpret the index return.
+
+In simple terms, index construction answers the question:
+
+```text
+How is the index calculated?
+```
+
+This matters because two indices can contain similar securities but behave differently if they use different weighting methods.
+
+Common index construction methods include:
+
+```text
+Price-weighted index
+Market-cap-weighted index
+Equal-weighted index
+Factor-weighted index
+Fundamental-weighted index
+```
+
+For CFA Level 1 and for Athena AI Risk Terminal, the most important methods to understand first are:
+
+```text
+Price-weighted
+Market-cap-weighted
+Equal-weighted
+```
+
+A simple idea:
+
+```text
+Index construction determines which companies drive the index.
+```
+
+---
+
+### Why index construction matters
+
+Index construction matters because the same market can be represented in different ways.
+
+Example:
+
+```text
+Index A contains 100 stocks.
+Index B contains the same 100 stocks.
+```
+
+At first, they may look similar.
+
+But if Index A is market-cap-weighted and Index B is equal-weighted, they may produce different returns.
+
+Why?
+
+Because the weights are different.
+
+In one index, large companies may dominate.
+
+In the other index, every company has the same importance.
+
+Simple idea:
+
+```text
+Same stocks does not always mean same index behavior.
+```
+
+Index construction affects:
+
+```text
+Return
+Risk
+Sector exposure
+Concentration
+Diversification
+Turnover
+Rebalancing
+Benchmark interpretation
+```
+
+For Athena, understanding index construction is important because benchmark comparison can be misleading if the benchmark structure is not understood.
+
+---
+
+### Index constituents
+
+The securities included in an index are called constituents.
+
+Example:
+
+```text
+An equity index may include:
+Apple
+Microsoft
+Nvidia
+JPMorgan
+Amazon
+Tesla
+```
+
+Each constituent has a weight.
+
+The weight determines how much that security influences the index.
+
+Example:
+
+```text
+Stock A weight = 8%
+Stock B weight = 0.5%
+```
+
+A price movement in Stock A will have a much larger effect on the index than the same percentage movement in Stock B.
+
+Simple idea:
+
+```text
+Constituent = security inside the index
+Weight = importance of that security in the index
+```
+
+---
+
+### Index weight
+
+An index weight is the percentage of the index represented by one constituent.
+
+Example:
+
+```text
+Company A weight = 6%
+Company B weight = 2%
+Company C weight = 1%
+```
+
+The sum of all weights should equal:
+
+```text
+100%
+```
+
+Weights are important because they explain what drives index performance.
+
+Example:
+
+```text
+If a stock has a 10% index weight,
+its movement matters much more than a stock with a 0.2% weight.
+```
+
+This is why large index constituents can strongly influence benchmark returns.
+
+---
 
 ### Price-weighted index
 
 In a price-weighted index, higher-priced stocks have more influence.
 
+The index gives more weight to stocks with higher share prices.
+
 Example:
 
 ```text
-A stock priced at 300 has more impact than a stock priced at 50.
+Stock A price = 300
+Stock B price = 50
 ```
+
+Stock A has more impact on the index because its share price is higher.
+
+Simple idea:
+
+```text
+Higher share price = higher index influence
+```
+
+This method does not directly consider company size.
+
+A company with a high share price can have more influence than a much larger company with a lower share price.
+
+---
+
+### Price-weighted index example
+
+Assume an index has three stocks:
+
+```text
+Stock A price = 100
+Stock B price = 50
+Stock C price = 25
+```
+
+A simple price-weighted index can be based on the average price:
+
+```text
+Index level = (100 + 50 + 25) / 3
+Index level = 58.33
+```
+
+Now assume Stock A rises by 10:
+
+```text
+Stock A price = 110
+Stock B price = 50
+Stock C price = 25
+```
+
+New index level:
+
+```text
+Index level = (110 + 50 + 25) / 3
+Index level = 61.67
+```
+
+Stock A has a strong effect because its price is high.
+
+If Stock C rises by 10 instead:
+
+```text
+Stock A price = 100
+Stock B price = 50
+Stock C price = 35
+```
+
+New index level:
+
+```text
+Index level = (100 + 50 + 35) / 3
+Index level = 61.67
+```
+
+In this simplified example, the same dollar change has the same effect.
+
+That is the key point of price weighting:
+
+```text
+Dollar price changes matter more than percentage changes.
+```
+
+---
+
+### Weakness of price-weighted indices
+
+Price-weighted indices can be easy to understand, but they have weaknesses.
+
+The main weakness is that share price does not necessarily reflect company size.
+
+Example:
+
+```text
+Company A share price = 300
+Company B share price = 50
+```
+
+Company A is not automatically bigger or more important than Company B.
+
+Company size depends on market capitalization:
+
+```text
+Market capitalization = share price × shares outstanding
+```
+
+A company can have a high share price but fewer shares outstanding.
+
+Another company can have a lower share price but many more shares outstanding.
+
+This is why price-weighted indices can sometimes give unusual weights.
+
+---
+
+### Stock splits and price-weighted indices
+
+A stock split can affect the weight of a stock in a price-weighted index.
+
+Example:
+
+```text
+Before split:
+Stock price = 300
+
+After 3-for-1 split:
+Stock price = 100
+```
+
+The economic value of the company did not change because of the split.
+
+But in a price-weighted index, the stock's influence may decrease because the share price is now lower.
+
+This is one reason price-weighted indices require adjustment mechanisms.
+
+Simple idea:
+
+```text
+A stock split changes the share price,
+but not the company value.
+```
+
+---
 
 ### Market-cap-weighted index
 
@@ -15060,10 +27614,166 @@ In a market-cap-weighted index, larger companies have more influence.
 Market capitalization is:
 
 ```text
-Market cap = share price * number of shares outstanding
+Market cap = share price × number of shares outstanding
 ```
 
+Example:
+
+```text
+Company A market cap = 2 trillion
+Company B market cap = 50 billion
+```
+
+Company A has more influence because its total market value is much larger.
+
 This is the most common index construction method.
+
+Simple idea:
+
+```text
+Bigger company = bigger index weight
+```
+
+Many major indices use market-cap weighting.
+
+Examples:
+
+```text
+S&P 500
+Nasdaq-100
+MSCI World
+TSX Composite
+CAC 40
+```
+
+---
+
+### Market-cap-weighted index example
+
+Assume an index has three companies:
+
+```text
+Company A market cap = 500 billion
+Company B market cap = 300 billion
+Company C market cap = 200 billion
+```
+
+Total market cap:
+
+```text
+Total market cap = 500 + 300 + 200
+Total market cap = 1,000 billion
+```
+
+Weights:
+
+```text
+Company A weight = 500 / 1,000 = 50%
+Company B weight = 300 / 1,000 = 30%
+Company C weight = 200 / 1,000 = 20%
+```
+
+If Company A moves strongly, the index will be affected more than if Company C moves.
+
+This is because Company A has the highest weight.
+
+---
+
+### Free-float market-cap weighting
+
+Many market-cap-weighted indices use free-float market capitalization.
+
+Free float refers to shares that are available for public trading.
+
+Some shares may not be freely traded because they are held by:
+
+```text
+Founders
+Governments
+Strategic investors
+Company insiders
+Long-term controlling shareholders
+```
+
+Simple idea:
+
+```text
+Free-float market cap = share price × publicly tradable shares
+```
+
+Free-float adjustment makes the index more realistic because it focuses on shares that investors can actually trade.
+
+Example:
+
+```text
+Company total shares = 1,000 million
+Publicly tradable shares = 600 million
+```
+
+The free float is 60%.
+
+An index provider may use only the tradable portion to calculate the index weight.
+
+---
+
+### Strengths of market-cap weighting
+
+Market-cap weighting has several advantages.
+
+```text
+It reflects company size.
+It is widely used.
+It is easy to replicate.
+It usually has lower turnover.
+It naturally adjusts as market values change.
+It is practical for passive investing.
+```
+
+Example:
+
+```text
+If a company grows in market value,
+its index weight increases naturally.
+```
+
+This makes market-cap-weighted indices useful for ETFs and passive strategies.
+
+---
+
+### Weaknesses of market-cap weighting
+
+Market-cap weighting also has weaknesses.
+
+The main weakness is concentration.
+
+Large companies can dominate the index.
+
+Example:
+
+```text
+Top 10 stocks = 35% of the index
+Remaining stocks = 65% of the index
+```
+
+If the largest stocks are concentrated in one sector, the index may become heavily exposed to that sector.
+
+Example:
+
+```text
+A broad equity index may still be strongly influenced by technology stocks.
+```
+
+Another weakness is that market-cap weighting gives more weight to companies whose prices have already increased.
+
+Simple idea:
+
+```text
+Market-cap weighting can overweight expensive or popular companies.
+```
+
+This does not mean the method is bad, but users must understand its behavior.
+
+---
 
 ### Equal-weighted index
 
@@ -15076,28 +27786,1020 @@ Example:
 Each stock weight = 1%
 ```
 
-### Price return vs total return index
+This means each company contributes equally to the index return at the rebalancing date.
 
-A price return index includes only price changes.  
-A total return index includes price changes and reinvested income.
+Simple idea:
 
-This distinction is important for long-term analysis.
+```text
+Every company has equal importance.
+```
+
+This is different from market-cap weighting, where large companies dominate.
 
 ---
+
+### Equal-weighted index example
+
+Assume an index has five stocks.
+
+In an equal-weighted index:
+
+```text
+Stock A weight = 20%
+Stock B weight = 20%
+Stock C weight = 20%
+Stock D weight = 20%
+Stock E weight = 20%
+```
+
+If one stock performs very well, its weight may rise above 20%.
+
+Example:
+
+```text
+Stock A weight after price increase = 24%
+```
+
+At the next rebalancing, the index may sell part of Stock A and buy more of the other stocks to return to equal weights.
+
+This creates a rebalancing effect.
+
+---
+
+### Strengths of equal-weighted indices
+
+Equal-weighted indices have several advantages.
+
+```text
+They reduce concentration in the largest companies.
+They give more importance to smaller constituents.
+They may provide broader participation.
+They can reduce dominance by a few mega-cap stocks.
+```
+
+Example:
+
+```text
+In a market-cap-weighted index,
+one very large company may dominate.
+
+In an equal-weighted index,
+that company receives the same weight as every other company.
+```
+
+This can make the index more diversified by constituent weight.
+
+---
+
+### Weaknesses of equal-weighted indices
+
+Equal-weighted indices also have disadvantages.
+
+They usually require more rebalancing.
+
+Rebalancing creates:
+
+```text
+Higher turnover
+Higher transaction costs
+More trading
+Potential tax effects
+```
+
+Equal-weighted indices may also have more exposure to smaller companies.
+
+This can increase:
+
+```text
+Volatility
+Liquidity risk
+Small-cap exposure
+Trading costs
+```
+
+Simple idea:
+
+```text
+Equal weighting reduces large-company concentration,
+but it may increase turnover and exposure to smaller companies.
+```
+
+---
+
+### Rebalancing
+
+Rebalancing is the process of adjusting index weights back to target weights.
+
+Example for an equal-weighted index:
+
+```text
+Target weight for each stock = 1%
+```
+
+After market movements, some stocks may become larger or smaller in the index.
+
+Rebalancing restores the target structure.
+
+Example:
+
+```text
+Stock A weight before rebalancing = 1.5%
+Target weight = 1.0%
+
+The index reduces Stock A's weight.
+```
+
+Rebalancing matters because it affects index behavior and transaction costs.
+
+---
+
+### Reconstitution
+
+Reconstitution is the process of changing the list of index constituents.
+
+Example:
+
+```text
+One company is removed from the index.
+Another company is added.
+```
+
+This can happen when a company no longer meets the index rules.
+
+Possible reasons include:
+
+```text
+Market capitalization changes
+Liquidity changes
+Sector classification changes
+Bankruptcy
+Merger or acquisition
+Listing changes
+Eligibility rules
+```
+
+Simple distinction:
+
+```text
+Rebalancing = changing weights
+Reconstitution = changing constituents
+```
+
+---
+
+### Price return index
+
+A price return index includes only price changes.
+
+It does not include dividends or other income.
+
+Simple idea:
+
+```text
+Price return index = capital appreciation only
+```
+
+Example:
+
+```text
+Index starts at 1,000
+Index ends at 1,080
+```
+
+Price return:
+
+```text
+Price return = 1,080 / 1,000 - 1
+Price return = 8%
+```
+
+If the companies also paid dividends, those dividends are not included in the price return index.
+
+---
+
+### Total return index
+
+A total return index includes price changes and reinvested income.
+
+Simple idea:
+
+```text
+Total return index = price movement + reinvested dividends
+```
+
+Example:
+
+```text
+Price return = 8%
+Dividend contribution = 2%
+```
+
+Total return:
+
+```text
+Total return = 10%
+```
+
+A total return index gives a more complete view of investor performance because it includes income.
+
+For long-term analysis, total return indices are usually more useful than price return indices.
+
+---
+
+### Price return vs total return index
+
+The distinction between price return and total return is important.
+
+Simple comparison:
+
+```text
+Price return index:
+Includes only price changes.
+
+Total return index:
+Includes price changes and reinvested income.
+```
+
+Example:
+
+```text
+Index start value = 1,000
+Index end price value = 1,080
+Dividends = 20
+```
+
+Price return:
+
+```text
+Price return = 1,080 / 1,000 - 1
+Price return = 8%
+```
+
+Total return:
+
+```text
+Total return = (1,080 + 20) / 1,000 - 1
+Total return = 10%
+```
+
+The total return is higher because it includes dividends.
+
+Simple idea:
+
+```text
+Price return can understate long-term investment performance.
+```
+
+---
+
+### Gross total return vs net total return
+
+Some indices also distinguish between gross total return and net total return.
+
+Gross total return includes reinvested income before withholding taxes.
+
+Net total return includes reinvested income after withholding taxes.
+
+Simple comparison:
+
+```text
+Gross total return = dividends reinvested before tax
+Net total return = dividends reinvested after withholding tax
+```
+
+This matters especially for international indices where dividend taxation can affect investor returns.
+
+For a beginner version of Athena, it is enough to understand that total return includes income.
+
+A more advanced version can distinguish between gross and net return.
+
+---
+
+### Index concentration
+
+Index concentration means that a small number of constituents represent a large part of the index.
+
+Example:
+
+```text
+Top 5 stocks = 25% of the index
+Top 10 stocks = 35% of the index
+```
+
+Concentration matters because the index may depend heavily on a few companies.
+
+Example:
+
+```text
+If the largest technology stocks fall,
+a concentrated index may fall significantly.
+```
+
+Market-cap-weighted indices can become concentrated when a few companies become very large.
+
+Equal-weighted indices usually reduce this type of concentration.
+
+---
+
+### Sector concentration
+
+Sector concentration means that an index is heavily exposed to one or a few sectors.
+
+Examples of sectors:
+
+```text
+Technology
+Financials
+Energy
+Healthcare
+Industrials
+Consumer discretionary
+Utilities
+Materials
+Real estate
+Communication services
+```
+
+Example:
+
+```text
+Technology weight = 40%
+Energy weight = 5%
+```
+
+This index is strongly exposed to technology.
+
+Sector concentration is important for risk analysis because sectors can behave differently across market cycles.
+
+---
+
+### Index turnover
+
+Index turnover measures how much the index changes over time.
+
+Turnover can come from:
+
+```text
+Rebalancing
+Reconstitution
+Changes in weights
+Changes in constituents
+Corporate actions
+```
+
+High turnover can increase trading costs for funds that track the index.
+
+Example:
+
+```text
+An ETF tracking a high-turnover index may need to trade frequently.
+```
+
+This can create higher transaction costs and possibly higher tracking error.
+
+---
+
+### Corporate actions and index construction
+
+Corporate actions can affect index construction.
+
+Examples:
+
+```text
+Stock splits
+Dividends
+Mergers
+Acquisitions
+Spin-offs
+Share buybacks
+New share issuance
+Delistings
+```
+
+Index providers adjust index calculations to avoid artificial distortions.
+
+Example:
+
+```text
+A stock split lowers the share price,
+but it does not reduce the company's economic value.
+```
+
+The index methodology must handle this correctly.
+
+For Athena, corporate actions are also important for clean historical analysis.
+
+---
+
+### Index divisor
+
+Some indices use an index divisor to maintain continuity.
+
+The divisor is an adjustment factor used to prevent artificial jumps in the index level when structural changes happen.
+
+Example:
+
+```text
+A stock split occurs.
+A company is added or removed.
+A special dividend is paid.
+```
+
+The divisor may be adjusted so that the index does not move only because of a technical change.
+
+Simple idea:
+
+```text
+Index divisor helps keep the index level consistent over time.
+```
+
+For CFA Level 1, the key point is not to calculate complex divisors manually, but to understand why adjustments are needed.
+
+---
+
+### Index construction comparison
+
+A simple comparison:
+
+```text
+Price-weighted index:
+Higher-priced stocks have more influence.
+
+Market-cap-weighted index:
+Larger companies have more influence.
+
+Equal-weighted index:
+Every constituent has the same weight.
+```
+
+Another comparison:
+
+```text
+Price-weighted:
+Simple, but share price can be misleading.
+
+Market-cap-weighted:
+Common and practical, but can become concentrated.
+
+Equal-weighted:
+Reduces large-company dominance, but requires more rebalancing.
+```
+
+---
+
+### Example with the same three stocks
+
+Assume three stocks:
+
+```text
+Stock A price = 100
+Stock B price = 50
+Stock C price = 25
+```
+
+And market capitalizations:
+
+```text
+Stock A market cap = 100 billion
+Stock B market cap = 300 billion
+Stock C market cap = 600 billion
+```
+
+In a price-weighted index, Stock A has the most influence because it has the highest share price.
+
+In a market-cap-weighted index, Stock C has the most influence because it has the highest market capitalization.
+
+In an equal-weighted index, all three stocks have the same weight:
+
+```text
+Stock A weight = 33.33%
+Stock B weight = 33.33%
+Stock C weight = 33.33%
+```
+
+This shows why index construction matters.
+
+The same stocks can produce different index behavior depending on the weighting method.
+
+---
+
+### Benchmark interpretation
+
+Index construction is important for benchmark interpretation.
+
+Example:
+
+```text
+Portfolio return = 8%
+Benchmark return = 10%
+```
+
+Before saying the portfolio underperformed, an analyst should understand what the benchmark represents.
+
+Questions to ask:
+
+```text
+Is the benchmark market-cap-weighted?
+Is it equal-weighted?
+Is it concentrated in a few stocks?
+Does it include dividends?
+Is it price return or total return?
+Does it match the portfolio universe?
+```
+
+A benchmark is only useful if its construction is understood.
+
+---
+
+### Index construction and ETFs
+
+Many ETFs track indices.
+
+The ETF inherits the index methodology.
+
+Example:
+
+```text
+An ETF tracking a market-cap-weighted index
+will usually be more exposed to the largest companies.
+```
+
+Another example:
+
+```text
+An ETF tracking an equal-weighted index
+will usually rebalance more often.
+```
+
+This matters because two ETFs may cover the same market but behave differently.
+
+Example:
+
+```text
+S&P 500 market-cap-weighted ETF
+S&P 500 equal-weighted ETF
+```
+
+Both may hold the same 500 companies, but their weights and returns can differ.
+
+---
+
+### Index construction in Athena
+
+For Athena AI Risk Terminal, index construction should be stored and displayed when benchmarks are used.
+
+Possible benchmark fields:
+
+```text
+benchmark_symbol
+benchmark_name
+asset_class
+region
+currency
+constituents_count
+weighting_method
+return_type
+rebalancing_frequency
+data_source
+```
+
+Example:
+
+```text
+benchmark_symbol: SPX
+benchmark_name: S&P 500 Index
+asset_class: Equity
+region: United States
+currency: USD
+weighting_method: Market-cap-weighted
+return_type: Price return
+rebalancing_frequency: Quarterly
+```
+
+For Athena's first version, the most important fields are:
+
+```text
+benchmark_name
+benchmark_symbol
+weighting_method
+return_type
+currency
+historical_values
+```
+
+---
+
+### Possible Athena features
+
+Athena could use index construction data to improve benchmark analysis.
+
+Possible features:
+
+```text
+Display benchmark weighting method
+Show price return vs total return label
+Compare portfolio weights with benchmark weights
+Flag benchmark concentration risk
+Show top benchmark constituents
+Show sector exposure of benchmark
+Explain benchmark mismatch
+Calculate benchmark returns consistently
+```
+
+Example warning:
+
+```text
+Warning:
+The selected benchmark is price return only.
+It may understate long-term performance compared with a total return benchmark.
+```
+
+Another warning:
+
+```text
+Warning:
+The benchmark is highly concentrated in its top constituents.
+Portfolio comparison may be driven by a small number of large companies.
+```
+
+This would make Athena more useful for professional-style analysis.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, index construction is important because the weighting method affects index performance and interpretation.
+
+Important concepts include:
+
+```text
+Index constituent
+Index weight
+Price-weighted index
+Market-cap-weighted index
+Equal-weighted index
+Price return index
+Total return index
+Rebalancing
+Reconstitution
+Index concentration
+Sector concentration
+Index divisor
+Corporate actions
+```
+
+A simple memory rule:
+
+```text
+Price-weighted = higher share price matters more
+Market-cap-weighted = bigger company matters more
+Equal-weighted = every company matters equally
+```
+
+Another useful rule:
+
+```text
+Price return excludes dividends.
+Total return includes reinvested income.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, index construction is important because benchmarks should not be treated as black boxes.
+
+A benchmark has a structure.
+
+That structure affects performance, risk and interpretation.
+
+Athena should store and display index construction information so users understand what they are comparing against.
+
+Possible backend logic:
+
+```text
+benchmark_weighting_method
+benchmark_return_type
+benchmark_constituent_weights
+benchmark_rebalancing_frequency
+benchmark_concentration_metrics
+```
+
+Possible frontend components:
+
+```text
+Benchmark Methodology card
+Index Weighting badge
+Price Return vs Total Return label
+Top Constituents table
+Sector Exposure chart
+Benchmark Concentration warning
+```
+
+The goal is to make benchmark analysis more transparent.
+
+---
+
+### Mini revision questions
+
+1. What does index construction mean?
+
+2. Why does the construction method affect index behavior?
+
+3. What is a constituent?
+
+4. What is an index weight?
+
+5. How does a price-weighted index work?
+
+6. What is the weakness of a price-weighted index?
+
+7. How does a market-cap-weighted index work?
+
+8. Why can market-cap-weighted indices become concentrated?
+
+9. How does an equal-weighted index work?
+
+10. What is the difference between rebalancing and reconstitution?
+
+11. What is the difference between a price return index and a total return index?
+
+12. Why should Athena store the weighting method of a benchmark?
+
+---
+
+### Mini answers
+
+1. Index construction means the method used to build and calculate an index.
+
+2. The construction method affects index behavior because it determines which securities have the most influence.
+
+3. A constituent is a security included in an index.
+
+4. An index weight is the percentage of the index represented by one constituent.
+
+5. A price-weighted index gives more influence to stocks with higher share prices.
+
+6. Its weakness is that share price does not necessarily reflect company size.
+
+7. A market-cap-weighted index gives more influence to companies with larger market capitalization.
+
+8. It can become concentrated because very large companies may represent a large part of the index.
+
+9. An equal-weighted index gives every constituent the same weight.
+
+10. Rebalancing changes weights, while reconstitution changes the list of constituents.
+
+11. A price return index includes only price changes, while a total return index includes price changes and reinvested income.
+
+12. Athena should store the weighting method because benchmark behavior depends on how the index is constructed.
+
+---
+
+### Section summary
+
+Indices can be constructed in different ways.
+
+The main methods are price-weighted, market-cap-weighted and equal-weighted.
+
+Each method gives different importance to different constituents.
+
+For CFA Level 1, index construction is important because it explains why benchmarks can behave differently even when they represent similar markets.
+
+For Athena AI Risk Terminal, index construction is important because benchmark analysis should be transparent and realistic.
+
+The key lesson is:
+
+```text
+An index is not just a list of securities.
+Its construction method determines how it behaves.
+```
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 37. Market efficiency basics
 
 Market efficiency describes how quickly and accurately market prices reflect information.
 
+In simple terms, market efficiency asks the question:
+
+```text
+Do market prices already include the information available to investors?
+```
+
+If markets are efficient, prices adjust quickly when new information becomes available.
+
+This means that it can be difficult to consistently outperform the market without:
+
+```text
+Taking additional risk
+Having better information
+Using better analysis
+Reacting faster than other investors
+Accepting higher uncertainty
+```
+
+Market efficiency is an important idea in finance because it connects directly to:
+
+```text
+Active investing
+Passive investing
+Security analysis
+Market prices
+Information
+Risk and return
+Portfolio management
+```
+
+For Athena AI Risk Terminal, market efficiency matters because it helps explain why a price should not be treated as random or meaningless.
+
+A market price is usually the result of many investors processing information and trading.
+
+Simple idea:
+
+```text
+Market price = information + expectations + trading activity
+```
+
+---
+
 ### Basic idea
 
-If markets are efficient, prices already reflect available information.
+The basic idea of market efficiency is that prices reflect available information.
 
-This makes it difficult to consistently outperform the market without taking additional risk or having an informational advantage.
+If many investors analyze the same information, trade on it, and compete with each other, prices may adjust quickly.
 
-### Forms of market efficiency
+Example:
 
-Common forms:
+```text
+A company announces better-than-expected earnings.
+Investors react quickly.
+The stock price rises shortly after the announcement.
+```
+
+In an efficient market, the price should adjust rapidly to the new information.
+
+This makes it difficult for an investor to profit after the information is already public.
+
+Simple idea:
+
+```text
+If everyone already knows the information,
+the price may already reflect it.
+```
+
+---
+
+### Why market efficiency matters
+
+Market efficiency matters because it affects how investors think about performance.
+
+If markets are highly efficient, it is harder to consistently find mispriced securities.
+
+This supports the idea of passive investing.
+
+If markets are less efficient, active investors may have more opportunity to find undervalued or overvalued assets.
+
+Market efficiency affects decisions such as:
+
+```text
+Should I try to pick individual stocks?
+Should I invest in an index fund?
+Can technical analysis work?
+Can public news create trading opportunities?
+Is active management worth the cost?
+```
+
+For a risk platform like Athena, market efficiency helps explain why benchmark comparison and risk-adjusted performance are important.
+
+A portfolio should not only be judged by return.
+
+It should also be judged by:
+
+```text
+Risk taken
+Benchmark used
+Costs paid
+Information used
+Consistency of performance
+```
+
+---
+
+### Efficient Market Hypothesis
+
+The Efficient Market Hypothesis, or EMH, is the theory that market prices reflect information.
+
+It does not mean prices are always perfect.
+
+It means that prices reflect information quickly enough that consistent abnormal profits are difficult to achieve.
+
+Simple idea:
+
+```text
+EMH = prices reflect information
+```
+
+Important clarification:
+
+```text
+Efficient market does not mean correct market.
+Efficient market means information is rapidly incorporated into prices.
+```
+
+Prices can still move, markets can still crash, and investors can still disagree.
+
+Efficiency is about information processing, not perfection.
+
+---
+
+### Market price and intrinsic value
+
+Market efficiency is related to the difference between market price and intrinsic value.
+
+```text
+Market price = price observed in the market
+Intrinsic value = estimated true economic value
+```
+
+In an efficient market, the market price should be close to intrinsic value most of the time.
+
+However, price and value can still differ.
+
+Example:
+
+```text
+Market price = 80
+Analyst estimated value = 100
+```
+
+The analyst may believe the asset is undervalued.
+
+But if the market is efficient, finding this type of opportunity consistently is difficult.
+
+Simple idea:
+
+```text
+Active investors search for gaps between price and value.
+Market efficiency says those gaps are hard to find and exploit consistently.
+```
+
+---
+
+### Information and prices
+
+Market prices can reflect many types of information.
+
+Examples:
+
+```text
+Historical prices
+Trading volume
+Earnings reports
+Interest rates
+Inflation data
+Economic growth
+Company news
+Analyst forecasts
+Regulatory announcements
+Geopolitical events
+Investor expectations
+```
+
+The more information prices reflect, the stronger the form of market efficiency.
+
+This is why market efficiency is usually divided into three forms:
 
 ```text
 Weak form
@@ -15105,31 +28807,880 @@ Semi-strong form
 Strong form
 ```
 
-### Weak form
+---
 
+### Forms of market efficiency
+
+The common forms of market efficiency are:
+
+```text
+Weak form
+Semi-strong form
+Strong form
+```
+
+Each form describes a different level of information included in prices.
+
+Simple comparison:
+
+```text
+Weak form:
 Prices reflect past market data.
+
+Semi-strong form:
+Prices reflect all publicly available information.
+
+Strong form:
+Prices reflect all public and private information.
+```
+
+The stronger the form, the more information is assumed to be included in prices.
+
+---
+
+### Weak form efficiency
+
+Weak form efficiency means that prices reflect past market data.
+
+Past market data includes:
+
+```text
+Historical prices
+Historical returns
+Trading volume
+Past price patterns
+```
 
 If weak-form efficiency holds, historical prices alone should not reliably predict future returns.
 
-### Semi-strong form
+Simple idea:
 
-Prices reflect all publicly available information.
+```text
+Past prices are already reflected in current prices.
+```
+
+This challenges simple technical analysis strategies that rely only on past price patterns.
+
+Example:
+
+```text
+A stock increased for five days in a row.
+An investor buys only because the stock increased for five days.
+```
+
+If weak-form efficiency holds, this pattern alone should not provide a reliable advantage.
+
+---
+
+### Weak form example
+
+Assume a stock has the following daily returns:
+
+```text
+Day 1: +1%
+Day 2: +2%
+Day 3: +1%
+Day 4: +3%
+```
+
+A beginner may think:
+
+```text
+The stock has been going up.
+It will probably continue going up tomorrow.
+```
+
+Weak-form efficiency suggests that this past price information is already known and reflected in the current price.
+
+Therefore, the pattern alone should not reliably predict tomorrow's return.
+
+This does not mean prices cannot trend.
+
+It means that simple historical patterns should not create easy, consistent profits after costs and risk.
+
+---
+
+### Weak form and technical analysis
+
+Technical analysis studies past prices, charts and volume to make trading decisions.
+
+Weak-form efficiency does not say that every technical strategy is useless.
+
+But it does suggest that simple price patterns should not be easy sources of consistent abnormal return.
+
+Examples of technical signals:
+
+```text
+Moving averages
+Support and resistance
+Momentum indicators
+Chart patterns
+Volume signals
+```
+
+If a signal is obvious and widely used, market participants may trade on it quickly.
+
+This can reduce its effectiveness.
+
+Simple idea:
+
+```text
+The more obvious a pattern is,
+the less likely it is to be a free opportunity.
+```
+
+---
+
+### Semi-strong form efficiency
+
+Semi-strong form efficiency means that prices reflect all publicly available information.
+
+Public information includes:
+
+```text
+Financial statements
+Earnings announcements
+News releases
+Economic data
+Interest rate decisions
+Analyst reports
+Public company guidance
+Industry news
+Regulatory filings
+```
 
 If semi-strong efficiency holds, public news is quickly incorporated into prices.
 
-### Strong form
+Simple idea:
 
+```text
+Public information should already be reflected in market prices.
+```
+
+This means it is difficult to consistently outperform by trading on public information after it has been released.
+
+---
+
+### Semi-strong form example
+
+Assume a company announces strong earnings at 8:00 AM.
+
+The news is public.
+
+Many investors, analysts and trading systems react quickly.
+
+By the time a beginner reads the news later in the day, the stock price may already have adjusted.
+
+Example:
+
+```text
+Before announcement: stock price = 100
+After announcement: stock price = 108
+```
+
+The market may have already incorporated the good news.
+
+Buying after the price adjustment does not guarantee an easy profit.
+
+Simple idea:
+
+```text
+Good news does not automatically mean good trade
+if the price already moved.
+```
+
+---
+
+### Semi-strong form and fundamental analysis
+
+Fundamental analysis estimates the value of an asset using economic and financial information.
+
+Examples:
+
+```text
+Revenue
+Earnings
+Cash flows
+Margins
+Growth
+Interest rates
+Competitive position
+Valuation ratios
+```
+
+Semi-strong efficiency suggests that public fundamental information is quickly reflected in prices.
+
+This makes it harder for analysts to outperform using only public information.
+
+However, active investors may still try to outperform by:
+
+```text
+Interpreting information better
+Forecasting future results better
+Understanding business quality better
+Reacting faster
+Focusing on less-covered securities
+Using a longer time horizon
+```
+
+Market efficiency does not eliminate analysis.
+
+It makes the competition harder.
+
+---
+
+### Strong form efficiency
+
+Strong form efficiency means that prices reflect all public and private information.
+
+Private information includes non-public information known only to insiders or selected individuals.
+
+Examples:
+
+```text
+Confidential merger discussions
+Non-public earnings information
+Internal company forecasts
+Private regulatory information
+Secret strategic decisions
+```
+
+If strong-form efficiency held perfectly, even insiders could not earn abnormal returns from private information.
+
+This is the strongest form of market efficiency.
+
+It is also the most unrealistic form in practice.
+
+Simple idea:
+
+```text
+Strong form = prices reflect everything, even private information.
+```
+
+---
+
+### Why strong form is unrealistic
+
+Strong form efficiency is unrealistic because private information can exist before it becomes public.
+
+Example:
+
+```text
+Company insiders may know about a major acquisition before the market knows.
+```
+
+If they traded on that information, they might have an unfair advantage.
+
+This is why securities laws often prohibit insider trading.
+
+The existence of insider trading rules suggests that private information can be valuable and is not always reflected in prices immediately.
+
+For CFA Level 1, the key point is:
+
+```text
+Strong-form efficiency is the strongest theoretical form,
+but it does not perfectly describe real markets.
+```
+
+---
+
+### Comparing the three forms
+
+A simple comparison:
+
+```text
+Weak form:
+Prices reflect past price and volume data.
+
+Semi-strong form:
+Prices reflect all public information.
+
+Strong form:
 Prices reflect all public and private information.
+```
 
-This is the strongest and most unrealistic form in practice.
+Another way to remember:
 
-### Active vs passive investing
+```text
+Weak = past market data
+Semi-strong = public information
+Strong = public + private information
+```
+
+The forms are cumulative.
+
+If a market is semi-strong efficient, it should also be weak-form efficient.
+
+If a market is strong-form efficient, it should also be semi-strong and weak-form efficient.
+
+---
+
+### Market efficiency and active investing
+
+Active investing tries to outperform a benchmark.
+
+Active investors may use:
+
+```text
+Security selection
+Market timing
+Sector allocation
+Factor exposure
+Fundamental analysis
+Quantitative models
+Alternative data
+Macroeconomic views
+```
+
+Market efficiency makes active investing difficult because many investors are competing to find opportunities.
+
+Simple idea:
+
+```text
+If many smart investors search for mispricing,
+obvious opportunities disappear quickly.
+```
+
+This does not mean active investing cannot work.
+
+It means that consistent outperformance requires skill, discipline, information advantage, risk-taking, or a market segment where inefficiencies exist.
+
+---
+
+### Market efficiency and passive investing
 
 Market efficiency is one reason passive investing exists.
 
-If it is difficult to beat the market, some investors choose to track the market instead of trying to outperform it.
+If it is difficult to beat the market consistently, some investors choose to track the market instead.
+
+Passive investing usually aims to match a benchmark.
+
+Examples:
+
+```text
+S&P 500 index fund
+Nasdaq-100 ETF
+Global equity ETF
+Bond index fund
+```
+
+Passive investors often focus on:
+
+```text
+Low fees
+Broad diversification
+Benchmark tracking
+Long-term discipline
+Tax efficiency
+Simple implementation
+```
+
+Simple idea:
+
+```text
+If beating the market is difficult,
+owning the market may be a rational choice.
+```
 
 ---
+
+### Active vs passive investing
+
+Active and passive investing are different responses to market efficiency.
+
+```text
+Active investing:
+Try to outperform the benchmark.
+
+Passive investing:
+Try to track the benchmark.
+```
+
+Active management may be more attractive when:
+
+```text
+Markets are less efficient
+Information is harder to process
+Securities are less covered
+Costs are reasonable
+Manager skill is strong
+```
+
+Passive management may be more attractive when:
+
+```text
+Markets are highly efficient
+Fees matter a lot
+Diversification is desired
+The investor wants simplicity
+The investor accepts market return
+```
+
+There is no universal answer.
+
+The best choice depends on the investor's objective, skill, cost sensitivity, risk tolerance and market segment.
+
+---
+
+### Market anomalies
+
+A market anomaly is a pattern that seems inconsistent with market efficiency.
+
+Examples often discussed in finance include:
+
+```text
+Momentum
+Value effect
+Size effect
+Low-volatility effect
+Post-earnings announcement drift
+Calendar effects
+```
+
+An anomaly may suggest that markets are not perfectly efficient.
+
+However, anomalies can weaken or disappear after they become widely known.
+
+They may also reflect hidden risk, data mining, trading costs or behavioral biases.
+
+Simple idea:
+
+```text
+An anomaly is not automatically free money.
+```
+
+For Athena, anomalies could be studied later through factor analytics or quantitative research modules.
+
+---
+
+### Behavioral finance and market efficiency
+
+Behavioral finance studies how psychology affects financial decisions.
+
+It challenges the idea that investors are always perfectly rational.
+
+Examples of behavioral biases:
+
+```text
+Overconfidence
+Herding
+Loss aversion
+Anchoring
+Confirmation bias
+Recency bias
+Fear and greed
+```
+
+These biases can cause prices to deviate from fundamental value.
+
+Example:
+
+```text
+Investors may overreact to bad news during a panic.
+```
+
+Behavioral finance does not completely reject market efficiency.
+
+It shows that real markets can be affected by human behavior, especially in the short term.
+
+---
+
+### Efficient does not mean predictable
+
+A common beginner mistake is to think that efficient markets are easy to predict.
+
+That is the opposite.
+
+If markets are efficient, prices already reflect available information.
+
+Future price changes depend mostly on new information.
+
+New information is uncertain.
+
+Therefore, future returns are difficult to predict.
+
+Simple idea:
+
+```text
+Efficient markets are hard to beat because new information is hard to predict.
+```
+
+---
+
+### Efficient does not mean risk-free
+
+Another common mistake is to think that efficient markets are safe.
+
+Market efficiency does not remove risk.
+
+Even in an efficient market, prices can fall sharply.
+
+Example:
+
+```text
+An efficient stock market can still crash
+if new information changes investor expectations.
+```
+
+Efficiency means information is reflected in prices.
+
+It does not mean investors cannot lose money.
+
+Simple idea:
+
+```text
+Efficient market ≠ risk-free market
+```
+
+---
+
+### Efficient does not mean prices are always correct
+
+Market prices can be wrong in hindsight.
+
+Example:
+
+```text
+A stock trades at 100 today.
+One year later, it trades at 50.
+```
+
+This does not automatically prove the market was inefficient at 100.
+
+At the time, investors used the information available.
+
+Later, new information changed expectations.
+
+Simple idea:
+
+```text
+A price can be efficient given current information,
+even if it later turns out to be wrong.
+```
+
+---
+
+### Market efficiency and risk-adjusted return
+
+When evaluating performance, it is not enough to ask:
+
+```text
+Did the portfolio beat the market?
+```
+
+It is also important to ask:
+
+```text
+How much risk was taken?
+Was the outperformance due to skill or risk exposure?
+Were fees and transaction costs included?
+Was the benchmark appropriate?
+```
+
+An investor may outperform by taking more risk.
+
+Example:
+
+```text
+Portfolio return = 12%
+Benchmark return = 8%
+```
+
+This looks good.
+
+But if the portfolio had much higher volatility or leverage, the comparison is incomplete.
+
+Market efficiency connects naturally with risk-adjusted performance.
+
+---
+
+### Market efficiency and transaction costs
+
+Even if a trading strategy appears profitable before costs, it may not be profitable after costs.
+
+Costs include:
+
+```text
+Bid-ask spread
+Commissions
+Slippage
+Market impact
+Taxes
+Management fees
+```
+
+In efficient markets, small opportunities may disappear after transaction costs.
+
+Simple idea:
+
+```text
+A strategy must beat the market after costs, not before costs.
+```
+
+For Athena, this is important because theoretical returns should be interpreted carefully.
+
+---
+
+### Market efficiency in Athena
+
+Athena AI Risk Terminal does not need to prove whether markets are efficient.
+
+However, it should help users analyze performance realistically.
+
+Market efficiency can influence Athena features such as:
+
+```text
+Benchmark comparison
+Risk-adjusted performance
+Passive vs active comparison
+Excess return calculation
+Information ratio
+Tracking error
+Transaction cost awareness
+Factor exposure analysis
+```
+
+Athena should avoid presenting raw return as enough evidence of skill.
+
+Example:
+
+```text
+Portfolio return = 15%
+```
+
+This should be compared with:
+
+```text
+Benchmark return
+Portfolio volatility
+Maximum drawdown
+Factor exposure
+Transaction costs
+Time period
+```
+
+This makes the analysis more professional.
+
+---
+
+### Possible Athena features
+
+Possible features related to market efficiency:
+
+```text
+Portfolio vs benchmark comparison
+Excess return analysis
+Active return chart
+Tracking error calculation
+Information ratio calculation
+Risk-adjusted return metrics
+Passive ETF comparison
+Market anomaly research module
+Factor exposure dashboard
+Transaction cost warning
+```
+
+Example insight:
+
+```text
+The portfolio outperformed the benchmark,
+but most of the excess return came from higher technology exposure.
+```
+
+Another example:
+
+```text
+The strategy beat the benchmark before costs,
+but underperformed after estimated transaction costs.
+```
+
+These features would make Athena more realistic and closer to professional investment analysis.
+
+---
+
+### CFA Level 1 takeaway
+
+For CFA Level 1, market efficiency is important because it explains how information is reflected in prices and why outperforming the market can be difficult.
+
+Important concepts include:
+
+```text
+Efficient Market Hypothesis
+Weak form efficiency
+Semi-strong form efficiency
+Strong form efficiency
+Public information
+Private information
+Active investing
+Passive investing
+Market anomalies
+Behavioral finance
+Risk-adjusted return
+Transaction costs
+```
+
+A simple memory rule:
+
+```text
+Weak = past market data
+Semi-strong = public information
+Strong = public + private information
+```
+
+Another useful rule:
+
+```text
+Market efficiency does not mean prices are perfect.
+It means prices reflect available information quickly.
+```
+
+---
+
+### Athena implementation takeaway
+
+For Athena, market efficiency provides the conceptual foundation for benchmark-based analysis.
+
+The platform should not only show returns.
+
+It should help users understand whether returns were meaningful compared with a benchmark and the risk taken.
+
+Possible backend calculations:
+
+```text
+portfolio_return
+benchmark_return
+excess_return
+tracking_error
+information_ratio
+portfolio_volatility
+benchmark_volatility
+maximum_drawdown
+transaction_cost_adjusted_return
+```
+
+Possible frontend components:
+
+```text
+Market Efficiency explanation card
+Active vs Passive comparison panel
+Portfolio vs Benchmark chart
+Excess Return card
+Information Ratio card
+Tracking Error card
+Transaction Cost warning
+Factor Exposure explanation
+```
+
+The goal is to avoid naive performance interpretation.
+
+---
+
+### Mini revision questions
+
+1. What does market efficiency mean?
+
+2. What is the Efficient Market Hypothesis?
+
+3. What does weak-form efficiency say?
+
+4. What does semi-strong form efficiency say?
+
+5. What does strong-form efficiency say?
+
+6. Why is strong-form efficiency unrealistic in practice?
+
+7. Why does market efficiency make active investing difficult?
+
+8. Why does market efficiency support passive investing?
+
+9. What is a market anomaly?
+
+10. Why does efficient market not mean risk-free market?
+
+11. Why are transaction costs important when evaluating strategies?
+
+12. Why is market efficiency useful for Athena?
+
+---
+
+### Mini answers
+
+1. Market efficiency means that market prices reflect available information quickly and accurately.
+
+2. The Efficient Market Hypothesis is the theory that prices reflect information, making consistent abnormal profits difficult to achieve.
+
+3. Weak-form efficiency says prices reflect past market data such as historical prices and volume.
+
+4. Semi-strong form efficiency says prices reflect all publicly available information.
+
+5. Strong-form efficiency says prices reflect all public and private information.
+
+6. Strong-form efficiency is unrealistic because private information can exist before it becomes public.
+
+7. Market efficiency makes active investing difficult because many investors compete to find and exploit mispricing.
+
+8. It supports passive investing because if beating the market is difficult, tracking the market at low cost can be rational.
+
+9. A market anomaly is a pattern that seems inconsistent with market efficiency.
+
+10. Efficient markets are not risk-free because prices can still fall when new information changes expectations.
+
+11. Transaction costs are important because a strategy must outperform after costs, not only before costs.
+
+12. Market efficiency is useful for Athena because it supports benchmark comparison, risk-adjusted analysis and realistic performance interpretation.
+
+---
+
+### Section summary
+
+Market efficiency describes how quickly and accurately prices reflect information.
+
+The three main forms are weak form, semi-strong form and strong form.
+
+Weak form says prices reflect past market data.
+
+Semi-strong form says prices reflect public information.
+
+Strong form says prices reflect both public and private information.
+
+For CFA Level 1, market efficiency is important because it explains why consistent outperformance is difficult and why passive investing is widely used.
+
+For Athena AI Risk Terminal, market efficiency matters because performance should be evaluated relative to benchmarks, risk, costs and available information.
+
+The key lesson is:
+
+```text
+Market efficiency does not mean prices are always perfect.
+It means that available information is quickly reflected in prices,
+making easy and consistent outperformance difficult.
+```
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -15169,6 +29720,35 @@ In Athena, data quality warnings should be visible to the user.
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 39. Missing data
 
 Missing data can break calculations or distort results.
@@ -15206,6 +29786,32 @@ Therefore, the method must be documented.
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 40. Outliers
 
 An outlier is an abnormal observation.
@@ -15240,6 +29846,33 @@ Do not silently delete extreme observations.
 ```
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 41. Currency consistency
 
@@ -15277,6 +29910,33 @@ exchange rate when conversion is needed
 Even if full currency conversion is not implemented immediately, the data model should be ready.
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 42. Data frequency
 
@@ -15327,6 +29987,34 @@ Do not mix frequencies without clear methodology.
 For Athena's first version, daily data is the best starting point.
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 43. Key formulas
 
@@ -15404,6 +30092,31 @@ Real return = (1 + nominal return) / (1 + inflation) - 1
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 44. Possible API endpoints
 
 Possible endpoints for Athena's market finance and volatility module:
@@ -15448,6 +30161,32 @@ GET /api/market-data/liquidity/{symbol}
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 45. Possible frontend components
 
 Possible components for the Market Finance and Volatility page:
@@ -15484,6 +30223,29 @@ The user should be able to see:
 The page should be educational and analytical.
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 46. Suggested tests
 
@@ -15543,6 +30305,24 @@ Low volume and high spread should indicate weaker liquidity.
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 47. Common beginner mistakes
 
 ### Mistake 1 — Using prices instead of returns
@@ -15586,6 +30366,31 @@ An asset can look attractive but be difficult or expensive to trade.
 Financial returns often have fat tails and extreme events.
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 48. Summary
 
