@@ -79,7 +79,8 @@
     "high": "Haut",
     "low": "Bas",
     "close": "Cloture",
-    "volume": "Volume"
+    "volume": "Volume",
+    "apiError": "L'API Market Data est indisponible. Lance le backend ou verifie la sortie du script dev."
   },
   "portfolio": {
     "title": "Construction de portefeuille",

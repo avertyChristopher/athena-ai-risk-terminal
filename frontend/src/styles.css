@@ -1,18 +1,23 @@
 :root {
   color-scheme: light;
-  --bg: #f4f1ea;
+  --primary-blue: #6b96c3;
+  --warm-brown: #8a6a43;
+  --bg: #f4f2ee;
   --bg-elevated: rgba(255, 255, 255, 0.8);
-  --bg-sidebar: linear-gradient(180deg, #10243b 0%, #18395b 100%);
-  --border: rgba(16, 36, 59, 0.12);
+  --bg-sidebar:
+    linear-gradient(180deg, rgba(19, 37, 58, 0.34), rgba(19, 37, 58, 0.2)),
+    linear-gradient(180deg, #456f9c 0%, var(--primary-blue) 48%, var(--warm-brown) 100%);
+  --border: rgba(107, 150, 195, 0.2);
   --text: #13253a;
-  --muted: #5e7085;
-  --accent: #1d7a85;
-  --accent-soft: rgba(29, 122, 133, 0.12);
+  --muted: #667482;
+  --accent: var(--primary-blue);
+  --accent-strong: #456f9c;
+  --accent-soft: rgba(107, 150, 195, 0.16);
   --success: #1d7f5f;
-  --warning: #b76b1d;
+  --warning: var(--warm-brown);
   --danger: #b03a48;
   --critical: #7e1f38;
-  --shadow: 0 18px 36px rgba(16, 36, 59, 0.08);
+  --shadow: 0 18px 36px rgba(54, 73, 95, 0.1);
   font-family:
     "Segoe UI",
     "Aptos",
@@ -21,8 +26,9 @@
   font-weight: 400;
   color: var(--text);
   background:
-    radial-gradient(circle at top right, rgba(29, 122, 133, 0.14), transparent 30%),
-    linear-gradient(180deg, #f6f2eb 0%, #f1eee7 100%);
+    radial-gradient(circle at top right, rgba(107, 150, 195, 0.2), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(138, 106, 67, 0.14), transparent 34%),
+    linear-gradient(180deg, #f7f5f1 0%, #eeebe5 100%);
 }
 
 * {
@@ -191,7 +197,9 @@ button {
 }
 
 .hero {
-  background: linear-gradient(135deg, rgba(16, 36, 59, 0.96), rgba(29, 122, 133, 0.88));
+  background:
+    linear-gradient(135deg, rgba(19, 37, 58, 0.52), rgba(19, 37, 58, 0.16)),
+    linear-gradient(135deg, var(--primary-blue) 0%, var(--warm-brown) 100%);
   border-radius: 28px;
   padding: 30px;
   color: white;
@@ -299,6 +307,19 @@ button {
   margin: 0;
 }
 
+.status-message {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #ffffff;
+}
+
+.status-message--error {
+  border-color: rgba(176, 58, 72, 0.28);
+  background: rgba(176, 58, 72, 0.08);
+  color: var(--danger);
+}
+
 .portfolio-toolbar {
   display: flex;
   justify-content: flex-end;
@@ -370,7 +391,7 @@ button {
 .button--primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #ffffff;
+  color: #0f2438;
 }
 
 .button--ghost {
@@ -464,7 +485,7 @@ button {
 .bar-fill {
   height: 100%;
   border-radius: inherit;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--primary-blue), var(--warm-brown));
 }
 
 .modal-backdrop {
@@ -513,8 +534,8 @@ button {
   display: block;
   width: 100%;
   height: 160px;
-  color: var(--accent);
-  background: rgba(29, 122, 133, 0.08);
+  color: var(--accent-strong);
+  background: linear-gradient(135deg, rgba(107, 150, 195, 0.12), rgba(138, 106, 67, 0.08));
   border-radius: 8px;
 }
 

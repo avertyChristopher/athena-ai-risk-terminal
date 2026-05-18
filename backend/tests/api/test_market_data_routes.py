@@ -35,3 +35,16 @@ def test_market_data_quality_response() -> None:
     assert body["missing_price_dates"] == []
     assert body["duplicate_dates"] == []
     assert body["is_valid"] is True
+
+
+def test_market_data_cors_allows_localhost_and_loopback_frontend() -> None:
+    response = client.options(
+        "/api/market-data/assets",
+        headers={
+            "Origin": "http://127.0.0.1:5173",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:5173"

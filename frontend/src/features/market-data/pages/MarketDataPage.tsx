@@ -90,6 +90,11 @@ export function MarketDataPage() {
       ) : null}
 
       {assetsQuery.isLoading ? <p>{t("common.loading")}</p> : null}
+      {assetsQuery.isError ? (
+        <p className="status-message status-message--error">
+          {t("marketData.apiError")}
+        </p>
+      ) : null}
 
       <section className="market-data-grid">
         <PriceChart

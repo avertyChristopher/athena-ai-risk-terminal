@@ -79,7 +79,8 @@
     "high": "High",
     "low": "Low",
     "close": "Close",
-    "volume": "Volume"
+    "volume": "Volume",
+    "apiError": "Market data API is unavailable. Start the backend or check the dev script output."
   },
   "portfolio": {
     "title": "Portfolio Builder",

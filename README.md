@@ -38,6 +38,19 @@ npm install
 npm run dev
 ```
 
+### Start everything at once on Windows
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start-dev.ps1
+```
+
+Then open:
+
+- Frontend: `http://127.0.0.1:5173`
+- Backend API docs: `http://127.0.0.1:8000/docs`
+
+Use `Ctrl+C` in the terminal to stop both servers.
+
 ### Optional local services
 
 ```bash

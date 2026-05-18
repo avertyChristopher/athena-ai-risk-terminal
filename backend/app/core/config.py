@@ -19,7 +19,10 @@ class Settings(BaseModel):
     redis_url: str = "redis://localhost:6379/0"
     secret_key: str = "athena-dev-secret"
     allowed_origins: list[str] = Field(
-        default_factory=lambda: ["http://localhost:5173"],
+        default_factory=lambda: [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ],
     )
 
 
@@ -36,7 +39,10 @@ def get_settings() -> Settings:
         redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
         secret_key=os.getenv("SECRET_KEY", "athena-dev-secret"),
         allowed_origins=_parse_csv(
-            os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:5173"),
+            os.getenv(
+                "BACKEND_CORS_ORIGINS",
+                "http://localhost:5173,http://127.0.0.1:5173",
+            ),
         ),
     )
 
