@@ -7,6 +7,8 @@ export const endpoints = {
     `/api/market-data/volatility/${symbol}`,
   marketDataQuality: (symbol: string) =>
     `/api/market-data/data-quality/${symbol}`,
+  marketDataAnalytics: (symbol: string) =>
+    `/api/market-data/analytics/${symbol}`,
   portfolios: "/api/portfolios",
   portfolio: (portfolioId: string) => `/api/portfolios/${portfolioId}`,
   portfolioSummary: (portfolioId: string) =>

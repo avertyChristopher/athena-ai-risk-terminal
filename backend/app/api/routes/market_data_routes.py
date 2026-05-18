@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies import get_market_data_service
 from app.schemas.market_data_schema import (
     DataQualityResponse,
+    MarketDataAnalyticsResponse,
     MarketAsset,
     MarketDataModuleStatus,
     PricePoint,
@@ -58,3 +59,11 @@ def get_data_quality(
     service: MarketDataService = Depends(get_market_data_service),
 ) -> DataQualityResponse:
     return service.get_data_quality(symbol)
+
+
+@router.get("/analytics/{symbol}", response_model=MarketDataAnalyticsResponse)
+def get_analytics(
+    symbol: str,
+    service: MarketDataService = Depends(get_market_data_service),
+) -> MarketDataAnalyticsResponse:
+    return service.get_analytics(symbol)

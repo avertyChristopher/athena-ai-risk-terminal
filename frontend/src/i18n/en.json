@@ -25,6 +25,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "marketData": "Market Data",
+    "equityAnalysis": "Equity Analysis",
     "portfolioBuilder": "Portfolio Builder",
     "tradeSimulator": "Trade Simulator",
     "riskMonitor": "Risk Monitor",
@@ -80,7 +81,99 @@
     "low": "Low",
     "close": "Close",
     "volume": "Volume",
-    "apiError": "Market data API is unavailable. Start the backend or check the dev script output."
+    "apiError": "Market data API is unavailable. Start the backend or check the dev script output.",
+    "volumeChart": "Volume and liquidity",
+    "cumulativeReturnsChart": "Cumulative returns",
+    "drawdownChart": "Drawdown",
+    "distributionChart": "Return distribution",
+    "percentiles": "Percentiles and quantiles",
+    "emptyOutliers": "No outliers flagged in the current sample.",
+    "benchmarkComparison": "Benchmark comparison",
+    "benchmarkStats": "Relative statistics",
+    "movingAverages": "Moving averages",
+    "marketContext": "Market context data",
+    "referenceData": "Reference and liquidity data",
+    "summary": {
+      "asset": "Selected asset",
+      "latestPrice": "Latest price",
+      "latestReturn": "Latest return",
+      "annualizedVolatility": "Annualized volatility",
+      "maxDrawdown": "Max drawdown",
+      "quality": "Data quality",
+      "valid": "Valid",
+      "review": "Review"
+    },
+    "sections": {
+      "assetOverview": {
+        "title": "Asset Overview",
+        "description": "Price history, OHLCV records, volume, liquidity context and data quality for the selected asset."
+      },
+      "returns": {
+        "title": "Returns Analytics",
+        "description": "Simple returns, log returns, cumulative performance and annualized return profile."
+      },
+      "riskVolatility": {
+        "title": "Risk & Volatility Analytics",
+        "description": "Variance, standard deviation, daily and annualized volatility, rolling volatility and drawdown behavior."
+      },
+      "distribution": {
+        "title": "Distribution & Statistical Profile",
+        "description": "Distribution shape, percentiles, skewness, kurtosis and outlier diagnostics."
+      },
+      "benchmark": {
+        "title": "Benchmark & Relative Analysis",
+        "description": "Relative performance, active return, correlation, covariance, beta and single-asset Sharpe ratio."
+      },
+      "context": {
+        "title": "Market Context",
+        "description": "Moving averages, momentum and planned macro market data needed for richer analysis."
+      }
+    },
+    "stats": {
+      "simpleReturn": "Simple return",
+      "logReturn": "Log return",
+      "holdingPeriodReturn": "Holding period return",
+      "cumulativeReturn": "Cumulative return",
+      "arithmeticMeanReturn": "Arithmetic mean",
+      "geometricMeanReturn": "Geometric mean",
+      "annualizedReturn": "Annualized return",
+      "variance": "Variance",
+      "standardDeviation": "Standard deviation",
+      "dailyVolatility": "Daily volatility",
+      "annualizedVolatility": "Annualized volatility",
+      "maxDrawdown": "Maximum drawdown",
+      "skewness": "Skewness",
+      "kurtosis": "Excess kurtosis",
+      "activeReturn": "Active return",
+      "correlation": "Correlation",
+      "covariance": "Covariance",
+      "beta": "Beta",
+      "sharpe": "Sharpe ratio",
+      "benchmark": "Benchmark",
+      "latest": "Latest price",
+      "ma5": "5D moving average",
+      "ma20": "20D moving average",
+      "momentum5": "5D momentum",
+      "riskFree": "Risk-free proxy",
+      "averageVolume20": "20D average volume",
+      "latestDollarVolume": "Latest dollar volume",
+      "liquidityScore": "Liquidity score",
+      "highLiquidity": "High liquidity",
+      "moderateLiquidity": "Moderate liquidity",
+      "yieldCurve2y": "2Y yield",
+      "yieldCurve10y": "10Y yield"
+    },
+    "planned": {
+      "title": "Planned data feeds",
+      "adjustedClose": "Adjusted close",
+      "corporateActions": "Corporate actions",
+      "liquidity": "Advanced liquidity metrics",
+      "normalComparison": "Normal distribution comparison",
+      "fxRates": "FX rates",
+      "currencyConsistency": "Currency consistency",
+      "yieldCurve": "Yield curve market data",
+      "commodities": "Commodity and alternative asset data"
+    }
   },
   "portfolio": {
     "title": "Portfolio Builder",
@@ -137,6 +230,10 @@
     "marketData": {
       "title": "Market Data",
       "description": "Asset discovery, pricing feeds, and historical time series will be added here."
+    },
+    "equityAnalysis": {
+      "title": "Equity Analysis",
+      "description": "Single-stock fundamentals, valuation, performance drivers, and analyst-style equity diagnostics will be built here."
     },
     "portfolio": {
       "title": "Portfolio Builder",

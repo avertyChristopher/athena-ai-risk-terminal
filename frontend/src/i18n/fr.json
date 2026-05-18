@@ -25,6 +25,7 @@
   "nav": {
     "dashboard": "Tableau de bord",
     "marketData": "Données de marché",
+    "equityAnalysis": "Analyse actions",
     "portfolioBuilder": "Construction de portefeuille",
     "tradeSimulator": "Simulateur de trade",
     "riskMonitor": "Surveillance du risque",
@@ -80,7 +81,99 @@
     "low": "Bas",
     "close": "Cloture",
     "volume": "Volume",
-    "apiError": "L'API Market Data est indisponible. Lance le backend ou verifie la sortie du script dev."
+    "apiError": "L'API Market Data est indisponible. Lance le backend ou verifie la sortie du script dev.",
+    "volumeChart": "Volume et liquidite",
+    "cumulativeReturnsChart": "Rendements cumules",
+    "drawdownChart": "Drawdown",
+    "distributionChart": "Distribution des rendements",
+    "percentiles": "Percentiles et quantiles",
+    "emptyOutliers": "Aucun outlier signale dans l'echantillon courant.",
+    "benchmarkComparison": "Comparaison benchmark",
+    "benchmarkStats": "Statistiques relatives",
+    "movingAverages": "Moyennes mobiles",
+    "marketContext": "Donnees de contexte marche",
+    "referenceData": "Donnees de reference et liquidite",
+    "summary": {
+      "asset": "Actif selectionne",
+      "latestPrice": "Dernier prix",
+      "latestReturn": "Dernier rendement",
+      "annualizedVolatility": "Volatilite annualisee",
+      "maxDrawdown": "Drawdown max",
+      "quality": "Qualite des donnees",
+      "valid": "Valide",
+      "review": "A verifier"
+    },
+    "sections": {
+      "assetOverview": {
+        "title": "Vue d'ensemble de l'actif",
+        "description": "Historique de prix, donnees OHLCV, volume, contexte de liquidite et qualite des donnees pour l'actif selectionne."
+      },
+      "returns": {
+        "title": "Analyse des rendements",
+        "description": "Rendements simples, rendements log, performance cumulee et profil de rendement annualise."
+      },
+      "riskVolatility": {
+        "title": "Risque et volatilite",
+        "description": "Variance, ecart-type, volatilite quotidienne et annualisee, volatilite glissante et comportement du drawdown."
+      },
+      "distribution": {
+        "title": "Distribution et profil statistique",
+        "description": "Forme de distribution, percentiles, skewness, kurtosis et diagnostic des outliers."
+      },
+      "benchmark": {
+        "title": "Analyse benchmark et relative",
+        "description": "Performance relative, rendement actif, correlation, covariance, beta et ratio de Sharpe individuel."
+      },
+      "context": {
+        "title": "Contexte de marche",
+        "description": "Moyennes mobiles, momentum et donnees macro marche prevues pour enrichir l'analyse."
+      }
+    },
+    "stats": {
+      "simpleReturn": "Rendement simple",
+      "logReturn": "Rendement log",
+      "holdingPeriodReturn": "Rendement de detention",
+      "cumulativeReturn": "Rendement cumule",
+      "arithmeticMeanReturn": "Moyenne arithmetique",
+      "geometricMeanReturn": "Moyenne geometrique",
+      "annualizedReturn": "Rendement annualise",
+      "variance": "Variance",
+      "standardDeviation": "Ecart-type",
+      "dailyVolatility": "Volatilite quotidienne",
+      "annualizedVolatility": "Volatilite annualisee",
+      "maxDrawdown": "Drawdown maximum",
+      "skewness": "Skewness",
+      "kurtosis": "Kurtosis excedentaire",
+      "activeReturn": "Rendement actif",
+      "correlation": "Correlation",
+      "covariance": "Covariance",
+      "beta": "Beta",
+      "sharpe": "Ratio de Sharpe",
+      "benchmark": "Benchmark",
+      "latest": "Dernier prix",
+      "ma5": "Moyenne mobile 5J",
+      "ma20": "Moyenne mobile 20J",
+      "momentum5": "Momentum 5J",
+      "riskFree": "Proxy taux sans risque",
+      "averageVolume20": "Volume moyen 20J",
+      "latestDollarVolume": "Dollar volume recent",
+      "liquidityScore": "Score de liquidite",
+      "highLiquidity": "Liquidite elevee",
+      "moderateLiquidity": "Liquidite moderee",
+      "yieldCurve2y": "Taux 2A",
+      "yieldCurve10y": "Taux 10A"
+    },
+    "planned": {
+      "title": "Flux de donnees prevus",
+      "adjustedClose": "Prix ajuste",
+      "corporateActions": "Operations sur titres",
+      "liquidity": "Mesures avancees de liquidite",
+      "normalComparison": "Comparaison a la distribution normale",
+      "fxRates": "Taux FX",
+      "currencyConsistency": "Coherence des devises",
+      "yieldCurve": "Donnees de courbe de taux",
+      "commodities": "Donnees commodities et actifs alternatifs"
+    }
   },
   "portfolio": {
     "title": "Construction de portefeuille",
@@ -137,6 +230,10 @@
     "marketData": {
       "title": "Données de marché",
       "description": "La découverte d'actifs, les flux de prix et les séries historiques seront ajoutés ici."
+    },
+    "equityAnalysis": {
+      "title": "Analyse actions",
+      "description": "Les fondamentaux, la valorisation, les moteurs de performance et les diagnostics de type analyste seront construits ici."
     },
     "portfolio": {
       "title": "Construction de portefeuille",

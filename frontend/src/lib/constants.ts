@@ -6,6 +6,7 @@ export type NavigationItem = {
 export const navigationItems: NavigationItem[] = [
   { path: "/", labelKey: "nav.dashboard" },
   { path: "/market-data", labelKey: "nav.marketData" },
+  { path: "/equity-analysis", labelKey: "nav.equityAnalysis" },
   { path: "/portfolio-builder", labelKey: "nav.portfolioBuilder" },
   { path: "/trade-simulator", labelKey: "nav.tradeSimulator" },
   { path: "/risk-monitor", labelKey: "nav.riskMonitor" },

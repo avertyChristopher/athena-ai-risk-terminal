@@ -21,13 +21,17 @@ export function RollingVolatilityChart({
       <div>
         <span>{labels.daily}</span>
         <strong>
-          <PercentValue value={volatility?.daily_volatility ?? 0} />
+          {volatility ? <PercentValue value={volatility.daily_volatility} /> : "--"}
         </strong>
       </div>
       <div>
         <span>{labels.annualized}</span>
         <strong>
-          <PercentValue value={volatility?.annualized_volatility ?? 0} />
+          {volatility ? (
+            <PercentValue value={volatility.annualized_volatility} />
+          ) : (
+            "--"
+          )}
         </strong>
       </div>
     </section>

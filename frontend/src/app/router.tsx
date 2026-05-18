@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { AppShell } from "../components/layout/AppShell";
 import { AiAnomaliesPage } from "../features/ai-anomalies/pages/AiAnomaliesPage";
 import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
+import { EquityAnalysisPage } from "../features/equity-analysis/pages/EquityAnalysisPage";
 import { LimitsPage } from "../features/limits/pages/LimitsPage";
 import { MarketDataPage } from "../features/market-data/pages/MarketDataPage";
 import { OptionsPricingPage } from "../features/options-pricing/pages/OptionsPricingPage";
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardPage /> },
       { path: "market-data", element: <MarketDataPage /> },
+      { path: "equity-analysis", element: <EquityAnalysisPage /> },
       { path: "portfolio-builder", element: <PortfolioPage /> },
       { path: "trade-simulator", element: <TradeSimulatorPage /> },
       { path: "risk-monitor", element: <RiskMonitorPage /> },

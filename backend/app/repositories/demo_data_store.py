@@ -176,7 +176,7 @@ def _load_json_list(file_name: str) -> list[dict[str, Any]]:
 def _load_price_csv(file_name: str) -> list[dict[str, Any]]:
     with (DEMO_DATA_DIR / file_name).open(encoding="utf-8", newline="") as file:
         reader = csv.DictReader(file)
-        return [_coerce_price_row(row) for row in reader]
+        return _extend_price_history([_coerce_price_row(row) for row in reader])
 
 
 def _coerce_price_row(row: dict[str, str]) -> dict[str, Any]:
@@ -189,6 +189,67 @@ def _coerce_price_row(row: dict[str, str]) -> dict[str, Any]:
         "close": float(row["close"]),
         "volume": int(row["volume"]),
     }
+
+
+def _extend_price_history(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    synthetic_dates = [
+        "2026-05-13",
+        "2026-05-14",
+        "2026-05-15",
+        "2026-05-18",
+        "2026-05-19",
+        "2026-05-20",
+        "2026-05-21",
+        "2026-05-22",
+        "2026-05-25",
+        "2026-05-26",
+        "2026-05-27",
+        "2026-05-28",
+        "2026-05-29",
+        "2026-06-01",
+        "2026-06-02",
+        "2026-06-03",
+    ]
+    symbol_returns = {
+        "AAPL": [0.006, -0.004, 0.011, 0.003, -0.007, 0.009, 0.004, -0.003],
+        "MSFT": [0.004, 0.006, -0.003, 0.008, 0.002, -0.005, 0.007, 0.003],
+        "NVDA": [0.018, -0.012, 0.021, 0.009, -0.016, 0.024, 0.012, -0.01],
+        "SPY": [0.003, 0.004, -0.002, 0.005, 0.002, -0.003, 0.004, 0.001],
+        "BND": [0.001, -0.0005, 0.0008, 0.0012, -0.0007, 0.0006, 0.0009, -0.0004],
+        "QQQ": [0.006, 0.008, -0.005, 0.009, 0.004, -0.006, 0.008, 0.003],
+    }
+    grouped_rows: dict[str, list[dict[str, Any]]] = {}
+
+    for row in rows:
+        grouped_rows.setdefault(str(row["symbol"]), []).append(row)
+
+    extended_rows = list(rows)
+    for symbol, symbol_rows in grouped_rows.items():
+        sorted_rows = sorted(symbol_rows, key=lambda row: row["date"])
+        last_row = dict(sorted_rows[-1])
+        return_pattern = symbol_returns.get(symbol, symbol_returns["SPY"])
+
+        for index, synthetic_date in enumerate(synthetic_dates):
+            period_return = return_pattern[index % len(return_pattern)]
+            previous_close = float(last_row["close"])
+            close = round(previous_close * (1.0 + period_return), 2)
+            open_price = round(previous_close * (1.0 + period_return / 2), 2)
+            high = round(max(open_price, close) * 1.006, 2)
+            low = round(min(open_price, close) * 0.994, 2)
+            volume = int(float(last_row["volume"]) * (1.0 + 0.015 * ((index % 5) - 2)))
+
+            last_row = {
+                "date": synthetic_date,
+                "symbol": symbol,
+                "open": open_price,
+                "high": high,
+                "low": low,
+                "close": close,
+                "volume": max(volume, 1),
+            }
+            extended_rows.append(last_row)
+
+    return extended_rows
 
 
 def _next_id(prefix: str, records: dict[str, Any]) -> str:

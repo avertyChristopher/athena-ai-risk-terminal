@@ -3,10 +3,23 @@ import math
 import pytest
 
 from app.domain.market_data import (
+    calculate_annualized_return,
     calculate_cumulative_returns,
     calculate_drawdown,
+    calculate_geometric_mean_return,
+    calculate_kurtosis,
     calculate_log_returns,
+    calculate_max_drawdown,
+    calculate_moving_average,
+    calculate_percentiles,
     calculate_simple_returns,
+    calculate_skewness,
+    calculate_standard_deviation,
+    calculate_variance,
+    calculate_arithmetic_mean_return,
+    calculate_beta,
+    calculate_correlation,
+    calculate_covariance,
     detect_duplicate_dates,
     detect_missing_prices,
     detect_outliers,
@@ -54,6 +67,18 @@ def test_calculate_cumulative_returns() -> None:
     assert cumulative_returns == pytest.approx([0.10, 0.045, 0.0659])
 
 
+def test_return_summary_statistics() -> None:
+    returns = [0.10, -0.05, 0.02]
+
+    assert calculate_arithmetic_mean_return(returns) == pytest.approx(
+        0.023333333333333334,
+    )
+    assert calculate_geometric_mean_return(returns) == pytest.approx(
+        (1.1 * 0.95 * 1.02) ** (1 / 3) - 1,
+    )
+    assert calculate_annualized_return(returns, trading_days=3) == pytest.approx(0.0659)
+
+
 def test_calculate_drawdown() -> None:
     values = [100.0, 120.0, 90.0, 108.0, 130.0, 117.0]
 
@@ -65,6 +90,10 @@ def test_calculate_drawdown() -> None:
 def test_drawdown_rejects_invalid_values() -> None:
     with pytest.raises(ValueError, match="strictly positive"):
         calculate_drawdown([100.0, -95.0])
+
+
+def test_calculate_max_drawdown() -> None:
+    assert calculate_max_drawdown([100.0, 120.0, 90.0, 108.0]) == pytest.approx(-0.25)
 
 
 def test_missing_prices_are_detected() -> None:
@@ -91,6 +120,40 @@ def test_outliers_are_flagged() -> None:
     values = [10.0, 11.0, 12.0, 100.0]
 
     assert detect_outliers(values, threshold=1.0) == [3]
+
+
+def test_distribution_statistics() -> None:
+    values = [-1.0, 0.0, 1.0]
+
+    assert calculate_skewness(values) == pytest.approx(0.0)
+    assert calculate_kurtosis(values + [0.0]) == pytest.approx(-1.0)
+    assert calculate_percentiles([0.0, 10.0, 20.0, 30.0, 40.0]) == pytest.approx(
+        {
+            "p5": 2.0,
+            "p25": 10.0,
+            "p50": 20.0,
+            "p75": 30.0,
+            "p95": 38.0,
+        },
+    )
+
+
+def test_variance_standard_deviation_and_relative_stats() -> None:
+    asset_returns = [1.0, 2.0, 3.0]
+    benchmark_returns = [2.0, 4.0, 6.0]
+
+    assert calculate_variance(asset_returns) == pytest.approx(1.0)
+    assert calculate_standard_deviation(asset_returns) == pytest.approx(1.0)
+    assert calculate_covariance(asset_returns, benchmark_returns) == pytest.approx(2.0)
+    assert calculate_correlation(asset_returns, benchmark_returns) == pytest.approx(1.0)
+    assert calculate_beta(asset_returns, benchmark_returns) == pytest.approx(0.5)
+
+
+def test_moving_average_returns_none_when_not_enough_data() -> None:
+    assert calculate_moving_average([100.0, 101.0, 102.0], window=5) is None
+    assert calculate_moving_average([100.0, 101.0, 102.0], window=2) == pytest.approx(
+        101.5,
+    )
 
 
 def test_daily_and_annualized_volatility() -> None:
