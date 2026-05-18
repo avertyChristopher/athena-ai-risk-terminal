@@ -59,6 +59,79 @@
     "contentTitle": "Architecture-first foundation",
     "contentBody": "The app shell, navigation, i18n, and API hook structure are ready for incremental feature development."
   },
+  "marketData": {
+    "title": "Market Data",
+    "subtitle": "Inspect demo assets, prices, returns, volatility, and data quality.",
+    "asset": "Asset",
+    "priceChart": "Close price",
+    "returnsChart": "Daily returns",
+    "volatility": "Volatility",
+    "daily": "Daily",
+    "annualized": "Annualized",
+    "quality": "Data quality",
+    "rows": "Rows",
+    "missing": "Missing",
+    "duplicates": "Duplicates",
+    "outliers": "Outliers",
+    "table": "Price history",
+    "date": "Date",
+    "open": "Open",
+    "high": "High",
+    "low": "Low",
+    "close": "Close",
+    "volume": "Volume"
+  },
+  "portfolio": {
+    "title": "Portfolio Builder",
+    "subtitle": "Create portfolios, manage positions, and inspect allocation from demo data.",
+    "selector": "Portfolio",
+    "form": {
+      "title": "New portfolio",
+      "name": "Name",
+      "currency": "Base currency",
+      "benchmark": "Benchmark",
+      "cash": "Cash",
+      "create": "Create portfolio"
+    },
+    "details": {
+      "title": "Selected portfolio"
+    },
+    "summary": {
+      "totalValue": "Total value",
+      "positions": "Positions",
+      "cash": "Cash",
+      "largestPosition": "Largest position",
+      "benchmark": "Benchmark",
+      "baseCurrency": "Base currency",
+      "cashWeight": "Cash weight",
+      "concentration": "Top 5 holdings"
+    },
+    "positions": {
+      "title": "Positions",
+      "add": "Add position",
+      "symbol": "Symbol",
+      "name": "Name",
+      "type": "Type",
+      "quantity": "Quantity",
+      "averagePrice": "Avg price",
+      "currentPrice": "Current price",
+      "marketValue": "Market value",
+      "weight": "Weight",
+      "currency": "Currency",
+      "sector": "Sector",
+      "country": "Country",
+      "actions": "Actions",
+      "delete": "Delete"
+    },
+    "addPosition": {
+      "title": "Add position",
+      "cancel": "Cancel",
+      "add": "Add position"
+    },
+    "allocation": {
+      "sectors": "Sector allocation"
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Market Data",

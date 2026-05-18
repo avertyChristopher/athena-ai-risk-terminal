@@ -1,0 +1,7 @@
+{
+  "id": "pf_001",
+  "name": "Athena Demo Portfolio",
+  "base_currency": "USD",
+  "benchmark": "SPY",
+  "cash": 5000.0
+}

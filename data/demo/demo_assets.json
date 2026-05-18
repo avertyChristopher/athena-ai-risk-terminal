@@ -1,0 +1,50 @@
+[
+  {
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "asset_type": "equity",
+    "currency": "USD",
+    "sector": "Technology",
+    "country": "United States"
+  },
+  {
+    "symbol": "MSFT",
+    "name": "Microsoft Corporation",
+    "asset_type": "equity",
+    "currency": "USD",
+    "sector": "Technology",
+    "country": "United States"
+  },
+  {
+    "symbol": "NVDA",
+    "name": "NVIDIA Corporation",
+    "asset_type": "equity",
+    "currency": "USD",
+    "sector": "Technology",
+    "country": "United States"
+  },
+  {
+    "symbol": "SPY",
+    "name": "SPDR S&P 500 ETF Trust",
+    "asset_type": "etf",
+    "currency": "USD",
+    "sector": "Broad Market",
+    "country": "United States"
+  },
+  {
+    "symbol": "BND",
+    "name": "Vanguard Total Bond Market ETF",
+    "asset_type": "etf",
+    "currency": "USD",
+    "sector": "Fixed Income",
+    "country": "United States"
+  },
+  {
+    "symbol": "QQQ",
+    "name": "Invesco QQQ Trust",
+    "asset_type": "etf",
+    "currency": "USD",
+    "sector": "Technology",
+    "country": "United States"
+  }
+]

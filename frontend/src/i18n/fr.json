@@ -59,6 +59,79 @@
     "contentTitle": "Fondation guidée par l'architecture",
     "contentBody": "Le shell applicatif, la navigation, l'i18n et la structure des hooks API sont prêts pour le développement incrémental des fonctionnalités."
   },
+  "marketData": {
+    "title": "Donnees de marche",
+    "subtitle": "Explorer les actifs demo, les prix, les rendements, la volatilite et la qualite des donnees.",
+    "asset": "Actif",
+    "priceChart": "Prix de cloture",
+    "returnsChart": "Rendements quotidiens",
+    "volatility": "Volatilite",
+    "daily": "Quotidienne",
+    "annualized": "Annualisee",
+    "quality": "Qualite des donnees",
+    "rows": "Lignes",
+    "missing": "Manquants",
+    "duplicates": "Doublons",
+    "outliers": "Outliers",
+    "table": "Historique des prix",
+    "date": "Date",
+    "open": "Ouverture",
+    "high": "Haut",
+    "low": "Bas",
+    "close": "Cloture",
+    "volume": "Volume"
+  },
+  "portfolio": {
+    "title": "Construction de portefeuille",
+    "subtitle": "Creer des portefeuilles, gerer les positions et visualiser l'allocation depuis les donnees demo.",
+    "selector": "Portefeuille",
+    "form": {
+      "title": "Nouveau portefeuille",
+      "name": "Nom",
+      "currency": "Devise de base",
+      "benchmark": "Benchmark",
+      "cash": "Cash",
+      "create": "Creer portefeuille"
+    },
+    "details": {
+      "title": "Portefeuille selectionne"
+    },
+    "summary": {
+      "totalValue": "Valeur totale",
+      "positions": "Positions",
+      "cash": "Cash",
+      "largestPosition": "Plus grande position",
+      "benchmark": "Benchmark",
+      "baseCurrency": "Devise de base",
+      "cashWeight": "Poids cash",
+      "concentration": "Top 5 positions"
+    },
+    "positions": {
+      "title": "Positions",
+      "add": "Ajouter position",
+      "symbol": "Symbole",
+      "name": "Nom",
+      "type": "Type",
+      "quantity": "Quantite",
+      "averagePrice": "Prix moyen",
+      "currentPrice": "Prix courant",
+      "marketValue": "Valeur marche",
+      "weight": "Poids",
+      "currency": "Devise",
+      "sector": "Secteur",
+      "country": "Pays",
+      "actions": "Actions",
+      "delete": "Supprimer"
+    },
+    "addPosition": {
+      "title": "Ajouter position",
+      "cancel": "Annuler",
+      "add": "Ajouter position"
+    },
+    "allocation": {
+      "sectors": "Allocation sectorielle"
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Données de marché",

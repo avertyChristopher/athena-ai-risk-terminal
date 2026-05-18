@@ -1,0 +1,67 @@
+[
+  {
+    "id": "pos_001",
+    "portfolio_id": "pf_001",
+    "symbol": "AAPL",
+    "asset_name": "Apple Inc.",
+    "asset_type": "equity",
+    "quantity": 40,
+    "average_price": 180.0,
+    "current_price": 191.0,
+    "currency": "USD",
+    "sector": "Technology",
+    "country": "United States"
+  },
+  {
+    "id": "pos_002",
+    "portfolio_id": "pf_001",
+    "symbol": "MSFT",
+    "asset_name": "Microsoft Corporation",
+    "asset_type": "equity",
+    "quantity": 22,
+    "average_price": 395.0,
+    "current_price": 421.0,
+    "currency": "USD",
+    "sector": "Technology",
+    "country": "United States"
+  },
+  {
+    "id": "pos_003",
+    "portfolio_id": "pf_001",
+    "symbol": "NVDA",
+    "asset_name": "NVIDIA Corporation",
+    "asset_type": "equity",
+    "quantity": 35,
+    "average_price": 830.0,
+    "current_price": 910.0,
+    "currency": "USD",
+    "sector": "Technology",
+    "country": "United States"
+  },
+  {
+    "id": "pos_004",
+    "portfolio_id": "pf_001",
+    "symbol": "SPY",
+    "asset_name": "SPDR S&P 500 ETF Trust",
+    "asset_type": "etf",
+    "quantity": 30,
+    "average_price": 495.0,
+    "current_price": 512.0,
+    "currency": "USD",
+    "sector": "Broad Market",
+    "country": "United States"
+  },
+  {
+    "id": "pos_005",
+    "portfolio_id": "pf_001",
+    "symbol": "BND",
+    "asset_name": "Vanguard Total Bond Market ETF",
+    "asset_type": "etf",
+    "quantity": 120,
+    "average_price": 72.0,
+    "current_price": 71.5,
+    "currency": "USD",
+    "sector": "Fixed Income",
+    "country": "United States"
+  }
+]

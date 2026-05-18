@@ -7,6 +7,7 @@ from app.database.session import get_db
 from app.repositories.market_data_repository import MarketDataRepository
 from app.repositories.pnl_repository import PnlRepository
 from app.repositories.portfolio_repository import PortfolioRepository
+from app.repositories.position_repository import PositionRepository
 from app.repositories.report_repository import ReportRepository
 from app.repositories.risk_repository import RiskRepository
 from app.repositories.trade_repository import TradeRepository
@@ -14,6 +15,7 @@ from app.services.ai_service import AIService
 from app.services.market_data_service import MarketDataService
 from app.services.pnl_service import PnlService
 from app.services.portfolio_service import PortfolioService
+from app.services.position_service import PositionService
 from app.services.pricing_service import PricingService
 from app.services.rates_service import RatesService
 from app.services.report_service import ReportService
@@ -35,7 +37,13 @@ def get_market_data_service(
 def get_portfolio_service(
     db: Session = Depends(get_db_session),
 ) -> PortfolioService:
-    return PortfolioService(PortfolioRepository(db))
+    return PortfolioService(PortfolioRepository(db), PositionRepository(db))
+
+
+def get_position_service(
+    db: Session = Depends(get_db_session),
+) -> PositionService:
+    return PositionService(PositionRepository(db), PortfolioRepository(db))
 
 
 def get_trade_service(db: Session = Depends(get_db_session)) -> TradeService:

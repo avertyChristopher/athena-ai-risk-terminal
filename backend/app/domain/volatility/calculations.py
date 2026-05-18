@@ -5,20 +5,20 @@ from typing import Sequence
 TRADING_DAYS_PER_YEAR = 252
 
 
-def daily_volatility(returns: Sequence[float]) -> float:
+def calculate_daily_volatility(returns: Sequence[float]) -> float:
     _validate_returns(returns, minimum_length=2)
 
     return stdev(returns)
 
 
-def annualized_volatility(
+def calculate_annualized_volatility(
     returns: Sequence[float],
     trading_days: int = TRADING_DAYS_PER_YEAR,
 ) -> float:
     if trading_days <= 0:
         raise ValueError("Trading days must be positive.")
 
-    return daily_volatility(returns) * sqrt(trading_days)
+    return calculate_daily_volatility(returns) * sqrt(trading_days)
 
 
 def rolling_volatility(
@@ -48,3 +48,7 @@ def rolling_volatility(
 def _validate_returns(returns: Sequence[float], minimum_length: int) -> None:
     if len(returns) < minimum_length:
         raise ValueError(f"At least {minimum_length} returns are required.")
+
+
+daily_volatility = calculate_daily_volatility
+annualized_volatility = calculate_annualized_volatility
