@@ -1,0 +1,251 @@
+[
+  {
+    "symbol": "AAPL",
+    "company_name": "Apple Inc.",
+    "exchange": "NASDAQ",
+    "sector": "Technology",
+    "industry": "Consumer Electronics",
+    "country": "United States",
+    "currency": "USD",
+    "latest_price": 198.34,
+    "shares_outstanding": 14.85,
+    "benchmark_symbol": "SPY",
+    "security_profile": {
+      "equity_type": "Common equity",
+      "voting_rights": "One share, one vote",
+      "dividend_profile": "Mature dividend payer with modest payout and buyback focus.",
+      "book_value_context": "Market value is materially above book value because brand, ecosystem and intangible earning power dominate accounting equity.",
+      "risk_return_notes": [
+        "Large-cap quality compounder profile with lower business-model uncertainty than smaller technology issuers.",
+        "Return profile is sensitive to iPhone cycle, services growth and valuation multiple compression."
+      ]
+    },
+    "industry_analysis": {
+      "classification": "Technology hardware and services ecosystem",
+      "porter_forces": [
+        "Supplier power: moderate due to scale but exposed to semiconductor and manufacturing concentration.",
+        "Buyer power: moderate; switching costs remain meaningful inside the product ecosystem.",
+        "Competitive rivalry: high across smartphones, services and consumer devices."
+      ],
+      "pestle": [
+        "Regulatory pressure around app stores and platform economics.",
+        "FX and global consumer demand exposure.",
+        "Supply-chain localization and geopolitical risk."
+      ],
+      "competitive_position": "Premium brand, installed base, services monetization and strong capital return program."
+    },
+    "business_model": {
+      "summary": "Integrated hardware, software and services ecosystem monetized through devices, recurring services and accessories.",
+      "revenue_drivers": [
+        "iPhone replacement cycle",
+        "Services attach rate",
+        "Wearables and accessories",
+        "Installed base expansion"
+      ],
+      "pricing_power": "High brand loyalty supports premium pricing, though hardware cycles can pressure growth.",
+      "operating_leverage": "Services mix and buybacks support EPS resilience even when hardware revenue slows."
+    },
+    "fundamentals": {
+      "revenue": 391.0,
+      "gross_profit": 180.7,
+      "ebit": 123.2,
+      "ebitda": 134.6,
+      "net_income": 93.7,
+      "eps": 6.31,
+      "dividends_per_share": 1.04,
+      "assets": 365.0,
+      "liabilities": 309.0,
+      "equity": 56.0,
+      "debt": 106.0,
+      "cash": 67.0,
+      "current_assets": 143.0,
+      "current_liabilities": 145.0,
+      "receivables": 66.0,
+      "marketable_securities": 35.0,
+      "interest_expense": 3.9,
+      "operating_cash_flow": 118.0,
+      "free_cash_flow": 99.6
+    },
+    "valuation_assumptions": {
+      "required_return": 0.085,
+      "growth_rate": 0.035,
+      "sector_pe_ratio": 30.0
+    },
+    "strengths": [
+      "Exceptional brand strength and customer retention.",
+      "High free cash flow conversion with consistent capital returns.",
+      "Services mix improves revenue durability."
+    ],
+    "risks": [
+      "Hardware replacement cycles can slow revenue growth.",
+      "Regulatory pressure may affect services economics.",
+      "Premium valuation leaves less room for execution mistakes."
+    ]
+  },
+  {
+    "symbol": "MSFT",
+    "company_name": "Microsoft Corporation",
+    "exchange": "NASDAQ",
+    "sector": "Technology",
+    "industry": "Software Infrastructure",
+    "country": "United States",
+    "currency": "USD",
+    "latest_price": 512.6,
+    "shares_outstanding": 7.43,
+    "benchmark_symbol": "SPY",
+    "security_profile": {
+      "equity_type": "Common equity",
+      "voting_rights": "One share, one vote",
+      "dividend_profile": "Dividend grower with moderate payout and large reinvestment capacity.",
+      "book_value_context": "Market value reflects durable software economics, cloud scale and intangible platform assets.",
+      "risk_return_notes": [
+        "Quality growth profile driven by cloud, productivity software and AI infrastructure.",
+        "Valuation is sensitive to cloud growth, AI capex returns and enterprise IT spending."
+      ]
+    },
+    "industry_analysis": {
+      "classification": "Enterprise software, cloud infrastructure and AI platform",
+      "porter_forces": [
+        "Supplier power: moderate because AI infrastructure depends on advanced chips and data center capacity.",
+        "Buyer power: moderate; enterprise integration creates switching costs.",
+        "Competitive rivalry: high with hyperscalers and productivity software competitors."
+      ],
+      "pestle": [
+        "AI regulation and data governance requirements.",
+        "Global enterprise spending cycles.",
+        "Energy and data center capacity constraints."
+      ],
+      "competitive_position": "Diversified software platform with strong enterprise distribution and cloud scale."
+    },
+    "business_model": {
+      "summary": "Recurring enterprise software, cloud infrastructure, developer tooling, gaming and AI-enabled productivity platforms.",
+      "revenue_drivers": [
+        "Azure consumption",
+        "Microsoft 365 seat growth",
+        "AI copilots and infrastructure demand",
+        "LinkedIn and gaming monetization"
+      ],
+      "pricing_power": "Strong enterprise embeddedness supports pricing and bundling power.",
+      "operating_leverage": "Cloud scale and software gross margins support durable operating leverage despite AI capex."
+    },
+    "fundamentals": {
+      "revenue": 245.0,
+      "gross_profit": 171.0,
+      "ebit": 109.0,
+      "ebitda": 125.0,
+      "net_income": 88.1,
+      "eps": 11.85,
+      "dividends_per_share": 3.32,
+      "assets": 512.0,
+      "liabilities": 243.0,
+      "equity": 269.0,
+      "debt": 62.0,
+      "cash": 80.0,
+      "current_assets": 184.0,
+      "current_liabilities": 125.0,
+      "receivables": 56.0,
+      "marketable_securities": 40.0,
+      "interest_expense": 2.0,
+      "operating_cash_flow": 119.0,
+      "free_cash_flow": 74.0
+    },
+    "valuation_assumptions": {
+      "required_return": 0.09,
+      "growth_rate": 0.05,
+      "sector_pe_ratio": 32.0
+    },
+    "strengths": [
+      "Diversified recurring revenue base.",
+      "Strong operating margins and cloud scale.",
+      "Balance sheet capacity to fund AI infrastructure."
+    ],
+    "risks": [
+      "AI infrastructure spending may pressure free cash flow.",
+      "Cloud growth expectations are demanding.",
+      "Regulatory review of platform bundling remains a monitoring point."
+    ]
+  },
+  {
+    "symbol": "NVDA",
+    "company_name": "NVIDIA Corporation",
+    "exchange": "NASDAQ",
+    "sector": "Technology",
+    "industry": "Semiconductors",
+    "country": "United States",
+    "currency": "USD",
+    "latest_price": 138.52,
+    "shares_outstanding": 24.6,
+    "benchmark_symbol": "SPY",
+    "security_profile": {
+      "equity_type": "Common equity",
+      "voting_rights": "One share, one vote",
+      "dividend_profile": "Minimal dividend; shareholder return is primarily growth-driven.",
+      "book_value_context": "Market value is driven by data center earnings power and AI accelerator leadership rather than book equity.",
+      "risk_return_notes": [
+        "High growth and high multiple profile with elevated sensitivity to AI infrastructure cycles.",
+        "Return dispersion can be wider than diversified large-cap benchmarks."
+      ]
+    },
+    "industry_analysis": {
+      "classification": "AI accelerators, semiconductors and data center infrastructure",
+      "porter_forces": [
+        "Supplier power: moderate to high due to advanced foundry capacity constraints.",
+        "Buyer power: increasing as hyperscalers scale custom silicon efforts.",
+        "Competitive rivalry: high across GPUs, ASICs and networking platforms."
+      ],
+      "pestle": [
+        "Export controls and geopolitical restrictions.",
+        "Data center energy availability.",
+        "Semiconductor supply-chain concentration."
+      ],
+      "competitive_position": "Leading AI accelerator ecosystem with strong software moat and data center demand."
+    },
+    "business_model": {
+      "summary": "Designs GPUs, accelerators, networking and software platforms for gaming, data center, AI and professional visualization.",
+      "revenue_drivers": [
+        "AI accelerator demand",
+        "Data center networking",
+        "Gaming GPU refresh cycle",
+        "Software ecosystem adoption"
+      ],
+      "pricing_power": "Very strong in leading AI accelerators, but cyclical if supply normalizes or custom silicon substitutes accelerate.",
+      "operating_leverage": "High gross margin and scale create substantial operating leverage when data center demand expands."
+    },
+    "fundamentals": {
+      "revenue": 130.5,
+      "gross_profit": 97.0,
+      "ebit": 81.0,
+      "ebitda": 85.0,
+      "net_income": 72.9,
+      "eps": 2.96,
+      "dividends_per_share": 0.04,
+      "assets": 111.0,
+      "liabilities": 32.0,
+      "equity": 79.0,
+      "debt": 10.0,
+      "cash": 43.0,
+      "current_assets": 85.0,
+      "current_liabilities": 15.0,
+      "receivables": 24.0,
+      "marketable_securities": 18.0,
+      "interest_expense": 0.7,
+      "operating_cash_flow": 64.0,
+      "free_cash_flow": 61.0
+    },
+    "valuation_assumptions": {
+      "required_return": 0.105,
+      "growth_rate": 0.075,
+      "sector_pe_ratio": 38.0
+    },
+    "strengths": [
+      "Leadership in AI accelerators and software ecosystem.",
+      "Exceptional profitability and cash generation.",
+      "Net cash balance sheet supports investment flexibility."
+    ],
+    "risks": [
+      "Growth expectations are very high.",
+      "Customer concentration and custom silicon efforts can affect demand.",
+      "Export controls can restrict addressable markets."
+    ]
+  }
+]

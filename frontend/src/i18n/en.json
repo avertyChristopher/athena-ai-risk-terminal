@@ -60,6 +60,162 @@
     "contentTitle": "Architecture-first foundation",
     "contentBody": "The app shell, navigation, i18n, and API hook structure are ready for incremental feature development."
   },
+  "equityAnalysis": {
+    "title": "Equity Analysis",
+    "subtitle": "Single-stock fundamentals, ratios, valuation models and analyst-style diagnostics for demo large-cap equities.",
+    "selector": "Equity",
+    "apiError": "Equity analysis API is unavailable. Start the backend or check the dev script output.",
+    "table": {
+      "metric": "Metric",
+      "value": "Value"
+    },
+    "summary": {
+      "company": "Company",
+      "latestPrice": "Latest price",
+      "marketCap": "Market cap",
+      "intrinsicValue": "Intrinsic value",
+      "marginOfSafety": "Margin of safety",
+      "valuation": "Valuation status"
+    },
+    "sections": {
+      "overview": {
+        "title": "Company Overview & Security Profile",
+        "description": "Issuer identity, common equity profile, dividend policy, book value context and risk/return notes."
+      },
+      "industry": {
+        "title": "Industry & Business Model",
+        "description": "Industry structure, competitive position, revenue drivers, pricing power and operating leverage."
+      },
+      "fundamentals": {
+        "title": "Financial Statement Fundamentals & Ratios",
+        "description": "Income statement, balance sheet, cash flow, profitability, liquidity, leverage and sustainable growth metrics."
+      },
+      "valuation": {
+        "title": "Valuation Models",
+        "description": "Gordon Growth Model, dividend discount framing, valuation multiples, intrinsic value and sensitivity analysis."
+      },
+      "diagnostics": {
+        "title": "Analyst Summary & Investment Diagnostics",
+        "description": "Educational diagnostics that summarize strengths, risks and analytical classifications without investment advice."
+      }
+    },
+    "company": {
+      "title": "Company Overview",
+      "company": "Company",
+      "ticker": "Ticker",
+      "exchange": "Exchange",
+      "sector": "Sector",
+      "industry": "Industry",
+      "country": "Country",
+      "currency": "Currency",
+      "marketCap": "Market cap",
+      "latestPrice": "Latest price",
+      "benchmark": "Benchmark"
+    },
+    "security": {
+      "title": "Equity Security Profile",
+      "equityType": "Security type",
+      "votingRights": "Voting rights",
+      "dividendProfile": "Dividend profile",
+      "bookValueContext": "Market value vs book value",
+      "riskReturnNotes": "Risk/return notes"
+    },
+    "industry": {
+      "title": "Industry & Competitive Analysis",
+      "classification": "Industry classification",
+      "porter": "Porter Five Forces",
+      "pestle": "PESTLE context",
+      "position": "Competitive position"
+    },
+    "business": {
+      "title": "Business Model & Revenue Drivers",
+      "summary": "Business model summary",
+      "drivers": "Revenue drivers",
+      "pricingPower": "Pricing power",
+      "operatingLeverage": "Operating leverage"
+    },
+    "fundamentals": {
+      "title": "Financial Statement Fundamentals",
+      "revenue": "Revenue",
+      "ebit": "EBIT",
+      "ebitda": "EBITDA",
+      "netIncome": "Net income",
+      "eps": "EPS",
+      "dividends": "Dividends per share",
+      "assets": "Assets",
+      "liabilities": "Liabilities",
+      "equity": "Equity",
+      "debt": "Debt",
+      "cash": "Cash",
+      "operatingCashFlow": "Operating cash flow",
+      "freeCashFlow": "Free cash flow",
+      "bookValuePerShare": "Book value per share",
+      "enterpriseValue": "Enterprise value"
+    },
+    "ratios": {
+      "title": "Ratios & Quality Metrics",
+      "profitability": "Profitability ratios",
+      "liquidity": "Liquidity ratios",
+      "leverage": "Leverage ratios",
+      "dividend": "Dividend and growth ratios",
+      "grossMargin": "Gross margin",
+      "operatingMargin": "Operating margin",
+      "netMargin": "Net margin",
+      "roe": "ROE",
+      "roa": "ROA",
+      "currentRatio": "Current ratio",
+      "quickRatio": "Quick ratio",
+      "debtToEquity": "Debt / equity",
+      "interestCoverage": "Interest coverage",
+      "payout": "Dividend payout",
+      "retention": "Retention ratio",
+      "sustainableGrowth": "Sustainable growth"
+    },
+    "valuation": {
+      "intrinsicTitle": "Intrinsic Value",
+      "marketPrice": "Market price",
+      "ggm": "Gordon Growth value",
+      "ddm": "Dividend discount value",
+      "blended": "Blended intrinsic value",
+      "requiredReturn": "Required return",
+      "growth": "Growth rate",
+      "marginTitle": "Margin of Safety",
+      "marginDescription": "Positive values indicate intrinsic value above the current demo market price.",
+      "multiplesTitle": "Valuation Multiples",
+      "pe": "P/E",
+      "pb": "P/B",
+      "ps": "P/S",
+      "evEbitda": "EV / EBITDA",
+      "dividendYield": "Dividend yield",
+      "earningsYield": "Earnings yield",
+      "fcfYield": "Free cash flow yield",
+      "impliedCost": "Implied cost of equity",
+      "impliedGrowth": "Implied growth rate"
+    },
+    "ggm": {
+      "title": "Gordon Growth Model Calculator",
+      "dividend": "Dividend next year",
+      "requiredReturn": "Required return",
+      "growth": "Growth rate",
+      "calculate": "Calculate",
+      "intrinsicValue": "Intrinsic value",
+      "spread": "Return-growth spread",
+      "sensitivity": "Sensitivity table",
+      "invalid": "Required return must be greater than growth rate."
+    },
+    "diagnostics": {
+      "title": "Equity Diagnostics",
+      "valuation": "Valuation",
+      "profitability": "Profitability",
+      "balanceSheet": "Balance sheet",
+      "strengths": "Strengths",
+      "risks": "Risks"
+    },
+    "summaryPanel": {
+      "title": "Analyst-Style Summary",
+      "note": "Educational analysis only. Not investment advice."
+    }
+  },
   "marketData": {
     "title": "Market Data",
     "subtitle": "Inspect demo assets, prices, returns, volatility, and data quality.",

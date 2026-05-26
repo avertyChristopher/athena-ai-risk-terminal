@@ -60,6 +60,162 @@
     "contentTitle": "Fondation guidée par l'architecture",
     "contentBody": "Le shell applicatif, la navigation, l'i18n et la structure des hooks API sont prêts pour le développement incrémental des fonctionnalités."
   },
+  "equityAnalysis": {
+    "title": "Analyse actions",
+    "subtitle": "Fondamentaux, ratios, modeles de valorisation et diagnostics de type analyste pour des grandes capitalisations demo.",
+    "selector": "Action",
+    "apiError": "L'API Equity Analysis est indisponible. Lance le backend ou verifie la sortie du script dev.",
+    "table": {
+      "metric": "Metrique",
+      "value": "Valeur"
+    },
+    "summary": {
+      "company": "Societe",
+      "latestPrice": "Dernier prix",
+      "marketCap": "Capitalisation",
+      "intrinsicValue": "Valeur intrinseque",
+      "marginOfSafety": "Marge de securite",
+      "valuation": "Statut de valorisation"
+    },
+    "sections": {
+      "overview": {
+        "title": "Vue societe et profil du titre",
+        "description": "Identite de l'emetteur, profil common equity, politique de dividende, contexte book value et notes risque/rendement."
+      },
+      "industry": {
+        "title": "Industrie et modele d'affaires",
+        "description": "Structure sectorielle, position concurrentielle, moteurs de revenus, pricing power et levier operationnel."
+      },
+      "fundamentals": {
+        "title": "Fondamentaux financiers et ratios",
+        "description": "Compte de resultat, bilan, cash flow, profitabilite, liquidite, levier et croissance soutenable."
+      },
+      "valuation": {
+        "title": "Modeles de valorisation",
+        "description": "Gordon Growth Model, dividend discount, multiples, valeur intrinseque et analyse de sensibilite."
+      },
+      "diagnostics": {
+        "title": "Synthese analyste et diagnostics",
+        "description": "Diagnostics educatifs qui resument forces, risques et classifications analytiques sans conseil d'investissement."
+      }
+    },
+    "company": {
+      "title": "Vue societe",
+      "company": "Societe",
+      "ticker": "Ticker",
+      "exchange": "Bourse",
+      "sector": "Secteur",
+      "industry": "Industrie",
+      "country": "Pays",
+      "currency": "Devise",
+      "marketCap": "Capitalisation",
+      "latestPrice": "Dernier prix",
+      "benchmark": "Benchmark"
+    },
+    "security": {
+      "title": "Profil du titre equity",
+      "equityType": "Type de titre",
+      "votingRights": "Droits de vote",
+      "dividendProfile": "Profil dividende",
+      "bookValueContext": "Valeur marche vs book value",
+      "riskReturnNotes": "Notes risque/rendement"
+    },
+    "industry": {
+      "title": "Analyse industrie et concurrence",
+      "classification": "Classification sectorielle",
+      "porter": "Porter Five Forces",
+      "pestle": "Contexte PESTLE",
+      "position": "Position concurrentielle"
+    },
+    "business": {
+      "title": "Modele d'affaires et moteurs",
+      "summary": "Resume du modele",
+      "drivers": "Moteurs de revenus",
+      "pricingPower": "Pricing power",
+      "operatingLeverage": "Levier operationnel"
+    },
+    "fundamentals": {
+      "title": "Fondamentaux financiers",
+      "revenue": "Revenus",
+      "ebit": "EBIT",
+      "ebitda": "EBITDA",
+      "netIncome": "Resultat net",
+      "eps": "BPA",
+      "dividends": "Dividende par action",
+      "assets": "Actifs",
+      "liabilities": "Passifs",
+      "equity": "Capitaux propres",
+      "debt": "Dette",
+      "cash": "Cash",
+      "operatingCashFlow": "Cash flow operationnel",
+      "freeCashFlow": "Free cash flow",
+      "bookValuePerShare": "Book value par action",
+      "enterpriseValue": "Valeur d'entreprise"
+    },
+    "ratios": {
+      "title": "Ratios et qualite",
+      "profitability": "Ratios de profitabilite",
+      "liquidity": "Ratios de liquidite",
+      "leverage": "Ratios de levier",
+      "dividend": "Dividende et croissance",
+      "grossMargin": "Marge brute",
+      "operatingMargin": "Marge operationnelle",
+      "netMargin": "Marge nette",
+      "roe": "ROE",
+      "roa": "ROA",
+      "currentRatio": "Current ratio",
+      "quickRatio": "Quick ratio",
+      "debtToEquity": "Dette / equity",
+      "interestCoverage": "Couverture interets",
+      "payout": "Payout dividende",
+      "retention": "Retention",
+      "sustainableGrowth": "Croissance soutenable"
+    },
+    "valuation": {
+      "intrinsicTitle": "Valeur intrinseque",
+      "marketPrice": "Prix de marche",
+      "ggm": "Valeur Gordon Growth",
+      "ddm": "Valeur dividend discount",
+      "blended": "Valeur intrinseque combinee",
+      "requiredReturn": "Rendement exige",
+      "growth": "Taux de croissance",
+      "marginTitle": "Marge de securite",
+      "marginDescription": "Une valeur positive indique une valeur intrinseque superieure au prix de marche demo.",
+      "multiplesTitle": "Multiples de valorisation",
+      "pe": "P/E",
+      "pb": "P/B",
+      "ps": "P/S",
+      "evEbitda": "EV / EBITDA",
+      "dividendYield": "Rendement dividende",
+      "earningsYield": "Earnings yield",
+      "fcfYield": "Free cash flow yield",
+      "impliedCost": "Cout implicite des fonds propres",
+      "impliedGrowth": "Croissance implicite"
+    },
+    "ggm": {
+      "title": "Calculateur Gordon Growth Model",
+      "dividend": "Dividende annee prochaine",
+      "requiredReturn": "Rendement exige",
+      "growth": "Croissance",
+      "calculate": "Calculer",
+      "intrinsicValue": "Valeur intrinseque",
+      "spread": "Ecart rendement-croissance",
+      "sensitivity": "Table de sensibilite",
+      "invalid": "Le rendement exige doit etre superieur au taux de croissance."
+    },
+    "diagnostics": {
+      "title": "Diagnostics equity",
+      "valuation": "Valorisation",
+      "profitability": "Profitabilite",
+      "balanceSheet": "Bilan",
+      "strengths": "Forces",
+      "risks": "Risques"
+    },
+    "summaryPanel": {
+      "title": "Synthese de type analyste",
+      "note": "Analyse educative seulement. Ce n'est pas un conseil d'investissement."
+    }
+  },
   "marketData": {
     "title": "Donnees de marche",
     "subtitle": "Explorer les actifs demo, les prix, les rendements, la volatilite et la qualite des donnees.",

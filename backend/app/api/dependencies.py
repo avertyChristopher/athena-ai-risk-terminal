@@ -12,6 +12,7 @@ from app.repositories.report_repository import ReportRepository
 from app.repositories.risk_repository import RiskRepository
 from app.repositories.trade_repository import TradeRepository
 from app.services.ai_service import AIService
+from app.services.equity_analysis_service import EquityAnalysisService
 from app.services.market_data_service import MarketDataService
 from app.services.pnl_service import PnlService
 from app.services.portfolio_service import PortfolioService
@@ -32,6 +33,10 @@ def get_market_data_service(
     db: Session = Depends(get_db_session),
 ) -> MarketDataService:
     return MarketDataService(MarketDataRepository(db))
+
+
+def get_equity_analysis_service() -> EquityAnalysisService:
+    return EquityAnalysisService()
 
 
 def get_portfolio_service(

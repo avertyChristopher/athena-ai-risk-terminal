@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
 from app.api.routes.ai_routes import router as ai_router
+from app.api.routes.equity_routes import router as equity_router
 from app.api.routes.health_routes import router as health_router
 from app.api.routes.market_data_routes import router as market_data_router
 from app.api.routes.pnl_routes import router as pnl_router
@@ -39,6 +40,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health_router, prefix=settings.api_prefix)
     app.include_router(market_data_router, prefix=settings.api_prefix)
+    app.include_router(equity_router, prefix=settings.api_prefix)
     app.include_router(portfolio_router, prefix=settings.api_prefix)
     app.include_router(trade_router, prefix=settings.api_prefix)
     app.include_router(risk_router, prefix=settings.api_prefix)
