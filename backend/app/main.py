@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
 from app.api.routes.ai_routes import router as ai_router
-from app.api.routes.equity_routes import router as equity_router
 from app.api.routes.health_routes import router as health_router
 from app.api.routes.market_data_routes import router as market_data_router
 from app.api.routes.pnl_routes import router as pnl_router
@@ -16,6 +15,7 @@ from app.api.routes.trade_routes import router as trade_router
 from app.core.config import settings
 from app.core.exceptions import AthenaError, athena_exception_handler
 from app.core.logging import configure_logging
+from app.modules.equity_analysis.routes import router as equity_router
 
 
 def create_app() -> FastAPI:

@@ -1,0 +1,1 @@
+"""Rates Lab backend category."""

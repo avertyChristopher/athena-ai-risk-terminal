@@ -65,6 +65,10 @@
     "subtitle": "Fondamentaux, ratios, modeles de valorisation et diagnostics de type analyste pour des grandes capitalisations demo.",
     "selector": "Action",
     "apiError": "L'API Equity Analysis est indisponible. Lance le backend ou verifie la sortie du script dev.",
+    "controls": {
+      "benchmark": "Benchmark",
+      "demoData": "Donnees demo"
+    },
     "table": {
       "metric": "Metrique",
       "value": "Valeur"
@@ -75,9 +79,22 @@
       "marketCap": "Capitalisation",
       "intrinsicValue": "Valeur intrinseque",
       "marginOfSafety": "Marge de securite",
-      "valuation": "Statut de valorisation"
+      "pe": "Ratio P/E",
+      "pb": "Ratio P/B",
+      "dividendYield": "Rendement dividende",
+      "roe": "ROE",
+      "revenueGrowth": "Croissance revenus",
+      "valuation": "Signal de valorisation"
     },
     "sections": {
+      "marketOrganization": {
+        "title": "Organisation de marche et instruments equity",
+        "description": "Type de titre, lieu de cotation, droits de vote, liquidite et valeur marche versus book value."
+      },
+      "company": {
+        "title": "Vue d'ensemble de la societe",
+        "description": "Identite, ticker, secteur, industrie, capitalisation, actions en circulation et description du modele."
+      },
       "overview": {
         "title": "Vue societe et profil du titre",
         "description": "Identite de l'emetteur, profil common equity, politique de dividende, contexte book value et notes risque/rendement."
@@ -86,18 +103,55 @@
         "title": "Industrie et modele d'affaires",
         "description": "Structure sectorielle, position concurrentielle, moteurs de revenus, pricing power et levier operationnel."
       },
+      "business": {
+        "title": "Modele d'affaires et moteurs de revenus",
+        "description": "Moteurs de revenus, mix par segment, exposition geographique, pricing power, cyclicite et levier operationnel."
+      },
       "fundamentals": {
         "title": "Fondamentaux financiers et ratios",
         "description": "Compte de resultat, bilan, cash flow, profitabilite, liquidite, levier et croissance soutenable."
       },
+      "ratios": {
+        "title": "Ratios et mesures de qualite",
+        "description": "Profitabilite, liquidite, levier, efficacite, dividendes et score qualite depuis les fondamentaux demo."
+      },
+      "growth": {
+        "title": "Croissance, forecast et croissance soutenable",
+        "description": "Croissance des revenus, EPS, dividende, retention et diagnostics de croissance soutenable."
+      },
       "valuation": {
         "title": "Modeles de valorisation",
-        "description": "Gordon Growth Model, dividend discount, multiples, valeur intrinseque et analyse de sensibilite."
+        "description": "Gordon Growth Model, dividend discount, multiples, valeur issue du modele et analyse de sensibilite."
+      },
+      "relative": {
+        "title": "Valorisation relative et multiples",
+        "description": "Multiples de la societe compares aux medianes de pairs demo et classification premium/discount."
+      },
+      "peers": {
+        "title": "Benchmark et comparaison aux pairs",
+        "description": "Benchmark, table de pairs, profitabilite, croissance et diagnostic relatif au secteur."
+      },
+      "corporateActions": {
+        "title": "Corporate actions et retour aux actionnaires",
+        "description": "Dividendes, payout, retention, split placeholder, rachat d'actions placeholder et shareholder yield."
+      },
+      "governance": {
+        "title": "Gouvernance, ESG et facteurs de risque",
+        "description": "Placeholders gouvernance/ESG et risques societe, industrie, financiers, valorisation, liquidite et regulation."
       },
       "diagnostics": {
         "title": "Synthese analyste et diagnostics",
         "description": "Diagnostics educatifs qui resument forces, risques et classifications analytiques sans conseil d'investissement."
       }
+    },
+    "marketOrganization": {
+      "instruments": "Profil de l'instrument equity",
+      "market": "Organisation de marche",
+      "marketVsBook": "Valeur marche vs book value",
+      "type": "Type de titre",
+      "liquidity": "Note de liquidite",
+      "freeFloat": "Capitalisation free-float",
+      "marketToBook": "Marche / book"
     },
     "company": {
       "title": "Vue societe",
@@ -110,7 +164,8 @@
       "currency": "Devise",
       "marketCap": "Capitalisation",
       "latestPrice": "Dernier prix",
-      "benchmark": "Benchmark"
+      "benchmark": "Benchmark",
+      "profile": "Profil societe"
     },
     "security": {
       "title": "Profil du titre equity",
@@ -125,18 +180,29 @@
       "classification": "Classification sectorielle",
       "porter": "Porter Five Forces",
       "pestle": "Contexte PESTLE",
-      "position": "Position concurrentielle"
+      "position": "Position concurrentielle",
+      "competitiveDetails": "Details concurrentiels",
+      "barriers": "Barrieres a l'entree",
+      "pricingPower": "Pricing power",
+      "substitution": "Risque de substitution",
+      "rivalry": "Rivalite concurrentielle"
     },
     "business": {
       "title": "Modele d'affaires et moteurs",
       "summary": "Resume du modele",
       "drivers": "Moteurs de revenus",
       "pricingPower": "Pricing power",
-      "operatingLeverage": "Levier operationnel"
+      "operatingLeverage": "Levier operationnel",
+      "segments": "Segments de revenus",
+      "geographic": "Exposition geographique",
+      "cyclicality": "Cyclicite",
+      "capitalIntensity": "Intensite capitalistique"
     },
     "fundamentals": {
       "title": "Fondamentaux financiers",
       "revenue": "Revenus",
+      "grossProfit": "Marge brute",
+      "operatingIncome": "Resultat operationnel",
       "ebit": "EBIT",
       "ebitda": "EBITDA",
       "netIncome": "Resultat net",
@@ -148,9 +214,14 @@
       "debt": "Dette",
       "cash": "Cash",
       "operatingCashFlow": "Cash flow operationnel",
+      "capex": "Depenses d'investissement",
       "freeCashFlow": "Free cash flow",
       "bookValuePerShare": "Book value par action",
-      "enterpriseValue": "Valeur d'entreprise"
+      "enterpriseValue": "Valeur d'entreprise",
+      "workingCapital": "Fonds de roulement",
+      "incomeStatement": "Snapshot compte de resultat",
+      "balanceSheet": "Snapshot bilan",
+      "cashFlow": "Snapshot cash flow"
     },
     "ratios": {
       "title": "Ratios et qualite",
@@ -165,22 +236,42 @@
       "roa": "ROA",
       "currentRatio": "Current ratio",
       "quickRatio": "Quick ratio",
+      "currentRatioFormula": "Current ratio = actifs courants / passifs courants.",
+      "quickRatioFormula": "Quick ratio = cash + creances + titres negociables, divise par les passifs courants.",
       "debtToEquity": "Dette / equity",
       "interestCoverage": "Couverture interets",
       "payout": "Payout dividende",
       "retention": "Retention",
-      "sustainableGrowth": "Croissance soutenable"
+      "sustainableGrowth": "Croissance soutenable",
+      "ebitdaMargin": "Marge EBITDA",
+      "roic": "ROIC",
+      "debtToAssets": "Dette / actifs",
+      "netDebtEbitda": "Dette nette / EBITDA",
+      "assetTurnover": "Rotation des actifs",
+      "fcfMargin": "Marge free cash flow",
+      "qualityScore": "Score qualite"
+    },
+    "growth": {
+      "revenueGrowth": "Croissance revenus",
+      "epsGrowth": "Croissance BPA",
+      "operatingIncomeGrowth": "Croissance resultat operationnel",
+      "dividendGrowth": "Croissance dividende",
+      "profile": "Profil de croissance",
+      "forecast": "Hypotheses de forecast"
     },
     "valuation": {
-      "intrinsicTitle": "Valeur intrinseque",
+      "intrinsicTitle": "Valeur issue du modele dividende",
       "marketPrice": "Prix de marche",
       "ggm": "Valeur Gordon Growth",
       "ddm": "Valeur dividend discount",
-      "blended": "Valeur intrinseque combinee",
+      "blended": "Valeur combinee du modele",
       "requiredReturn": "Rendement exige",
       "growth": "Taux de croissance",
-      "marginTitle": "Marge de securite",
-      "marginDescription": "Une valeur positive indique une valeur intrinseque superieure au prix de marche demo.",
+      "marginTitle": "Ecart prix-modele",
+      "marginDescription": "Compare la valeur issue du modele dividende au prix de marche demo. C'est un signal de modele, pas une recommandation.",
+      "modelSignal": "Signal de modele",
+      "extremeMarginWarning": "Ecart de modele extreme: la valorisation par dividendes peut etre tres sensible pour les societes a faible rendement ou axees rachats d'actions.",
+      "modelLimitation": "Les modeles de dividendes supposent un payout stable et une croissance long terme constante. A lire avec les multiples et les pairs.",
       "multiplesTitle": "Multiples de valorisation",
       "pe": "P/E",
       "pb": "P/B",
@@ -192,16 +283,46 @@
       "impliedCost": "Cout implicite des fonds propres",
       "impliedGrowth": "Croissance implicite"
     },
+    "relative": {
+      "title": "Table de valorisation relative",
+      "multiple": "Multiple",
+      "company": "Societe",
+      "peerMedian": "Mediane pairs",
+      "status": "Statut",
+      "premiumDiscount": "Premium / discount"
+    },
+    "peers": {
+      "title": "Table de comparaison aux pairs",
+      "symbol": "Symbole",
+      "benchmark": "Benchmark",
+      "relativePerformance": "Performance relative",
+      "summary": "Synthese relative au secteur"
+    },
+    "corporateActions": {
+      "dividend": "Profil dividende",
+      "shareholderReturns": "Retour aux actionnaires",
+      "timeline": "Timeline corporate actions",
+      "buybackYield": "Buyback yield",
+      "totalYield": "Total shareholder yield"
+    },
+    "governance": {
+      "governance": "Gouvernance",
+      "esg": "Considerations ESG",
+      "riskFactors": "Facteurs de risque",
+      "watchlist": "Signaux a surveiller"
+    },
     "ggm": {
       "title": "Calculateur Gordon Growth Model",
       "dividend": "Dividende annee prochaine",
       "requiredReturn": "Rendement exige",
       "growth": "Croissance",
       "calculate": "Calculer",
-      "intrinsicValue": "Valeur intrinseque",
+      "intrinsicValue": "Valeur du modele GGM",
       "spread": "Ecart rendement-croissance",
       "sensitivity": "Table de sensibilite",
-      "invalid": "Le rendement exige doit etre superieur au taux de croissance."
+      "invalid": "Le rendement exige doit etre superieur au taux de croissance.",
+      "invalidCell": "Spread invalide",
+      "limitation": "Le GGM est surtout utile pour les payeurs de dividendes stables et devient tres sensible quand rendement exige et croissance sont proches."
     },
     "diagnostics": {
       "title": "Diagnostics equity",
@@ -209,7 +330,14 @@
       "profitability": "Profitabilite",
       "balanceSheet": "Bilan",
       "strengths": "Forces",
-      "risks": "Risques"
+      "risks": "Risques",
+      "cases": "Cas bull / base / bear",
+      "strengthsWeaknesses": "Forces et faiblesses",
+      "scorecard": "Scorecard diagnostics",
+      "weaknesses": "Faiblesses",
+      "dividend": "Dividende",
+      "risk": "Risque",
+      "disclaimer": "Pas un conseil d'investissement"
     },
     "summaryPanel": {
       "title": "Synthese de type analyste",

@@ -16,6 +16,8 @@ type RatiosGridProps = {
     roa: string;
     currentRatio: string;
     quickRatio: string;
+    currentRatioFormula: string;
+    quickRatioFormula: string;
     debtToEquity: string;
     interestCoverage: string;
     payout: string;
@@ -36,35 +38,36 @@ export function RatiosGrid({ ratios, labels }: RatiosGridProps) {
         <RatioGroup
           title={labels.profitability}
           rows={[
-            [labels.grossMargin, formatPercent(ratios.gross_margin)],
-            [labels.operatingMargin, formatPercent(ratios.operating_margin)],
-            [labels.netMargin, formatPercent(ratios.net_margin)],
-            [labels.roe, formatPercent(ratios.roe)],
-            [labels.roa, formatPercent(ratios.roa)],
+            [labels.grossMargin, formatNullablePercent(ratios.gross_margin)],
+            [labels.operatingMargin, formatNullablePercent(ratios.operating_margin)],
+            [labels.netMargin, formatNullablePercent(ratios.net_margin)],
+            [labels.roe, formatNullablePercent(ratios.roe)],
+            [labels.roa, formatNullablePercent(ratios.roa)],
           ]}
         />
         <RatioGroup
           title={labels.liquidity}
           rows={[
-            [labels.currentRatio, ratios.current_ratio.toFixed(2)],
-            [labels.quickRatio, ratios.quick_ratio.toFixed(2)],
+            [labels.currentRatio, formatNullableNumber(ratios.current_ratio)],
+            [labels.quickRatio, formatNullableNumber(ratios.quick_ratio)],
           ]}
+          note={`${labels.currentRatioFormula} ${labels.quickRatioFormula}`}
         />
         <RatioGroup
           title={labels.leverage}
           rows={[
-            [labels.debtToEquity, ratios.debt_to_equity.toFixed(2)],
-            [labels.interestCoverage, `${ratios.interest_coverage.toFixed(1)}x`],
+            [labels.debtToEquity, formatNullableNumber(ratios.debt_to_equity)],
+            [labels.interestCoverage, formatNullableMultiple(ratios.interest_coverage)],
           ]}
         />
         <RatioGroup
           title={labels.dividend}
           rows={[
-            [labels.payout, formatPercent(ratios.dividend_payout_ratio)],
-            [labels.retention, formatPercent(ratios.retention_ratio)],
+            [labels.payout, formatNullablePercent(ratios.dividend_payout_ratio)],
+            [labels.retention, formatNullablePercent(ratios.retention_ratio)],
             [
               labels.sustainableGrowth,
-              formatPercent(ratios.sustainable_growth_rate),
+              formatNullablePercent(ratios.sustainable_growth_rate),
             ],
           ]}
         />
@@ -73,12 +76,26 @@ export function RatiosGrid({ ratios, labels }: RatiosGridProps) {
   );
 }
 
+function formatNullablePercent(value: number | null) {
+  return value === null ? "--" : formatPercent(value);
+}
+
+function formatNullableNumber(value: number | null) {
+  return value === null ? "--" : value.toFixed(2);
+}
+
+function formatNullableMultiple(value: number | null) {
+  return value === null ? "--" : `${value.toFixed(1)}x`;
+}
+
 function RatioGroup({
   title,
   rows,
+  note,
 }: {
   title: string;
   rows: Array<[string, string]>;
+  note?: string;
 }) {
   return (
     <div className="equity-ratio-group">
@@ -89,6 +106,7 @@ function RatioGroup({
           <strong>{value}</strong>
         </div>
       ))}
+      {note ? <p className="equity-note">{note}</p> : null}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import Any
 
 
 def calculate_gordon_growth_value(
@@ -62,27 +63,37 @@ def calculate_implied_growth_rate(
     return required_return - (dividend_next_year / current_price)
 
 
-def calculate_pe_ratio(price: float, earnings_per_share: float) -> float:
+def calculate_pe_ratio(price: float, earnings_per_share: float | None) -> float | None:
     _validate_positive(price, "price")
-    _validate_positive(earnings_per_share, "earnings_per_share")
+    if not earnings_per_share:
+        return None
     return price / earnings_per_share
 
 
-def calculate_pb_ratio(price: float, book_value_per_share: float) -> float:
+def calculate_pb_ratio(
+    price: float,
+    book_value_per_share: float | None,
+) -> float | None:
     _validate_positive(price, "price")
-    _validate_positive(book_value_per_share, "book_value_per_share")
+    if not book_value_per_share:
+        return None
     return price / book_value_per_share
 
 
-def calculate_ps_ratio(market_cap: float, revenue: float) -> float:
+def calculate_ps_ratio(market_cap: float, revenue: float | None) -> float | None:
     _validate_positive(market_cap, "market_cap")
-    _validate_positive(revenue, "revenue")
+    if not revenue:
+        return None
     return market_cap / revenue
 
 
-def calculate_ev_ebitda(enterprise_value: float, ebitda: float) -> float:
+def calculate_ev_ebitda(
+    enterprise_value: float,
+    ebitda: float | None,
+) -> float | None:
     _validate_positive(enterprise_value, "enterprise_value")
-    _validate_positive(ebitda, "ebitda")
+    if not ebitda:
+        return None
     return enterprise_value / ebitda
 
 
@@ -92,14 +103,23 @@ def calculate_dividend_yield(dividend_per_share: float, price: float) -> float:
     return dividend_per_share / price
 
 
-def calculate_earnings_yield(earnings_per_share: float, price: float) -> float:
-    _validate_positive(earnings_per_share, "earnings_per_share")
+def calculate_earnings_yield(
+    earnings_per_share: float | None,
+    price: float,
+) -> float | None:
     _validate_positive(price, "price")
+    if earnings_per_share is None:
+        return None
     return earnings_per_share / price
 
 
-def calculate_free_cash_flow_yield(free_cash_flow: float, market_cap: float) -> float:
+def calculate_free_cash_flow_yield(
+    free_cash_flow: float | None,
+    market_cap: float,
+) -> float | None:
     _validate_positive(market_cap, "market_cap")
+    if free_cash_flow is None:
+        return None
     return free_cash_flow / market_cap
 
 
@@ -110,6 +130,43 @@ def calculate_margin_of_safety(
     _validate_positive(intrinsic_value, "intrinsic_value")
     _validate_positive(market_price, "market_price")
     return (intrinsic_value - market_price) / intrinsic_value
+
+
+def calculate_valuation_status(margin_of_safety: float | None) -> str:
+    if margin_of_safety is None:
+        return "Insufficient valuation inputs"
+    if margin_of_safety >= 0.15:
+        return "Model-implied discount"
+    if margin_of_safety <= -0.15:
+        return "Model-implied premium"
+    return "Near model fair value"
+
+
+def calculate_valuation_sensitivity_table(
+    dividend_next_year: float,
+    required_returns: Sequence[float],
+    growth_rates: Sequence[float],
+) -> list[dict[str, Any]]:
+    cells: list[dict[str, Any]] = []
+    for required_return in required_returns:
+        for growth_rate in growth_rates:
+            try:
+                value = calculate_gordon_growth_value(
+                    dividend_next_year,
+                    required_return,
+                    growth_rate,
+                )
+            except ValueError:
+                value = None
+            cells.append(
+                {
+                    "required_return": required_return,
+                    "growth_rate": growth_rate,
+                    "intrinsic_value": value,
+                },
+            )
+
+    return cells
 
 
 def _validate_rate(value: float, field_name: str) -> None:

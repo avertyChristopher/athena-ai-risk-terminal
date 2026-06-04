@@ -21,6 +21,8 @@ type GGMCalculatorProps = {
     spread: string;
     sensitivity: string;
     invalid: string;
+    invalidCell: string;
+    limitation: string;
   };
 };
 
@@ -44,7 +46,7 @@ export function GGMCalculator({ valuation, labels }: GGMCalculatorProps) {
       intrinsic_value: valuation.gordon_growth_value,
       spread: valuation.required_return - valuation.growth_rate,
     });
-    setSensitivity(null);
+    setSensitivity({ cells: valuation.sensitivity_table });
     setError("");
   }, [valuation]);
 
@@ -159,14 +161,15 @@ export function GGMCalculator({ valuation, labels }: GGMCalculatorProps) {
                 {growthRates.map((growthRate) => {
                   const cell = sensitivity?.cells.find(
                     (item) =>
-                      item.required_return === requiredReturnValue &&
-                      item.growth_rate === growthRate,
+                      isSameRate(item.required_return, requiredReturnValue) &&
+                      isSameRate(item.growth_rate, growthRate),
                   );
                   return (
                     <td key={growthRate}>
-                      {cell?.intrinsic_value
+                      {cell?.intrinsic_value !== null &&
+                      cell?.intrinsic_value !== undefined
                         ? formatCurrency(cell.intrinsic_value)
-                        : "--"}
+                        : labels.invalidCell}
                     </td>
                   );
                 })}
@@ -175,6 +178,18 @@ export function GGMCalculator({ valuation, labels }: GGMCalculatorProps) {
           </tbody>
         </table>
       </div>
+
+      <div className="model-warning-list">
+        <p>{labels.limitation}</p>
+        {valuation?.warnings
+          .filter((warning) => /GGM|dividend|model/i.test(warning))
+          .slice(0, 2)
+          .map((warning) => <span key={warning}>{warning}</span>)}
+      </div>
     </section>
   );
+}
+
+function isSameRate(first: number, second: number) {
+  return Math.abs(first - second) < 0.00001;
 }

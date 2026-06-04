@@ -11,6 +11,7 @@ type IntrinsicValueCardProps = {
     blended: string;
     requiredReturn: string;
     growth: string;
+    limitation: string;
   };
 };
 
@@ -42,9 +43,11 @@ export function IntrinsicValueCard({ valuation, labels }: IntrinsicValueCardProp
       </div>
       <p className="equity-note">
         {labels.requiredReturn}:{" "}
-        {valuation ? formatPercent(valuation.required_return) : "--"} / {labels.growth}:{" "}
+        {valuation ? formatPercent(valuation.required_return) : "--"} /{" "}
+        {labels.growth}:{" "}
         {valuation ? formatPercent(valuation.growth_rate) : "--"}
       </p>
+      <p className="equity-note equity-note--warning">{labels.limitation}</p>
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import { formatCurrency } from "../../../lib/formatters";
+import { formatCurrency, formatLargeCurrency } from "../../../lib/formatters";
 import { EquityOverviewResponse } from "../../../types/equity";
 
 type CompanyOverviewCardProps = {
@@ -34,7 +34,7 @@ export function CompanyOverviewCard({
     [labels.industry, overview.industry],
     [labels.country, overview.country],
     [labels.currency, overview.currency],
-    [labels.marketCap, formatCurrency(overview.market_cap * 1_000_000_000)],
+    [labels.marketCap, formatLargeCurrency(overview.market_cap)],
     [labels.latestPrice, formatCurrency(overview.latest_price, overview.currency)],
     [labels.benchmark, overview.benchmark_symbol],
   ];

@@ -1,4 +1,4 @@
-import { formatPercent } from "../../../lib/formatters";
+import { formatMultiple, formatPercent } from "../../../lib/formatters";
 import { EquityValuationResponse } from "../../../types/equity";
 
 type ValuationMultiplesTableProps = {
@@ -25,13 +25,21 @@ export function ValuationMultiplesTable({
 }: ValuationMultiplesTableProps) {
   const rows = valuation
     ? [
-        [labels.pe, valuation.pe_ratio.toFixed(1)],
-        [labels.pb, valuation.pb_ratio.toFixed(1)],
-        [labels.ps, valuation.ps_ratio.toFixed(1)],
-        [labels.evEbitda, valuation.ev_ebitda.toFixed(1)],
+        [labels.pe, formatMultiple(valuation.pe_ratio)],
+        [labels.pb, formatMultiple(valuation.pb_ratio)],
+        [labels.ps, formatMultiple(valuation.ps_ratio)],
+        [labels.evEbitda, formatMultiple(valuation.ev_ebitda)],
         [labels.dividendYield, formatPercent(valuation.dividend_yield)],
-        [labels.earningsYield, formatPercent(valuation.earnings_yield)],
-        [labels.fcfYield, formatPercent(valuation.free_cash_flow_yield)],
+        [
+          labels.earningsYield,
+          valuation.earnings_yield === null ? "--" : formatPercent(valuation.earnings_yield),
+        ],
+        [
+          labels.fcfYield,
+          valuation.free_cash_flow_yield === null
+            ? "--"
+            : formatPercent(valuation.free_cash_flow_yield),
+        ],
         [labels.impliedCost, formatPercent(valuation.implied_cost_of_equity)],
         [labels.impliedGrowth, formatPercent(valuation.implied_growth_rate)],
       ]

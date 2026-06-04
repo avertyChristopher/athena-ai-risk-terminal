@@ -65,6 +65,10 @@
     "subtitle": "Single-stock fundamentals, ratios, valuation models and analyst-style diagnostics for demo large-cap equities.",
     "selector": "Equity",
     "apiError": "Equity analysis API is unavailable. Start the backend or check the dev script output.",
+    "controls": {
+      "benchmark": "Benchmark",
+      "demoData": "Demo data"
+    },
     "table": {
       "metric": "Metric",
       "value": "Value"
@@ -75,9 +79,22 @@
       "marketCap": "Market cap",
       "intrinsicValue": "Intrinsic value",
       "marginOfSafety": "Margin of safety",
-      "valuation": "Valuation status"
+      "pe": "P/E ratio",
+      "pb": "P/B ratio",
+      "dividendYield": "Dividend yield",
+      "roe": "ROE",
+      "revenueGrowth": "Revenue growth",
+      "valuation": "Valuation signal"
     },
     "sections": {
+      "marketOrganization": {
+        "title": "Market Organization & Equity Instruments",
+        "description": "Security type, listing venue, voting rights, liquidity context and market value versus book value."
+      },
+      "company": {
+        "title": "Company Overview",
+        "description": "Company identity, ticker, sector, industry, market capitalization, shares outstanding and business description."
+      },
       "overview": {
         "title": "Company Overview & Security Profile",
         "description": "Issuer identity, common equity profile, dividend policy, book value context and risk/return notes."
@@ -86,18 +103,55 @@
         "title": "Industry & Business Model",
         "description": "Industry structure, competitive position, revenue drivers, pricing power and operating leverage."
       },
+      "business": {
+        "title": "Business Model & Revenue Drivers",
+        "description": "Revenue drivers, segment mix, geographic exposure placeholders, pricing power, cyclicality and operating leverage."
+      },
       "fundamentals": {
         "title": "Financial Statement Fundamentals & Ratios",
         "description": "Income statement, balance sheet, cash flow, profitability, liquidity, leverage and sustainable growth metrics."
       },
+      "ratios": {
+        "title": "Ratios & Quality Metrics",
+        "description": "Profitability, liquidity, leverage, efficiency, dividend and quality metrics from deterministic demo fundamentals."
+      },
+      "growth": {
+        "title": "Growth, Forecasting & Sustainable Growth",
+        "description": "Revenue growth, EPS growth, dividend growth, retention ratio and sustainable growth diagnostics."
+      },
       "valuation": {
         "title": "Valuation Models",
-        "description": "Gordon Growth Model, dividend discount framing, valuation multiples, intrinsic value and sensitivity analysis."
+        "description": "Gordon Growth Model, dividend discount framing, valuation multiples, model-implied value and sensitivity analysis."
+      },
+      "relative": {
+        "title": "Relative Valuation & Multiples",
+        "description": "Company multiples compared with demo peer medians and premium or discount classifications."
+      },
+      "peers": {
+        "title": "Benchmark & Peer Comparison",
+        "description": "Benchmark symbol, peer table, profitability versus peers, growth versus peers and sector-relative diagnostics."
+      },
+      "corporateActions": {
+        "title": "Corporate Actions & Shareholder Returns",
+        "description": "Dividend profile, payout, retention, stock split placeholder, repurchase placeholder and shareholder yield."
+      },
+      "governance": {
+        "title": "Governance, ESG & Risk Factors",
+        "description": "Governance and ESG placeholders plus company, industry, financial, valuation, liquidity and regulatory risks."
       },
       "diagnostics": {
         "title": "Analyst Summary & Investment Diagnostics",
         "description": "Educational diagnostics that summarize strengths, risks and analytical classifications without investment advice."
       }
+    },
+    "marketOrganization": {
+      "instruments": "Equity instrument profile",
+      "market": "Market organization",
+      "marketVsBook": "Market value vs book value",
+      "type": "Security type",
+      "liquidity": "Liquidity note",
+      "freeFloat": "Free-float market cap",
+      "marketToBook": "Market / book"
     },
     "company": {
       "title": "Company Overview",
@@ -110,7 +164,8 @@
       "currency": "Currency",
       "marketCap": "Market cap",
       "latestPrice": "Latest price",
-      "benchmark": "Benchmark"
+      "benchmark": "Benchmark",
+      "profile": "Company profile"
     },
     "security": {
       "title": "Equity Security Profile",
@@ -125,18 +180,29 @@
       "classification": "Industry classification",
       "porter": "Porter Five Forces",
       "pestle": "PESTLE context",
-      "position": "Competitive position"
+      "position": "Competitive position",
+      "competitiveDetails": "Competitive details",
+      "barriers": "Barriers to entry",
+      "pricingPower": "Pricing power",
+      "substitution": "Substitution risk",
+      "rivalry": "Competitive rivalry"
     },
     "business": {
       "title": "Business Model & Revenue Drivers",
       "summary": "Business model summary",
       "drivers": "Revenue drivers",
       "pricingPower": "Pricing power",
-      "operatingLeverage": "Operating leverage"
+      "operatingLeverage": "Operating leverage",
+      "segments": "Revenue segments",
+      "geographic": "Geographic exposure",
+      "cyclicality": "Cyclicality",
+      "capitalIntensity": "Capital intensity"
     },
     "fundamentals": {
       "title": "Financial Statement Fundamentals",
       "revenue": "Revenue",
+      "grossProfit": "Gross profit",
+      "operatingIncome": "Operating income",
       "ebit": "EBIT",
       "ebitda": "EBITDA",
       "netIncome": "Net income",
@@ -148,9 +214,14 @@
       "debt": "Debt",
       "cash": "Cash",
       "operatingCashFlow": "Operating cash flow",
+      "capex": "Capital expenditures",
       "freeCashFlow": "Free cash flow",
       "bookValuePerShare": "Book value per share",
-      "enterpriseValue": "Enterprise value"
+      "enterpriseValue": "Enterprise value",
+      "workingCapital": "Working capital",
+      "incomeStatement": "Income statement snapshot",
+      "balanceSheet": "Balance sheet snapshot",
+      "cashFlow": "Cash flow snapshot"
     },
     "ratios": {
       "title": "Ratios & Quality Metrics",
@@ -165,22 +236,42 @@
       "roa": "ROA",
       "currentRatio": "Current ratio",
       "quickRatio": "Quick ratio",
+      "currentRatioFormula": "Current ratio = current assets / current liabilities.",
+      "quickRatioFormula": "Quick ratio = cash + receivables + marketable securities, divided by current liabilities.",
       "debtToEquity": "Debt / equity",
       "interestCoverage": "Interest coverage",
       "payout": "Dividend payout",
       "retention": "Retention ratio",
-      "sustainableGrowth": "Sustainable growth"
+      "sustainableGrowth": "Sustainable growth",
+      "ebitdaMargin": "EBITDA margin",
+      "roic": "ROIC",
+      "debtToAssets": "Debt / assets",
+      "netDebtEbitda": "Net debt / EBITDA",
+      "assetTurnover": "Asset turnover",
+      "fcfMargin": "Free cash flow margin",
+      "qualityScore": "Quality score"
+    },
+    "growth": {
+      "revenueGrowth": "Revenue growth",
+      "epsGrowth": "EPS growth",
+      "operatingIncomeGrowth": "Operating income growth",
+      "dividendGrowth": "Dividend growth",
+      "profile": "Growth profile",
+      "forecast": "Forecast assumptions"
     },
     "valuation": {
-      "intrinsicTitle": "Intrinsic Value",
+      "intrinsicTitle": "Dividend Model Value",
       "marketPrice": "Market price",
       "ggm": "Gordon Growth value",
       "ddm": "Dividend discount value",
-      "blended": "Blended intrinsic value",
+      "blended": "Blended model value",
       "requiredReturn": "Required return",
       "growth": "Growth rate",
-      "marginTitle": "Margin of Safety",
-      "marginDescription": "Positive values indicate intrinsic value above the current demo market price.",
+      "marginTitle": "Model Price Gap",
+      "marginDescription": "Compares dividend-model value with the current demo market price. It is a model signal, not a recommendation.",
+      "modelSignal": "Model signal",
+      "extremeMarginWarning": "Extreme model gap: dividend-based valuation can be very sensitive for low-yield or buyback-heavy companies.",
+      "modelLimitation": "Dividend models assume stable payout behavior and constant long-run growth. Read this with multiples and peer context.",
       "multiplesTitle": "Valuation Multiples",
       "pe": "P/E",
       "pb": "P/B",
@@ -192,16 +283,46 @@
       "impliedCost": "Implied cost of equity",
       "impliedGrowth": "Implied growth rate"
     },
+    "relative": {
+      "title": "Relative valuation table",
+      "multiple": "Multiple",
+      "company": "Company",
+      "peerMedian": "Peer median",
+      "status": "Status",
+      "premiumDiscount": "Premium / discount"
+    },
+    "peers": {
+      "title": "Peer comparison table",
+      "symbol": "Symbol",
+      "benchmark": "Benchmark",
+      "relativePerformance": "Relative performance",
+      "summary": "Sector-relative summary"
+    },
+    "corporateActions": {
+      "dividend": "Dividend profile",
+      "shareholderReturns": "Shareholder returns",
+      "timeline": "Corporate actions timeline",
+      "buybackYield": "Buyback yield",
+      "totalYield": "Total shareholder yield"
+    },
+    "governance": {
+      "governance": "Governance",
+      "esg": "ESG considerations",
+      "riskFactors": "Risk factors",
+      "watchlist": "Watchlist flags"
+    },
     "ggm": {
       "title": "Gordon Growth Model Calculator",
       "dividend": "Dividend next year",
       "requiredReturn": "Required return",
       "growth": "Growth rate",
       "calculate": "Calculate",
-      "intrinsicValue": "Intrinsic value",
+      "intrinsicValue": "GGM model value",
       "spread": "Return-growth spread",
       "sensitivity": "Sensitivity table",
-      "invalid": "Required return must be greater than growth rate."
+      "invalid": "Required return must be greater than growth rate.",
+      "invalidCell": "Invalid spread",
+      "limitation": "GGM is most useful for stable dividend payers and is highly sensitive when required return and growth are close."
     },
     "diagnostics": {
       "title": "Equity Diagnostics",
@@ -209,7 +330,14 @@
       "profitability": "Profitability",
       "balanceSheet": "Balance sheet",
       "strengths": "Strengths",
-      "risks": "Risks"
+      "risks": "Risks",
+      "cases": "Bull / base / bear cases",
+      "strengthsWeaknesses": "Strengths and weaknesses",
+      "scorecard": "Diagnostics scorecard",
+      "weaknesses": "Weaknesses",
+      "dividend": "Dividend",
+      "risk": "Risk",
+      "disclaimer": "Not investment advice"
     },
     "summaryPanel": {
       "title": "Analyst-Style Summary",

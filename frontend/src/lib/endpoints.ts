@@ -10,9 +10,21 @@ export const endpoints = {
   marketDataAnalytics: (symbol: string) =>
     `/api/market-data/analytics/${symbol}`,
   equityOverview: (symbol: string) => `/api/equity/${symbol}/overview`,
+  equitySecurityProfile: (symbol: string) =>
+    `/api/equity/${symbol}/security-profile`,
+  equityIndustry: (symbol: string) => `/api/equity/${symbol}/industry`,
+  equityBusinessModel: (symbol: string) =>
+    `/api/equity/${symbol}/business-model`,
   equityFundamentals: (symbol: string) => `/api/equity/${symbol}/fundamentals`,
   equityRatios: (symbol: string) => `/api/equity/${symbol}/ratios`,
+  equityGrowth: (symbol: string) => `/api/equity/${symbol}/growth`,
   equityValuation: (symbol: string) => `/api/equity/${symbol}/valuation`,
+  equityRelativeValuation: (symbol: string) =>
+    `/api/equity/${symbol}/relative-valuation`,
+  equityPeerComparison: (symbol: string) =>
+    `/api/equity/${symbol}/peer-comparison`,
+  equityCorporateActions: (symbol: string) =>
+    `/api/equity/${symbol}/corporate-actions`,
   equityDiagnostics: (symbol: string) => `/api/equity/${symbol}/diagnostics`,
   equityGgm: "/api/equity/valuation/ggm",
   equitySensitivity: "/api/equity/valuation/sensitivity",

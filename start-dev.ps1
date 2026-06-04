@@ -112,12 +112,19 @@ try {
 
     while ($true) {
         foreach ($Job in @($BackendJob, $FrontendJob)) {
-            Receive-Job -Job $Job | ForEach-Object {
+            Receive-Job -Job $Job -ErrorAction SilentlyContinue -ErrorVariable JobLogErrors | ForEach-Object {
                 Write-Host "[$($Job.Name)] $_"
             }
 
+            foreach ($JobLogError in $JobLogErrors) {
+                Write-Host "[$($Job.Name)] $JobLogError"
+            }
+
             if ($Job.State -in @("Failed", "Stopped", "Completed")) {
-                Receive-Job -Job $Job
+                Receive-Job -Job $Job -ErrorAction SilentlyContinue -ErrorVariable FinalJobErrors
+                foreach ($FinalJobError in $FinalJobErrors) {
+                    Write-Host "[$($Job.Name)] $FinalJobError"
+                }
                 throw "$($Job.Name) stopped with state $($Job.State)."
             }
         }

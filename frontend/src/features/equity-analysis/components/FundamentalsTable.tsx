@@ -35,8 +35,8 @@ export function FundamentalsTable({
         [labels.ebit, formatBillions(fundamentals.ebit)],
         [labels.ebitda, formatBillions(fundamentals.ebitda)],
         [labels.netIncome, formatBillions(fundamentals.net_income)],
-        [labels.eps, formatCurrency(fundamentals.eps)],
-        [labels.dividends, formatCurrency(fundamentals.dividends_per_share)],
+        [labels.eps, formatNullableCurrency(fundamentals.eps)],
+        [labels.dividends, formatNullableCurrency(fundamentals.dividends_per_share)],
         [labels.assets, formatBillions(fundamentals.assets)],
         [labels.liabilities, formatBillions(fundamentals.liabilities)],
         [labels.equity, formatBillions(fundamentals.equity)],
@@ -46,7 +46,7 @@ export function FundamentalsTable({
         [labels.freeCashFlow, formatBillions(fundamentals.free_cash_flow)],
         [
           labels.bookValuePerShare,
-          formatCurrency(fundamentals.book_value_per_share),
+          formatNullableCurrency(fundamentals.book_value_per_share),
         ],
         [labels.enterpriseValue, formatBillions(fundamentals.enterprise_value)],
       ]
@@ -75,6 +75,10 @@ export function FundamentalsTable({
   );
 }
 
-function formatBillions(value: number) {
-  return `${formatCurrency(value)}B`;
+function formatBillions(value: number | null | undefined) {
+  return value === null || value === undefined ? "--" : `${formatCurrency(value)}B`;
+}
+
+function formatNullableCurrency(value: number | null | undefined) {
+  return value === null || value === undefined ? "--" : formatCurrency(value);
 }
