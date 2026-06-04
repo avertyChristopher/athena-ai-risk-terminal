@@ -1,6 +1,6 @@
 import pytest
 
-from app.domain.equity import (
+from app.modules.equity_analysis.domain import (
     calculate_debt_to_assets,
     calculate_current_ratio,
     calculate_debt_to_equity,

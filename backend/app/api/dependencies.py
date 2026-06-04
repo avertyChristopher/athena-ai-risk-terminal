@@ -11,7 +11,6 @@ from app.repositories.report_repository import ReportRepository
 from app.repositories.risk_repository import RiskRepository
 from app.repositories.trade_repository import TradeRepository
 from app.services.ai_service import AIService
-from app.services.equity_analysis_service import EquityAnalysisService
 from app.services.pnl_service import PnlService
 from app.services.portfolio_service import PortfolioService
 from app.services.position_service import PositionService
@@ -21,6 +20,7 @@ from app.services.report_service import ReportService
 from app.services.risk_service import RiskService
 from app.services.riskdna_service import RiskDnaService
 from app.services.trade_service import TradeService
+from app.modules.equity_analysis.service import EquityAnalysisService
 from app.modules.market_data.repository import MarketDataRepository
 from app.modules.market_data.service import MarketDataService
 
