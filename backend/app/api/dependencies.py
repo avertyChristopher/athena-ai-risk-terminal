@@ -4,7 +4,6 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-from app.repositories.market_data_repository import MarketDataRepository
 from app.repositories.pnl_repository import PnlRepository
 from app.repositories.portfolio_repository import PortfolioRepository
 from app.repositories.position_repository import PositionRepository
@@ -13,7 +12,6 @@ from app.repositories.risk_repository import RiskRepository
 from app.repositories.trade_repository import TradeRepository
 from app.services.ai_service import AIService
 from app.services.equity_analysis_service import EquityAnalysisService
-from app.services.market_data_service import MarketDataService
 from app.services.pnl_service import PnlService
 from app.services.portfolio_service import PortfolioService
 from app.services.position_service import PositionService
@@ -23,6 +21,8 @@ from app.services.report_service import ReportService
 from app.services.risk_service import RiskService
 from app.services.riskdna_service import RiskDnaService
 from app.services.trade_service import TradeService
+from app.modules.market_data.repository import MarketDataRepository
+from app.modules.market_data.service import MarketDataService
 
 
 def get_db_session() -> Generator[Session, None, None]:

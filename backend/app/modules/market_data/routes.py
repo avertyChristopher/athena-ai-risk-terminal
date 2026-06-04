@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies import get_market_data_service
-from app.schemas.market_data_schema import (
+from app.modules.market_data.schemas import (
     DataQualityResponse,
     MarketDataAnalyticsResponse,
     MarketAsset,
@@ -10,7 +10,7 @@ from app.schemas.market_data_schema import (
     ReturnPoint,
     VolatilityResponse,
 )
-from app.services.market_data_service import MarketDataService
+from app.modules.market_data.service import MarketDataService
 
 router = APIRouter(prefix="/market-data", tags=["market-data"])
 

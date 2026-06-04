@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from app.domain.market_data import (
+from app.modules.market_data.domain import (
     calculate_annualized_return,
     calculate_cumulative_returns,
     calculate_drawdown,

@@ -1,10 +1,10 @@
-from app.domain.market_data.returns import (
+from app.modules.market_data.domain.returns import (
     calculate_cumulative_returns,
     calculate_drawdown,
     calculate_log_returns,
     calculate_simple_returns,
 )
-from app.domain.market_data.statistics import (
+from app.modules.market_data.domain.statistics import (
     calculate_annualized_return,
     calculate_arithmetic_mean_return,
     calculate_beta,
@@ -20,14 +20,17 @@ from app.domain.market_data.statistics import (
     calculate_standard_deviation,
     calculate_variance,
 )
-from app.domain.market_data.cleaning import normalize_ohlcv_columns
-from app.domain.market_data.data_quality import (
+from app.modules.market_data.domain.cleaning import normalize_ohlcv_columns
+from app.modules.market_data.domain.data_quality import (
     detect_duplicate_dates,
     detect_missing_prices,
     detect_outliers,
 )
-from app.domain.market_data.price_series import extract_close_prices, sort_price_series
-from app.domain.market_data.validation import validate_price_data
+from app.modules.market_data.domain.price_series import (
+    extract_close_prices,
+    sort_price_series,
+)
+from app.modules.market_data.domain.validation import validate_price_data
 
 __all__ = [
     "calculate_cumulative_returns",

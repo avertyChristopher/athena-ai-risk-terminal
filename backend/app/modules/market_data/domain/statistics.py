@@ -2,7 +2,7 @@ from math import sqrt
 from statistics import mean
 from typing import Sequence
 
-from app.domain.market_data.returns import calculate_drawdown
+from app.modules.market_data.domain.returns import calculate_drawdown
 
 TRADING_DAYS_PER_YEAR = 252
 

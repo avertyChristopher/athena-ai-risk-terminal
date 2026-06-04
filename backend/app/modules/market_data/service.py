@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 
-from app.domain.market_data import (
+from app.modules.market_data.domain import (
     calculate_annualized_return,
     calculate_arithmetic_mean_return,
     calculate_beta,
@@ -30,8 +30,8 @@ from app.domain.volatility import (
     calculate_annualized_volatility,
     calculate_daily_volatility,
 )
-from app.repositories.market_data_repository import MarketDataRepository
-from app.schemas.market_data_schema import (
+from app.modules.market_data.repository import MarketDataRepository
+from app.modules.market_data.schemas import (
     DataQualityResponse,
     MarketDataAnalyticsResponse,
     MarketAsset,
