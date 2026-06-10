@@ -24,7 +24,7 @@ from app.modules.market_data.domain import (
     detect_missing_prices,
     detect_outliers,
 )
-from app.domain.portfolios import (
+from app.modules.portfolio_builder.domain import (
     calculate_allocation_by_sector,
     calculate_cash_weight,
     calculate_portfolio_market_value,

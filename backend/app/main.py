@@ -5,7 +5,6 @@ from app import __version__
 from app.api.routes.ai_routes import router as ai_router
 from app.api.routes.health_routes import router as health_router
 from app.api.routes.pnl_routes import router as pnl_router
-from app.api.routes.portfolio_routes import router as portfolio_router
 from app.api.routes.pricing_routes import router as pricing_router
 from app.api.routes.rates_routes import router as rates_router
 from app.api.routes.report_routes import router as report_router
@@ -16,6 +15,7 @@ from app.core.exceptions import AthenaError, athena_exception_handler
 from app.core.logging import configure_logging
 from app.modules.equity_analysis.routes import router as equity_router
 from app.modules.market_data.routes import router as market_data_router
+from app.modules.portfolio_builder.routes import router as portfolio_router
 
 
 def create_app() -> FastAPI:

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies import get_portfolio_service, get_position_service
-from app.schemas.portfolio_schema import (
+from app.modules.portfolio_builder.schemas import (
     AllocationResponse,
     ConcentrationResponse,
     DeleteResponse,
@@ -10,15 +10,12 @@ from app.schemas.portfolio_schema import (
     PortfolioRead,
     PortfolioSummary,
     PortfolioUpdate,
-)
-from app.schemas.position_schema import (
     PositionCreate,
     PositionListResponse,
     PositionRead,
     PositionUpdate,
 )
-from app.services.portfolio_service import PortfolioService
-from app.services.position_service import PositionService
+from app.modules.portfolio_builder.service import PortfolioService, PositionService
 
 router = APIRouter(prefix="/portfolios", tags=["portfolios"])
 
