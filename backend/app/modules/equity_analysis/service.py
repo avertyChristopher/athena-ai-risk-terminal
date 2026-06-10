@@ -5,6 +5,63 @@ from typing import Any
 
 from fastapi import HTTPException
 
+from app.modules.equity_analysis.domain.capm import (
+    calculate_capm_required_return,
+    calculate_market_risk_premium,
+    classify_required_return_signal,
+    compare_expected_return_to_required_return,
+    create_capm_warnings,
+)
+from app.modules.equity_analysis.domain.data_quality import (
+    create_equity_data_quality_score,
+    detect_missing_fundamental_fields,
+    validate_fcf_consistency,
+    validate_fundamental_completeness,
+    validate_market_cap_consistency,
+)
+from app.modules.equity_analysis.domain.dcf import (
+    calculate_dcf_sensitivity_table,
+    calculate_enterprise_value_from_fcff,
+    calculate_equity_value_from_enterprise_value,
+    calculate_fcfe,
+    calculate_fcff,
+    calculate_intrinsic_value_per_share,
+    discount_cash_flows,
+)
+from app.modules.equity_analysis.domain.dupont import (
+    calculate_asset_turnover as calculate_dupont_asset_turnover,
+    calculate_dupont_roe,
+    calculate_extended_dupont_roe,
+    calculate_financial_leverage,
+    calculate_interest_burden,
+    calculate_net_margin as calculate_dupont_net_margin,
+    calculate_tax_burden,
+    explain_dupont_drivers,
+)
+from app.modules.equity_analysis.domain.earnings_quality import (
+    calculate_accruals_ratio,
+    calculate_cash_conversion_ratio,
+    calculate_fcf_conversion_ratio,
+    classify_earnings_quality,
+    compare_net_income_to_operating_cash_flow,
+    create_earnings_quality_warnings,
+)
+from app.modules.equity_analysis.domain.equity_signals import (
+    create_equity_signal,
+    create_portfolio_builder_bridge,
+)
+from app.modules.equity_analysis.domain.historical_fundamentals import (
+    calculate_cagr,
+    calculate_margin_trends,
+    calculate_ratio_trends,
+    calculate_year_over_year_growth,
+    detect_trend_deterioration,
+    detect_trend_improvement,
+)
+from app.modules.equity_analysis.domain.sector_rules import (
+    classify_sector_ratio_emphasis,
+    interpret_sector_ratios,
+)
 from app.modules.equity_analysis.domain import (
     calculate_asset_turnover,
     calculate_book_value_per_share,
@@ -82,18 +139,30 @@ from app.modules.equity_analysis.domain import (
     summarize_share_repurchases_placeholder,
     summarize_stock_split_placeholder,
 )
+from app.modules.market_data.provider import get_market_data_provider
+from app.modules.market_data.domain.price_series import sort_price_series
+from app.modules.market_data.domain.reference_data import get_risk_free_rate_proxy
 from app.modules.equity_analysis.schemas import (
+    DcfRequest,
+    EquityCapmResponse,
     EquityBusinessModelResponse,
     EquityCorporateActionsResponse,
+    EquityDataQualityResponse,
+    EquityDcfResponse,
     EquityDiagnosticsResponse,
+    EquityDupontResponse,
+    EquityEarningsQualityResponse,
     EquityFundamentalsResponse,
     EquityGrowthResponse,
+    EquityHistoricalFundamentalsResponse,
+    EquityInstitutionalSignalsResponse,
     EquityIndustryResponse,
     EquityOverviewResponse,
     EquityPeerComparisonResponse,
     EquityRatiosResponse,
     EquityRelativeValuationResponse,
     EquitySecurityProfileResponse,
+    EquitySectorInterpretationResponse,
     EquityValuationResponse,
     GgmValuationRequest,
     GgmValuationResponse,
@@ -110,6 +179,7 @@ DEMO_EQUITIES_FILE = Path(__file__).resolve().parents[4] / "data" / "demo" / (
 class EquityAnalysisService:
     def get_overview(self, symbol: str) -> EquityOverviewResponse:
         record = self._get_equity(symbol)
+        market_context = self._market_data_context(record)
 
         return EquityOverviewResponse(
             symbol=record["symbol"],
@@ -127,8 +197,8 @@ class EquityAnalysisService:
                 record.get("free_float_percent"),
             ),
             shares_outstanding=record["shares_outstanding"],
-            latest_price=record["latest_price"],
-            beta=record.get("beta"),
+            latest_price=market_context["latest_price"],
+            beta=market_context["beta"],
             benchmark_symbol=record["benchmark_symbol"],
             business_description=record["business_description"],
             data_source="Athena deterministic demo equity dataset",
@@ -136,6 +206,12 @@ class EquityAnalysisService:
             security_profile=record["security_profile"],
             industry_analysis=record["industry_analysis"],
             business_model=record["business_model"],
+            price_source=market_context["price_source"],
+            price_timestamp=market_context["price_timestamp"],
+            benchmark_source=market_context["benchmark_source"],
+            beta_source=market_context["beta_source"],
+            risk_free_rate_source=market_context["risk_free_rate_source"],
+            data_source_notes=market_context["data_source_notes"],
         )
 
     def get_security_profile(self, symbol: str) -> EquitySecurityProfileResponse:
@@ -797,6 +873,532 @@ class EquityAnalysisService:
             )
         ]
         return SensitivityResponse(cells=cells)
+
+    def get_capm(self, symbol: str) -> EquityCapmResponse:
+        record = self._get_equity(symbol)
+        market_context = self._market_data_context(record)
+        expected_market_return = 0.08
+        expected_return = record.get("eps_growth") or record.get("revenue_growth")
+        market_risk_premium = calculate_market_risk_premium(
+            expected_market_return,
+            market_context["risk_free_rate"],
+        )
+        required_return = calculate_capm_required_return(
+            market_context["risk_free_rate"],
+            market_context["beta"],
+            market_risk_premium,
+        )
+        spread = compare_expected_return_to_required_return(
+            expected_return,
+            required_return,
+        )
+
+        return EquityCapmResponse(
+            symbol=record["symbol"],
+            risk_free_rate=market_context["risk_free_rate"],
+            beta=market_context["beta"],
+            expected_market_return=expected_market_return,
+            market_risk_premium=market_risk_premium,
+            capm_required_return=required_return,
+            expected_return=expected_return,
+            expected_return_vs_required_return=spread,
+            capm_signal=classify_required_return_signal(spread),
+            price_source=market_context["price_source"],
+            price_timestamp=market_context["price_timestamp"],
+            benchmark_source=market_context["benchmark_source"],
+            beta_source=market_context["beta_source"],
+            risk_free_rate_source=market_context["risk_free_rate_source"],
+            data_source_notes=market_context["data_source_notes"],
+            warnings=create_capm_warnings(
+                market_context["beta"],
+                market_context["risk_free_rate"],
+                market_risk_premium,
+            ),
+        )
+
+    def get_dupont(self, symbol: str) -> EquityDupontResponse:
+        record = self._get_equity(symbol)
+        fundamentals = self._fundamentals(record)
+        average_assets = fundamentals.get("average_assets") or fundamentals.get("assets")
+        average_equity = fundamentals.get("average_equity") or fundamentals.get("equity")
+        pretax_income = (
+            fundamentals.get("net_income") + fundamentals.get("interest_expense")
+            if fundamentals.get("net_income") is not None
+            and fundamentals.get("interest_expense") is not None
+            else None
+        )
+        net_margin = calculate_dupont_net_margin(
+            fundamentals.get("net_income"),
+            fundamentals.get("revenue"),
+        )
+        asset_turnover = calculate_dupont_asset_turnover(
+            fundamentals.get("revenue"),
+            average_assets,
+        )
+        financial_leverage = calculate_financial_leverage(average_assets, average_equity)
+        ebit_margin = calculate_ebit_margin(
+            fundamentals.get("ebit"),
+            fundamentals.get("revenue"),
+        )
+        tax_burden = calculate_tax_burden(fundamentals.get("net_income"), pretax_income)
+        interest_burden = calculate_interest_burden(pretax_income, fundamentals.get("ebit"))
+
+        return EquityDupontResponse(
+            symbol=record["symbol"],
+            net_margin=net_margin,
+            asset_turnover=asset_turnover,
+            financial_leverage=financial_leverage,
+            three_step_roe=calculate_dupont_roe(
+                net_margin,
+                asset_turnover,
+                financial_leverage,
+            ),
+            reported_roe=calculate_roe(
+                fundamentals.get("net_income"),
+                fundamentals.get("equity"),
+            ),
+            tax_burden=tax_burden,
+            interest_burden=interest_burden,
+            ebit_margin=ebit_margin,
+            extended_dupont_roe=calculate_extended_dupont_roe(
+                tax_burden,
+                interest_burden,
+                ebit_margin,
+                asset_turnover,
+                financial_leverage,
+            ),
+            drivers=explain_dupont_drivers(
+                net_margin,
+                asset_turnover,
+                financial_leverage,
+            ),
+            warnings=self._warnings_for_missing(
+                {
+                    "net_margin": net_margin,
+                    "asset_turnover": asset_turnover,
+                    "financial_leverage": financial_leverage,
+                },
+            ),
+        )
+
+    def get_quality_of_earnings(self, symbol: str) -> EquityEarningsQualityResponse:
+        record = self._get_equity(symbol)
+        fundamentals = self._fundamentals(record)
+        cash_conversion = calculate_cash_conversion_ratio(
+            fundamentals.get("operating_cash_flow"),
+            fundamentals.get("net_income"),
+        )
+        accruals_ratio = calculate_accruals_ratio(
+            fundamentals.get("net_income"),
+            fundamentals.get("operating_cash_flow"),
+            fundamentals.get("average_assets") or fundamentals.get("assets"),
+        )
+        fcf_conversion = calculate_fcf_conversion_ratio(
+            fundamentals.get("free_cash_flow"),
+            fundamentals.get("net_income"),
+        )
+
+        return EquityEarningsQualityResponse(
+            symbol=record["symbol"],
+            cash_conversion_ratio=cash_conversion,
+            accruals_ratio=accruals_ratio,
+            fcf_conversion_ratio=fcf_conversion,
+            net_income_vs_operating_cash_flow=compare_net_income_to_operating_cash_flow(
+                fundamentals.get("net_income"),
+                fundamentals.get("operating_cash_flow"),
+            ),
+            earnings_quality=classify_earnings_quality(
+                cash_conversion,
+                accruals_ratio,
+                fcf_conversion,
+            ),
+            earnings_persistence_placeholder="Persistence requires multi-year normalized earnings; demo trend is illustrative.",
+            non_recurring_items_placeholder="No event-level non-recurring item feed is connected yet.",
+            working_capital_quality="Working capital quality is inferred from cash conversion in demo mode.",
+            revenue_quality_placeholder="Revenue quality placeholder until segment-level recurring revenue history is available.",
+            warnings=create_earnings_quality_warnings(
+                cash_conversion,
+                accruals_ratio,
+                fcf_conversion,
+            ),
+        )
+
+    def get_historical_fundamentals(
+        self,
+        symbol: str,
+    ) -> EquityHistoricalFundamentalsResponse:
+        record = self._get_equity(symbol)
+        rows = self._historical_fundamentals(record)
+        revenue_growth = calculate_year_over_year_growth(rows, "revenue")
+        net_margin_trend = calculate_margin_trends(rows, "net_income")
+        operating_margin_trend = calculate_margin_trends(rows, "operating_income")
+        fcf_margin_trend = calculate_margin_trends(rows, "free_cash_flow")
+        debt_to_equity_trend = calculate_ratio_trends(rows, "debt", "equity")
+        revenue_values = [row["revenue"] for row in rows]
+        eps_values = [row["eps"] for row in rows]
+        trend_diagnostics = []
+        if detect_trend_improvement([row["margin"] for row in net_margin_trend]):
+            trend_diagnostics.append("Net margin trend is improving.")
+        if detect_trend_deterioration([row["ratio"] for row in debt_to_equity_trend]):
+            trend_diagnostics.append("Debt-to-equity trend is improving.")
+        if not trend_diagnostics:
+            trend_diagnostics.append("Historical trend diagnostics are neutral in demo mode.")
+
+        return EquityHistoricalFundamentalsResponse(
+            symbol=record["symbol"],
+            rows=rows,
+            revenue_cagr=calculate_cagr(revenue_values[0], revenue_values[-1], len(rows) - 1),
+            eps_cagr=calculate_cagr(eps_values[0], eps_values[-1], len(rows) - 1),
+            revenue_growth=revenue_growth,
+            margin_trends={
+                "net_margin": net_margin_trend,
+                "operating_margin": operating_margin_trend,
+                "fcf_margin": fcf_margin_trend,
+            },
+            ratio_trends={"debt_to_equity": debt_to_equity_trend},
+            trend_diagnostics=trend_diagnostics,
+            warnings=["Historical fundamentals are deterministic demo scaffolding."],
+        )
+
+    def get_dcf(self, symbol: str) -> EquityDcfResponse:
+        record = self._get_equity(symbol)
+        assumptions = record["valuation_assumptions"]
+        payload = DcfRequest(
+            symbol=record["symbol"],
+            revenue_growth_rate=min(max(record.get("revenue_growth", 0.05), 0.02), 0.12),
+            ebit_margin=calculate_ebit_margin(
+                self._fundamentals(record).get("ebit"),
+                self._fundamentals(record).get("revenue"),
+            )
+            or 0.25,
+            wacc=assumptions["required_return"],
+            cost_of_equity=assumptions["required_return"],
+            terminal_growth_rate=min(assumptions["growth_rate"], assumptions["required_return"] - 0.01),
+        )
+        return self.calculate_dcf(payload)
+
+    def calculate_dcf(self, payload: DcfRequest) -> EquityDcfResponse:
+        record = self._get_equity(payload.symbol)
+        fundamentals = self._fundamentals(record)
+        if payload.wacc <= payload.terminal_growth_rate:
+            raise HTTPException(
+                status_code=422,
+                detail="WACC must be greater than terminal growth rate.",
+            )
+        if payload.cost_of_equity <= payload.terminal_growth_rate:
+            raise HTTPException(
+                status_code=422,
+                detail="Cost of equity must be greater than terminal growth rate.",
+            )
+
+        forecast = []
+        revenue = float(fundamentals.get("revenue") or 0.0)
+        previous_working_capital = float(
+            calculate_working_capital(
+                fundamentals.get("current_assets"),
+                fundamentals.get("current_liabilities"),
+            )
+            or 0.0,
+        )
+        for year in range(1, payload.forecast_years + 1):
+            revenue *= 1.0 + payload.revenue_growth_rate
+            ebit = revenue * payload.ebit_margin
+            depreciation = revenue * payload.depreciation_percent_of_revenue
+            capex = revenue * payload.capex_percent_of_revenue
+            working_capital = revenue * payload.working_capital_percent_of_revenue
+            change_in_working_capital = working_capital - previous_working_capital
+            previous_working_capital = working_capital
+            net_income = ebit * (1.0 - payload.tax_rate)
+            fcff = calculate_fcff(
+                ebit,
+                payload.tax_rate,
+                depreciation,
+                capex,
+                change_in_working_capital,
+            )
+            fcfe = calculate_fcfe(
+                net_income,
+                depreciation,
+                capex,
+                change_in_working_capital,
+                payload.net_borrowing,
+            )
+            forecast.append(
+                {
+                    "year": year,
+                    "revenue": revenue,
+                    "ebit": ebit,
+                    "depreciation": depreciation,
+                    "capital_expenditures": capex,
+                    "change_in_working_capital": change_in_working_capital,
+                    "fcff": fcff,
+                    "fcfe": fcfe,
+                },
+            )
+
+        fcff_values = [row["fcff"] for row in forecast]
+        fcfe_values = [row["fcfe"] for row in forecast]
+        enterprise_value = calculate_enterprise_value_from_fcff(
+            fcff_values,
+            payload.wacc,
+            payload.terminal_growth_rate,
+        )
+        equity_value_fcff = calculate_equity_value_from_enterprise_value(
+            enterprise_value,
+            fundamentals.get("debt") or 0.0,
+            fundamentals.get("cash") or 0.0,
+        )
+        terminal_fcfe = calculate_gordon_growth_value(
+            fcfe_values[-1] * (1.0 + payload.terminal_growth_rate),
+            payload.cost_of_equity,
+            payload.terminal_growth_rate,
+        )
+        equity_value_fcfe = sum(discount_cash_flows(fcfe_values, payload.cost_of_equity))
+        equity_value_fcfe += terminal_fcfe / ((1.0 + payload.cost_of_equity) ** len(fcfe_values))
+        shares = float(record["shares_outstanding"])
+        intrinsic_fcff = calculate_intrinsic_value_per_share(equity_value_fcff, shares)
+        intrinsic_fcfe = calculate_intrinsic_value_per_share(equity_value_fcfe, shares)
+        market_price = float(record["latest_price"])
+
+        return EquityDcfResponse(
+            symbol=record["symbol"],
+            assumptions=payload.model_dump(exclude={"symbol"}),
+            forecast=forecast,
+            enterprise_value_fcff=enterprise_value,
+            equity_value_fcff=equity_value_fcff,
+            intrinsic_value_per_share_fcff=intrinsic_fcff,
+            equity_value_fcfe=equity_value_fcfe,
+            intrinsic_value_per_share_fcfe=intrinsic_fcfe,
+            market_price=market_price,
+            margin_of_safety_fcff=calculate_margin_of_safety(intrinsic_fcff, market_price),
+            margin_of_safety_fcfe=calculate_margin_of_safety(intrinsic_fcfe, market_price),
+            sensitivity_table=calculate_dcf_sensitivity_table(
+                fcff_values[-1],
+                [payload.wacc - 0.01, payload.wacc, payload.wacc + 0.01],
+                [
+                    payload.terminal_growth_rate - 0.01,
+                    payload.terminal_growth_rate,
+                    payload.terminal_growth_rate + 0.01,
+                ],
+            ),
+            warnings=[
+                "DCF is a deterministic CFA-style scaffold, not a full investment banking model.",
+                "Depreciation, reinvestment and net borrowing are placeholder assumptions.",
+            ],
+        )
+
+    def get_data_quality(self, symbol: str) -> EquityDataQualityResponse:
+        record = self._get_equity(symbol)
+        fundamentals = self._fundamentals(record)
+        market_cap = self._calculate_market_cap(record)
+        missing_fields = detect_missing_fundamental_fields(fundamentals)
+        negative_warnings = [
+            f"{field} is negative."
+            for field in ["revenue", "assets", "equity", "operating_cash_flow"]
+            if fundamentals.get(field) is not None and fundamentals[field] < 0
+        ]
+        market_cap_consistent = validate_market_cap_consistency(
+            market_cap,
+            record.get("latest_price"),
+            record.get("shares_outstanding"),
+        )
+        fcf_consistent = validate_fcf_consistency(
+            fundamentals.get("free_cash_flow"),
+            fundamentals.get("operating_cash_flow"),
+            fundamentals.get("capital_expenditures"),
+        )
+        warnings = []
+        if not validate_fundamental_completeness(fundamentals):
+            warnings.append("Required fundamental fields are missing.")
+        if not market_cap_consistent:
+            warnings.append("Market cap does not reconcile to price times shares.")
+        if not fcf_consistent:
+            warnings.append("Free cash flow does not reconcile to operating cash flow minus capex.")
+        warnings.extend(negative_warnings)
+        quality_score = create_equity_data_quality_score(warnings, missing_fields)
+
+        return EquityDataQualityResponse(
+            symbol=record["symbol"],
+            missing_fields=missing_fields,
+            negative_value_warnings=negative_warnings,
+            stale_data_warning="Demo data freshness is fixed; no filing date feed is connected.",
+            market_cap_consistent=market_cap_consistent,
+            fcf_consistent=fcf_consistent,
+            peer_data_available=bool(self._get_peer_metric_rows(symbol)),
+            benchmark_available=bool(record.get("benchmark_symbol")),
+            demo_data_warning="Equity fundamentals are deterministic demo data.",
+            quality_score=quality_score,
+            is_usable=quality_score >= 0.75,
+            warnings=warnings,
+        )
+
+    def get_sector_interpretation(
+        self,
+        symbol: str,
+    ) -> EquitySectorInterpretationResponse:
+        record = self._get_equity(symbol)
+        ratios = self.get_ratios(symbol)
+        return EquitySectorInterpretationResponse(
+            symbol=record["symbol"],
+            sector=record["sector"],
+            industry=record["industry"],
+            ratio_emphasis=classify_sector_ratio_emphasis(
+                record["sector"],
+                record["industry"],
+            ),
+            interpretation_notes=interpret_sector_ratios(
+                record["sector"],
+                record["industry"],
+                ratios.model_dump(),
+            ),
+        )
+
+    def get_institutional_signals(
+        self,
+        symbol: str,
+    ) -> EquityInstitutionalSignalsResponse:
+        diagnostics = self.get_diagnostics(symbol)
+        earnings_quality = self.get_quality_of_earnings(symbol)
+        capm = self.get_capm(symbol)
+        data_quality = self.get_data_quality(symbol)
+        signal = create_equity_signal(
+            diagnostics.valuation_profile,
+            earnings_quality.earnings_quality,
+            capm.capm_signal,
+            data_quality.quality_score,
+        )
+        return EquityInstitutionalSignalsResponse(
+            symbol=symbol.upper(),
+            signal=signal,
+            portfolio_builder_bridge=create_portfolio_builder_bridge(
+                data_quality.quality_score,
+                diagnostics.valuation_profile,
+                diagnostics.risk_profile,
+                capm.expected_return,
+            ),
+            data_source_notes=capm.data_source_notes,
+        )
+
+    def _market_data_context(self, record: dict[str, Any]) -> dict[str, Any]:
+        notes = []
+        latest_price = record["latest_price"]
+        price_timestamp = None
+        price_source = "demo_equities"
+        benchmark_source = "demo_equities"
+        beta_source = "demo_equities"
+        risk_free_rate_source = "market_data_demo_proxy"
+
+        try:
+            provider = get_market_data_provider("demo")
+            rows = sort_price_series(provider.get_prices(record["symbol"]))
+            if rows:
+                latest_row = rows[-1]
+                latest_price = float(latest_row["close"])
+                price_timestamp = str(latest_row["date"])
+                price_source = "market_data_demo_provider"
+        except Exception:
+            notes.append("Market Data latest price unavailable; using equity demo price.")
+
+        try:
+            risk_free_rate = get_risk_free_rate_proxy(record["currency"], "3M")
+        except Exception:
+            risk_free_rate = 0.04
+            risk_free_rate_source = "fallback_demo_rate"
+            notes.append("Market Data risk-free proxy unavailable; using fallback rate.")
+
+        return {
+            "latest_price": latest_price,
+            "price_timestamp": price_timestamp,
+            "price_source": price_source,
+            "benchmark_source": benchmark_source,
+            "beta": record.get("beta"),
+            "beta_source": beta_source,
+            "risk_free_rate": risk_free_rate,
+            "risk_free_rate_source": risk_free_rate_source,
+            "data_source_notes": notes
+            or ["Demo market data integration active; no live provider connected."],
+        }
+
+    def _historical_fundamentals(self, record: dict[str, Any]) -> list[dict[str, Any]]:
+        fundamentals = self._fundamentals(record)
+        current_year = 2026
+        rows = []
+        revenue_growth = record.get("revenue_growth") or 0.05
+        eps_growth = record.get("eps_growth") or revenue_growth
+        operating_growth = record.get("operating_income_growth") or revenue_growth
+        dividend_growth = record.get("dividend_growth_rate") or 0.02
+
+        for index, year in enumerate(range(current_year - 4, current_year + 1)):
+            years_back = current_year - year
+            revenue = self._reverse_growth(fundamentals.get("revenue"), revenue_growth, years_back)
+            operating_income = self._reverse_growth(
+                fundamentals.get("operating_income"),
+                operating_growth,
+                years_back,
+            )
+            net_income = self._reverse_growth(
+                fundamentals.get("net_income"),
+                eps_growth * 0.8,
+                years_back,
+            )
+            eps = self._reverse_growth(fundamentals.get("eps"), eps_growth, years_back)
+            dividends = self._reverse_growth(
+                fundamentals.get("dividends_per_share"),
+                dividend_growth,
+                years_back,
+            )
+            assets = self._reverse_growth(fundamentals.get("assets"), 0.04, years_back)
+            liabilities = self._reverse_growth(fundamentals.get("liabilities"), 0.035, years_back)
+            equity = self._reverse_growth(fundamentals.get("equity"), 0.045, years_back)
+            debt = self._reverse_growth(fundamentals.get("debt"), 0.02, years_back)
+            cash = self._reverse_growth(fundamentals.get("cash"), 0.03, years_back)
+            ocf = self._reverse_growth(
+                fundamentals.get("operating_cash_flow"),
+                revenue_growth,
+                years_back,
+            )
+            capex = self._reverse_growth(
+                fundamentals.get("capital_expenditures"),
+                0.05,
+                years_back,
+            )
+            fcf = ocf - capex if ocf is not None and capex is not None else None
+            gross_profit = self._reverse_growth(
+                fundamentals.get("gross_profit"),
+                revenue_growth,
+                years_back,
+            )
+            rows.append(
+                {
+                    "year": year,
+                    "revenue": revenue,
+                    "gross_profit": gross_profit,
+                    "operating_income": operating_income,
+                    "net_income": net_income,
+                    "eps": eps,
+                    "dividends_per_share": dividends,
+                    "assets": assets,
+                    "liabilities": liabilities,
+                    "equity": equity,
+                    "debt": debt,
+                    "cash": cash,
+                    "operating_cash_flow": ocf,
+                    "capital_expenditures": capex,
+                    "free_cash_flow": fcf,
+                },
+            )
+
+        return rows
+
+    def _reverse_growth(
+        self,
+        value: float | None,
+        growth_rate: float,
+        years_back: int,
+    ) -> float | None:
+        if value is None:
+            return None
+        return float(value) / ((1.0 + growth_rate) ** years_back)
 
     def _get_peer_metric_rows(self, symbol: str) -> list[dict[str, Any]]:
         normalized_symbol = symbol.upper()

@@ -17,7 +17,9 @@ export function MetricCard({
 }: MetricCardProps) {
   return (
     <Card className="metric-card">
-      <p className="metric-card__title">{title}</p>
+      <div className="metric-card__header">
+        <p className="metric-card__title">{title}</p>
+      </div>
       <div className="metric-card__value">{value}</div>
       <div className="metric-card__meta">
         <p className="metric-card__subtitle">{subtitle}</p>

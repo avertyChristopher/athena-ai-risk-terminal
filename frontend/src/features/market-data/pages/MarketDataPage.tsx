@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { PageHeader } from "../../../components/layout/PageHeader";
+import { LoadingState } from "../../../components/ui/LoadingState";
 import { apiClient } from "../../../lib/api-client";
 import { endpoints } from "../../../lib/endpoints";
 import { useTranslation } from "../../../hooks/useTranslation";
@@ -101,7 +102,7 @@ export function MarketDataPage() {
         />
       ) : null}
 
-      {assetsQuery.isLoading ? <p>{t("common.loading")}</p> : null}
+      {assetsQuery.isLoading ? <LoadingState label={t("common.loading")} /> : null}
       {assetsQuery.isError ? (
         <p className="status-message status-message--error">
           {t("marketData.apiError")}

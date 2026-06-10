@@ -15,6 +15,10 @@
     "comingSoon": "Implementation comes next in the service and domain layers.",
     "loading": "Loading",
     "unavailable": "Unavailable",
+    "workstation": "Athena workstation",
+    "institutionalDemo": "Institutional demo",
+    "researchMode": "Research mode",
+    "demoDataOnline": "Demo data online",
     "riskLevels": {
       "low": "Low",
       "medium": "Medium",
@@ -348,6 +352,8 @@
     "title": "Market Data",
     "subtitle": "Inspect demo assets, prices, returns, volatility, and data quality.",
     "asset": "Asset",
+    "selectorEyebrow": "Market universe",
+    "selectorDescription": "Choose a tracked asset to inspect clean prices, returns, volatility and benchmark diagnostics.",
     "priceChart": "Close price",
     "returnsChart": "Daily returns",
     "volatility": "Volatility",
@@ -499,7 +505,9 @@
       "sector": "Sector",
       "country": "Country",
       "actions": "Actions",
-      "delete": "Delete"
+      "delete": "Delete",
+      "emptyTitle": "No positions",
+      "emptyMessage": "Add a position to start calculating allocation, concentration and portfolio diagnostics."
     },
     "addPosition": {
       "title": "Add position",

@@ -64,9 +64,41 @@ def test_equity_extended_dashboard_endpoints_return_data() -> None:
         "/api/equity/AAPL/peer-comparison",
         "/api/equity/AAPL/corporate-actions",
         "/api/equity/AAPL/diagnostics",
+        "/api/equity/AAPL/capm",
+        "/api/equity/AAPL/dupont",
+        "/api/equity/AAPL/quality-of-earnings",
+        "/api/equity/AAPL/historical-fundamentals",
+        "/api/equity/AAPL/dcf",
+        "/api/equity/AAPL/data-quality",
+        "/api/equity/AAPL/sector-interpretation",
+        "/api/equity/AAPL/institutional-signals",
     ]
 
     for endpoint in endpoints:
         response = client.get(endpoint)
         assert response.status_code == 200
         assert response.json()["symbol"] == "AAPL"
+
+
+def test_equity_capm_uses_market_data_context_fields() -> None:
+    response = client.get("/api/equity/AAPL/capm")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["capm_required_return"] is not None
+    assert body["price_source"] in {"market_data_demo_provider", "demo_equities"}
+    assert body["risk_free_rate_source"]
+
+
+def test_equity_dcf_post_rejects_invalid_terminal_growth() -> None:
+    response = client.post(
+        "/api/equity/valuation/dcf",
+        json={
+            "symbol": "AAPL",
+            "wacc": 0.03,
+            "cost_of_equity": 0.03,
+            "terminal_growth_rate": 0.04,
+        },
+    )
+
+    assert response.status_code == 422

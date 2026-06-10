@@ -1,5 +1,6 @@
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
+import { EmptyState } from "../../../components/ui/EmptyState";
 import { PositionRead } from "../../../types/portfolio";
 
 type PositionTableProps = {
@@ -16,11 +17,17 @@ type PositionTableProps = {
     currentPrice: string;
     marketValue: string;
     weight: string;
+    portfolioWeight?: string;
+    investedWeight?: string;
+    costBasis?: string;
+    unrealizedPnl?: string;
     currency: string;
     sector: string;
     country: string;
     actions: string;
     delete: string;
+    emptyTitle?: string;
+    emptyMessage?: string;
   };
   onAddClick: () => void;
 };
@@ -39,69 +46,98 @@ export function PositionTable({
           {labels.add}
         </button>
       </div>
-      <div className="table-scroll">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>{labels.symbol}</th>
-              <th>{labels.name}</th>
-              <th>{labels.type}</th>
-              <th>{labels.quantity}</th>
-              <th>{labels.averagePrice}</th>
-              <th>{labels.currentPrice}</th>
-              <th>{labels.marketValue}</th>
-              <th>{labels.weight}</th>
-              <th>{labels.currency}</th>
-              <th>{labels.sector}</th>
-              <th>{labels.country}</th>
-              <th>{labels.actions}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {positions.map((position) => (
-              <tr key={position.id}>
-                <td>{position.symbol}</td>
-                <td>{position.asset_name}</td>
-                <td>{position.asset_type}</td>
-                <td>{position.quantity}</td>
-                <td>
-                  <MoneyValue
-                    value={position.average_price}
-                    currency={position.currency}
-                  />
-                </td>
-                <td>
-                  <MoneyValue
-                    value={position.current_price}
-                    currency={position.currency}
-                  />
-                </td>
-                <td>
-                  <MoneyValue
-                    value={position.market_value}
-                    currency={position.currency}
-                  />
-                </td>
-                <td>
-                  <PercentValue value={position.weight} />
-                </td>
-                <td>{position.currency}</td>
-                <td>{position.sector}</td>
-                <td>{position.country}</td>
-                <td>
-                  <button
-                    className="button button--ghost"
-                    type="button"
-                    onClick={() => onDelete(position.id)}
-                  >
-                    {labels.delete}
-                  </button>
-                </td>
+      {positions.length === 0 ? (
+        <EmptyState
+          title={labels.emptyTitle ?? "No positions"}
+          message={
+            labels.emptyMessage ??
+            "Add a position to start calculating allocation, concentration and portfolio diagnostics."
+          }
+        />
+      ) : (
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>{labels.symbol}</th>
+                <th>{labels.name}</th>
+                <th>{labels.type}</th>
+                <th>{labels.quantity}</th>
+                <th>{labels.averagePrice}</th>
+                <th>{labels.currentPrice}</th>
+                <th>{labels.marketValue}</th>
+                <th>{labels.portfolioWeight ?? labels.weight}</th>
+                <th>{labels.investedWeight ?? labels.weight}</th>
+                <th>{labels.costBasis ?? "Cost basis"}</th>
+                <th>{labels.unrealizedPnl ?? "Unrealized P&L"}</th>
+                <th>{labels.currency}</th>
+                <th>{labels.sector}</th>
+                <th>{labels.country}</th>
+                <th>{labels.actions}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {positions.map((position) => (
+                <tr key={position.id}>
+                  <td>{position.symbol}</td>
+                  <td>{position.asset_name}</td>
+                  <td>{position.asset_type}</td>
+                  <td>{position.quantity}</td>
+                  <td>
+                    <MoneyValue
+                      value={position.average_price}
+                      currency={position.currency}
+                    />
+                  </td>
+                  <td>
+                    <MoneyValue
+                      value={position.current_price}
+                      currency={position.currency}
+                    />
+                  </td>
+                  <td>
+                    <MoneyValue
+                      value={position.market_value}
+                      currency={position.currency}
+                    />
+                  </td>
+                  <td>
+                    <PercentValue value={position.portfolio_weight ?? position.weight} />
+                  </td>
+                  <td>
+                    <PercentValue value={position.invested_weight ?? position.weight} />
+                  </td>
+                  <td>
+                    <MoneyValue
+                      value={position.cost_basis}
+                      currency={position.currency}
+                    />
+                  </td>
+                  <td>
+                    <MoneyValue
+                      value={position.unrealized_pnl}
+                      currency={position.currency}
+                    />{" "}
+                    (<PercentValue value={position.unrealized_pnl_percent} />)
+                  </td>
+                  <td>{position.currency}</td>
+                  <td>{position.sector}</td>
+                  <td>{position.country}</td>
+                  <td>
+                    <button
+                      className="button button--ghost"
+                      type="button"
+                      onClick={() => onDelete(position.id)}
+                    >
+                      {labels.delete}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </section>
   );
 }

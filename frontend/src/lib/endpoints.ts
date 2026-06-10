@@ -26,8 +26,21 @@ export const endpoints = {
   equityCorporateActions: (symbol: string) =>
     `/api/equity/${symbol}/corporate-actions`,
   equityDiagnostics: (symbol: string) => `/api/equity/${symbol}/diagnostics`,
+  equityCapm: (symbol: string) => `/api/equity/${symbol}/capm`,
+  equityDupont: (symbol: string) => `/api/equity/${symbol}/dupont`,
+  equityQualityOfEarnings: (symbol: string) =>
+    `/api/equity/${symbol}/quality-of-earnings`,
+  equityHistoricalFundamentals: (symbol: string) =>
+    `/api/equity/${symbol}/historical-fundamentals`,
+  equityDcf: (symbol: string) => `/api/equity/${symbol}/dcf`,
+  equityDataQuality: (symbol: string) => `/api/equity/${symbol}/data-quality`,
+  equitySectorInterpretation: (symbol: string) =>
+    `/api/equity/${symbol}/sector-interpretation`,
+  equityInstitutionalSignals: (symbol: string) =>
+    `/api/equity/${symbol}/institutional-signals`,
   equityGgm: "/api/equity/valuation/ggm",
   equitySensitivity: "/api/equity/valuation/sensitivity",
+  equityDcfValuation: "/api/equity/valuation/dcf",
   portfolios: "/api/portfolios",
   portfolio: (portfolioId: string) => `/api/portfolios/${portfolioId}`,
   portfolioSummary: (portfolioId: string) =>
@@ -38,4 +51,34 @@ export const endpoints = {
     `/api/portfolios/${portfolioId}/positions/${positionId}`,
   portfolioSectorAllocation: (portfolioId: string) =>
     `/api/portfolios/${portfolioId}/allocation/sectors`,
+  portfolioAssetAllocation: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/allocation/assets`,
+  portfolioCurrencyAllocation: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/allocation/currencies`,
+  portfolioCountryAllocation: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/allocation/countries`,
+  portfolioAssetTypeAllocation: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/allocation/asset-types`,
+  portfolioConcentration: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/concentration`,
+  portfolioDiversification: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/diversification`,
+  portfolioRiskReturn: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/risk-return`,
+  portfolioBenchmark: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/benchmark`,
+  portfolioPolicy: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/policy`,
+  portfolioTargetAllocation: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/target-allocation`,
+  portfolioRebalancingPreview: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/rebalancing-preview`,
+  portfolioPerformanceMeasurement: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/performance-measurement`,
+  portfolioConstraints: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/constraints`,
+  portfolioDiagnostics: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/diagnostics`,
+  portfolioCfaConcepts: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/cfa-concepts`,
 } as const;

@@ -14,6 +14,13 @@ def calculate_portfolio_market_value(
     return sum(position_market_values) + cash
 
 
+def calculate_invested_value(position_market_values: Sequence[float]) -> float:
+    if any(market_value < 0 for market_value in position_market_values):
+        raise ValueError("Position market values cannot be negative.")
+
+    return sum(position_market_values)
+
+
 def calculate_portfolio_weights(
     position_market_values: Sequence[float],
     cash: float = 0.0,

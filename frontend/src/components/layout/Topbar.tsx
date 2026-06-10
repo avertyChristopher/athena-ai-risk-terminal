@@ -23,6 +23,7 @@ export function Topbar() {
       </div>
 
       <div className="topbar__controls">
+        <span className="topbar__status">{t("common.institutionalDemo")}</span>
         <span className="topbar__label">{t("common.language")}</span>
         <div className="topbar__language-group">
           <button

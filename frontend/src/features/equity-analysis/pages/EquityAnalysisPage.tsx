@@ -2,6 +2,7 @@ import { ReactNode, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { PageHeader } from "../../../components/layout/PageHeader";
+import { LoadingState } from "../../../components/ui/LoadingState";
 import { apiClient } from "../../../lib/api-client";
 import { endpoints } from "../../../lib/endpoints";
 import {
@@ -13,16 +14,24 @@ import {
 import { useTranslation } from "../../../hooks/useTranslation";
 import {
   EquityBusinessModelResponse,
+  EquityCapmResponse,
   EquityCorporateActionsResponse,
+  EquityDataQualityResponse,
+  EquityDcfResponse,
   EquityDiagnosticsResponse,
+  EquityDupontResponse,
+  EquityEarningsQualityResponse,
   EquityFundamentalsResponse,
   EquityGrowthResponse,
+  EquityHistoricalFundamentalsResponse,
+  EquityInstitutionalSignalsResponse,
   EquityIndustryResponse,
   EquityOverviewResponse,
   EquityPeerComparisonResponse,
   EquityRatiosResponse,
   EquityRelativeValuationResponse,
   EquitySecurityProfileResponse,
+  EquitySectorInterpretationResponse,
   EquityValuationResponse,
 } from "../../../types/equity";
 import { AnalystSummaryPanel } from "../components/AnalystSummaryPanel";
@@ -123,6 +132,47 @@ export function EquityAnalysisPage() {
     selectedSymbol,
     endpoints.equityDiagnostics,
   );
+  const capmQuery = useEquityQuery<EquityCapmResponse>(
+    "capm",
+    selectedSymbol,
+    endpoints.equityCapm,
+  );
+  const dupontQuery = useEquityQuery<EquityDupontResponse>(
+    "dupont",
+    selectedSymbol,
+    endpoints.equityDupont,
+  );
+  const earningsQualityQuery = useEquityQuery<EquityEarningsQualityResponse>(
+    "quality-of-earnings",
+    selectedSymbol,
+    endpoints.equityQualityOfEarnings,
+  );
+  const historicalQuery = useEquityQuery<EquityHistoricalFundamentalsResponse>(
+    "historical-fundamentals",
+    selectedSymbol,
+    endpoints.equityHistoricalFundamentals,
+  );
+  const dcfQuery = useEquityQuery<EquityDcfResponse>(
+    "dcf",
+    selectedSymbol,
+    endpoints.equityDcf,
+  );
+  const dataQualityQuery = useEquityQuery<EquityDataQualityResponse>(
+    "data-quality",
+    selectedSymbol,
+    endpoints.equityDataQuality,
+  );
+  const sectorInterpretationQuery = useEquityQuery<EquitySectorInterpretationResponse>(
+    "sector-interpretation",
+    selectedSymbol,
+    endpoints.equitySectorInterpretation,
+  );
+  const institutionalSignalsQuery =
+    useEquityQuery<EquityInstitutionalSignalsResponse>(
+      "institutional-signals",
+      selectedSymbol,
+      endpoints.equityInstitutionalSignals,
+    );
 
   const queries = [
     overviewQuery,
@@ -137,6 +187,14 @@ export function EquityAnalysisPage() {
     peersQuery,
     corporateActionsQuery,
     diagnosticsQuery,
+    capmQuery,
+    dupontQuery,
+    earningsQualityQuery,
+    historicalQuery,
+    dcfQuery,
+    dataQualityQuery,
+    sectorInterpretationQuery,
+    institutionalSignalsQuery,
   ];
   const hasApiError = queries.some((query) => query.isError);
   const isLoading = queries.some((query) => query.isLoading);
@@ -167,7 +225,7 @@ export function EquityAnalysisPage() {
         </div>
       </div>
 
-      {isLoading ? <p>{t("common.loading")}</p> : null}
+      {isLoading ? <LoadingState label={t("common.loading")} /> : null}
       {hasApiError ? (
         <p className="status-message status-message--error">
           {t("equityAnalysis.apiError")}
@@ -242,7 +300,185 @@ export function EquityAnalysisPage() {
           label={t("equityAnalysis.summary.valuation")}
           value={valuationQuery.data?.valuation_status ?? "--"}
         />
+        <SummaryMetric
+          label="Price source"
+          value={
+            overviewQuery.data?.price_timestamp
+              ? `${overviewQuery.data.price_source} / ${overviewQuery.data.price_timestamp}`
+              : overviewQuery.data?.price_source ?? "--"
+          }
+        />
       </section>
+
+      <EquitySection
+        title="Institutional CFA workstation"
+        description="CAPM, DuPont, earnings quality, historical trends, DCF, data quality and portfolio-ready signals."
+      >
+        <div className="section-grid section-grid--three">
+          <InstitutionalPanel
+            title="CAPM required return"
+            rows={[
+              ["Beta", formatNullableMultiple(capmQuery.data?.beta)],
+              ["Risk-free rate", formatNullablePercent(capmQuery.data?.risk_free_rate)],
+              [
+                "Market risk premium",
+                formatNullablePercent(capmQuery.data?.market_risk_premium),
+              ],
+              [
+                "CAPM required return",
+                formatNullablePercent(capmQuery.data?.capm_required_return),
+              ],
+              [
+                "Expected vs required",
+                formatNullablePercent(
+                  capmQuery.data?.expected_return_vs_required_return,
+                ),
+              ],
+              ["Signal", capmQuery.data?.capm_signal ?? "--"],
+            ]}
+            notes={[
+              ...(capmQuery.data?.data_source_notes ?? []),
+              ...(capmQuery.data?.warnings ?? []),
+            ]}
+          />
+          <InstitutionalPanel
+            title="DuPont analysis"
+            rows={[
+              ["Net margin", formatNullablePercent(dupontQuery.data?.net_margin)],
+              [
+                "Asset turnover",
+                formatNullableMultiple(dupontQuery.data?.asset_turnover),
+              ],
+              [
+                "Financial leverage",
+                formatNullableMultiple(dupontQuery.data?.financial_leverage),
+              ],
+              [
+                "3-step ROE",
+                formatNullablePercent(dupontQuery.data?.three_step_roe),
+              ],
+              [
+                "Extended ROE",
+                formatNullablePercent(dupontQuery.data?.extended_dupont_roe),
+              ],
+            ]}
+            notes={[...(dupontQuery.data?.drivers ?? []), ...(dupontQuery.data?.warnings ?? [])]}
+          />
+          <InstitutionalPanel
+            title="Quality of earnings"
+            rows={[
+              [
+                "Cash conversion",
+                formatNullableMultiple(
+                  earningsQualityQuery.data?.cash_conversion_ratio,
+                ),
+              ],
+              [
+                "Accruals ratio",
+                formatNullablePercent(earningsQualityQuery.data?.accruals_ratio),
+              ],
+              [
+                "FCF conversion",
+                formatNullableMultiple(
+                  earningsQualityQuery.data?.fcf_conversion_ratio,
+                ),
+              ],
+              [
+                "Classification",
+                earningsQualityQuery.data?.earnings_quality ?? "--",
+              ],
+            ]}
+            notes={[
+              earningsQualityQuery.data?.net_income_vs_operating_cash_flow ?? "",
+              ...(earningsQualityQuery.data?.warnings ?? []),
+            ].filter(Boolean)}
+          />
+        </div>
+
+        <div className="section-grid section-grid--three">
+          <InstitutionalPanel
+            title="Historical trend diagnostics"
+            rows={[
+              ["Revenue CAGR", formatNullablePercent(historicalQuery.data?.revenue_cagr)],
+              ["EPS CAGR", formatNullablePercent(historicalQuery.data?.eps_cagr)],
+              [
+                "Years",
+                historicalQuery.data?.rows
+                  ? `${historicalQuery.data.rows[0]?.year} - ${
+                      historicalQuery.data.rows[historicalQuery.data.rows.length - 1]
+                        ?.year
+                    }`
+                  : "--",
+              ],
+            ]}
+            notes={[
+              ...(historicalQuery.data?.trend_diagnostics ?? []),
+              ...(historicalQuery.data?.warnings ?? []),
+            ]}
+          />
+          <InstitutionalPanel
+            title="DCF FCFF / FCFE foundation"
+            rows={[
+              [
+                "FCFF value/share",
+                dcfQuery.data
+                  ? formatCurrency(
+                      dcfQuery.data.intrinsic_value_per_share_fcff,
+                      overviewQuery.data?.currency ?? "USD",
+                    )
+                  : "--",
+              ],
+              [
+                "FCFE value/share",
+                dcfQuery.data
+                  ? formatCurrency(
+                      dcfQuery.data.intrinsic_value_per_share_fcfe,
+                      overviewQuery.data?.currency ?? "USD",
+                    )
+                  : "--",
+              ],
+              [
+                "FCFF margin of safety",
+                formatNullablePercent(dcfQuery.data?.margin_of_safety_fcff),
+              ],
+              [
+                "FCFE margin of safety",
+                formatNullablePercent(dcfQuery.data?.margin_of_safety_fcfe),
+              ],
+            ]}
+            notes={dcfQuery.data?.warnings}
+          />
+          <InstitutionalPanel
+            title="Data quality & sector rules"
+            rows={[
+              [
+                "Quality score",
+                dataQualityQuery.data
+                  ? `${Math.round(dataQualityQuery.data.quality_score * 100)} / 100`
+                  : "--",
+              ],
+              [
+                "Market cap check",
+                dataQualityQuery.data?.market_cap_consistent ? "Pass" : "Review",
+              ],
+              [
+                "FCF check",
+                dataQualityQuery.data?.fcf_consistent ? "Pass" : "Review",
+              ],
+              [
+                "Signal",
+                institutionalSignalsQuery.data?.signal ?? "--",
+              ],
+            ]}
+            notes={[
+              ...(sectorInterpretationQuery.data?.ratio_emphasis ?? []),
+              ...(sectorInterpretationQuery.data?.interpretation_notes ?? []),
+              ...(dataQualityQuery.data?.warnings ?? []),
+              dataQualityQuery.data?.demo_data_warning ?? "",
+            ].filter(Boolean)}
+          />
+        </div>
+      </EquitySection>
 
       <EquitySection
         title={t("equityAnalysis.sections.marketOrganization.title")}
@@ -711,6 +947,47 @@ function useEquityQuery<T>(
     queryKey: ["equity", key, symbol],
     queryFn: () => apiClient.get<T>(endpoint(symbol)),
   });
+}
+
+function InstitutionalPanel({
+  title,
+  rows,
+  notes,
+}: {
+  title: string;
+  rows: Array<[string, string]>;
+  notes?: string[];
+}) {
+  return (
+    <section className="card equity-card compact-table-card">
+      <h3>{title}</h3>
+      <table className="compact-table">
+        <tbody>
+          {rows.map(([label, value]) => (
+            <tr key={label}>
+              <td>{label}</td>
+              <td>{value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {notes?.length ? (
+        <ul>
+          {notes.map((note) => (
+            <li key={note}>{note}</li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
+
+function formatNullablePercent(value: number | null | undefined) {
+  return value === null || value === undefined ? "--" : formatPercent(value);
+}
+
+function formatNullableMultiple(value: number | null | undefined) {
+  return value === null || value === undefined ? "--" : formatMultiple(value);
 }
 
 function EquitySection({

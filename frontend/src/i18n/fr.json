@@ -15,6 +15,10 @@
     "comingSoon": "L'implémentation viendra ensuite dans les couches service et domaine.",
     "loading": "Chargement",
     "unavailable": "Indisponible",
+    "workstation": "Poste de travail Athena",
+    "institutionalDemo": "Demo institutionnelle",
+    "researchMode": "Mode recherche",
+    "demoDataOnline": "Donnees demo en ligne",
     "riskLevels": {
       "low": "Faible",
       "medium": "Moyen",
@@ -348,6 +352,8 @@
     "title": "Donnees de marche",
     "subtitle": "Explorer les actifs demo, les prix, les rendements, la volatilite et la qualite des donnees.",
     "asset": "Actif",
+    "selectorEyebrow": "Univers de marche",
+    "selectorDescription": "Choisis un actif suivi pour inspecter les prix propres, les rendements, la volatilite et les diagnostics benchmark.",
     "priceChart": "Prix de cloture",
     "returnsChart": "Rendements quotidiens",
     "volatility": "Volatilite",
@@ -499,7 +505,9 @@
       "sector": "Secteur",
       "country": "Pays",
       "actions": "Actions",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "emptyTitle": "Aucune position",
+      "emptyMessage": "Ajoute une position pour commencer a calculer l'allocation, la concentration et les diagnostics portefeuille."
     },
     "addPosition": {
       "title": "Ajouter position",

@@ -2,6 +2,9 @@ from sqlalchemy.orm import Session
 
 from app.repositories.demo_data_store import DemoDataStore
 
+_POLICIES: dict[str, dict[str, object]] = {}
+_CONSTRAINTS: dict[str, dict[str, object]] = {}
+
 
 class PortfolioRepository:
     def __init__(self, db: Session) -> None:
@@ -24,7 +27,33 @@ class PortfolioRepository:
         return DemoDataStore.update_portfolio(portfolio_id, payload)
 
     def delete_portfolio(self, portfolio_id: str) -> bool:
+        _POLICIES.pop(portfolio_id, None)
+        _CONSTRAINTS.pop(portfolio_id, None)
         return DemoDataStore.delete_portfolio(portfolio_id)
+
+    def get_policy(self, portfolio_id: str) -> dict[str, object] | None:
+        policy = _POLICIES.get(portfolio_id)
+        return dict(policy) if policy is not None else None
+
+    def update_policy(
+        self,
+        portfolio_id: str,
+        payload: dict[str, object],
+    ) -> dict[str, object]:
+        _POLICIES[portfolio_id] = payload
+        return dict(payload)
+
+    def get_constraints(self, portfolio_id: str) -> dict[str, object] | None:
+        constraints = _CONSTRAINTS.get(portfolio_id)
+        return dict(constraints) if constraints is not None else None
+
+    def update_constraints(
+        self,
+        portfolio_id: str,
+        payload: dict[str, object],
+    ) -> dict[str, object]:
+        _CONSTRAINTS[portfolio_id] = payload
+        return dict(payload)
 
 
 class PositionRepository:

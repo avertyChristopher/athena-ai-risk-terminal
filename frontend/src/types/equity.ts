@@ -54,6 +54,12 @@ export type EquityOverviewResponse = {
   security_profile: SecurityProfile;
   industry_analysis: IndustryAnalysis;
   business_model: BusinessModel;
+  price_source: string;
+  price_timestamp: string | null;
+  benchmark_source: string;
+  beta_source: string;
+  risk_free_rate_source: string;
+  data_source_notes: string[];
 };
 
 export type EquitySecurityProfileResponse = {
@@ -284,4 +290,110 @@ export type SensitivityCell = {
 
 export type SensitivityResponse = {
   cells: SensitivityCell[];
+};
+
+export type EquityCapmResponse = {
+  symbol: string;
+  risk_free_rate: number | null;
+  beta: number | null;
+  expected_market_return: number;
+  market_risk_premium: number | null;
+  capm_required_return: number | null;
+  expected_return: number | null;
+  expected_return_vs_required_return: number | null;
+  capm_signal: string;
+  price_source: string;
+  price_timestamp: string | null;
+  benchmark_source: string;
+  beta_source: string;
+  risk_free_rate_source: string;
+  data_source_notes: string[];
+  warnings: string[];
+};
+
+export type EquityDupontResponse = {
+  symbol: string;
+  net_margin: number | null;
+  asset_turnover: number | null;
+  financial_leverage: number | null;
+  three_step_roe: number | null;
+  reported_roe: number | null;
+  tax_burden: number | null;
+  interest_burden: number | null;
+  ebit_margin: number | null;
+  extended_dupont_roe: number | null;
+  drivers: string[];
+  warnings: string[];
+};
+
+export type EquityEarningsQualityResponse = {
+  symbol: string;
+  cash_conversion_ratio: number | null;
+  accruals_ratio: number | null;
+  fcf_conversion_ratio: number | null;
+  net_income_vs_operating_cash_flow: string;
+  earnings_quality: string;
+  earnings_persistence_placeholder: string;
+  non_recurring_items_placeholder: string;
+  working_capital_quality: string;
+  revenue_quality_placeholder: string;
+  warnings: string[];
+};
+
+export type EquityHistoricalFundamentalsResponse = {
+  symbol: string;
+  rows: Array<Record<string, number | null>>;
+  revenue_cagr: number | null;
+  eps_cagr: number | null;
+  revenue_growth: Array<Record<string, number | null>>;
+  margin_trends: Record<string, Array<Record<string, number | null>>>;
+  ratio_trends: Record<string, Array<Record<string, number | null>>>;
+  trend_diagnostics: string[];
+  warnings: string[];
+};
+
+export type EquityDcfResponse = {
+  symbol: string;
+  assumptions: Record<string, number>;
+  forecast: Array<Record<string, number>>;
+  enterprise_value_fcff: number;
+  equity_value_fcff: number;
+  intrinsic_value_per_share_fcff: number;
+  equity_value_fcfe: number;
+  intrinsic_value_per_share_fcfe: number;
+  market_price: number;
+  margin_of_safety_fcff: number;
+  margin_of_safety_fcfe: number;
+  sensitivity_table: Array<Record<string, number | null>>;
+  warnings: string[];
+};
+
+export type EquityDataQualityResponse = {
+  symbol: string;
+  missing_fields: string[];
+  negative_value_warnings: string[];
+  stale_data_warning: string | null;
+  market_cap_consistent: boolean;
+  fcf_consistent: boolean;
+  peer_data_available: boolean;
+  benchmark_available: boolean;
+  demo_data_warning: string;
+  quality_score: number;
+  is_usable: boolean;
+  warnings: string[];
+};
+
+export type EquitySectorInterpretationResponse = {
+  symbol: string;
+  sector: string;
+  industry: string;
+  ratio_emphasis: string[];
+  interpretation_notes: string[];
+};
+
+export type EquityInstitutionalSignalsResponse = {
+  symbol: string;
+  signal: string;
+  portfolio_builder_bridge: Record<string, string | number | null>;
+  data_source_notes: string[];
 };

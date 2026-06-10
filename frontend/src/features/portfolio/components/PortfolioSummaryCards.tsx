@@ -27,16 +27,16 @@ export function PortfolioSummaryCards({
         title={labels.totalValue}
         value={
           <MoneyValue
-            value={summary.total_value}
+            value={summary.total_market_value ?? summary.total_value}
             currency={summary.base_currency}
           />
         }
-        subtitle={`${labels.benchmark}: ${summary.benchmark}`}
+        subtitle={`${labels.benchmark}: ${summary.benchmark} · ${summary.data_source}`}
       />
       <MetricCard
         title={labels.positions}
         value={summary.number_of_positions}
-        subtitle={`${labels.baseCurrency}: ${summary.base_currency}`}
+        subtitle={`${labels.baseCurrency}: ${summary.base_currency} · ${summary.number_of_asset_classes} asset classes`}
       />
       <MetricCard
         title={labels.cash}

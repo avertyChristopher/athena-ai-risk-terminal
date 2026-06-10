@@ -24,6 +24,12 @@ class EquityOverviewResponse(BaseModel):
     security_profile: dict[str, Any]
     industry_analysis: dict[str, Any]
     business_model: dict[str, Any]
+    price_source: str = "demo"
+    price_timestamp: str | None = None
+    benchmark_source: str = "demo"
+    beta_source: str = "demo"
+    risk_free_rate_source: str = "demo"
+    data_source_notes: list[str] = []
 
 
 class EquitySecurityProfileResponse(BaseModel):
@@ -254,3 +260,153 @@ class SensitivityCell(BaseModel):
 
 class SensitivityResponse(BaseModel):
     cells: list[SensitivityCell]
+
+
+class EquityCapmResponse(BaseModel):
+    symbol: str
+    risk_free_rate: float | None
+    beta: float | None
+    expected_market_return: float
+    market_risk_premium: float | None
+    capm_required_return: float | None
+    expected_return: float | None
+    expected_return_vs_required_return: float | None
+    capm_signal: str
+    price_source: str
+    price_timestamp: str | None
+    benchmark_source: str
+    beta_source: str
+    risk_free_rate_source: str
+    data_source_notes: list[str]
+    warnings: list[str]
+
+
+class EquityDupontResponse(BaseModel):
+    symbol: str
+    net_margin: float | None
+    asset_turnover: float | None
+    financial_leverage: float | None
+    three_step_roe: float | None
+    reported_roe: float | None
+    tax_burden: float | None
+    interest_burden: float | None
+    ebit_margin: float | None
+    extended_dupont_roe: float | None
+    drivers: list[str]
+    warnings: list[str]
+
+
+class EquityEarningsQualityResponse(BaseModel):
+    symbol: str
+    cash_conversion_ratio: float | None
+    accruals_ratio: float | None
+    fcf_conversion_ratio: float | None
+    net_income_vs_operating_cash_flow: str
+    earnings_quality: str
+    earnings_persistence_placeholder: str
+    non_recurring_items_placeholder: str
+    working_capital_quality: str
+    revenue_quality_placeholder: str
+    warnings: list[str]
+
+
+class HistoricalFundamentalRow(BaseModel):
+    year: int
+    revenue: float | None
+    gross_profit: float | None
+    operating_income: float | None
+    net_income: float | None
+    eps: float | None
+    dividends_per_share: float | None
+    assets: float | None
+    liabilities: float | None
+    equity: float | None
+    debt: float | None
+    cash: float | None
+    operating_cash_flow: float | None
+    capital_expenditures: float | None
+    free_cash_flow: float | None
+
+
+class EquityHistoricalFundamentalsResponse(BaseModel):
+    symbol: str
+    rows: list[HistoricalFundamentalRow]
+    revenue_cagr: float | None
+    eps_cagr: float | None
+    revenue_growth: list[dict[str, float | int | None]]
+    margin_trends: dict[str, list[dict[str, float | int | None]]]
+    ratio_trends: dict[str, list[dict[str, float | int | None]]]
+    trend_diagnostics: list[str]
+    warnings: list[str]
+
+
+class DcfRequest(BaseModel):
+    symbol: str
+    revenue_growth_rate: float = 0.05
+    ebit_margin: float = 0.25
+    tax_rate: float = 0.21
+    depreciation_percent_of_revenue: float = 0.03
+    capex_percent_of_revenue: float = 0.05
+    working_capital_percent_of_revenue: float = 0.01
+    net_borrowing: float = 0.0
+    wacc: float = 0.09
+    cost_of_equity: float = 0.09
+    terminal_growth_rate: float = 0.03
+    forecast_years: int = 5
+
+
+class DcfForecastRow(BaseModel):
+    year: int
+    revenue: float
+    ebit: float
+    depreciation: float
+    capital_expenditures: float
+    change_in_working_capital: float
+    fcff: float
+    fcfe: float
+
+
+class EquityDcfResponse(BaseModel):
+    symbol: str
+    assumptions: dict[str, float | int]
+    forecast: list[DcfForecastRow]
+    enterprise_value_fcff: float
+    equity_value_fcff: float
+    intrinsic_value_per_share_fcff: float
+    equity_value_fcfe: float
+    intrinsic_value_per_share_fcfe: float
+    market_price: float
+    margin_of_safety_fcff: float
+    margin_of_safety_fcfe: float
+    sensitivity_table: list[dict[str, float | None]]
+    warnings: list[str]
+
+
+class EquityDataQualityResponse(BaseModel):
+    symbol: str
+    missing_fields: list[str]
+    negative_value_warnings: list[str]
+    stale_data_warning: str | None
+    market_cap_consistent: bool
+    fcf_consistent: bool
+    peer_data_available: bool
+    benchmark_available: bool
+    demo_data_warning: str
+    quality_score: float
+    is_usable: bool
+    warnings: list[str]
+
+
+class EquitySectorInterpretationResponse(BaseModel):
+    symbol: str
+    sector: str
+    industry: str
+    ratio_emphasis: list[str]
+    interpretation_notes: list[str]
+
+
+class EquityInstitutionalSignalsResponse(BaseModel):
+    symbol: str
+    signal: str
+    portfolio_builder_bridge: dict[str, float | str | None]
+    data_source_notes: list[str]

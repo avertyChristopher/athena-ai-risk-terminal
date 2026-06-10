@@ -2,17 +2,26 @@ from fastapi import APIRouter, Depends
 
 from app.api.dependencies import get_equity_analysis_service
 from app.modules.equity_analysis.schemas import (
+    DcfRequest,
+    EquityCapmResponse,
     EquityBusinessModelResponse,
     EquityCorporateActionsResponse,
+    EquityDataQualityResponse,
+    EquityDcfResponse,
     EquityDiagnosticsResponse,
+    EquityDupontResponse,
+    EquityEarningsQualityResponse,
     EquityFundamentalsResponse,
     EquityGrowthResponse,
+    EquityHistoricalFundamentalsResponse,
+    EquityInstitutionalSignalsResponse,
     EquityIndustryResponse,
     EquityOverviewResponse,
     EquityPeerComparisonResponse,
     EquityRatiosResponse,
     EquityRelativeValuationResponse,
     EquitySecurityProfileResponse,
+    EquitySectorInterpretationResponse,
     EquityValuationResponse,
     GgmValuationRequest,
     GgmValuationResponse,
@@ -126,12 +135,87 @@ def get_equity_diagnostics(
     return service.get_diagnostics(symbol)
 
 
+@router.get("/{symbol}/capm", response_model=EquityCapmResponse)
+def get_equity_capm(
+    symbol: str,
+    service: EquityAnalysisService = Depends(get_equity_analysis_service),
+) -> EquityCapmResponse:
+    return service.get_capm(symbol)
+
+
+@router.get("/{symbol}/dupont", response_model=EquityDupontResponse)
+def get_equity_dupont(
+    symbol: str,
+    service: EquityAnalysisService = Depends(get_equity_analysis_service),
+) -> EquityDupontResponse:
+    return service.get_dupont(symbol)
+
+
+@router.get("/{symbol}/quality-of-earnings", response_model=EquityEarningsQualityResponse)
+def get_equity_quality_of_earnings(
+    symbol: str,
+    service: EquityAnalysisService = Depends(get_equity_analysis_service),
+) -> EquityEarningsQualityResponse:
+    return service.get_quality_of_earnings(symbol)
+
+
+@router.get(
+    "/{symbol}/historical-fundamentals",
+    response_model=EquityHistoricalFundamentalsResponse,
+)
+def get_equity_historical_fundamentals(
+    symbol: str,
+    service: EquityAnalysisService = Depends(get_equity_analysis_service),
+) -> EquityHistoricalFundamentalsResponse:
+    return service.get_historical_fundamentals(symbol)
+
+
+@router.get("/{symbol}/dcf", response_model=EquityDcfResponse)
+def get_equity_dcf(
+    symbol: str,
+    service: EquityAnalysisService = Depends(get_equity_analysis_service),
+) -> EquityDcfResponse:
+    return service.get_dcf(symbol)
+
+
+@router.get("/{symbol}/data-quality", response_model=EquityDataQualityResponse)
+def get_equity_data_quality(
+    symbol: str,
+    service: EquityAnalysisService = Depends(get_equity_analysis_service),
+) -> EquityDataQualityResponse:
+    return service.get_data_quality(symbol)
+
+
+@router.get("/{symbol}/sector-interpretation", response_model=EquitySectorInterpretationResponse)
+def get_equity_sector_interpretation(
+    symbol: str,
+    service: EquityAnalysisService = Depends(get_equity_analysis_service),
+) -> EquitySectorInterpretationResponse:
+    return service.get_sector_interpretation(symbol)
+
+
+@router.get("/{symbol}/institutional-signals", response_model=EquityInstitutionalSignalsResponse)
+def get_equity_institutional_signals(
+    symbol: str,
+    service: EquityAnalysisService = Depends(get_equity_analysis_service),
+) -> EquityInstitutionalSignalsResponse:
+    return service.get_institutional_signals(symbol)
+
+
 @router.post("/valuation/ggm", response_model=GgmValuationResponse)
 def calculate_ggm_value(
     payload: GgmValuationRequest,
     service: EquityAnalysisService = Depends(get_equity_analysis_service),
 ) -> GgmValuationResponse:
     return service.calculate_ggm(payload)
+
+
+@router.post("/valuation/dcf", response_model=EquityDcfResponse)
+def calculate_dcf_value(
+    payload: DcfRequest,
+    service: EquityAnalysisService = Depends(get_equity_analysis_service),
+) -> EquityDcfResponse:
+    return service.calculate_dcf(payload)
 
 
 @router.post("/valuation/sensitivity", response_model=SensitivityResponse)

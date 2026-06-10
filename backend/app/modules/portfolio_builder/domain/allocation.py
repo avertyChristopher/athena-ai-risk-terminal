@@ -27,10 +27,48 @@ def calculate_allocation_by_country(
     return _calculate_allocation(positions, "country")
 
 
+def calculate_allocation_by_region(
+    positions: Sequence[Mapping[str, Any]],
+) -> list[dict[str, float | str]]:
+    return _calculate_allocation(positions, "region")
+
+
 def calculate_allocation_by_asset_type(
     positions: Sequence[Mapping[str, Any]],
 ) -> list[dict[str, float | str]]:
     return _calculate_allocation(positions, "asset_type")
+
+
+def calculate_cash_allocation(
+    positions: Sequence[Mapping[str, Any]],
+    cash: float,
+) -> list[dict[str, float | str]]:
+    if cash < 0:
+        raise ValueError("Cash cannot be negative.")
+
+    invested_value = sum(_market_value(position) for position in positions)
+    total_value = invested_value + cash
+    if total_value <= 0:
+        return []
+
+    return [
+        {
+            "name": "Invested positions",
+            "market_value": invested_value,
+            "weight": invested_value / total_value,
+        },
+        {
+            "name": "Cash",
+            "market_value": cash,
+            "weight": cash / total_value,
+        },
+    ]
+
+
+def calculate_invested_allocation(
+    positions: Sequence[Mapping[str, Any]],
+) -> list[dict[str, float | str]]:
+    return calculate_allocation_by_asset(positions)
 
 
 def calculate_top_holdings(

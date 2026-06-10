@@ -87,7 +87,7 @@ Frontend React/TypeScript
         ↓
 API REST FastAPI
         ↓
-Couche services
+Modules produit sous app/modules
         ↓
 Logique métier / moteurs quantitatifs
         ↓
@@ -333,7 +333,85 @@ Pytest coverage
 
 # 5. Backend Architecture / Architecture backend
 
+## 5.0 Current backend migration status / Etat actuel de la migration backend
+
+Athena is moving from a global layered backend layout to a product-module
+layout. The migration is progressive: one feature module is migrated at a time
+so API paths and tests remain stable.
+
+Current migrated backend modules:
+
+```text
+backend/app/modules/
+├── market_data/
+│   ├── routes.py
+│   ├── schemas.py
+│   ├── service.py
+│   ├── repository.py
+│   └── domain/
+├── equity_analysis/
+│   ├── routes.py
+│   ├── schemas.py
+│   ├── service.py
+│   ├── repository.py
+│   └── domain/
+└── portfolio_builder/
+    ├── routes.py
+    ├── schemas.py
+    ├── service.py
+    ├── repository.py
+    └── domain/
+```
+
+For migrated modules, the module folder is the source of truth. Do not recreate
+their old global files under `app/api/routes`, `app/schemas`, `app/services`,
+`app/repositories` or `app/domain`.
+
+Still-centralized backend infrastructure:
+
+```text
+backend/app/core/
+backend/app/database/
+backend/app/models/
+backend/app/api/dependencies.py
+```
+
+Some non-migrated features still use the older global layout. They should be
+migrated progressively using the same module pattern.
+
 ## 5.1 Backend folder structure / Structure des dossiers backend
+
+The current target structure is module-first for product features:
+
+```text
+backend/
+├── app/
+│   ├── api/
+│   │   ├── routes/
+│   │   │   └── health_routes.py
+│   │   └── dependencies.py
+│   ├── core/
+│   ├── database/
+│   ├── models/
+│   ├── modules/
+│   │   ├── market_data/
+│   │   ├── equity_analysis/
+│   │   ├── portfolio_builder/
+│   │   └── <future_feature_module>/
+│   ├── repositories/
+│   ├── schemas/
+│   ├── services/
+│   ├── domain/
+│   ├── main.py
+│   └── __init__.py
+└── tests/
+```
+
+The remaining global `repositories`, `schemas`, `services` and `domain`
+folders are transitional for features that have not yet been migrated.
+
+The older global layered tree below is historical/reference material. Use the
+module-first structure above for new feature work and module migrations.
 
 ```text
 backend/
@@ -465,6 +543,20 @@ backend/
 
 ## 5.2 Backend layers / Couches backend
 
+For migrated product modules, the layers live inside the module:
+
+```text
+app/modules/<module>/
+├── routes.py       # HTTP endpoints only
+├── schemas.py      # Pydantic request/response contracts
+├── service.py      # use-case orchestration
+├── repository.py   # persistence/data access
+└── domain/         # pure calculations and business formulas
+```
+
+For non-migrated features, the same responsibilities still apply in the older
+global folders until those features are moved.
+
 ## API routes
 
 ### Role
@@ -582,7 +674,31 @@ SQLAlchemy
 
 # 6. Domain Modules / Modules domaine
 
+For migrated modules, domain code now lives under the owning module instead of
+the global `app/domain` package. The global domain folder is transitional and
+should only contain non-migrated shared/domain code.
+
 ## 6.1 Portfolio domain
+
+Current implementation:
+
+```text
+app/modules/portfolio_builder/domain/
+├── portfolio_calculator.py
+├── position_calculator.py
+└── allocation.py
+```
+
+Current responsibilities:
+
+- portfolio market value;
+- position market value;
+- position weights;
+- cash weight;
+- allocation by asset, sector, currency, country and asset type;
+- concentration metrics.
+
+Historical/reference target:
 
 ```text
 domain/portfolios/
@@ -1108,6 +1224,16 @@ Bond 1 --- N BondValuation
 # 10. API Architecture / Architecture API
 
 ## 10.1 API groups
+
+API paths are stable and should not expose the internal module layout. For
+example, Market Data, Equity Analysis and Portfolio Builder are implemented
+under `app/modules/`, but their public paths remain:
+
+```text
+/api/market-data
+/api/equity
+/api/portfolios
+```
 
 ```text
 /api/health
@@ -1642,15 +1768,22 @@ Athena AI Risk Terminal uses a clean full-stack architecture:
 ```text
 React TypeScript frontend
 FastAPI backend
-Service layer
-Domain quant engines
-Repository layer
+Product modules under app/modules
+Thin route layer
+Service layer per module
+Domain quant engines per module
+Repository layer per module
 PostgreSQL database
 Redis workers
 AI explanation layer
 ```
 
 The architecture is designed to support a professional multi-asset risk platform covering equities, options, bonds, rates, portfolio analytics, risk controls and AI-assisted reporting.
+
+The current backend migration has consolidated Market Data, Equity Analysis and
+Portfolio Builder into module-owned route/schema/service/repository/domain
+packages while keeping shared core, database, dependency wiring and SQLAlchemy
+models centralized.
 
 ## Français
 

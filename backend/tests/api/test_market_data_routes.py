@@ -56,6 +56,68 @@ def test_market_data_analytics_response() -> None:
     assert body["fx_rate_to_usd"] == 1.0
 
 
+def test_market_data_latest_prices_batch_response() -> None:
+    response = client.get("/api/market-data/latest-prices?symbols=AAPL,MSFT,XXX")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["missing_symbols"] == ["XXX"]
+    assert len(body["items"]) == 2
+    assert body["items"][0]["adjusted_close"] > 0
+
+
+def test_market_data_price_and_returns_panels_are_aligned() -> None:
+    price_response = client.get("/api/market-data/price-panel?symbols=AAPL,MSFT,NVDA")
+    returns_response = client.get("/api/market-data/returns-panel?symbols=AAPL,MSFT,NVDA")
+
+    assert price_response.status_code == 200
+    assert returns_response.status_code == 200
+    price_body = price_response.json()
+    returns_body = returns_response.json()
+    assert price_body["rows"]
+    assert returns_body["rows"]
+    assert {"date", "AAPL", "MSFT", "NVDA"} <= set(price_body["rows"][0])
+    assert {"date", "AAPL", "MSFT", "NVDA"} <= set(returns_body["rows"][0])
+
+
+def test_market_data_asset_metadata_and_validation() -> None:
+    metadata_response = client.get("/api/market-data/assets/AAPL/metadata")
+    validation_response = client.get("/api/market-data/assets/validate/XXX")
+
+    assert metadata_response.status_code == 200
+    assert metadata_response.json()["symbol"] == "AAPL"
+    assert metadata_response.json()["latest_price_available"] is True
+    assert validation_response.status_code == 200
+    assert validation_response.json()["exists"] is False
+
+
+def test_market_data_portfolio_quality_report_flags_missing_symbols() -> None:
+    response = client.get(
+        "/api/market-data/data-quality/batch?symbols=AAPL,MSFT,XXX&expected_currency=USD",
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["missing_symbols"] == ["XXX"]
+    assert body["reports"]
+    assert body["quality_score"] <= 1
+    assert "XXX: missing from asset master." in body["warnings"]
+
+
+def test_market_data_benchmark_fx_and_risk_free_endpoints() -> None:
+    benchmark_response = client.get("/api/market-data/benchmark/SPY/returns")
+    fx_response = client.get("/api/market-data/fx/latest?base=USD&quote=CAD")
+    risk_free_response = client.get("/api/market-data/risk-free-rate")
+
+    assert benchmark_response.status_code == 200
+    assert benchmark_response.json()["benchmark_symbol"] == "SPY"
+    assert benchmark_response.json()["returns"]
+    assert fx_response.status_code == 200
+    assert fx_response.json()["rate"] == pytest.approx(1.37)
+    assert risk_free_response.status_code == 200
+    assert risk_free_response.json()["rate"] == pytest.approx(0.04)
+
+
 def test_market_data_cors_allows_localhost_and_loopback_frontend() -> None:
     response = client.options(
         "/api/market-data/assets",

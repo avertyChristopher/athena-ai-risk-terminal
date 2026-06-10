@@ -14,7 +14,46 @@ def test_portfolio_summary_uses_demo_positions() -> None:
     assert body["portfolio_id"] == "pf_001"
     assert body["name"] == "Athena Demo Portfolio"
     assert body["total_value"] == 77692.0
+    assert body["total_market_value"] == 77692.0
+    assert body["invested_value"] == 72692.0
+    assert body["largest_position"] == "NVDA"
+    assert body["data_source"] == "Athena deterministic demo portfolio store"
     assert body["number_of_positions"] == 5
+
+
+def test_portfolio_management_foundation_endpoints_return_data() -> None:
+    endpoints = [
+        "/api/portfolios/pf_001/concentration",
+        "/api/portfolios/pf_001/diversification",
+        "/api/portfolios/pf_001/risk-return",
+        "/api/portfolios/pf_001/benchmark",
+        "/api/portfolios/pf_001/policy",
+        "/api/portfolios/pf_001/target-allocation",
+        "/api/portfolios/pf_001/rebalancing-preview",
+        "/api/portfolios/pf_001/performance-measurement",
+        "/api/portfolios/pf_001/constraints",
+        "/api/portfolios/pf_001/diagnostics",
+        "/api/portfolios/pf_001/cfa-concepts",
+    ]
+
+    for endpoint in endpoints:
+        response = client.get(endpoint)
+        assert response.status_code == 200
+        assert response.json()["portfolio_id"] == "pf_001"
+
+
+def test_portfolio_cfa_concepts_expose_level_one_sections() -> None:
+    response = client.get("/api/portfolios/pf_001/cfa-concepts")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["portfolio_id"] == "pf_001"
+    assert body["investor_profile"]["investor_type"] == "Individual"
+    assert body["risk_tolerance"]["overall_risk_tolerance"] == "Moderate"
+    assert "utility_score" in body["utility"]
+    assert "portfolio_beta" in body["capm"]
+    assert "sharpe_ratio" in body["risk_adjusted_performance"]
+    assert len(body["efficient_frontier"]["points"]) == 3
 
 
 def test_portfolio_can_be_created() -> None:
@@ -87,6 +126,10 @@ def test_position_lifecycle_updates_portfolio_summary() -> None:
     position = position_response.json()
     assert position["market_value"] == 2000
     assert position["weight"] == 2 / 3
+    assert position["portfolio_weight"] == 2 / 3
+    assert position["invested_weight"] == 1
+    assert position["cost_basis"] == 1800
+    assert position["unrealized_pnl"] == 200
 
     summary_response = client.get(f"/api/portfolios/{portfolio_id}/summary")
     assert summary_response.json()["total_value"] == 3000

@@ -1,10 +1,11 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 import { useTranslation } from "../../hooks/useTranslation";
 import { navigationItems } from "../../lib/constants";
 
 export function Sidebar() {
   const { t } = useTranslation();
+  const location = useLocation();
 
   return (
     <aside className="sidebar">
@@ -20,16 +21,22 @@ export function Sidebar() {
             key={item.path}
             to={item.path}
             end={item.path === "/"}
-            className={({ isActive }) =>
-              isActive
+            className={({ isActive }) => {
+              const isDashboardAlias =
+                item.path === "/" && location.pathname === "/dashboard";
+              return isActive || isDashboardAlias
                 ? "sidebar__link sidebar__link--active"
-                : "sidebar__link"
-            }
+                : "sidebar__link";
+            }}
           >
             {t(item.labelKey)}
           </NavLink>
         ))}
       </nav>
+      <div className="sidebar__footer">
+        <span>{t("common.researchMode")}</span>
+        <strong>{t("common.demoDataOnline")}</strong>
+      </div>
     </aside>
   );
 }

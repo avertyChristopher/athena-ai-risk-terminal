@@ -3,18 +3,28 @@ from app.modules.portfolio_builder.domain.allocation import (
     calculate_allocation_by_asset_type,
     calculate_allocation_by_country,
     calculate_allocation_by_currency,
+    calculate_allocation_by_region,
     calculate_allocation_by_sector,
+    calculate_cash_allocation,
     calculate_concentration_metrics,
+    calculate_invested_allocation,
     calculate_top_holdings,
 )
 from app.modules.portfolio_builder.domain.portfolio_calculator import (
     calculate_cash_weight,
+    calculate_invested_value,
     calculate_portfolio_market_value,
     calculate_portfolio_return,
     calculate_portfolio_weights,
 )
 from app.modules.portfolio_builder.domain.position_calculator import (
+    calculate_invested_weight,
+    calculate_portfolio_weight,
+    calculate_position_cost_basis,
     calculate_position_market_value,
+    calculate_position_unrealized_pnl,
+    calculate_position_unrealized_pnl_percent,
+    validate_position_input,
 )
 
 __all__ = [
@@ -22,12 +32,22 @@ __all__ = [
     "calculate_allocation_by_asset_type",
     "calculate_allocation_by_country",
     "calculate_allocation_by_currency",
+    "calculate_allocation_by_region",
     "calculate_allocation_by_sector",
     "calculate_cash_weight",
+    "calculate_cash_allocation",
     "calculate_concentration_metrics",
+    "calculate_invested_allocation",
+    "calculate_invested_value",
+    "calculate_invested_weight",
     "calculate_portfolio_market_value",
     "calculate_portfolio_return",
+    "calculate_portfolio_weight",
+    "calculate_position_cost_basis",
     "calculate_portfolio_weights",
     "calculate_position_market_value",
+    "calculate_position_unrealized_pnl",
+    "calculate_position_unrealized_pnl_percent",
     "calculate_top_holdings",
+    "validate_position_input",
 ]

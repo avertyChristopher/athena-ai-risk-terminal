@@ -3,10 +3,19 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies import get_portfolio_service, get_position_service
 from app.modules.portfolio_builder.schemas import (
     AllocationResponse,
+    CfaConceptsResponse,
     ConcentrationResponse,
+    ConstraintsResponse,
     DeleteResponse,
+    DiversificationResponse,
+    BenchmarkResponse,
+    PerformanceMeasurementResponse,
+    PolicyResponse,
     PortfolioCreate,
+    PortfolioConstraints,
+    PortfolioDiagnosticsResponse,
     PortfolioListResponse,
+    PortfolioPolicy,
     PortfolioRead,
     PortfolioSummary,
     PortfolioUpdate,
@@ -14,6 +23,10 @@ from app.modules.portfolio_builder.schemas import (
     PositionListResponse,
     PositionRead,
     PositionUpdate,
+    RebalancingPreviewResponse,
+    RiskReturnResponse,
+    TargetAllocation,
+    TargetAllocationResponse,
 )
 from app.modules.portfolio_builder.service import PortfolioService, PositionService
 
@@ -150,3 +163,116 @@ def get_concentration(
     service: PortfolioService = Depends(get_portfolio_service),
 ) -> ConcentrationResponse:
     return service.get_concentration(portfolio_id)
+
+
+@router.get("/{portfolio_id}/diversification", response_model=DiversificationResponse)
+def get_diversification(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> DiversificationResponse:
+    return service.get_diversification(portfolio_id)
+
+
+@router.get("/{portfolio_id}/risk-return", response_model=RiskReturnResponse)
+def get_risk_return(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> RiskReturnResponse:
+    return service.get_risk_return(portfolio_id)
+
+
+@router.get("/{portfolio_id}/benchmark", response_model=BenchmarkResponse)
+def get_benchmark(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> BenchmarkResponse:
+    return service.get_benchmark(portfolio_id)
+
+
+@router.get("/{portfolio_id}/policy", response_model=PolicyResponse)
+def get_policy(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> PolicyResponse:
+    return service.get_policy(portfolio_id)
+
+
+@router.put("/{portfolio_id}/policy", response_model=PolicyResponse)
+def update_policy(
+    portfolio_id: str,
+    payload: PortfolioPolicy,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> PolicyResponse:
+    return service.update_policy(portfolio_id, payload)
+
+
+@router.get("/{portfolio_id}/target-allocation", response_model=TargetAllocationResponse)
+def get_target_allocation(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> TargetAllocationResponse:
+    return service.get_target_allocation(portfolio_id)
+
+
+@router.put("/{portfolio_id}/target-allocation", response_model=TargetAllocationResponse)
+def update_target_allocation(
+    portfolio_id: str,
+    payload: list[TargetAllocation],
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> TargetAllocationResponse:
+    return service.update_target_allocation(portfolio_id, payload)
+
+
+@router.get(
+    "/{portfolio_id}/rebalancing-preview",
+    response_model=RebalancingPreviewResponse,
+)
+def get_rebalancing_preview(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> RebalancingPreviewResponse:
+    return service.get_rebalancing_preview(portfolio_id)
+
+
+@router.get(
+    "/{portfolio_id}/performance-measurement",
+    response_model=PerformanceMeasurementResponse,
+)
+def get_performance_measurement(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> PerformanceMeasurementResponse:
+    return service.get_performance_measurement(portfolio_id)
+
+
+@router.get("/{portfolio_id}/constraints", response_model=ConstraintsResponse)
+def get_constraints(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> ConstraintsResponse:
+    return service.get_constraints(portfolio_id)
+
+
+@router.put("/{portfolio_id}/constraints", response_model=ConstraintsResponse)
+def update_constraints(
+    portfolio_id: str,
+    payload: PortfolioConstraints,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> ConstraintsResponse:
+    return service.update_constraints(portfolio_id, payload)
+
+
+@router.get("/{portfolio_id}/diagnostics", response_model=PortfolioDiagnosticsResponse)
+def get_diagnostics(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> PortfolioDiagnosticsResponse:
+    return service.get_diagnostics(portfolio_id)
+
+
+@router.get("/{portfolio_id}/cfa-concepts", response_model=CfaConceptsResponse)
+def get_cfa_concepts(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> CfaConceptsResponse:
+    return service.get_cfa_concepts(portfolio_id)

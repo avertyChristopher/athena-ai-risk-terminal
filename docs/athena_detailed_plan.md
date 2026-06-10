@@ -1138,6 +1138,51 @@ Pytest coverage
 
 ## 8.2 Backend Clean Architecture
 
+Current backend direction: Athena is migrating progressively from a global
+layered backend to feature-owned backend modules. Migrated modules own their
+routes, schemas, services, repositories and pure domain calculations under
+`backend/app/modules/<module_name>/`.
+
+Current migrated modules:
+
+```text
+backend/app/modules/
+├── market_data/
+│   ├── routes.py
+│   ├── schemas.py
+│   ├── service.py
+│   ├── repository.py
+│   └── domain/
+├── equity_analysis/
+│   ├── routes.py
+│   ├── schemas.py
+│   ├── service.py
+│   ├── repository.py
+│   └── domain/
+└── portfolio_builder/
+    ├── routes.py
+    ├── schemas.py
+    ├── service.py
+    ├── repository.py
+    └── domain/
+```
+
+Shared backend infrastructure remains centralized:
+
+```text
+backend/app/core/
+backend/app/database/
+backend/app/models/
+backend/app/api/dependencies.py
+```
+
+The older global folders `api/routes`, `schemas`, `services`, `repositories`
+and `domain` are transitional for non-migrated features only. New work on
+Market Data, Equity Analysis or Portfolio Builder should use the module folders
+above and should not recreate old global files.
+
+Historical/global layout reference:
+
 ```text
 backend/app/
 ├── api/

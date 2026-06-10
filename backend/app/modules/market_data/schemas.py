@@ -14,6 +14,15 @@ class MarketAsset(BaseModel):
     currency: str
     sector: str
     country: str
+    exchange: str | None = None
+    industry: str | None = None
+    benchmark_eligible: bool = True
+    is_etf: bool = False
+    is_index: bool = False
+    is_fx_pair: bool = False
+    is_commodity: bool = False
+    data_source: str = "demo"
+    primary_benchmark: str = "SPY"
 
 
 class PricePoint(BaseModel):
@@ -23,6 +32,10 @@ class PricePoint(BaseModel):
     high: float
     low: float
     close: float
+    adjusted_close: float | None = None
+    split_factor: float = 1.0
+    dividend_amount: float = 0.0
+    corporate_action_flag: bool = False
     volume: int
 
 
@@ -48,6 +61,98 @@ class DataQualityResponse(BaseModel):
     duplicate_dates: list[str]
     outlier_indexes: list[int]
     is_valid: bool
+
+
+class LatestPrice(BaseModel):
+    symbol: str
+    date: str
+    close: float
+    adjusted_close: float
+    currency: str
+    data_source: str
+    stale: bool
+
+
+class LatestPricesResponse(BaseModel):
+    symbols: list[str]
+    items: list[LatestPrice]
+    missing_symbols: list[str]
+
+
+class PricePanelResponse(BaseModel):
+    symbols: list[str]
+    start_date: str | None
+    end_date: str | None
+    rows: list[dict[str, float | str]]
+    missing_symbols: list[str]
+    warnings: list[str]
+
+
+class ReturnsPanelResponse(BaseModel):
+    symbols: list[str]
+    return_type: str
+    rows: list[dict[str, float | str]]
+    missing_symbols: list[str]
+    warnings: list[str]
+
+
+class AssetMetadata(MarketAsset):
+    latest_price_available: bool
+    latest_price_date: str | None
+
+
+class AssetValidationResponse(BaseModel):
+    symbol: str
+    exists: bool
+    metadata: AssetMetadata | None
+    warnings: list[str]
+
+
+class MarketDataQualityReport(BaseModel):
+    symbol: str
+    rows: int
+    missing_price_dates: list[str]
+    duplicate_dates: list[str]
+    outlier_indexes: list[int]
+    is_valid: bool
+    latest_price_date: str | None
+    stale_latest_price: bool
+    currency: str | None
+    currency_mismatch: bool
+    warnings: list[str]
+
+
+class PortfolioMarketDataQualityReport(BaseModel):
+    symbols: list[str]
+    expected_currency: str
+    reports: list[MarketDataQualityReport]
+    missing_symbols: list[str]
+    stale_symbols: list[str]
+    currency_mismatch_symbols: list[str]
+    quality_score: float
+    is_valid_for_portfolio: bool
+    warnings: list[str]
+
+
+class BenchmarkReturnsResponse(BaseModel):
+    benchmark_symbol: str
+    return_type: str
+    returns: list[ReturnPoint]
+
+
+class FXRateResponse(BaseModel):
+    base: str
+    quote: str
+    date: str
+    rate: float
+    data_source: str
+
+
+class RiskFreeRateResponse(BaseModel):
+    currency: str
+    tenor: str
+    rate: float
+    data_source: str
 
 
 class MarketDataAnalyticsResponse(BaseModel):

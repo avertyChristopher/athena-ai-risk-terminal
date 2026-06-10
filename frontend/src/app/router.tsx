@@ -24,6 +24,7 @@ export const router = createBrowserRouter([
     element: <AppShell />,
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: "dashboard", element: <DashboardPage /> },
       { path: "market-data", element: <MarketDataPage /> },
       { path: "equity-analysis", element: <EquityAnalysisPage /> },
       { path: "portfolio-builder", element: <PortfolioPage /> },
