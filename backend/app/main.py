@@ -16,6 +16,7 @@ from app.core.logging import configure_logging
 from app.modules.equity_analysis.routes import router as equity_router
 from app.modules.market_data.routes import router as market_data_router
 from app.modules.portfolio_builder.routes import router as portfolio_router
+from app.modules.trade_simulator.routes import router as trade_simulator_router
 
 
 def create_app() -> FastAPI:
@@ -42,6 +43,7 @@ def create_app() -> FastAPI:
     app.include_router(market_data_router, prefix=settings.api_prefix)
     app.include_router(equity_router, prefix=settings.api_prefix)
     app.include_router(portfolio_router, prefix=settings.api_prefix)
+    app.include_router(trade_simulator_router, prefix=settings.api_prefix)
     app.include_router(trade_router, prefix=settings.api_prefix)
     app.include_router(risk_router, prefix=settings.api_prefix)
     app.include_router(pricing_router, prefix=settings.api_prefix)

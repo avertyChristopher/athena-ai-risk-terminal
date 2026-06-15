@@ -1,9 +1,4 @@
-from sqlalchemy.orm import Session
+from app.modules.trade_simulator.repository import TradeSimulatorRepository
 
 
-class TradeRepository:
-    def __init__(self, db: Session) -> None:
-        self.db = db
-
-    def simulation_available(self) -> bool:
-        return False
+TradeRepository = TradeSimulatorRepository
