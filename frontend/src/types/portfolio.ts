@@ -218,6 +218,20 @@ export type PortfolioDiagnosticsResponse = {
   summary: string;
 };
 
+export type PortfolioMarketDataIntegrationResponse = {
+  portfolio_id: string;
+  symbols: string[];
+  return_series_endpoint: string | null;
+  aligned_returns_endpoint: string | null;
+  data_quality_endpoint: string | null;
+  current_status: string;
+  integration_message: string;
+  current_assumptions: string[];
+  planned_analytics: string[];
+  limitations: string[];
+  readiness_badges: string[];
+};
+
 export type CfaConceptsResponse = {
   portfolio_id: string;
   portfolio_management_process: {

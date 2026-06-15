@@ -2,6 +2,7 @@ import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
 import { EmptyState } from "../../../components/ui/EmptyState";
 import { PositionRead } from "../../../types/portfolio";
+import { PortfolioStatusBadge } from "./PortfolioStatusBadge";
 
 type PositionTableProps = {
   positions: PositionRead[];
@@ -79,41 +80,49 @@ export function PositionTable({
             <tbody>
               {positions.map((position) => (
                 <tr key={position.id}>
-                  <td>{position.symbol}</td>
+                  <td className="data-table__symbol">{position.symbol}</td>
                   <td>{position.asset_name}</td>
-                  <td>{position.asset_type}</td>
-                  <td>{position.quantity}</td>
                   <td>
+                    <PortfolioStatusBadge label={position.asset_type} variant="info" />
+                  </td>
+                  <td className="data-table__numeric">{position.quantity}</td>
+                  <td className="data-table__numeric">
                     <MoneyValue
                       value={position.average_price}
                       currency={position.currency}
                     />
                   </td>
-                  <td>
+                  <td className="data-table__numeric">
                     <MoneyValue
                       value={position.current_price}
                       currency={position.currency}
                     />
                   </td>
-                  <td>
+                  <td className="data-table__numeric">
                     <MoneyValue
                       value={position.market_value}
                       currency={position.currency}
                     />
                   </td>
-                  <td>
+                  <td className="data-table__numeric">
                     <PercentValue value={position.portfolio_weight ?? position.weight} />
                   </td>
-                  <td>
+                  <td className="data-table__numeric">
                     <PercentValue value={position.invested_weight ?? position.weight} />
                   </td>
-                  <td>
+                  <td className="data-table__numeric">
                     <MoneyValue
                       value={position.cost_basis}
                       currency={position.currency}
                     />
                   </td>
-                  <td>
+                  <td
+                    className={`data-table__numeric ${
+                      position.unrealized_pnl >= 0
+                        ? "positive-value"
+                        : "negative-value"
+                    }`}
+                  >
                     <MoneyValue
                       value={position.unrealized_pnl}
                       currency={position.currency}
@@ -125,7 +134,7 @@ export function PositionTable({
                   <td>{position.country}</td>
                   <td>
                     <button
-                      className="button button--ghost"
+                      className="button button--danger"
                       type="button"
                       onClick={() => onDelete(position.id)}
                     >

@@ -3,6 +3,12 @@ export const endpoints = {
   marketDataAssets: "/api/market-data/assets",
   marketDataPrices: (symbol: string) => `/api/market-data/prices/${symbol}`,
   marketDataReturns: (symbol: string) => `/api/market-data/returns/${symbol}`,
+  marketDataReturnsPanel: (symbols: string) =>
+    `/api/market-data/returns-panel?symbols=${symbols}`,
+  marketDataAlignedReturns: (symbols: string) =>
+    `/api/market-data/aligned-returns?symbols=${symbols}`,
+  marketDataQualityBatch: (symbols: string, expectedCurrency = "USD") =>
+    `/api/market-data/data-quality/batch?symbols=${symbols}&expected_currency=${expectedCurrency}`,
   marketDataVolatility: (symbol: string) =>
     `/api/market-data/volatility/${symbol}`,
   marketDataQuality: (symbol: string) =>
@@ -79,6 +85,8 @@ export const endpoints = {
     `/api/portfolios/${portfolioId}/constraints`,
   portfolioDiagnostics: (portfolioId: string) =>
     `/api/portfolios/${portfolioId}/diagnostics`,
+  portfolioMarketDataIntegration: (portfolioId: string) =>
+    `/api/portfolios/${portfolioId}/market-data-integration`,
   portfolioCfaConcepts: (portfolioId: string) =>
     `/api/portfolios/${portfolioId}/cfa-concepts`,
 } as const;

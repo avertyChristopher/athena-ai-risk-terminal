@@ -10,7 +10,7 @@ type AllocationChartProps = {
 
 export function AllocationChart({ title, items, currency }: AllocationChartProps) {
   return (
-    <section className="card allocation-panel">
+    <section className="allocation-panel">
       <h2>{title}</h2>
       <div className="bar-list">
         {items.map((item) => (
