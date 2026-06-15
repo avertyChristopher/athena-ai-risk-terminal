@@ -91,4 +91,7 @@ export const endpoints = {
     `/api/portfolios/${portfolioId}/cfa-concepts`,
   tradeSimulatorStatus: "/api/trade-simulator/status",
   tradeSimulatorSimulate: "/api/trade-simulator/simulate",
+  riskMonitorStatus: "/api/risk-monitor/status",
+  riskMonitorAnalyze: "/api/risk-monitor/analyze",
+  riskMonitorDemo: "/api/risk-monitor/demo",
 } as const;

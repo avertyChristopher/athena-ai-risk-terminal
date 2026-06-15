@@ -851,6 +851,127 @@
       "title": "Commentaire de trade Athena"
     }
   },
+  "riskMonitor": {
+    "title": "Surveillance du risque",
+    "subtitle": "Surveillance du risque portefeuille, limites, tests de stress et suivi du risque actif.",
+    "workbench": {
+      "eyebrow": "Surveillance post-trade",
+      "title": "Cockpit institutionnel de risk management",
+      "description": "Surveille le risque portefeuille, la concentration, la liquidite, l'ecart benchmark et les limites de type IPS depuis une seule interface."
+    },
+    "controls": {
+      "portfolio": "Portefeuille"
+    },
+    "empty": {
+      "title": "Aucun portefeuille selectionne",
+      "message": "Selectionne un portefeuille pour lancer la surveillance du risque."
+    },
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "overviewShort": "Statut",
+      "limits": "Limites et depassements",
+      "limitsShort": "Politique",
+      "metrics": "Metriques de risque",
+      "metricsShort": "VaR / CVaR",
+      "stress": "Tests de stress",
+      "stressShort": "Scenarios",
+      "contribution": "Contribution au risque",
+      "contributionShort": "Drivers",
+      "benchmark": "Risque actif",
+      "benchmarkShort": "Actif",
+      "commentary": "Commentaire Athena",
+      "commentaryShort": "Actions"
+    },
+    "kpis": {
+      "score": "Score de risque",
+      "var": "VaR 95%",
+      "cvar": "CVaR 95%",
+      "volatility": "Volatilite",
+      "drawdown": "Max drawdown",
+      "maxDrawdown": "Risque peak-to-trough",
+      "trackingError": "Tracking error",
+      "breaches": "Depassements actifs",
+      "activeBreaches": "Moteur de limites",
+      "totalValue": "Valeur portefeuille"
+    },
+    "sections": {
+      "surveillance": "Synthese de surveillance",
+      "mainDrivers": "Principaux drivers de risque",
+      "concentration": "Surveillance de concentration",
+      "concentrationDescription": "Checks de risque par emetteur, secteur, top holdings et cash.",
+      "alerts": "Alertes prioritaires",
+      "alertsDescription": "Depassements severes et vulnerabilites aux stress scenarios.",
+      "limits": "Limites et depassements",
+      "limitsDescription": "Valeurs portefeuille actuelles comparees aux seuils de risque institutionnels.",
+      "metrics": "Metriques de risque",
+      "metricsDescription": "Les donnees realisees utilisent les series de rendements Market Data lorsqu'elles sont disponibles; sinon les hypotheses demo sont signalees.",
+      "stress": "Tests de stress",
+      "stressDescription": "Chocs deterministes actions, technologie, taux, risk-off, single-name et liquidite.",
+      "contribution": "Contribution au risque par actif",
+      "sectorContribution": "Contribution au risque par secteur",
+      "sectorContributionDescription": "Aggregation sectorielle du moteur de contribution au risque.",
+      "benchmark": "Benchmark et risque actif",
+      "commentary": "Commentaire Athena risque",
+      "nextActions": "Prochaines actions suggerees"
+    },
+    "concentration": {
+      "largest": "Plus grande ligne",
+      "topThree": "Poids top 3",
+      "topThreeLimit": "Limite de surveillance 65%",
+      "cash": "Reserve cash",
+      "cashLimit": "Reserve minimale 5%"
+    },
+    "dataSource": {
+      "source": "Source des donnees de risque",
+      "observations": "Observations",
+      "missingSymbols": "Symboles manquants",
+      "fallback": "Fallback",
+      "none": "Aucun",
+      "yes": "Oui",
+      "no": "Non",
+      "explanation": "Les metriques de risque realisees sont calculees a partir des series de rendements Market Data lorsqu'elles sont disponibles. Si l'historique est incomplet, Athena utilise des hypotheses de demonstration et signale les metriques concernees."
+    },
+    "limits": {
+      "current": "Actuel",
+      "limit": "Limite",
+      "noBreaches": "Aucun depassement actif",
+      "noBreachesMessage": "Le portefeuille actuel respecte les limites de surveillance du risque configurees."
+    },
+    "table": {
+      "metric": "Metrique",
+      "value": "Valeur",
+      "source": "Source",
+      "description": "Description",
+      "scenario": "Scenario",
+      "impact": "Impact",
+      "loss": "Perte estimee",
+      "affected": "Plus touches",
+      "severity": "Severite"
+    },
+    "benchmark": {
+      "symbol": "Benchmark",
+      "beta": "Beta",
+      "activeExposure": "Exposition active",
+      "trackingError": "Tracking error",
+      "informationRatio": "Information ratio"
+    },
+    "badges": {
+      "realized": "Donnees realisees",
+      "demo": "Hypotheses de demonstration",
+      "partialData": "Donnees partielles",
+      "placeholder": "Placeholder",
+      "requiresMarketData": "Requiert Market Data",
+      "benchmarkHistory": "Requiert historique benchmark",
+      "benchmarkFeed": "Requiert constituants benchmark",
+      "deterministic": "Commentaire deterministe"
+    },
+    "severity": {
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Eleve",
+      "critical": "Critique"
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Données de marché",

@@ -851,6 +851,127 @@
       "title": "Athena Trade Commentary"
     }
   },
+  "riskMonitor": {
+    "title": "Risk Monitor",
+    "subtitle": "Portfolio risk surveillance, limits, stress testing and active risk monitoring.",
+    "workbench": {
+      "eyebrow": "Post-trade surveillance",
+      "title": "Institutional risk management cockpit",
+      "description": "Monitor portfolio risk, concentration, liquidity, benchmark deviation and IPS-style limits from one control surface."
+    },
+    "controls": {
+      "portfolio": "Portfolio"
+    },
+    "empty": {
+      "title": "No portfolio selected",
+      "message": "Select a portfolio to run risk surveillance."
+    },
+    "tabs": {
+      "overview": "Overview",
+      "overviewShort": "Status",
+      "limits": "Limits & Breaches",
+      "limitsShort": "Policy",
+      "metrics": "Risk Metrics",
+      "metricsShort": "VaR / CVaR",
+      "stress": "Stress Testing",
+      "stressShort": "Scenarios",
+      "contribution": "Risk Contribution",
+      "contributionShort": "Drivers",
+      "benchmark": "Benchmark Risk",
+      "benchmarkShort": "Active",
+      "commentary": "Athena Commentary",
+      "commentaryShort": "Actions"
+    },
+    "kpis": {
+      "score": "Global Risk Score",
+      "var": "VaR 95%",
+      "cvar": "CVaR 95%",
+      "volatility": "Volatility",
+      "drawdown": "Max Drawdown",
+      "maxDrawdown": "Peak-to-trough risk",
+      "trackingError": "Tracking Error",
+      "breaches": "Active Breaches",
+      "activeBreaches": "Limit engine",
+      "totalValue": "Portfolio Value"
+    },
+    "sections": {
+      "surveillance": "Surveillance summary",
+      "mainDrivers": "Main risk drivers",
+      "concentration": "Concentration surveillance",
+      "concentrationDescription": "Issuer, sector, top-holdings and cash risk checks.",
+      "alerts": "Priority alerts",
+      "alertsDescription": "High-severity breaches and stress vulnerabilities.",
+      "limits": "Limits and breaches",
+      "limitsDescription": "Current portfolio values compared with institutional risk thresholds.",
+      "metrics": "Risk metrics",
+      "metricsDescription": "Realized metrics use Market Data return series when available, otherwise demo assumptions are labeled.",
+      "stress": "Stress testing",
+      "stressDescription": "Deterministic shocks for equity, technology, rates, risk-off, single-name and liquidity events.",
+      "contribution": "Risk contribution by asset",
+      "sectorContribution": "Risk contribution by sector",
+      "sectorContributionDescription": "Sector-level aggregation of the risk contribution engine.",
+      "benchmark": "Benchmark and active risk",
+      "commentary": "Athena risk commentary",
+      "nextActions": "Suggested next actions"
+    },
+    "concentration": {
+      "largest": "Largest holding",
+      "topThree": "Top 3 weight",
+      "topThreeLimit": "65% surveillance limit",
+      "cash": "Cash reserve",
+      "cashLimit": "5% minimum reserve"
+    },
+    "dataSource": {
+      "source": "Risk data source",
+      "observations": "Observations",
+      "missingSymbols": "Missing symbols",
+      "fallback": "Fallback",
+      "none": "None",
+      "yes": "Yes",
+      "no": "No",
+      "explanation": "Realized risk metrics are calculated from Market Data return series when available. If return history is incomplete, Athena falls back to deterministic demo assumptions and labels the affected metrics."
+    },
+    "limits": {
+      "current": "Current",
+      "limit": "Limit",
+      "noBreaches": "No active breaches",
+      "noBreachesMessage": "The current portfolio is inside the configured risk surveillance limits."
+    },
+    "table": {
+      "metric": "Metric",
+      "value": "Value",
+      "source": "Source",
+      "description": "Description",
+      "scenario": "Scenario",
+      "impact": "Impact",
+      "loss": "Estimated loss",
+      "affected": "Most affected",
+      "severity": "Severity"
+    },
+    "benchmark": {
+      "symbol": "Benchmark",
+      "beta": "Beta",
+      "activeExposure": "Active exposure",
+      "trackingError": "Tracking error",
+      "informationRatio": "Information ratio"
+    },
+    "badges": {
+      "realized": "Realized",
+      "demo": "Demo",
+      "partialData": "Partial Data",
+      "placeholder": "Placeholder",
+      "requiresMarketData": "Requires Market Data",
+      "benchmarkHistory": "Requires Benchmark History",
+      "benchmarkFeed": "Requires Benchmark Constituent Feed",
+      "deterministic": "Deterministic commentary"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Market Data",

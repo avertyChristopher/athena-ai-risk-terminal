@@ -1654,6 +1654,349 @@ ul.portfolio-note-list {
   color: var(--muted);
 }
 
+.risk-monitor-page {
+  display: grid;
+  gap: 20px;
+}
+
+.risk-monitor-command-panel,
+.risk-monitor-section-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 246, 242, 0.82)),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.risk-monitor-command-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 390px);
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+}
+
+.risk-monitor-command-panel span {
+  color: var(--accent-strong);
+  font-weight: 850;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.risk-monitor-command-panel h2,
+.risk-monitor-command-panel p {
+  margin: 0;
+}
+
+.risk-monitor-command-panel h2 {
+  font-size: 1.35rem;
+}
+
+.risk-monitor-command-panel p {
+  max-width: 760px;
+  color: var(--muted);
+}
+
+.risk-monitor-command-panel__controls {
+  display: grid;
+  gap: 12px;
+}
+
+.risk-monitor-badge-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.risk-monitor-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.risk-monitor-status-badge--info {
+  border-color: rgba(107, 150, 195, 0.28);
+  background: rgba(107, 150, 195, 0.12);
+  color: var(--accent-strong);
+}
+
+.risk-monitor-status-badge--success {
+  border-color: rgba(29, 127, 95, 0.24);
+  background: rgba(29, 127, 95, 0.1);
+  color: var(--success);
+}
+
+.risk-monitor-status-badge--warning {
+  border-color: rgba(138, 106, 67, 0.26);
+  background: rgba(138, 106, 67, 0.1);
+  color: var(--warning);
+}
+
+.risk-monitor-status-badge--danger {
+  border-color: rgba(176, 58, 72, 0.24);
+  background: rgba(176, 58, 72, 0.1);
+  color: var(--danger);
+}
+
+.risk-monitor-kpi-grid,
+.risk-monitor-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.risk-monitor-mini-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.risk-monitor-metric-card {
+  display: grid;
+  align-content: space-between;
+  gap: 9px;
+  min-height: 126px;
+  border: 1px solid var(--border);
+  border-top: 3px solid rgba(107, 150, 195, 0.34);
+  border-radius: 8px;
+  padding: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 246, 242, 0.72)),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.risk-monitor-metric-card--positive {
+  border-top-color: rgba(29, 127, 95, 0.48);
+}
+
+.risk-monitor-metric-card--warning {
+  border-top-color: rgba(138, 106, 67, 0.48);
+}
+
+.risk-monitor-metric-card--negative {
+  border-top-color: rgba(176, 58, 72, 0.46);
+}
+
+.risk-monitor-metric-card span,
+.risk-monitor-metric-card p {
+  color: var(--muted);
+}
+
+.risk-monitor-metric-card p {
+  margin: 0;
+}
+
+.risk-monitor-metric-card strong {
+  overflow-wrap: anywhere;
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  line-height: 1.1;
+}
+
+.risk-monitor-tabs {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: var(--shadow-soft);
+}
+
+.risk-monitor-tab {
+  display: grid;
+  gap: 3px;
+  min-height: 58px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    transform 120ms ease;
+}
+
+.risk-monitor-tab:hover,
+.risk-monitor-tab--active {
+  border-color: var(--border-strong);
+  background: rgba(107, 150, 195, 0.1);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.risk-monitor-tab span {
+  font-weight: 850;
+}
+
+.risk-monitor-tab small {
+  color: var(--muted);
+}
+
+.risk-monitor-panel,
+.risk-monitor-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.risk-monitor-section-card {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.risk-monitor-section-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.risk-monitor-section-card__header h2,
+.risk-monitor-section-card__header p,
+.risk-monitor-driver-list h3,
+.risk-monitor-commentary-grid h3 {
+  margin: 0;
+}
+
+.risk-monitor-section-card__header h2 {
+  font-size: 1.15rem;
+}
+
+.risk-monitor-section-card__header p,
+.risk-monitor-driver-list p,
+.risk-monitor-table-note,
+.risk-monitor-note-list p {
+  color: var(--muted);
+}
+
+.risk-monitor-overview-grid,
+.risk-monitor-two-column,
+.risk-monitor-commentary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.risk-monitor-data-source,
+.risk-monitor-driver-list,
+.risk-monitor-callout,
+.risk-monitor-note-list,
+.risk-monitor-alert,
+.risk-monitor-breach {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(107, 150, 195, 0.18);
+  border-radius: 8px;
+  padding: 13px;
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.1), rgba(138, 106, 67, 0.07)),
+    rgba(255, 255, 255, 0.74);
+}
+
+.risk-monitor-data-source div,
+.risk-monitor-exposure-list div,
+.risk-monitor-contribution-list div,
+.risk-monitor-alert div,
+.risk-monitor-breach div,
+.risk-monitor-breach dl {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.risk-monitor-data-source span,
+.risk-monitor-exposure-list span,
+.risk-monitor-contribution-list span,
+.risk-monitor-breach dt {
+  color: var(--muted);
+}
+
+.risk-monitor-data-source p,
+.risk-monitor-driver-list p,
+.risk-monitor-alert p,
+.risk-monitor-breach p,
+.risk-monitor-breach small,
+.risk-monitor-alert small,
+.risk-monitor-callout {
+  margin: 0;
+  color: var(--muted);
+}
+
+.risk-monitor-alert-grid,
+.risk-monitor-breach-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.risk-monitor-alert--high,
+.risk-monitor-alert--critical,
+.risk-monitor-breach--high,
+.risk-monitor-breach--critical {
+  border-color: rgba(176, 58, 72, 0.22);
+  background: rgba(176, 58, 72, 0.08);
+}
+
+.risk-monitor-alert--medium,
+.risk-monitor-breach--medium {
+  border-color: rgba(138, 106, 67, 0.24);
+  background: rgba(138, 106, 67, 0.08);
+}
+
+.risk-monitor-exposure-list,
+.risk-monitor-contribution-list {
+  display: grid;
+  gap: 8px;
+}
+
+.risk-monitor-exposure-list div,
+.risk-monitor-contribution-list > div {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.risk-monitor-contribution-list div div {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+}
+
+.risk-monitor-contribution-list small {
+  color: var(--muted);
+}
+
+.risk-monitor-table {
+  min-width: 920px;
+}
+
+.risk-monitor-table-note {
+  margin: 4px 0 0;
+  max-width: 560px;
+}
+
+.risk-monitor-commentary-grid ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
 .portfolio-form,
 .details-panel,
 .table-section,
@@ -2803,7 +3146,11 @@ ul.portfolio-note-list {
   .trade-command-panel,
   .trade-workbench-grid,
   .trade-two-column,
-  .trade-commentary-grid {
+  .trade-commentary-grid,
+  .risk-monitor-command-panel,
+  .risk-monitor-overview-grid,
+  .risk-monitor-two-column,
+  .risk-monitor-commentary-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2815,6 +3162,10 @@ ul.portfolio-note-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .risk-monitor-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .portfolio-metric-grid,
   .portfolio-metric-grid--compact,
   .portfolio-endpoint-grid,
@@ -2822,7 +3173,11 @@ ul.portfolio-note-list {
   .trade-ticket-cost-strip,
   .trade-summary-grid,
   .trade-policy-grid,
-  .trade-cost-grid {
+  .trade-cost-grid,
+  .risk-monitor-kpi-grid,
+  .risk-monitor-mini-grid,
+  .risk-monitor-alert-grid,
+  .risk-monitor-breach-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2939,14 +3294,21 @@ ul.portfolio-note-list {
   .trade-ticket-cost-strip,
   .trade-summary-grid,
   .trade-policy-grid,
-  .trade-cost-grid {
+  .trade-cost-grid,
+  .risk-monitor-tabs,
+  .risk-monitor-kpi-grid,
+  .risk-monitor-mini-grid,
+  .risk-monitor-alert-grid,
+  .risk-monitor-breach-grid {
     grid-template-columns: 1fr;
   }
 
   .portfolio-section-card__header,
   .portfolio-rebalancing-preview__summary,
   .trade-section-card__header,
-  .trade-command-panel {
+  .trade-command-panel,
+  .risk-monitor-section-card__header,
+  .risk-monitor-command-panel {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -2954,7 +3316,8 @@ ul.portfolio-note-list {
   .portfolio-section-card__aside,
   .portfolio-section-card__badges,
   .portfolio-badge-cluster,
-  .trade-badge-cluster {
+  .trade-badge-cluster,
+  .risk-monitor-badge-cluster {
     justify-content: flex-start;
   }
 
