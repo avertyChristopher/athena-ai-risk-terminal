@@ -690,6 +690,129 @@
       "dataQuality": "Data-quality endpoint"
     }
   },
+  "tradeSimulator": {
+    "title": "Trade Simulator",
+    "subtitle": "Institutional pre-trade analysis for portfolio impact, risk, suitability, costs and policy constraints.",
+    "workbench": {
+      "eyebrow": "Pre-trade workstation",
+      "title": "Institutional trade simulation",
+      "description": "Build a proposed order, inspect its portfolio impact, and review suitability before any execution decision."
+    },
+    "badges": {
+      "simulationOnly": "Simulation only",
+      "demoAssumptions": "Demo assumptions",
+      "requiresMarketData": "Requires Market Data",
+      "noExecution": "No execution",
+      "demoPrice": "Demo price",
+      "deterministicCommentary": "Deterministic commentary"
+    },
+    "ticket": {
+      "title": "Trade Ticket",
+      "description": "Enter the proposed buy or sell order and review estimated implementation costs before simulation.",
+      "portfolio": "Portfolio",
+      "symbol": "Symbol",
+      "assetName": "Asset name",
+      "assetType": "Asset type",
+      "quantity": "Quantity",
+      "estimatedPrice": "Estimated price",
+      "orderType": "Order type",
+      "limitPrice": "Limit price",
+      "timeInForce": "Time in force",
+      "rationale": "Trade rationale",
+      "tradeValue": "Estimated trade value",
+      "estimatedCosts": "Estimated costs",
+      "commission": "Commission",
+      "spread": "Spread",
+      "slippage": "Slippage",
+      "cashDirection": "Cash direction",
+      "cashOutflow": "Cash outflow",
+      "cashInflow": "Cash inflow",
+      "estimatedCashAfter": "Estimated cash after trade",
+      "preExecution": "Before execution",
+      "simulate": "Run simulation"
+    },
+    "summary": {
+      "title": "Simulation Result Summary",
+      "description": "Decision status, main reason, estimated cost and suitability outcome. No trade is executed.",
+      "pending": "Pending",
+      "emptyTitle": "No simulation yet",
+      "emptyMessage": "Complete the trade ticket and run a simulation to see pre-trade analytics.",
+      "estimatedCost": "Estimated cost",
+      "riskImpact": "Risk impact",
+      "cashAfter": "Cash after trade",
+      "status": "Trade status",
+      "notice": "Execution notice"
+    },
+    "tabs": {
+      "impact": "Impact",
+      "impactShort": "Before / after",
+      "risk": "Risk",
+      "riskShort": "VaR and beta",
+      "suitability": "Suitability",
+      "suitabilityShort": "IPS checks",
+      "costs": "Costs",
+      "costsShort": "Execution",
+      "benchmark": "Benchmark",
+      "benchmarkShort": "Active risk",
+      "commentary": "Commentary",
+      "commentaryShort": "Athena view"
+    },
+    "table": {
+      "metric": "Metric",
+      "before": "Before",
+      "after": "After",
+      "change": "Change",
+      "limit": "Limit",
+      "status": "Status"
+    },
+    "impact": {
+      "title": "Pre-Trade Impact Analysis"
+    },
+    "risk": {
+      "title": "Risk Impact"
+    },
+    "suitability": {
+      "title": "CFA Suitability Review",
+      "investorType": "Investor type",
+      "riskTolerance": "Risk tolerance",
+      "timeHorizon": "Time horizon",
+      "liquidityNeeds": "Liquidity needs"
+    },
+    "compliance": {
+      "title": "Compliance & Constraints",
+      "description": "Policy, concentration, cash, turnover and active-risk warnings generated from deterministic demo checks.",
+      "noWarnings": "No active warnings",
+      "noWarningsMessage": "The proposed trade does not trigger a demo policy warning."
+    },
+    "costs": {
+      "title": "Transaction Cost Analysis",
+      "gross": "Gross trade value",
+      "total": "Total estimated cost",
+      "percent": "Cost % of trade",
+      "net": "Estimated net value",
+      "explicit": "Explicit costs",
+      "implicit": "Implicit costs"
+    },
+    "execution": {
+      "title": "Execution Quality Simulation",
+      "expectedPrice": "Expected execution price",
+      "simulatedPrice": "Simulated execution price",
+      "shortfall": "Implementation shortfall",
+      "priceImpact": "Price improvement / shortfall"
+    },
+    "benchmark": {
+      "title": "Benchmark & Active Risk",
+      "name": "Benchmark",
+      "activeBefore": "Active weight before",
+      "activeAfter": "Active weight after",
+      "activeExposure": "Active exposure after trade",
+      "trackingError": "Tracking error impact",
+      "informationRatio": "Information ratio impact"
+    },
+    "commentary": {
+      "title": "Athena Trade Commentary"
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Market Data",

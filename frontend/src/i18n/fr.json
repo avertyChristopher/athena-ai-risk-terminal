@@ -690,6 +690,129 @@
       "dataQuality": "Endpoint de qualite des donnees"
     }
   },
+  "tradeSimulator": {
+    "title": "Simulateur de trade",
+    "subtitle": "Analyse pre-trade institutionnelle pour l'impact portefeuille, le risque, la suitability, les couts et les contraintes de politique.",
+    "workbench": {
+      "eyebrow": "Poste pre-trade",
+      "title": "Simulation de trade institutionnelle",
+      "description": "Construis un ordre propose, inspecte son impact portefeuille et revois sa suitability avant toute decision d'execution."
+    },
+    "badges": {
+      "simulationOnly": "Simulation seulement",
+      "demoAssumptions": "Hypotheses demo",
+      "requiresMarketData": "Requiert Market Data",
+      "noExecution": "Aucune execution",
+      "demoPrice": "Prix demo",
+      "deterministicCommentary": "Commentaire deterministe"
+    },
+    "ticket": {
+      "title": "Trade Ticket",
+      "description": "Saisis l'ordre d'achat ou de vente propose et revois les couts d'implementation estimes avant simulation.",
+      "portfolio": "Portefeuille",
+      "symbol": "Symbole",
+      "assetName": "Nom de l'actif",
+      "assetType": "Type d'actif",
+      "quantity": "Quantite",
+      "estimatedPrice": "Prix estime",
+      "orderType": "Type d'ordre",
+      "limitPrice": "Prix limite",
+      "timeInForce": "Validite",
+      "rationale": "Rationale du trade",
+      "tradeValue": "Valeur estimee du trade",
+      "estimatedCosts": "Couts estimes",
+      "commission": "Commission",
+      "spread": "Spread",
+      "slippage": "Slippage",
+      "cashDirection": "Direction cash",
+      "cashOutflow": "Sortie de cash",
+      "cashInflow": "Entree de cash",
+      "estimatedCashAfter": "Cash estime apres trade",
+      "preExecution": "Avant execution",
+      "simulate": "Lancer simulation"
+    },
+    "summary": {
+      "title": "Resume du resultat de simulation",
+      "description": "Statut de decision, raison principale, cout estime et suitability. Aucun trade n'est execute.",
+      "pending": "En attente",
+      "emptyTitle": "Aucune simulation",
+      "emptyMessage": "Complete le trade ticket et lance une simulation pour voir les analytiques pre-trade.",
+      "estimatedCost": "Cout estime",
+      "riskImpact": "Impact risque",
+      "cashAfter": "Cash apres trade",
+      "status": "Statut du trade",
+      "notice": "Notice d'execution"
+    },
+    "tabs": {
+      "impact": "Impact",
+      "impactShort": "Avant / apres",
+      "risk": "Risque",
+      "riskShort": "VaR et beta",
+      "suitability": "Suitability",
+      "suitabilityShort": "Checks IPS",
+      "costs": "Couts",
+      "costsShort": "Execution",
+      "benchmark": "Benchmark",
+      "benchmarkShort": "Risque actif",
+      "commentary": "Commentaire",
+      "commentaryShort": "Vue Athena"
+    },
+    "table": {
+      "metric": "Metrique",
+      "before": "Avant",
+      "after": "Apres",
+      "change": "Changement",
+      "limit": "Limite",
+      "status": "Statut"
+    },
+    "impact": {
+      "title": "Analyse d'impact pre-trade"
+    },
+    "risk": {
+      "title": "Impact risque"
+    },
+    "suitability": {
+      "title": "Revue de suitability CFA",
+      "investorType": "Type d'investisseur",
+      "riskTolerance": "Tolerance au risque",
+      "timeHorizon": "Horizon",
+      "liquidityNeeds": "Besoins de liquidite"
+    },
+    "compliance": {
+      "title": "Compliance et contraintes",
+      "description": "Alertes de politique, concentration, cash, turnover et risque actif issues de checks demo deterministes.",
+      "noWarnings": "Aucune alerte active",
+      "noWarningsMessage": "Le trade propose ne declenche pas d'alerte de politique demo."
+    },
+    "costs": {
+      "title": "Analyse des couts de transaction",
+      "gross": "Valeur brute du trade",
+      "total": "Cout total estime",
+      "percent": "Cout % du trade",
+      "net": "Valeur nette estimee",
+      "explicit": "Couts explicites",
+      "implicit": "Couts implicites"
+    },
+    "execution": {
+      "title": "Simulation de qualite d'execution",
+      "expectedPrice": "Prix d'execution attendu",
+      "simulatedPrice": "Prix d'execution simule",
+      "shortfall": "Implementation shortfall",
+      "priceImpact": "Amelioration / shortfall de prix"
+    },
+    "benchmark": {
+      "title": "Benchmark et risque actif",
+      "name": "Benchmark",
+      "activeBefore": "Poids actif avant",
+      "activeAfter": "Poids actif apres",
+      "activeExposure": "Exposition active apres trade",
+      "trackingError": "Impact tracking error",
+      "informationRatio": "Impact information ratio"
+    },
+    "commentary": {
+      "title": "Commentaire de trade Athena"
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Données de marché",
