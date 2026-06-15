@@ -22,6 +22,8 @@ from app.modules.portfolio_builder.repository import (
     PositionRepository,
 )
 from app.modules.portfolio_builder.service import PortfolioService, PositionService
+from app.modules.risk_monitor.repository import RiskMonitorRepository
+from app.modules.risk_monitor.service import RiskMonitorService
 from app.modules.trade_simulator.repository import TradeSimulatorRepository
 from app.modules.trade_simulator.service import TradeSimulatorService
 
@@ -66,6 +68,12 @@ def get_trade_service(
 
 def get_risk_service(db: Session = Depends(get_db_session)) -> RiskService:
     return RiskService(RiskRepository(db))
+
+
+def get_risk_monitor_service(
+    db: Session = Depends(get_db_session),
+) -> RiskMonitorService:
+    return RiskMonitorService(RiskMonitorRepository(db))
 
 
 def get_pricing_service() -> PricingService:
