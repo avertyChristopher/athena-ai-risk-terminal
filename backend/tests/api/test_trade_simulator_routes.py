@@ -45,8 +45,41 @@ def test_trade_simulator_returns_full_pre_trade_analysis() -> None:
     assert body["trade_ticket"]["symbol"] == "NVDA"
     assert body["trade_ticket"]["gross_trade_value"] == 625
     assert body["risk_impact"]["badges"]
+    assert body["risk_impact"]["metric_source"] == "realized_market_data"
+    assert body["risk_impact"]["fallback_used"] is False
+    assert "Realized" in body["risk_impact"]["badges"]
+    assert body["risk_impact"]["observations"] >= 2
     assert "Simulation only" in body["simulation_result"]["notice"]
     assert body["transaction_cost_analysis"]["total_estimated_cost"] > 0
+
+
+def test_trade_simulator_falls_back_when_market_returns_are_missing() -> None:
+    response = client.post(
+        "/api/trade-simulator/simulate",
+        json={
+            "portfolio_id": "pf_001",
+            "action": "BUY",
+            "symbol": "XYZ",
+            "asset_name": "Missing Return Series Corp.",
+            "asset_type": "equity",
+            "quantity": 3,
+            "estimated_price": 50,
+            "order_type": "Market",
+            "time_in_force": "Day",
+            "trade_rationale": "Growth opportunity",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["risk_impact"]["metric_source"] == "deterministic_demo"
+    assert body["risk_impact"]["fallback_used"] is True
+    assert "XYZ" in body["risk_impact"]["symbols_missing"]
+    assert "Requires Market Data" in body["risk_impact"]["badges"]
+    assert (
+        "Realized Market Data return series unavailable. Falling back to deterministic demo assumptions."
+        in body["risk_impact"]["message"]
+    )
 
 
 def test_trade_simulator_rejects_sell_above_available_quantity() -> None:

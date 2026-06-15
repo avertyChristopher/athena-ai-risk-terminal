@@ -1,5 +1,8 @@
 from fastapi import HTTPException
 
+from app.modules.market_data.repository import MarketDataRepository
+from app.modules.risk_analytics.schemas import RealizedRiskResult
+from app.modules.risk_analytics.service import RiskAnalyticsService
 from app.modules.trade_simulator.domain.constraints import build_constraint_warnings
 from app.modules.trade_simulator.domain.execution_quality import (
     calculate_price_shortfall,
@@ -55,6 +58,9 @@ from app.modules.trade_simulator.schemas import (
 class TradeSimulatorService:
     def __init__(self, repository: TradeSimulatorRepository) -> None:
         self.repository = repository
+        self.risk_analytics_service = RiskAnalyticsService(
+            MarketDataRepository(repository.db),
+        )
 
     def get_module_status(self) -> TradeModuleStatus:
         return TradeModuleStatus(
@@ -120,6 +126,19 @@ class TradeSimulatorService:
         )
         metrics_before = calculate_portfolio_metrics(positions, cash_before, symbol)
         metrics_after = calculate_portfolio_metrics(positions_after, cash_after, symbol)
+        decorated_after = decorate_positions(positions_after, cash_after)
+        realized_risk_before = self.risk_analytics_service.calculate_realized_portfolio_risk(
+            self._weights_by_symbol(decorated_before, "invested_weight"),
+            benchmark_symbol=str(portfolio["benchmark"]),
+        )
+        realized_risk_after = self.risk_analytics_service.calculate_realized_portfolio_risk(
+            self._weights_by_symbol(decorated_after, "invested_weight"),
+            benchmark_symbol=str(portfolio["benchmark"]),
+        )
+        risk_source = self._risk_source_metadata(
+            realized_risk_before,
+            realized_risk_after,
+        )
         existing_quantity = self._existing_quantity(positions, symbol)
         constraint_warnings = build_constraint_warnings(
             action=payload.action,
@@ -135,6 +154,8 @@ class TradeSimulatorService:
         risk_metrics = self._risk_impact_metrics(
             metrics_before,
             metrics_after,
+            realized_risk_before,
+            realized_risk_after,
         )
         suitability_status = determine_suitability_status(
             constraint_warnings,
@@ -235,17 +256,15 @@ class TradeSimulatorService:
             ),
             risk_impact=RiskImpactResponse(
                 metrics=risk_metrics,
-                message=(
-                    "Risk analytics currently use deterministic demo assumptions. "
-                    "Future versions will connect Market Data return series for realized "
-                    "volatility, covariance, VaR, CVaR and tracking error."
-                ),
-                badges=[
-                    "Demo assumptions",
-                    "Requires Market Data return series",
-                    "Placeholder VaR/CVaR",
-                    "Demo covariance",
-                ],
+                message=str(risk_source["message"]),
+                badges=list(risk_source["badges"]),
+                metric_source=str(risk_source["metric_source"]),
+                fallback_used=bool(risk_source["fallback_used"]),
+                fallback_reason=risk_source["fallback_reason"],
+                observations=int(risk_source["observations"]),
+                symbols_found=list(risk_source["symbols_found"]),
+                symbols_missing=list(risk_source["symbols_missing"]),
+                quality_warnings=list(risk_source["quality_warnings"]),
             ),
             suitability_review=SuitabilityReviewResponse(
                 status=suitability_status,
@@ -369,6 +388,8 @@ class TradeSimulatorService:
         self,
         before: dict[str, float | str],
         after: dict[str, float | str],
+        realized_before: RealizedRiskResult,
+        realized_after: RealizedRiskResult,
     ) -> list[ImpactMetric]:
         portfolio_value_before = float(before["portfolio_value"])
         portfolio_value_after = float(after["portfolio_value"])
@@ -390,28 +411,107 @@ class TradeSimulatorService:
             float(after["expected_return"]),
             tracking_error_after,
         )
+        realized_available = self._realized_risk_available(
+            realized_before,
+            realized_after,
+        )
+        expected_return_before = float(before["expected_return"])
+        expected_return_after = float(after["expected_return"])
+        sharpe_before = self._sharpe(expected_return_before, volatility_before)
+        sharpe_after = self._sharpe(expected_return_after, volatility_after)
+        var_before = estimate_var_95(portfolio_value_before, volatility_before)
+        var_after = estimate_var_95(portfolio_value_after, volatility_after)
+        cvar_before = estimate_cvar_95(portfolio_value_before, volatility_before)
+        cvar_after = estimate_cvar_95(portfolio_value_after, volatility_after)
+        max_drawdown_before = estimate_max_drawdown(volatility_before)
+        max_drawdown_after = estimate_max_drawdown(volatility_after)
+
+        if realized_available:
+            expected_return_before = (
+                realized_before.realized_annualized_return
+                if realized_before.realized_annualized_return is not None
+                else expected_return_before
+            )
+            expected_return_after = (
+                realized_after.realized_annualized_return
+                if realized_after.realized_annualized_return is not None
+                else expected_return_after
+            )
+            volatility_before = realized_before.realized_volatility or volatility_before
+            volatility_after = realized_after.realized_volatility or volatility_after
+            sharpe_before = realized_before.realized_sharpe_ratio
+            sharpe_after = realized_after.realized_sharpe_ratio
+            var_before = (
+                realized_before.portfolio_var_95 * portfolio_value_before
+                if realized_before.portfolio_var_95 is not None
+                else var_before
+            )
+            var_after = (
+                realized_after.portfolio_var_95 * portfolio_value_after
+                if realized_after.portfolio_var_95 is not None
+                else var_after
+            )
+            cvar_before = (
+                realized_before.portfolio_cvar_95 * portfolio_value_before
+                if realized_before.portfolio_cvar_95 is not None
+                else cvar_before
+            )
+            cvar_after = (
+                realized_after.portfolio_cvar_95 * portfolio_value_after
+                if realized_after.portfolio_cvar_95 is not None
+                else cvar_after
+            )
+            max_drawdown_before = (
+                realized_before.max_drawdown
+                if realized_before.max_drawdown is not None
+                else max_drawdown_before
+            )
+            max_drawdown_after = (
+                realized_after.max_drawdown
+                if realized_after.max_drawdown is not None
+                else max_drawdown_after
+            )
+            tracking_error_before = (
+                realized_before.tracking_error
+                if realized_before.tracking_error is not None
+                else tracking_error_before
+            )
+            tracking_error_after = (
+                realized_after.tracking_error
+                if realized_after.tracking_error is not None
+                else tracking_error_after
+            )
+            information_ratio_before = calculate_information_ratio(
+                expected_return_before,
+                tracking_error_before,
+            )
+            information_ratio_after = calculate_information_ratio(
+                expected_return_after,
+                tracking_error_after,
+            )
+
         risk_values = {
             "Expected return": (
-                float(before["expected_return"]),
-                float(after["expected_return"]),
+                expected_return_before,
+                expected_return_after,
             ),
             "Volatility": (volatility_before, volatility_after),
             "Sharpe ratio": (
-                self._sharpe(float(before["expected_return"]), volatility_before),
-                self._sharpe(float(after["expected_return"]), volatility_after),
+                sharpe_before,
+                sharpe_after,
             ),
             "Beta": (float(before["portfolio_beta"]), float(after["portfolio_beta"])),
             "VaR 95%": (
-                estimate_var_95(portfolio_value_before, volatility_before),
-                estimate_var_95(portfolio_value_after, volatility_after),
+                var_before,
+                var_after,
             ),
             "CVaR 95%": (
-                estimate_cvar_95(portfolio_value_before, volatility_before),
-                estimate_cvar_95(portfolio_value_after, volatility_after),
+                cvar_before,
+                cvar_after,
             ),
             "Max drawdown": (
-                estimate_max_drawdown(volatility_before),
-                estimate_max_drawdown(volatility_after),
+                max_drawdown_before,
+                max_drawdown_after,
             ),
             "Tracking error": (tracking_error_before, tracking_error_after),
             "Information ratio": (information_ratio_before, information_ratio_after),
@@ -477,6 +577,110 @@ class TradeSimulatorService:
             f"volatility change {risk_change:.2%}; "
             f"largest-position concentration change {concentration_change:.2%}."
         )
+
+    def _risk_source_metadata(
+        self,
+        realized_before: RealizedRiskResult,
+        realized_after: RealizedRiskResult,
+    ) -> dict[str, object]:
+        fallback_used = realized_before.fallback_used or realized_after.fallback_used
+        fallback_reason = realized_before.fallback_reason or realized_after.fallback_reason
+        quality_warnings = self._unique_values(
+            [
+                *realized_before.quality_warnings,
+                *realized_after.quality_warnings,
+            ],
+        )
+        symbols_missing = self._unique_values(
+            [
+                *realized_before.symbols_missing,
+                *realized_after.symbols_missing,
+            ],
+        )
+        symbols_found = self._unique_values(
+            [
+                *realized_before.symbols_found,
+                *realized_after.symbols_found,
+            ],
+        )
+        observations = min(realized_before.observations, realized_after.observations)
+
+        if fallback_used:
+            badges = [
+                "Demo",
+                "Requires Market Data",
+                "Placeholder VaR/CVaR",
+            ]
+            if symbols_missing:
+                badges.append("Partial Data")
+            return {
+                "metric_source": "deterministic_demo",
+                "fallback_used": True,
+                "fallback_reason": fallback_reason,
+                "observations": observations,
+                "symbols_found": symbols_found,
+                "symbols_missing": symbols_missing,
+                "quality_warnings": quality_warnings,
+                "message": (
+                    "Realized Market Data return series unavailable. "
+                    "Falling back to deterministic demo assumptions."
+                ),
+                "badges": badges,
+            }
+
+        badges = ["Realized", "Market Data returns"]
+        if quality_warnings:
+            badges.append("Partial Data")
+        if (
+            realized_before.tracking_error is None
+            or realized_after.tracking_error is None
+        ):
+            badges.append("Requires benchmark history")
+
+        return {
+            "metric_source": "realized_market_data",
+            "fallback_used": False,
+            "fallback_reason": None,
+            "observations": observations,
+            "symbols_found": symbols_found,
+            "symbols_missing": symbols_missing,
+            "quality_warnings": quality_warnings,
+            "message": (
+                "Risk impact uses realized Market Data return series for volatility, "
+                "VaR, CVaR, Sharpe ratio and tracking error when benchmark history is available."
+            ),
+            "badges": badges,
+        }
+
+    def _realized_risk_available(
+        self,
+        realized_before: RealizedRiskResult,
+        realized_after: RealizedRiskResult,
+    ) -> bool:
+        return (
+            not realized_before.fallback_used
+            and not realized_after.fallback_used
+            and realized_before.realized_volatility is not None
+            and realized_after.realized_volatility is not None
+        )
+
+    def _weights_by_symbol(
+        self,
+        positions: list[dict[str, object]],
+        weight_key: str,
+    ) -> dict[str, float]:
+        weights: dict[str, float] = {}
+        for position in positions:
+            symbol = str(position["symbol"]).upper()
+            weights[symbol] = weights.get(symbol, 0.0) + float(position[weight_key])
+        return weights
+
+    def _unique_values(self, values: list[str]) -> list[str]:
+        unique_values: list[str] = []
+        for value in values:
+            if value not in unique_values:
+                unique_values.append(value)
+        return unique_values
 
     def _position_field(
         self,

@@ -81,6 +81,13 @@ class RiskImpactResponse(BaseModel):
     metrics: list[ImpactMetric]
     message: str
     badges: list[str]
+    metric_source: str = "deterministic_demo"
+    fallback_used: bool = True
+    fallback_reason: str | None = None
+    observations: int = 0
+    symbols_found: list[str] = Field(default_factory=list)
+    symbols_missing: list[str] = Field(default_factory=list)
+    quality_warnings: list[str] = Field(default_factory=list)
 
 
 class SuitabilityReviewResponse(BaseModel):
