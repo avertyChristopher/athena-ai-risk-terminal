@@ -2,6 +2,10 @@ from fastapi import HTTPException
 
 from app.modules.market_data.repository import MarketDataRepository
 from app.modules.risk_analytics.service import RiskAnalyticsService
+from app.modules.risk_monitor.domain.alerts import build_risk_alerts
+from app.modules.risk_monitor.domain.commentary import build_athena_risk_commentary
+from app.modules.risk_monitor.domain.risk_contribution import calculate_risk_contribution
+from app.modules.risk_monitor.domain.risk_limits import evaluate_limit_breaches
 from app.modules.risk_monitor.domain.risk_metrics import (
     calculate_active_exposure,
     calculate_demo_beta,
@@ -22,18 +26,22 @@ from app.modules.risk_monitor.domain.risk_metrics import (
     classify_global_risk_status,
     decorate_positions,
 )
+from app.modules.risk_monitor.domain.stress_testing import run_stress_scenarios
 from app.modules.risk_monitor.repository import RiskMonitorRepository
 from app.modules.risk_monitor.schemas import (
     AthenaRiskCommentary,
     BenchmarkRiskResponse,
     ConcentrationAnalysis,
     ConcentrationExposure,
+    RiskAlert,
     RiskContributionResponse,
+    RiskLimitBreach,
     RiskMetric,
     RiskMonitorAnalysisResponse,
     RiskMonitorAnalyzeRequest,
     RiskMonitorStatus,
     RiskSourceMetadata,
+    StressScenarioResult,
 )
 
 
@@ -136,6 +144,34 @@ class RiskMonitorService:
             payload.benchmark_symbol,
         )
         top_3_weight = calculate_top_n_weight(decorated_positions, 3)
+        sector_exposures = calculate_exposure_by_key(decorated_positions, "sector")
+        asset_type_exposures = calculate_exposure_by_key(
+            decorated_positions,
+            "asset_type",
+        )
+        breaches = evaluate_limit_breaches(
+            decorated_positions=decorated_positions,
+            sector_exposures=sector_exposures,
+            asset_type_exposures=asset_type_exposures,
+            cash_weight=cash_weight,
+            top_3_weight=top_3_weight,
+            volatility=volatility,
+            var_95=var_95,
+            cvar_95=cvar_95,
+            max_drawdown=max_drawdown,
+            tracking_error=tracking_error,
+            active_exposure=active_exposure,
+        )
+        stress_tests = run_stress_scenarios(decorated_positions, total_value)
+        risk_contribution = calculate_risk_contribution(
+            decorated_positions=decorated_positions,
+            covariance_matrix=realized_risk.covariance_matrix,
+            covariance_symbols=realized_risk.covariance_symbols,
+        )
+        benchmark_warnings = ["Benchmark constituent weights are not connected yet."]
+        if realized_risk.tracking_error is None:
+            benchmark_warnings.append("Requires benchmark return history for realized tracking error.")
+        breach_severities = [str(breach["severity"]) for breach in breaches]
         global_risk_score = calculate_risk_score(
             volatility=volatility,
             var_95=var_95,
@@ -144,7 +180,22 @@ class RiskMonitorService:
             top_3_weight=top_3_weight,
             cash_weight=cash_weight,
             active_exposure=active_exposure,
-            breach_severities=[],
+            breach_severities=breach_severities,
+        )
+        global_risk_status = classify_global_risk_status(global_risk_score)
+        main_drivers = self._main_drivers(
+            decorated_positions,
+            top_3_weight,
+            breaches,
+            stress_tests,
+        )
+        alerts = build_risk_alerts(breaches, stress_tests)
+        commentary = build_athena_risk_commentary(
+            status=global_risk_status,
+            main_drivers=main_drivers,
+            breaches=breaches,
+            stress_tests=stress_tests,
+            benchmark_warnings=benchmark_warnings,
         )
 
         return RiskMonitorAnalysisResponse(
@@ -153,8 +204,8 @@ class RiskMonitorService:
             benchmark_symbol=payload.benchmark_symbol.upper(),
             total_value=total_value,
             global_risk_score=global_risk_score,
-            global_risk_status=classify_global_risk_status(global_risk_score),
-            main_drivers=self._basic_drivers(decorated_positions, top_3_weight),
+            global_risk_status=global_risk_status,
+            main_drivers=main_drivers,
             risk_metrics=self._risk_metrics(
                 expected_return=expected_return,
                 volatility=volatility,
@@ -173,35 +224,24 @@ class RiskMonitorService:
                 cash_weight,
                 top_3_weight,
             ),
-            limit_breaches=[],
-            stress_tests=[],
-            risk_contribution=RiskContributionResponse(
-                contribution_source="placeholder",
-                method="Risk contribution engine will be added in the next increment.",
-                by_asset=[],
-                by_sector=[],
-                largest_risk_contributor=None,
-                diversification_warning=None,
-            ),
+            limit_breaches=[RiskLimitBreach.model_validate(breach) for breach in breaches],
+            stress_tests=[
+                StressScenarioResult.model_validate(scenario)
+                for scenario in stress_tests
+            ],
+            risk_contribution=RiskContributionResponse.model_validate(risk_contribution),
             benchmark_risk=BenchmarkRiskResponse(
                 benchmark_symbol=payload.benchmark_symbol.upper(),
                 beta=beta,
                 active_exposure=active_exposure,
                 tracking_error=tracking_error,
                 information_ratio=information_ratio,
-                active_risk_status="Monitoring",
-                warnings=["Benchmark constituent weights are not connected yet."],
-                badges=["Requires Benchmark Constituent Feed"],
+                active_risk_status=self._benchmark_status(active_exposure, tracking_error),
+                warnings=benchmark_warnings,
+                badges=self._benchmark_badges(realized_risk.tracking_error),
             ),
-            alerts=[],
-            athena_commentary=AthenaRiskCommentary(
-                summary=(
-                    "Risk Monitor has calculated portfolio surveillance metrics. "
-                    "Limit, stress and commentary engines are enabled in the next increment."
-                ),
-                main_drivers=self._basic_drivers(decorated_positions, top_3_weight),
-                suggested_actions=["Review concentration and benchmark exposure."],
-            ),
+            alerts=[RiskAlert.model_validate(alert) for alert in alerts],
+            athena_commentary=AthenaRiskCommentary.model_validate(commentary),
             risk_source=self._risk_source_metadata(realized_risk),
         )
 
@@ -335,6 +375,52 @@ class RiskMonitorService:
             )
         drivers.append(f"Top 3 holdings weight at {top_3_weight:.1%}.")
         return drivers
+
+    def _main_drivers(
+        self,
+        decorated_positions: list[dict[str, object]],
+        top_3_weight: float,
+        breaches: list[dict[str, object]],
+        stress_tests: list[dict[str, object]],
+    ) -> list[str]:
+        drivers = [
+            str(breach["explanation"])
+            for breach in breaches
+            if str(breach["severity"]) in {"high", "critical"}
+        ][:4]
+        if not drivers:
+            drivers = self._basic_drivers(decorated_positions, top_3_weight)
+
+        worst_stress = min(
+            stress_tests,
+            key=lambda scenario: float(scenario["estimated_impact_percent"]),
+            default=None,
+        )
+        if worst_stress is not None:
+            drivers.append(
+                f"{worst_stress['name']} impact estimated at "
+                f"{float(worst_stress['estimated_impact_percent']):.1%}.",
+            )
+        return drivers[:5]
+
+    def _benchmark_status(
+        self,
+        active_exposure: float,
+        tracking_error: float | None,
+    ) -> str:
+        if active_exposure >= 0.80 or (tracking_error is not None and tracking_error >= 0.08):
+            return "High active risk"
+        if active_exposure >= 0.50 or (tracking_error is not None and tracking_error >= 0.05):
+            return "Elevated active risk"
+        return "Within active-risk watch"
+
+    def _benchmark_badges(self, realized_tracking_error: float | None) -> list[str]:
+        badges = ["Requires Benchmark Constituent Feed"]
+        if realized_tracking_error is None:
+            badges.append("Requires Benchmark History")
+        else:
+            badges.append("Realized")
+        return badges
 
     def _risk_source_metadata(self, realized_risk) -> RiskSourceMetadata:
         badges = [
