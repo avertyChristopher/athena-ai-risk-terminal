@@ -33,6 +33,7 @@ def test_portfolio_management_foundation_endpoints_return_data() -> None:
         "/api/portfolios/pf_001/performance-measurement",
         "/api/portfolios/pf_001/constraints",
         "/api/portfolios/pf_001/diagnostics",
+        "/api/portfolios/pf_001/market-data-integration",
         "/api/portfolios/pf_001/cfa-concepts",
     ]
 
@@ -54,6 +55,18 @@ def test_portfolio_cfa_concepts_expose_level_one_sections() -> None:
     assert "portfolio_beta" in body["capm"]
     assert "sharpe_ratio" in body["risk_adjusted_performance"]
     assert len(body["efficient_frontier"]["points"]) == 3
+
+
+def test_portfolio_market_data_integration_exposes_readiness_plan() -> None:
+    response = client.get("/api/portfolios/pf_001/market-data-integration")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["portfolio_id"] == "pf_001"
+    assert "AAPL" in body["symbols"]
+    assert "returns-panel" in body["return_series_endpoint"]
+    assert "Requires Market Data" in body["readiness_badges"]
+    assert "deterministic demo assumptions" in body["integration_message"]
 
 
 def test_portfolio_can_be_created() -> None:

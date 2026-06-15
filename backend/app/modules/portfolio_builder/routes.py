@@ -15,6 +15,7 @@ from app.modules.portfolio_builder.schemas import (
     PortfolioConstraints,
     PortfolioDiagnosticsResponse,
     PortfolioListResponse,
+    PortfolioMarketDataIntegrationResponse,
     PortfolioPolicy,
     PortfolioRead,
     PortfolioSummary,
@@ -268,6 +269,17 @@ def get_diagnostics(
     service: PortfolioService = Depends(get_portfolio_service),
 ) -> PortfolioDiagnosticsResponse:
     return service.get_diagnostics(portfolio_id)
+
+
+@router.get(
+    "/{portfolio_id}/market-data-integration",
+    response_model=PortfolioMarketDataIntegrationResponse,
+)
+def get_market_data_integration(
+    portfolio_id: str,
+    service: PortfolioService = Depends(get_portfolio_service),
+) -> PortfolioMarketDataIntegrationResponse:
+    return service.get_market_data_integration(portfolio_id)
 
 
 @router.get("/{portfolio_id}/cfa-concepts", response_model=CfaConceptsResponse)

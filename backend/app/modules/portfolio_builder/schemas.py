@@ -297,6 +297,20 @@ class PortfolioDiagnosticsResponse(BaseModel):
     summary: str
 
 
+class PortfolioMarketDataIntegrationResponse(BaseModel):
+    portfolio_id: str
+    symbols: list[str]
+    return_series_endpoint: str | None
+    aligned_returns_endpoint: str | None
+    data_quality_endpoint: str | None
+    current_status: str
+    integration_message: str
+    current_assumptions: list[str]
+    planned_analytics: list[str]
+    limitations: list[str]
+    readiness_badges: list[str]
+
+
 class ProcessStep(BaseModel):
     phase: str
     description: str

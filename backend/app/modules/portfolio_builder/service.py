@@ -129,6 +129,7 @@ from app.modules.portfolio_builder.schemas import (
     PortfolioConstraints,
     PortfolioDiagnosticsResponse,
     PortfolioListResponse,
+    PortfolioMarketDataIntegrationResponse,
     PortfolioPolicy,
     PortfolioRead,
     PortfolioSummary,
@@ -540,6 +541,75 @@ class PortfolioService:
                 benchmark_alignment=benchmark_alignment,
                 policy_breaches=policy.breaches,
             ),
+        )
+
+    def get_market_data_integration(
+        self,
+        portfolio_id: str,
+    ) -> PortfolioMarketDataIntegrationResponse:
+        portfolio = self._get_portfolio_or_404(portfolio_id)
+        positions = self._decorated_positions(portfolio_id)
+        symbols = sorted({str(position["symbol"]).upper() for position in positions})
+        symbol_query = ",".join(symbols)
+        base_currency = str(portfolio["base_currency"]).upper()
+
+        # TODO: inject MarketDataService once portfolio risk analytics consume return panels directly.
+        return PortfolioMarketDataIntegrationResponse(
+            portfolio_id=portfolio_id,
+            symbols=symbols,
+            return_series_endpoint=(
+                f"/api/market-data/returns-panel?symbols={symbol_query}"
+                if symbols
+                else None
+            ),
+            aligned_returns_endpoint=(
+                f"/api/market-data/aligned-returns?symbols={symbol_query}"
+                if symbols
+                else None
+            ),
+            data_quality_endpoint=(
+                "/api/market-data/data-quality/batch"
+                f"?symbols={symbol_query}&expected_currency={base_currency}"
+                if symbols
+                else None
+            ),
+            current_status=(
+                "Prepared for Market Data return-series integration; current analytics remain demo-based."
+            ),
+            integration_message=(
+                "Portfolio risk analytics currently use deterministic demo assumptions. "
+                "Future versions will connect Market Data return series for realized "
+                "volatility, covariance, VaR, CVaR and tracking error."
+            ),
+            current_assumptions=[
+                "Expected returns are deterministic by asset type.",
+                "Covariance uses demo asset-type volatilities and a fixed correlation scaffold.",
+                "Benchmark weights and tracking error are placeholders until benchmark history is connected.",
+                "Money-weighted return is a placeholder until dated cash flows exist.",
+            ],
+            planned_analytics=[
+                "Realized volatility from aligned Market Data return series.",
+                "Portfolio covariance and correlation matrix from observed returns.",
+                "Historical VaR and CVaR using portfolio return history.",
+                "Tracking error and information ratio using benchmark return history.",
+            ],
+            limitations=[
+                "DemoDataStore is in-memory and resets on backend restart.",
+                "No live market data refresh is triggered from Portfolio Builder.",
+                "No FX conversion is applied to cross-currency positions.",
+                "No benchmark constituent feed is connected yet.",
+            ],
+            readiness_badges=[
+                "Demo",
+                "Placeholder",
+                "Requires Market Data",
+                "Requires Benchmark History",
+                "In-Memory Store",
+                "Not Production Ready",
+                "No Live Refresh",
+                "No FX Conversion",
+                "No Benchmark Feed",
+            ],
         )
 
     def get_cfa_concepts(self, portfolio_id: str) -> CfaConceptsResponse:
