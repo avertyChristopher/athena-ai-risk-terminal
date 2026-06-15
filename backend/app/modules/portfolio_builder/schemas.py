@@ -160,6 +160,21 @@ class RiskReturnResponse(BaseModel):
     correlation_matrix_status: str
     contributions: list[RiskReturnAssetContribution]
     notes: list[str]
+    metric_source: str = "deterministic_demo"
+    fallback_used: bool = True
+    fallback_reason: str | None = None
+    observations: int = 0
+    symbols_found: list[str] = Field(default_factory=list)
+    symbols_missing: list[str] = Field(default_factory=list)
+    quality_warnings: list[str] = Field(default_factory=list)
+    realized_annualized_return: float | None = None
+    realized_volatility: float | None = None
+    realized_sharpe_ratio: float | None = None
+    historical_var_95: float | None = None
+    historical_cvar_95: float | None = None
+    max_drawdown: float | None = None
+    tracking_error: float | None = None
+    covariance_symbols: list[str] = Field(default_factory=list)
 
 
 class BenchmarkHolding(BaseModel):

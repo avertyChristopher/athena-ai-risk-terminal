@@ -69,6 +69,21 @@ def test_portfolio_market_data_integration_exposes_readiness_plan() -> None:
     assert "deterministic demo assumptions" in body["integration_message"]
 
 
+def test_portfolio_risk_return_uses_market_data_returns_when_available() -> None:
+    response = client.get("/api/portfolios/pf_001/risk-return")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["metric_source"] == "realized_market_data"
+    assert body["fallback_used"] is False
+    assert body["observations"] >= 2
+    assert body["realized_volatility"] is not None
+    assert body["realized_sharpe_ratio"] is not None
+    assert body["historical_var_95"] is not None
+    assert body["historical_cvar_95"] is not None
+    assert "SPY" in body["symbols_found"]
+
+
 def test_portfolio_can_be_created() -> None:
     response = client.post(
         "/api/portfolios",

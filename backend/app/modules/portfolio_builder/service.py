@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 
+from app.modules.market_data.repository import MarketDataRepository
 from app.modules.portfolio_builder.domain import (
     calculate_allocation_by_asset,
     calculate_allocation_by_asset_type,
@@ -110,6 +111,7 @@ from app.modules.portfolio_builder.repository import (
     PortfolioRepository,
     PositionRepository,
 )
+from app.modules.risk_analytics.service import RiskAnalyticsService
 from app.modules.portfolio_builder.schemas import (
     AllocationResponse,
     CapmResponse,
@@ -157,6 +159,9 @@ class PortfolioService:
     ) -> None:
         self.repository = repository
         self.position_repository = position_repository
+        self.risk_analytics_service = RiskAnalyticsService(
+            MarketDataRepository(repository.db),
+        )
 
     def list_portfolios(self) -> PortfolioListResponse:
         return PortfolioListResponse(
@@ -273,6 +278,7 @@ class PortfolioService:
         )
 
     def get_risk_return(self, portfolio_id: str) -> RiskReturnResponse:
+        portfolio = self._get_portfolio_or_404(portfolio_id)
         positions = self._decorated_positions(portfolio_id)
         weights = [float(position["invested_weight"]) for position in positions]
         expected_returns = [
@@ -293,19 +299,47 @@ class PortfolioService:
         weighted_average_volatility = sum(
             weight * volatility for weight, volatility in zip(weights, volatilities)
         )
+        weights_by_symbol = self._weights_by_symbol(positions, "invested_weight")
+        realized_risk = self.risk_analytics_service.calculate_realized_portfolio_risk(
+            weights_by_symbol,
+            benchmark_symbol=str(portfolio["benchmark"]),
+        )
+        output_variance = variance
+        output_standard_deviation = standard_deviation
+        covariance_matrix_status = "Demo covariance scaffold based on asset-type volatilities."
+        correlation_matrix_status = "Placeholder correlation assumptions; no full return history yet."
+        notes = [
+            "Expected returns remain deterministic by asset type.",
+            "Realized Market Data return series are used when enough aligned observations are available.",
+        ]
+
+        if not realized_risk.fallback_used and realized_risk.realized_volatility is not None:
+            output_standard_deviation = realized_risk.realized_volatility
+            output_variance = realized_risk.realized_volatility**2
+            covariance_matrix_status = (
+                "Realized annualized covariance matrix from Market Data return series."
+            )
+            correlation_matrix_status = (
+                f"Realized return panel with {realized_risk.observations} aligned observations."
+            )
+        elif realized_risk.fallback_reason:
+            notes.append(realized_risk.fallback_reason)
+
+        if realized_risk.quality_warnings:
+            notes.extend(realized_risk.quality_warnings)
 
         return RiskReturnResponse(
             portfolio_id=portfolio_id,
             expected_return=expected_return,
-            variance=variance,
-            standard_deviation=standard_deviation,
+            variance=output_variance,
+            standard_deviation=output_standard_deviation,
             diversification_benefit=calculate_diversification_benefit(
                 weighted_average_volatility,
-                standard_deviation,
+                output_standard_deviation,
             ),
-            risk_return_profile=self._risk_return_profile(expected_return, standard_deviation),
-            covariance_matrix_status="Demo covariance scaffold based on asset-type volatilities.",
-            correlation_matrix_status="Placeholder correlation assumptions; no full return history yet.",
+            risk_return_profile=self._risk_return_profile(expected_return, output_standard_deviation),
+            covariance_matrix_status=covariance_matrix_status,
+            correlation_matrix_status=correlation_matrix_status,
             contributions=[
                 {
                     "symbol": str(position["symbol"]),
@@ -325,10 +359,22 @@ class PortfolioService:
                     expected_returns,
                 )
             ],
-            notes=[
-                "Expected returns and covariance are deterministic demo scaffolding.",
-                "No VaR, CVaR or advanced risk engine is calculated in Portfolio Builder.",
-            ],
+            notes=notes,
+            metric_source=realized_risk.metric_source,
+            fallback_used=realized_risk.fallback_used,
+            fallback_reason=realized_risk.fallback_reason,
+            observations=realized_risk.observations,
+            symbols_found=realized_risk.symbols_found,
+            symbols_missing=realized_risk.symbols_missing,
+            quality_warnings=realized_risk.quality_warnings,
+            realized_annualized_return=realized_risk.realized_annualized_return,
+            realized_volatility=realized_risk.realized_volatility,
+            realized_sharpe_ratio=realized_risk.realized_sharpe_ratio,
+            historical_var_95=realized_risk.portfolio_var_95,
+            historical_cvar_95=realized_risk.portfolio_cvar_95,
+            max_drawdown=realized_risk.max_drawdown,
+            tracking_error=realized_risk.tracking_error,
+            covariance_symbols=realized_risk.covariance_symbols,
         )
 
     def get_benchmark(self, portfolio_id: str) -> BenchmarkResponse:
@@ -865,6 +911,17 @@ class PortfolioService:
         allocation: list[dict[str, float | str]],
     ) -> dict[str, float]:
         return {str(item["name"]): float(item["weight"]) for item in allocation}
+
+    def _weights_by_symbol(
+        self,
+        positions: list[dict[str, object]],
+        weight_key: str,
+    ) -> dict[str, float]:
+        weights: dict[str, float] = {}
+        for position in positions:
+            symbol = str(position["symbol"]).upper()
+            weights[symbol] = weights.get(symbol, 0.0) + float(position[weight_key])
+        return weights
 
     def _current_asset_type_allocation_with_cash(
         self,
