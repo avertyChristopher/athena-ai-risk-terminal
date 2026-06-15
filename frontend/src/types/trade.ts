@@ -74,6 +74,13 @@ export type RiskImpactResponse = {
   metrics: ImpactMetric[];
   message: string;
   badges: string[];
+  metric_source: string;
+  fallback_used: boolean;
+  fallback_reason: string | null;
+  observations: number;
+  symbols_found: string[];
+  symbols_missing: string[];
+  quality_warnings: string[];
 };
 
 export type SuitabilityReviewResponse = {

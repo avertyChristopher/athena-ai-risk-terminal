@@ -501,6 +501,8 @@
       "placeholder": "Placeholder",
       "inMemoryStore": "Stockage memoire",
       "marketDataBridge": "Pont Market Data",
+      "realized": "Realise",
+      "partialData": "Donnees partielles",
       "investedWeights": "Poids investis",
       "requiresMarketData": "Requiert Market Data",
       "notProductionReady": "Non production",
@@ -544,7 +546,13 @@
       "effectiveHoldings": "Positions effectives",
       "effectiveHoldingsHelp": "Mesure de diversification hors cash",
       "topThree": "Top 3 positions",
-      "diversificationBenefit": "Benefice de diversification"
+      "diversificationBenefit": "Benefice de diversification",
+      "realizedReturn": "Rendement realise",
+      "realizedSharpe": "Sharpe realise",
+      "historicalVar": "VaR historique 95%",
+      "historicalCvar": "CVaR historique 95%",
+      "maxDrawdown": "Max drawdown",
+      "trackingError": "Tracking error"
     },
     "positions": {
       "title": "Positions",
@@ -688,6 +696,21 @@
       "returnSeries": "Endpoint de rendements",
       "alignedReturns": "Endpoint de rendements alignes",
       "dataQuality": "Endpoint de qualite des donnees"
+    },
+    "riskSource": {
+      "title": "Source des donnees de risque",
+      "description": "Source, couverture et statut de fallback des metriques de risque realisees.",
+      "explanation": "Les metriques de risque realisees sont calculees a partir des series de rendements Market Data lorsqu'elles sont disponibles. Si l'historique est incomplet, Athena utilise des hypotheses de demonstration et signale les metriques concernees.",
+      "source": "Source de risque",
+      "observations": "Observations",
+      "missingSymbols": "Symboles manquants",
+      "fallback": "Fallback",
+      "reason": "Raison",
+      "none": "Aucun",
+      "yes": "Oui",
+      "no": "Non",
+      "realizedMarketData": "Market Data realise",
+      "demoAssumptions": "Hypotheses demo"
     }
   },
   "tradeSimulator": {
@@ -770,6 +793,21 @@
     },
     "risk": {
       "title": "Impact risque"
+    },
+    "riskSource": {
+      "source": "Source de risque",
+      "observations": "Observations",
+      "alignedReturns": "Rendements alignes",
+      "missingSymbols": "Symboles manquants",
+      "marketDataCoverage": "Couverture Market Data",
+      "fallback": "Fallback",
+      "noFallback": "Aucun fallback utilise",
+      "none": "Aucun",
+      "yes": "Oui",
+      "no": "Non",
+      "realizedMarketData": "Market Data realise",
+      "demoAssumptions": "Hypotheses demo",
+      "explanation": "Les metriques de risque realisees sont calculees a partir des series de rendements Market Data lorsqu'elles sont disponibles. Si l'historique est incomplet, Athena utilise des hypotheses de demonstration et signale les metriques concernees."
     },
     "suitability": {
       "title": "Revue de suitability CFA",

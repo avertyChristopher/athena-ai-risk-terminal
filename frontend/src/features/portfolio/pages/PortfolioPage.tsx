@@ -631,7 +631,11 @@ function OverviewTab({
             )
           }
           subtitle={riskReturn?.covariance_matrix_status ?? t("common.unavailable")}
-          badge={t("portfolio.badges.placeholder")}
+          badge={
+            riskReturn?.metric_source === "realized_market_data"
+              ? t("portfolio.badges.realized")
+              : t("portfolio.badges.placeholder")
+          }
         />
       </div>
 
@@ -791,13 +795,50 @@ function RiskTab({
         />
       </div>
 
+      {riskReturn ? (
+        <KeyValuePanel
+          title={t("portfolio.riskSource.title")}
+          description={t("portfolio.riskSource.description")}
+          badges={portfolioRiskSourceBadges(riskReturn, t)}
+          rows={[
+            {
+              label: t("portfolio.riskSource.source"),
+              value: portfolioRiskSourceLabel(riskReturn, t),
+            },
+            {
+              label: t("portfolio.riskSource.observations"),
+              value: riskReturn.observations.toLocaleString(),
+            },
+            {
+              label: t("portfolio.riskSource.missingSymbols"),
+              value: riskReturn.symbols_missing.length
+                ? riskReturn.symbols_missing.join(", ")
+                : t("portfolio.riskSource.none"),
+            },
+            {
+              label: t("portfolio.riskSource.fallback"),
+              value: riskReturn.fallback_used
+                ? t("portfolio.riskSource.yes")
+                : t("portfolio.riskSource.no"),
+            },
+            {
+              label: t("portfolio.riskSource.reason"),
+              value:
+                riskReturn.fallback_reason ??
+                riskReturn.correlation_matrix_status,
+            },
+          ]}
+          notes={[
+            t("portfolio.riskSource.explanation"),
+            ...riskReturn.quality_warnings,
+          ]}
+        />
+      ) : null}
+
       <PortfolioSectionCard
         title={t("portfolio.sections.riskTitle")}
         description={t("portfolio.sections.riskDescription")}
-        badges={[
-          { label: t("portfolio.badges.demoCovariance"), variant: "warning" },
-          { label: t("portfolio.badges.placeholderCorrelation"), variant: "warning" },
-        ]}
+        badges={riskReturn ? portfolioRiskSourceBadges(riskReturn, t) : []}
       >
         <div className="portfolio-metric-grid portfolio-metric-grid--compact">
           <PortfolioMetricCard
@@ -812,6 +853,17 @@ function RiskTab({
             subtitle={riskReturn?.risk_return_profile ?? t("common.unavailable")}
           />
           <PortfolioMetricCard
+            title={t("portfolio.metrics.realizedReturn")}
+            value={
+              riskReturn?.realized_annualized_return === null || !riskReturn ? (
+                t("common.unavailable")
+              ) : (
+                <PercentValue value={riskReturn.realized_annualized_return} />
+              )
+            }
+            subtitle={portfolioRiskSourceLabel(riskReturn, t)}
+          />
+          <PortfolioMetricCard
             title={t("portfolio.metrics.volatility")}
             value={
               riskReturn?.standard_deviation === null || !riskReturn ? (
@@ -821,6 +873,59 @@ function RiskTab({
               )
             }
             subtitle={riskReturn?.covariance_matrix_status ?? t("common.unavailable")}
+          />
+          <PortfolioMetricCard
+            title={t("portfolio.metrics.realizedSharpe")}
+            value={
+              riskReturn?.realized_sharpe_ratio === null || !riskReturn
+                ? t("common.unavailable")
+                : riskReturn.realized_sharpe_ratio.toFixed(3)
+            }
+            subtitle={t("portfolio.riskSource.realizedMarketData")}
+          />
+          <PortfolioMetricCard
+            title={t("portfolio.metrics.historicalVar")}
+            value={
+              riskReturn?.historical_var_95 === null || !riskReturn ? (
+                t("common.unavailable")
+              ) : (
+                <PercentValue value={riskReturn.historical_var_95} />
+              )
+            }
+            subtitle={portfolioRiskSourceLabel(riskReturn, t)}
+          />
+          <PortfolioMetricCard
+            title={t("portfolio.metrics.historicalCvar")}
+            value={
+              riskReturn?.historical_cvar_95 === null || !riskReturn ? (
+                t("common.unavailable")
+              ) : (
+                <PercentValue value={riskReturn.historical_cvar_95} />
+              )
+            }
+            subtitle={portfolioRiskSourceLabel(riskReturn, t)}
+          />
+          <PortfolioMetricCard
+            title={t("portfolio.metrics.maxDrawdown")}
+            value={
+              riskReturn?.max_drawdown === null || !riskReturn ? (
+                t("common.unavailable")
+              ) : (
+                <PercentValue value={riskReturn.max_drawdown} />
+              )
+            }
+            subtitle={portfolioRiskSourceLabel(riskReturn, t)}
+          />
+          <PortfolioMetricCard
+            title={t("portfolio.metrics.trackingError")}
+            value={
+              riskReturn?.tracking_error === null || !riskReturn ? (
+                t("common.unavailable")
+              ) : (
+                <PercentValue value={riskReturn.tracking_error} />
+              )
+            }
+            subtitle={t("portfolio.badges.benchmarkHistory")}
           />
         </div>
 
@@ -1389,6 +1494,60 @@ function EndpointTile({ label, value }: { label: string; value: string }) {
       <code>{value}</code>
     </div>
   );
+}
+
+function portfolioRiskSourceLabel(
+  riskReturn: RiskReturnResponse | undefined,
+  t: (key: string) => string,
+) {
+  if (!riskReturn) {
+    return t("common.unavailable");
+  }
+  return riskReturn.metric_source === "realized_market_data"
+    ? t("portfolio.riskSource.realizedMarketData")
+    : t("portfolio.riskSource.demoAssumptions");
+}
+
+function portfolioRiskSourceBadges(
+  riskReturn: RiskReturnResponse,
+  t: (key: string) => string,
+): {
+  label: string;
+  variant?: "neutral" | "info" | "success" | "warning" | "danger";
+}[] {
+  const badges = [
+    {
+      label:
+        riskReturn.metric_source === "realized_market_data"
+          ? t("portfolio.badges.realized")
+          : t("portfolio.badges.demo"),
+      variant:
+        riskReturn.metric_source === "realized_market_data"
+          ? ("success" as const)
+          : ("warning" as const),
+    },
+  ];
+
+  if (riskReturn.fallback_used) {
+    badges.push({
+      label: t("portfolio.badges.requiresMarketData"),
+      variant: "warning",
+    });
+  }
+  if (riskReturn.symbols_missing.length) {
+    badges.push({
+      label: t("portfolio.badges.partialData"),
+      variant: "warning",
+    });
+  }
+  if (riskReturn.tracking_error === null) {
+    badges.push({
+      label: t("portfolio.badges.benchmarkHistory"),
+      variant: "warning",
+    });
+  }
+
+  return badges;
 }
 
 function formatNullableNumber(value: number | null) {

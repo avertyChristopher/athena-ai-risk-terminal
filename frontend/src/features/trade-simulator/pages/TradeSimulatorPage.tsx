@@ -425,9 +425,13 @@ export function TradeSimulatorPage() {
                 description={simulation.risk_impact.message}
                 badges={simulation.risk_impact.badges.map((badge) => ({
                   label: badge,
-                  variant: "warning",
+                  variant: tradeRiskBadgeVariant(badge),
                 }))}
               >
+                <RiskImpactSourcePanel
+                  riskImpact={simulation.risk_impact}
+                  t={t}
+                />
                 <BeforeAfterTable
                   metrics={simulation.risk_impact.metrics}
                   labels={tableLabels(t)}
@@ -532,6 +536,65 @@ function SimulationSummary({
           ))}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function RiskImpactSourcePanel({
+  riskImpact,
+  t,
+}: {
+  riskImpact: TradeSimulationResponse["risk_impact"];
+  t: (key: string) => string;
+}) {
+  const warnings = uniqueStrings([
+    riskImpact.fallback_reason,
+    ...riskImpact.quality_warnings,
+  ].filter((warning): warning is string => Boolean(warning)));
+
+  return (
+    <div className="trade-summary-stack">
+      <div className="trade-cost-grid">
+        <TradeMetricCard
+          title={t("tradeSimulator.riskSource.source")}
+          value={tradeRiskSourceLabel(riskImpact, t)}
+          subtitle={riskImpact.metric_source}
+          tone={riskImpact.fallback_used ? "warning" : "positive"}
+        />
+        <TradeMetricCard
+          title={t("tradeSimulator.riskSource.observations")}
+          value={riskImpact.observations.toLocaleString()}
+          subtitle={t("tradeSimulator.riskSource.alignedReturns")}
+        />
+        <TradeMetricCard
+          title={t("tradeSimulator.riskSource.missingSymbols")}
+          value={
+            riskImpact.symbols_missing.length
+              ? riskImpact.symbols_missing.join(", ")
+              : t("tradeSimulator.riskSource.none")
+          }
+          subtitle={t("tradeSimulator.riskSource.marketDataCoverage")}
+          tone={riskImpact.symbols_missing.length ? "warning" : "positive"}
+        />
+        <TradeMetricCard
+          title={t("tradeSimulator.riskSource.fallback")}
+          value={
+            riskImpact.fallback_used
+              ? t("tradeSimulator.riskSource.yes")
+              : t("tradeSimulator.riskSource.no")
+          }
+          subtitle={
+            riskImpact.fallback_reason ?? t("tradeSimulator.riskSource.noFallback")
+          }
+          tone={riskImpact.fallback_used ? "warning" : "positive"}
+        />
+      </div>
+      <div className="trade-warning-list">
+        <p>{t("tradeSimulator.riskSource.explanation")}</p>
+        {warnings.map((warning) => (
+          <p key={warning}>{warning}</p>
+        ))}
+      </div>
     </div>
   );
 }
@@ -919,4 +982,33 @@ function statusVariant(status?: string) {
     return "warning";
   }
   return "neutral";
+}
+
+function tradeRiskSourceLabel(
+  riskImpact: TradeSimulationResponse["risk_impact"],
+  t: (key: string) => string,
+) {
+  return riskImpact.metric_source === "realized_market_data"
+    ? t("tradeSimulator.riskSource.realizedMarketData")
+    : t("tradeSimulator.riskSource.demoAssumptions");
+}
+
+function tradeRiskBadgeVariant(label: string) {
+  const normalized = label.toLowerCase();
+  if (normalized.includes("realized") || normalized.includes("market data returns")) {
+    return "success" as const;
+  }
+  if (
+    normalized.includes("demo") ||
+    normalized.includes("placeholder") ||
+    normalized.includes("requires") ||
+    normalized.includes("partial")
+  ) {
+    return "warning" as const;
+  }
+  return "info" as const;
+}
+
+function uniqueStrings(values: string[]) {
+  return values.filter((value, index) => values.indexOf(value) === index);
 }

@@ -501,6 +501,8 @@
       "placeholder": "Placeholder",
       "inMemoryStore": "In-Memory Store",
       "marketDataBridge": "Market Data Bridge",
+      "realized": "Realized",
+      "partialData": "Partial Data",
       "investedWeights": "Invested weights",
       "requiresMarketData": "Requires Market Data",
       "notProductionReady": "Not Production Ready",
@@ -544,7 +546,13 @@
       "effectiveHoldings": "Effective holdings",
       "effectiveHoldingsHelp": "Holdings-only diversification measure",
       "topThree": "Top 3 holdings",
-      "diversificationBenefit": "Diversification benefit"
+      "diversificationBenefit": "Diversification benefit",
+      "realizedReturn": "Realized return",
+      "realizedSharpe": "Realized Sharpe",
+      "historicalVar": "Historical VaR 95%",
+      "historicalCvar": "Historical CVaR 95%",
+      "maxDrawdown": "Max drawdown",
+      "trackingError": "Tracking error"
     },
     "positions": {
       "title": "Positions",
@@ -688,6 +696,21 @@
       "returnSeries": "Return series endpoint",
       "alignedReturns": "Aligned returns endpoint",
       "dataQuality": "Data-quality endpoint"
+    },
+    "riskSource": {
+      "title": "Risk Data Source",
+      "description": "Source, coverage and fallback status for realized portfolio risk metrics.",
+      "explanation": "Realized risk metrics are calculated from Market Data return series when available. If return history is incomplete, Athena falls back to deterministic demo assumptions and labels the affected metrics.",
+      "source": "Risk data source",
+      "observations": "Observations",
+      "missingSymbols": "Missing symbols",
+      "fallback": "Fallback",
+      "reason": "Reason",
+      "none": "None",
+      "yes": "Yes",
+      "no": "No",
+      "realizedMarketData": "Realized Market Data",
+      "demoAssumptions": "Demo assumptions"
     }
   },
   "tradeSimulator": {
@@ -770,6 +793,21 @@
     },
     "risk": {
       "title": "Risk Impact"
+    },
+    "riskSource": {
+      "source": "Risk data source",
+      "observations": "Observations",
+      "alignedReturns": "Aligned return rows",
+      "missingSymbols": "Missing symbols",
+      "marketDataCoverage": "Market Data coverage",
+      "fallback": "Fallback",
+      "noFallback": "No fallback used",
+      "none": "None",
+      "yes": "Yes",
+      "no": "No",
+      "realizedMarketData": "Realized Market Data",
+      "demoAssumptions": "Demo assumptions",
+      "explanation": "Realized risk metrics are calculated from Market Data return series when available. If return history is incomplete, Athena falls back to deterministic demo assumptions and labels the affected metrics."
     },
     "suitability": {
       "title": "CFA Suitability Review",
