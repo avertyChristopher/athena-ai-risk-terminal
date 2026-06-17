@@ -934,6 +934,23 @@
       "coverage": "Risk coverage",
       "positionsAnalyzed": "positions analyzed"
     },
+    "assumptions": {
+      "eyebrow": "Configurable assumptions",
+      "title": "Limits and stress tests",
+      "description": "Adjust surveillance thresholds and stress shocks. Analytics recalculate automatically with these assumptions.",
+      "limits": "Risk limits",
+      "stress": "Stress shocks",
+      "singlePosition": "Max position %",
+      "sector": "Max sector %",
+      "cash": "Minimum cash %",
+      "volatility": "Max volatility %",
+      "trackingError": "Max tracking error %",
+      "equityShock": "Equity shock %",
+      "techShock": "Technology shock %",
+      "ratesShock": "Rates/bonds shock %",
+      "issuerShock": "Largest holding shock %",
+      "reset": "Reset"
+    },
     "empty": {
       "title": "No portfolio selected",
       "message": "Select a portfolio to run risk surveillance."

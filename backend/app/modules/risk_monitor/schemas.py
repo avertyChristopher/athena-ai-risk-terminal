@@ -8,11 +8,34 @@ class RiskMonitorStatus(BaseModel):
     engines_available: list[str]
 
 
+class RiskLimitOverrides(BaseModel):
+    max_single_position_weight: float | None = Field(default=None, ge=0, le=1)
+    max_sector_exposure: float | None = Field(default=None, ge=0, le=1)
+    max_asset_type_exposure: float | None = Field(default=None, ge=0, le=1)
+    minimum_cash_reserve: float | None = Field(default=None, ge=0, le=1)
+    max_top_3_concentration: float | None = Field(default=None, ge=0, le=1)
+    max_portfolio_volatility: float | None = Field(default=None, ge=0, le=1)
+    max_var_95: float | None = Field(default=None, ge=0, le=1)
+    max_cvar_95: float | None = Field(default=None, ge=0, le=1)
+    max_drawdown: float | None = Field(default=None, ge=0, le=1)
+    max_tracking_error: float | None = Field(default=None, ge=0, le=1)
+    max_active_exposure: float | None = Field(default=None, ge=0, le=1)
+
+
+class StressShockOverrides(BaseModel):
+    equity_market_shock: float | None = Field(default=None, ge=-1, le=0)
+    technology_sector_shock: float | None = Field(default=None, ge=-1, le=0)
+    interest_rate_shock: float | None = Field(default=None, ge=-1, le=0)
+    largest_holding_shock: float | None = Field(default=None, ge=-1, le=0)
+
+
 class RiskMonitorAnalyzeRequest(BaseModel):
     portfolio_id: str = Field(min_length=1)
     benchmark_symbol: str = Field(default="SPY", min_length=1, max_length=32)
     confidence_level: float = Field(default=0.95, gt=0, lt=1)
     risk_free_rate: float = 0.02
+    limits: RiskLimitOverrides | None = None
+    stress_shocks: StressShockOverrides | None = None
 
 
 class RiskSourceMetadata(BaseModel):
@@ -24,6 +47,11 @@ class RiskSourceMetadata(BaseModel):
     symbols_missing: list[str]
     quality_warnings: list[str]
     badges: list[str]
+
+
+class RiskMonitorAssumptions(BaseModel):
+    limits: dict[str, float]
+    stress_shocks: dict[str, float]
 
 
 class RiskMetric(BaseModel):
@@ -130,3 +158,4 @@ class RiskMonitorAnalysisResponse(BaseModel):
     alerts: list[RiskAlert]
     athena_commentary: AthenaRiskCommentary
     risk_source: RiskSourceMetadata
+    assumptions: RiskMonitorAssumptions

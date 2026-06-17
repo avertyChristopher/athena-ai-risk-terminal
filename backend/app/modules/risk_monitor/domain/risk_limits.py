@@ -28,51 +28,69 @@ def evaluate_limit_breaches(
     max_drawdown: float,
     tracking_error: float | None,
     active_exposure: float,
+    limit_overrides: dict[str, float] | None = None,
 ) -> list[dict[str, object]]:
+    limits = {
+        **DEFAULT_RISK_LIMITS,
+        **{
+            key: value
+            for key, value in (limit_overrides or {}).items()
+            if key in DEFAULT_RISK_LIMITS and value is not None
+        },
+    }
     breaches: list[dict[str, object]] = []
     for position in decorated_positions:
         weight = float(position["invested_weight"])
-        if weight > DEFAULT_RISK_LIMITS["max_single_position_weight"]:
+        if weight > limits["max_single_position_weight"]:
             breaches.append(
                 _breach(
                     "Max single position weight",
                     "Concentration",
                     weight,
-                    DEFAULT_RISK_LIMITS["max_single_position_weight"],
-                    f"{position['symbol']} weight is {weight:.1%}, above the 25% single-position limit.",
+                    limits["max_single_position_weight"],
+                    (
+                        f"{position['symbol']} weight is {weight:.1%}, above the "
+                        f"{limits['max_single_position_weight']:.0%} single-position limit."
+                    ),
                     "Trim the position or rebalance into broader diversified exposure.",
                 ),
             )
 
     for sector, weight in sector_exposures.items():
-        if weight > DEFAULT_RISK_LIMITS["max_sector_exposure"]:
+        if weight > limits["max_sector_exposure"]:
             breaches.append(
                 _breach(
                     "Max sector exposure",
                     "Concentration",
                     weight,
-                    DEFAULT_RISK_LIMITS["max_sector_exposure"],
-                    f"{sector} exposure is {weight:.1%}, above the 50% sector limit.",
+                    limits["max_sector_exposure"],
+                    (
+                        f"{sector} exposure is {weight:.1%}, above the "
+                        f"{limits['max_sector_exposure']:.0%} sector limit."
+                    ),
                     "Reduce sector overweight or add diversifying exposures.",
                 ),
             )
 
     for asset_type, weight in asset_type_exposures.items():
-        if weight > DEFAULT_RISK_LIMITS["max_asset_type_exposure"]:
+        if weight > limits["max_asset_type_exposure"]:
             breaches.append(
                 _breach(
                     "Max asset type exposure",
                     "Allocation",
                     weight,
-                    DEFAULT_RISK_LIMITS["max_asset_type_exposure"],
-                    f"{asset_type} exposure is {weight:.1%}, above the 80% asset-type limit.",
+                    limits["max_asset_type_exposure"],
+                    (
+                        f"{asset_type} exposure is {weight:.1%}, above the "
+                        f"{limits['max_asset_type_exposure']:.0%} asset-type limit."
+                    ),
                     "Rebalance toward other asset classes or cash.",
                 ),
             )
 
-    if cash_weight < DEFAULT_RISK_LIMITS["minimum_cash_reserve"]:
+    if cash_weight < limits["minimum_cash_reserve"]:
         breaches.append(
-            _cash_breach(cash_weight, DEFAULT_RISK_LIMITS["minimum_cash_reserve"]),
+            _cash_breach(cash_weight, limits["minimum_cash_reserve"]),
         )
 
     checks = [
@@ -80,48 +98,60 @@ def evaluate_limit_breaches(
             "Max top 3 concentration",
             "Concentration",
             top_3_weight,
-            DEFAULT_RISK_LIMITS["max_top_3_concentration"],
-            f"Top 3 holdings concentration is {top_3_weight:.1%}, above the 65% policy limit.",
+            limits["max_top_3_concentration"],
+            (
+                f"Top 3 holdings concentration is {top_3_weight:.1%}, above the "
+                f"{limits['max_top_3_concentration']:.0%} policy limit."
+            ),
             "Rebalance the largest holdings to reduce issuer concentration.",
         ),
         (
             "Max portfolio volatility",
             "Market risk",
             volatility,
-            DEFAULT_RISK_LIMITS["max_portfolio_volatility"],
-            f"Portfolio volatility is {volatility:.1%}, above the 20% surveillance limit.",
+            limits["max_portfolio_volatility"],
+            (
+                f"Portfolio volatility is {volatility:.1%}, above the "
+                f"{limits['max_portfolio_volatility']:.0%} surveillance limit."
+            ),
             "Reduce high-volatility exposures or add lower-risk assets.",
         ),
         (
             "Max VaR 95%",
             "Downside risk",
             var_95,
-            DEFAULT_RISK_LIMITS["max_var_95"],
-            f"VaR 95% is {var_95:.1%}, above the 3% limit.",
+            limits["max_var_95"],
+            f"VaR 95% is {var_95:.1%}, above the {limits['max_var_95']:.0%} limit.",
             "Reduce downside concentration or hedge the portfolio.",
         ),
         (
             "Max CVaR 95%",
             "Downside risk",
             cvar_95,
-            DEFAULT_RISK_LIMITS["max_cvar_95"],
-            f"CVaR 95% is {cvar_95:.1%}, above the 5% limit.",
+            limits["max_cvar_95"],
+            f"CVaR 95% is {cvar_95:.1%}, above the {limits['max_cvar_95']:.0%} limit.",
             "Review tail-risk drivers and reduce vulnerable positions.",
         ),
         (
             "Max drawdown",
             "Drawdown risk",
             abs(max_drawdown),
-            DEFAULT_RISK_LIMITS["max_drawdown"],
-            f"Max drawdown is {abs(max_drawdown):.1%}, above the 15% limit.",
+            limits["max_drawdown"],
+            (
+                f"Max drawdown is {abs(max_drawdown):.1%}, above the "
+                f"{limits['max_drawdown']:.0%} limit."
+            ),
             "Lower portfolio beta or add defensive assets.",
         ),
         (
             "Max benchmark active exposure",
             "Benchmark risk",
             active_exposure,
-            DEFAULT_RISK_LIMITS["max_active_exposure"],
-            f"Active exposure versus benchmark is {active_exposure:.1%}, above the 70% limit.",
+            limits["max_active_exposure"],
+            (
+                f"Active exposure versus benchmark is {active_exposure:.1%}, above the "
+                f"{limits['max_active_exposure']:.0%} limit."
+            ),
             "Review benchmark alignment and active mandate tolerance.",
         ),
     ]
@@ -132,8 +162,11 @@ def evaluate_limit_breaches(
                 "Max tracking error",
                 "Benchmark risk",
                 tracking_error,
-                DEFAULT_RISK_LIMITS["max_tracking_error"],
-                f"Tracking error is {tracking_error:.1%}, above the 8% limit.",
+                limits["max_tracking_error"],
+                (
+                    f"Tracking error is {tracking_error:.1%}, above the "
+                    f"{limits['max_tracking_error']:.0%} limit."
+                ),
                 "Reduce active risk or align portfolio weights closer to benchmark exposure.",
             ),
         )
@@ -189,7 +222,9 @@ def _cash_breach(current_value: float, limit_value: float) -> dict[str, object]:
         "current_value": current_value,
         "limit_value": limit_value,
         "severity": severity,
-        "explanation": f"Cash reserve is {current_value:.1%}, below the 5% minimum.",
+        "explanation": (
+            f"Cash reserve is {current_value:.1%}, below the {limit_value:.0%} minimum."
+        ),
         "suggested_action": "Raise liquidity or reduce new buy orders until cash is rebuilt.",
     }
 

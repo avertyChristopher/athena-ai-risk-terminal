@@ -5,7 +5,10 @@ from app.modules.risk_analytics.service import RiskAnalyticsService
 from app.modules.risk_monitor.domain.alerts import build_risk_alerts
 from app.modules.risk_monitor.domain.commentary import build_athena_risk_commentary
 from app.modules.risk_monitor.domain.risk_contribution import calculate_risk_contribution
-from app.modules.risk_monitor.domain.risk_limits import evaluate_limit_breaches
+from app.modules.risk_monitor.domain.risk_limits import (
+    DEFAULT_RISK_LIMITS,
+    evaluate_limit_breaches,
+)
 from app.modules.risk_monitor.domain.risk_metrics import (
     calculate_active_exposure,
     calculate_demo_beta,
@@ -26,7 +29,10 @@ from app.modules.risk_monitor.domain.risk_metrics import (
     classify_global_risk_status,
     decorate_positions,
 )
-from app.modules.risk_monitor.domain.stress_testing import run_stress_scenarios
+from app.modules.risk_monitor.domain.stress_testing import (
+    DEFAULT_STRESS_SHOCKS,
+    run_stress_scenarios,
+)
 from app.modules.risk_monitor.repository import RiskMonitorRepository
 from app.modules.risk_monitor.schemas import (
     AthenaRiskCommentary,
@@ -37,6 +43,7 @@ from app.modules.risk_monitor.schemas import (
     RiskContributionResponse,
     RiskLimitBreach,
     RiskMetric,
+    RiskMonitorAssumptions,
     RiskMonitorAnalysisResponse,
     RiskMonitorAnalyzeRequest,
     RiskMonitorStatus,
@@ -72,6 +79,16 @@ class RiskMonitorService:
             raise HTTPException(status_code=404, detail="Portfolio not found.")
 
         positions = self.repository.list_positions(payload.portfolio_id)
+        limit_overrides = (
+            payload.limits.model_dump(exclude_none=True) if payload.limits else {}
+        )
+        stress_overrides = (
+            payload.stress_shocks.model_dump(exclude_none=True)
+            if payload.stress_shocks
+            else {}
+        )
+        applied_limits = {**DEFAULT_RISK_LIMITS, **limit_overrides}
+        applied_stress_shocks = {**DEFAULT_STRESS_SHOCKS, **stress_overrides}
         cash = float(portfolio["cash"])
         decorated_positions = decorate_positions(positions, cash)
         total_value = calculate_total_value(decorated_positions, cash)
@@ -161,8 +178,13 @@ class RiskMonitorService:
             max_drawdown=max_drawdown,
             tracking_error=tracking_error,
             active_exposure=active_exposure,
+            limit_overrides=limit_overrides,
         )
-        stress_tests = run_stress_scenarios(decorated_positions, total_value)
+        stress_tests = run_stress_scenarios(
+            decorated_positions,
+            total_value,
+            shock_overrides=stress_overrides,
+        )
         risk_contribution = calculate_risk_contribution(
             decorated_positions=decorated_positions,
             covariance_matrix=realized_risk.covariance_matrix,
@@ -243,6 +265,10 @@ class RiskMonitorService:
             alerts=[RiskAlert.model_validate(alert) for alert in alerts],
             athena_commentary=AthenaRiskCommentary.model_validate(commentary),
             risk_source=self._risk_source_metadata(realized_risk),
+            assumptions=RiskMonitorAssumptions(
+                limits=applied_limits,
+                stress_shocks=applied_stress_shocks,
+            ),
         )
 
     def _risk_metrics(

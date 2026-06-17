@@ -1811,6 +1811,74 @@ ul.portfolio-note-list {
   box-shadow: none;
 }
 
+.risk-monitor-controls-panel {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.1), rgba(138, 106, 67, 0.08)),
+    rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-soft);
+}
+
+.risk-monitor-controls-panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.risk-monitor-controls-panel__header span {
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.risk-monitor-controls-panel__header h2,
+.risk-monitor-controls-panel__header p,
+.risk-monitor-control-group h3 {
+  margin: 0;
+}
+
+.risk-monitor-controls-panel__header h2 {
+  margin-top: 4px;
+  font-size: 1.2rem;
+}
+
+.risk-monitor-controls-panel__header p {
+  max-width: 86ch;
+  color: var(--muted);
+}
+
+.risk-monitor-control-groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.risk-monitor-control-group {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.risk-monitor-control-group h3 {
+  font-size: 1rem;
+}
+
+.risk-monitor-control-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
 .risk-monitor-holding-strip {
   display: grid;
   gap: 8px;

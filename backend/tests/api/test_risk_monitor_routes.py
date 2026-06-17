@@ -40,6 +40,28 @@ def test_risk_monitor_analyze_returns_surveillance_dashboard() -> None:
     assert body["benchmark_risk"]["benchmark_symbol"] == "SPY"
     assert body["athena_commentary"]["summary"]
     assert body["risk_source"]["metric_source"] == "realized_market_data"
+    assert body["assumptions"]["limits"]["max_portfolio_volatility"] == 0.20
+
+
+def test_risk_monitor_accepts_configurable_limits_and_stress_shocks() -> None:
+    response = client.post(
+        "/api/risk-monitor/analyze",
+        json={
+            "portfolio_id": "pf_001",
+            "benchmark_symbol": "SPY",
+            "limits": {"max_portfolio_volatility": 0.01},
+            "stress_shocks": {"technology_sector_shock": -0.25},
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    rule_names = {breach["rule_name"] for breach in body["limit_breaches"]}
+    scenario_names = {scenario["name"] for scenario in body["stress_tests"]}
+    assert body["assumptions"]["limits"]["max_portfolio_volatility"] == 0.01
+    assert body["assumptions"]["stress_shocks"]["technology_sector_shock"] == -0.25
+    assert "Max portfolio volatility" in rule_names
+    assert "Technology sector shock -25%" in scenario_names
 
 
 def test_risk_monitor_demo_endpoint_uses_demo_portfolio() -> None:

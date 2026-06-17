@@ -1,25 +1,51 @@
 from typing import Any
 
 
+DEFAULT_STRESS_SHOCKS = {
+    "equity_market_shock": -0.10,
+    "technology_sector_shock": -0.15,
+    "interest_rate_shock": -0.05,
+    "largest_holding_shock": -0.20,
+}
+
+
 def run_stress_scenarios(
     decorated_positions: list[dict[str, Any]],
     total_value: float,
+    shock_overrides: dict[str, float] | None = None,
 ) -> list[dict[str, object]]:
+    shocks = {
+        **DEFAULT_STRESS_SHOCKS,
+        **{
+            key: value
+            for key, value in (shock_overrides or {}).items()
+            if key in DEFAULT_STRESS_SHOCKS and value is not None
+        },
+    }
     scenarios = [
         {
-            "name": "Equity market shock -10%",
+            "name": f"Equity market shock {_format_shock_label(shocks['equity_market_shock'])}",
             "explanation": "Equity and equity ETF positions are shocked lower to estimate market beta vulnerability.",
-            "shock": _equity_market_shock,
+            "shock": lambda positions: _equity_market_shock(
+                positions,
+                shocks["equity_market_shock"],
+            ),
         },
         {
-            "name": "Technology sector shock -15%",
+            "name": f"Technology sector shock {_format_shock_label(shocks['technology_sector_shock'])}",
             "explanation": "Technology holdings are shocked to isolate sector concentration risk.",
-            "shock": _technology_sector_shock,
+            "shock": lambda positions: _technology_sector_shock(
+                positions,
+                shocks["technology_sector_shock"],
+            ),
         },
         {
-            "name": "Interest rate shock: bonds -5%",
+            "name": f"Interest rate shock: bonds {_format_shock_label(shocks['interest_rate_shock'])}",
             "explanation": "Fixed-income and bond-like exposures are shocked lower under a rate selloff.",
-            "shock": _interest_rate_shock,
+            "shock": lambda positions: _interest_rate_shock(
+                positions,
+                shocks["interest_rate_shock"],
+            ),
         },
         {
             "name": "Broad risk-off scenario",
@@ -27,9 +53,12 @@ def run_stress_scenarios(
             "shock": _risk_off_shock,
         },
         {
-            "name": "Single-name shock: largest holding -20%",
+            "name": f"Single-name shock: largest holding {_format_shock_label(shocks['largest_holding_shock'])}",
             "explanation": "The largest holding is shocked lower to estimate issuer concentration vulnerability.",
-            "shock": _largest_holding_shock,
+            "shock": lambda positions: _largest_holding_shock(
+                positions,
+                shocks["largest_holding_shock"],
+            ),
         },
         {
             "name": "Liquidity shock",
@@ -58,31 +87,34 @@ def run_stress_scenarios(
 
 def _equity_market_shock(
     decorated_positions: list[dict[str, Any]],
+    shock: float,
 ) -> dict[str, float]:
     return {
         str(position["symbol"]): float(position["portfolio_weight"])
-        * (-0.10 if str(position["asset_type"]).lower() in {"equity", "etf"} else 0.0)
+        * (shock if str(position["asset_type"]).lower() in {"equity", "etf"} else 0.0)
         for position in decorated_positions
     }
 
 
 def _technology_sector_shock(
     decorated_positions: list[dict[str, Any]],
+    shock: float,
 ) -> dict[str, float]:
     return {
         str(position["symbol"]): float(position["portfolio_weight"])
-        * (-0.15 if str(position["sector"]).lower() == "technology" else 0.0)
+        * (shock if str(position["sector"]).lower() == "technology" else 0.0)
         for position in decorated_positions
     }
 
 
 def _interest_rate_shock(
     decorated_positions: list[dict[str, Any]],
+    shock: float,
 ) -> dict[str, float]:
     return {
         str(position["symbol"]): float(position["portfolio_weight"])
         * (
-            -0.05
+            shock
             if str(position["asset_type"]).lower() in {"fixed_income", "bond"}
             or str(position["sector"]).lower() == "fixed income"
             else 0.0
@@ -108,6 +140,7 @@ def _risk_off_shock(decorated_positions: list[dict[str, Any]]) -> dict[str, floa
 
 def _largest_holding_shock(
     decorated_positions: list[dict[str, Any]],
+    shock: float,
 ) -> dict[str, float]:
     largest = max(
         decorated_positions,
@@ -116,7 +149,7 @@ def _largest_holding_shock(
     )
     return {
         str(position["symbol"]): (
-            float(position["portfolio_weight"]) * -0.20
+            float(position["portfolio_weight"]) * shock
             if largest is not None and position["symbol"] == largest["symbol"]
             else 0.0
         )
@@ -141,3 +174,7 @@ def _scenario_severity(impact: float) -> str:
     if loss >= 0.05:
         return "medium"
     return "low"
+
+
+def _format_shock_label(value: float) -> str:
+    return f"{value:.0%}"

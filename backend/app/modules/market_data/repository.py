@@ -5,7 +5,7 @@ from app.repositories.persistent_market_data_store import PersistentMarketDataSt
 
 
 class MarketDataRepository:
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: Session | None) -> None:
         self.db = db
         self.provider = get_market_data_provider("demo")
 
@@ -13,6 +13,9 @@ class MarketDataRepository:
         return [asset["symbol"] for asset in self.list_assets()]
 
     def list_assets(self) -> list[dict[str, object]]:
+        if self.db is None:
+            return self.provider.list_assets()
+
         assets_by_symbol = {
             str(asset["symbol"]).upper(): asset
             for asset in self.provider.list_assets()
@@ -26,6 +29,9 @@ class MarketDataRepository:
         return list(assets_by_symbol.values())
 
     def get_prices(self, symbol: str) -> list[dict[str, object]]:
+        if self.db is None:
+            return self.provider.get_prices(symbol)
+
         rows_by_date = {
             str(row["date"]): row
             for row in self.provider.get_prices(symbol)
@@ -40,4 +46,7 @@ class MarketDataRepository:
         self,
         rows: list[dict[str, object]],
     ) -> tuple[int, list[str]]:
+        if self.db is None:
+            return 0, []
+
         return PersistentMarketDataStore.import_prices(self.db, rows)

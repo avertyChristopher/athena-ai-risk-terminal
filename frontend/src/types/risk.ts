@@ -10,6 +10,29 @@ export type RiskMonitorAnalyzeRequest = {
   benchmark_symbol?: string;
   confidence_level?: number;
   risk_free_rate?: number;
+  limits?: RiskLimitOverrides;
+  stress_shocks?: StressShockOverrides;
+};
+
+export type RiskLimitOverrides = {
+  max_single_position_weight?: number;
+  max_sector_exposure?: number;
+  max_asset_type_exposure?: number;
+  minimum_cash_reserve?: number;
+  max_top_3_concentration?: number;
+  max_portfolio_volatility?: number;
+  max_var_95?: number;
+  max_cvar_95?: number;
+  max_drawdown?: number;
+  max_tracking_error?: number;
+  max_active_exposure?: number;
+};
+
+export type StressShockOverrides = {
+  equity_market_shock?: number;
+  technology_sector_shock?: number;
+  interest_rate_shock?: number;
+  largest_holding_shock?: number;
 };
 
 export type RiskSourceMetadata = {
@@ -21,6 +44,11 @@ export type RiskSourceMetadata = {
   symbols_missing: string[];
   quality_warnings: string[];
   badges: string[];
+};
+
+export type RiskMonitorAssumptions = {
+  limits: Record<string, number>;
+  stress_shocks: Record<string, number>;
 };
 
 export type RiskMetric = {
@@ -127,4 +155,5 @@ export type RiskMonitorAnalysisResponse = {
   alerts: RiskAlert[];
   athena_commentary: AthenaRiskCommentary;
   risk_source: RiskSourceMetadata;
+  assumptions: RiskMonitorAssumptions;
 };

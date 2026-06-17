@@ -934,6 +934,23 @@
       "coverage": "Couverture risque",
       "positionsAnalyzed": "positions analysees"
     },
+    "assumptions": {
+      "eyebrow": "Hypotheses configurables",
+      "title": "Limites et stress tests",
+      "description": "Ajuste les seuils de surveillance et les chocs de stress. Les analyses se recalculent automatiquement avec ces hypotheses.",
+      "limits": "Limites de risque",
+      "stress": "Chocs de stress",
+      "singlePosition": "Position max %",
+      "sector": "Secteur max %",
+      "cash": "Cash minimum %",
+      "volatility": "Volatilite max %",
+      "trackingError": "Tracking error max %",
+      "equityShock": "Choc actions %",
+      "techShock": "Choc technologie %",
+      "ratesShock": "Choc taux/bonds %",
+      "issuerShock": "Choc plus grande ligne %",
+      "reset": "Reinitialiser"
+    },
     "empty": {
       "title": "Aucun portefeuille selectionne",
       "message": "Selectionne un portefeuille pour lancer la surveillance du risque."

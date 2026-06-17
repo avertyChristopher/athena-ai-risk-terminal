@@ -15,11 +15,13 @@ import { endpoints } from "../../../lib/endpoints";
 import {
   BenchmarkRiskResponse,
   RiskContributionResponse,
+  RiskLimitOverrides,
   RiskLimitBreach,
   RiskMetric,
   RiskMonitorAnalysisResponse,
   RiskModuleStatus,
   RiskSourceMetadata,
+  StressShockOverrides,
   StressScenarioResult,
 } from "../../../types/risk";
 
@@ -42,6 +44,32 @@ const tabs: RiskMonitorTab[] = [
   "commentary",
 ];
 
+type RiskControlState = Required<
+  Pick<
+    RiskLimitOverrides,
+    | "max_single_position_weight"
+    | "max_sector_exposure"
+    | "minimum_cash_reserve"
+    | "max_portfolio_volatility"
+    | "max_tracking_error"
+  >
+> &
+  Required<StressShockOverrides>;
+
+type RiskControlKey = keyof RiskControlState;
+
+const DEFAULT_RISK_CONTROLS: RiskControlState = {
+  max_single_position_weight: 0.25,
+  max_sector_exposure: 0.5,
+  minimum_cash_reserve: 0.05,
+  max_portfolio_volatility: 0.2,
+  max_tracking_error: 0.08,
+  equity_market_shock: -0.1,
+  technology_sector_shock: -0.15,
+  interest_rate_shock: -0.05,
+  largest_holding_shock: -0.2,
+};
+
 export function RiskMonitorPage() {
   const { t } = useTranslation();
   const {
@@ -51,6 +79,9 @@ export function RiskMonitorPage() {
     selectedPortfolio,
   } = usePortfolioContext();
   const [activeTab, setActiveTab] = useState<RiskMonitorTab>("overview");
+  const [riskControls, setRiskControls] = useState<RiskControlState>(
+    DEFAULT_RISK_CONTROLS,
+  );
 
   const statusQuery = useQuery({
     queryKey: ["risk-monitor-status"],
@@ -82,12 +113,15 @@ export function RiskMonitorPage() {
       "risk-monitor-analysis",
       selectedPortfolio?.id,
       holdingsSignature,
+      riskControls,
     ],
     enabled: Boolean(selectedPortfolio?.id),
     queryFn: () =>
       apiClient.post<RiskMonitorAnalysisResponse>(endpoints.riskMonitorAnalyze, {
         portfolio_id: selectedPortfolio?.id,
         benchmark_symbol: selectedPortfolio?.benchmark ?? "SPY",
+        limits: buildLimitOverrides(riskControls),
+        stress_shocks: buildStressShockOverrides(riskControls),
       }),
   });
 
@@ -146,6 +180,15 @@ export function RiskMonitorPage() {
           </div>
         </div>
       </section>
+
+      <RiskControlsPanel
+        controls={riskControls}
+        onChange={(key, value) =>
+          setRiskControls((current) => ({ ...current, [key]: value }))
+        }
+        onReset={() => setRiskControls(DEFAULT_RISK_CONTROLS)}
+        t={t}
+      />
 
       {isLoading ? <LoadingState label={t("common.loading")} /> : null}
 
@@ -212,6 +255,126 @@ export function RiskMonitorPage() {
           </div>
         </>
       ) : null}
+    </div>
+  );
+}
+
+function RiskControlsPanel({
+  controls,
+  onChange,
+  onReset,
+  t,
+}: {
+  controls: RiskControlState;
+  onChange: (key: RiskControlKey, value: number) => void;
+  onReset: () => void;
+  t: (key: string) => string;
+}) {
+  const limitFields: { key: RiskControlKey; label: string }[] = [
+    {
+      key: "max_single_position_weight",
+      label: t("riskMonitor.assumptions.singlePosition"),
+    },
+    {
+      key: "max_sector_exposure",
+      label: t("riskMonitor.assumptions.sector"),
+    },
+    {
+      key: "minimum_cash_reserve",
+      label: t("riskMonitor.assumptions.cash"),
+    },
+    {
+      key: "max_portfolio_volatility",
+      label: t("riskMonitor.assumptions.volatility"),
+    },
+    {
+      key: "max_tracking_error",
+      label: t("riskMonitor.assumptions.trackingError"),
+    },
+  ];
+  const stressFields: { key: RiskControlKey; label: string }[] = [
+    {
+      key: "equity_market_shock",
+      label: t("riskMonitor.assumptions.equityShock"),
+    },
+    {
+      key: "technology_sector_shock",
+      label: t("riskMonitor.assumptions.techShock"),
+    },
+    {
+      key: "interest_rate_shock",
+      label: t("riskMonitor.assumptions.ratesShock"),
+    },
+    {
+      key: "largest_holding_shock",
+      label: t("riskMonitor.assumptions.issuerShock"),
+    },
+  ];
+
+  return (
+    <section className="risk-monitor-controls-panel">
+      <div className="risk-monitor-controls-panel__header">
+        <div>
+          <span>{t("riskMonitor.assumptions.eyebrow")}</span>
+          <h2>{t("riskMonitor.assumptions.title")}</h2>
+          <p>{t("riskMonitor.assumptions.description")}</p>
+        </div>
+        <button className="button button--ghost" type="button" onClick={onReset}>
+          {t("riskMonitor.assumptions.reset")}
+        </button>
+      </div>
+      <div className="risk-monitor-control-groups">
+        <RiskControlGroup
+          title={t("riskMonitor.assumptions.limits")}
+          fields={limitFields}
+          controls={controls}
+          onChange={onChange}
+        />
+        <RiskControlGroup
+          title={t("riskMonitor.assumptions.stress")}
+          fields={stressFields}
+          controls={controls}
+          onChange={onChange}
+        />
+      </div>
+    </section>
+  );
+}
+
+function RiskControlGroup({
+  title,
+  fields,
+  controls,
+  onChange,
+}: {
+  title: string;
+  fields: { key: RiskControlKey; label: string }[];
+  controls: RiskControlState;
+  onChange: (key: RiskControlKey, value: number) => void;
+}) {
+  return (
+    <div className="risk-monitor-control-group">
+      <h3>{title}</h3>
+      <div className="risk-monitor-control-grid">
+        {fields.map((field) => (
+          <label className="form-field" key={field.key}>
+            <span>{field.label}</span>
+            <input
+              max={100}
+              min={field.key.includes("shock") ? -100 : 0}
+              step={1}
+              type="number"
+              value={Math.round(controls[field.key] * 100)}
+              onChange={(event) => {
+                const value = Number(event.target.value);
+                if (Number.isFinite(value)) {
+                  onChange(field.key, value / 100);
+                }
+              }}
+            />
+          </label>
+        ))}
+      </div>
     </div>
   );
 }
@@ -789,6 +952,27 @@ function metricLookup(metrics: RiskMetric[]) {
     lookup[metric.name] = metric;
     return lookup;
   }, {});
+}
+
+function buildLimitOverrides(controls: RiskControlState): RiskLimitOverrides {
+  return {
+    max_single_position_weight: controls.max_single_position_weight,
+    max_sector_exposure: controls.max_sector_exposure,
+    minimum_cash_reserve: controls.minimum_cash_reserve,
+    max_portfolio_volatility: controls.max_portfolio_volatility,
+    max_tracking_error: controls.max_tracking_error,
+  };
+}
+
+function buildStressShockOverrides(
+  controls: RiskControlState,
+): StressShockOverrides {
+  return {
+    equity_market_shock: controls.equity_market_shock,
+    technology_sector_shock: controls.technology_sector_shock,
+    interest_rate_shock: controls.interest_rate_shock,
+    largest_holding_shock: controls.largest_holding_shock,
+  };
 }
 
 function formatRiskMetric(metric?: RiskMetric) {
