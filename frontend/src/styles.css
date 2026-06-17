@@ -3710,7 +3710,11 @@ ul.portfolio-note-list {
   .risk-monitor-kpi-grid,
   .risk-monitor-mini-grid,
   .risk-monitor-alert-grid,
-  .risk-monitor-breach-grid {
+  .risk-monitor-breach-grid,
+  .market-data-coverage-grid,
+  .risk-monitor-control-groups,
+  .risk-monitor-control-grid,
+  .equity-scorecard-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -3836,7 +3840,11 @@ ul.portfolio-note-list {
   .risk-monitor-kpi-grid,
   .risk-monitor-mini-grid,
   .risk-monitor-alert-grid,
-  .risk-monitor-breach-grid {
+  .risk-monitor-breach-grid,
+  .market-data-coverage-grid,
+  .risk-monitor-control-groups,
+  .risk-monitor-control-grid,
+  .equity-scorecard-grid {
     grid-template-columns: 1fr;
   }
 
@@ -3845,7 +3853,11 @@ ul.portfolio-note-list {
   .trade-section-card__header,
   .trade-command-panel,
   .risk-monitor-section-card__header,
-  .risk-monitor-command-panel {
+  .risk-monitor-command-panel,
+  .risk-monitor-controls-panel__header,
+  .market-data-coverage-panel__header,
+  .equity-analyst-scorecard__header,
+  .equity-analyst-scorecard__footer {
     align-items: flex-start;
     flex-direction: column;
   }
