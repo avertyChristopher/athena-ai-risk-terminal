@@ -125,6 +125,21 @@
       "revenueGrowth": "Revenue growth",
       "valuation": "Valuation signal"
     },
+    "scorecard": {
+      "title": "Analyst scorecard",
+      "description": "Synthetic view of strengths and watch points across valuation, profitability, growth, quality and risk.",
+      "overall": "Overall score",
+      "signal": "Analyst signal",
+      "valuation": "Valuation",
+      "profitability": "Profitability",
+      "growth": "Growth",
+      "quality": "Quality",
+      "risk": "Risk",
+      "constructive": "Constructive",
+      "balanced": "Balanced",
+      "watchlist": "Watchlist",
+      "portfolioContext": "Portfolio context"
+    },
     "sections": {
       "marketOrganization": {
         "title": "Market Organization & Equity Instruments",

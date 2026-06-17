@@ -235,6 +235,17 @@ export function EquityAnalysisPage() {
   ];
   const hasApiError = queries.some((query) => query.isError);
   const isLoading = queries.some((query) => query.isLoading);
+  const analystScorecard = buildEquityAnalystScorecard({
+    capm: capmQuery.data,
+    dataQuality: dataQualityQuery.data,
+    dcf: dcfQuery.data,
+    diagnostics: diagnosticsQuery.data,
+    earningsQuality: earningsQualityQuery.data,
+    growth: growthQuery.data,
+    institutionalSignals: institutionalSignalsQuery.data,
+    ratios: ratiosQuery.data,
+    valuation: valuationQuery.data,
+  });
 
   return (
     <div className="page equity-analysis-page">
@@ -357,6 +368,32 @@ export function EquityAnalysisPage() {
           }
         />
       </section>
+
+      <EquityAnalystScorecard
+        scorecard={analystScorecard}
+        labels={{
+          title: t("equityAnalysis.scorecard.title"),
+          description: t("equityAnalysis.scorecard.description"),
+          overall: t("equityAnalysis.scorecard.overall"),
+          signal: t("equityAnalysis.scorecard.signal"),
+          valuation: t("equityAnalysis.scorecard.valuation"),
+          profitability: t("equityAnalysis.scorecard.profitability"),
+          growth: t("equityAnalysis.scorecard.growth"),
+          quality: t("equityAnalysis.scorecard.quality"),
+          risk: t("equityAnalysis.scorecard.risk"),
+          constructive: t("equityAnalysis.scorecard.constructive"),
+          balanced: t("equityAnalysis.scorecard.balanced"),
+          watchlist: t("equityAnalysis.scorecard.watchlist"),
+          portfolioContext: t("equityAnalysis.scorecard.portfolioContext"),
+        }}
+        portfolioContext={
+          selectedHolding
+            ? `${selectedHolding.symbol} / ${formatPercent(
+                selectedHolding.portfolio_weight,
+              )} ${t("portfolio.positions.portfolioWeight")}`
+            : undefined
+        }
+      />
 
       <EquitySection
         title="Institutional CFA workstation"
@@ -1028,6 +1065,244 @@ function InstitutionalPanel({
       ) : null}
     </section>
   );
+}
+
+type EquityAnalystScorecardInput = {
+  capm?: EquityCapmResponse;
+  dataQuality?: EquityDataQualityResponse;
+  dcf?: EquityDcfResponse;
+  diagnostics?: EquityDiagnosticsResponse;
+  earningsQuality?: EquityEarningsQualityResponse;
+  growth?: EquityGrowthResponse;
+  institutionalSignals?: EquityInstitutionalSignalsResponse;
+  ratios?: EquityRatiosResponse;
+  valuation?: EquityValuationResponse;
+};
+
+type EquityAnalystScorecardItemKey =
+  | "valuation"
+  | "profitability"
+  | "growth"
+  | "quality"
+  | "risk";
+
+type EquityAnalystScorecardItem = {
+  key: EquityAnalystScorecardItemKey;
+  score: number;
+  detail: string;
+};
+
+type EquityAnalystScorecardResult = {
+  overallScore: number;
+  signalKey: "constructive" | "balanced" | "watchlist";
+  thesis: string;
+  items: EquityAnalystScorecardItem[];
+};
+
+function EquityAnalystScorecard({
+  scorecard,
+  labels,
+  portfolioContext,
+}: {
+  scorecard: EquityAnalystScorecardResult;
+  labels: Record<string, string>;
+  portfolioContext?: string;
+}) {
+  return (
+    <section className="equity-analyst-scorecard">
+      <div className="equity-analyst-scorecard__header">
+        <div>
+          <span>{labels.signal}</span>
+          <h2>{labels.title}</h2>
+          <p>{labels.description}</p>
+        </div>
+        <div className={`equity-score-pill equity-score-pill--${scoreTone(scorecard.overallScore)}`}>
+          <span>{labels.overall}</span>
+          <strong>{scorecard.overallScore}/100</strong>
+          <small>{labels[scorecard.signalKey]}</small>
+        </div>
+      </div>
+
+      <div className="equity-scorecard-grid">
+        {scorecard.items.map((item) => (
+          <article
+            className={`equity-scorecard-tile equity-scorecard-tile--${scoreTone(item.score)}`}
+            key={item.key}
+          >
+            <span>{labels[item.key]}</span>
+            <strong>{item.score}/100</strong>
+            <p>{item.detail}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="equity-analyst-scorecard__footer">
+        <p>{scorecard.thesis}</p>
+        {portfolioContext ? (
+          <span>
+            {labels.portfolioContext}: {portfolioContext}
+          </span>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function buildEquityAnalystScorecard(
+  input: EquityAnalystScorecardInput,
+): EquityAnalystScorecardResult {
+  const valuationScore = scoreValuation(input.valuation, input.dcf);
+  const profitabilityScore = averageScores([
+    scorePositiveRatio(input.ratios?.roe, 0.25),
+    scorePositiveRatio(input.ratios?.roic, 0.2),
+    scorePositiveRatio(input.ratios?.net_margin, 0.25),
+  ]);
+  const growthScore = averageScores([
+    scorePositiveRatio(input.growth?.revenue_growth, 0.15),
+    scorePositiveRatio(input.growth?.eps_growth, 0.15),
+    scorePositiveRatio(input.growth?.sustainable_growth_rate, 0.12),
+  ]);
+  const qualityScore = averageScores([
+    input.ratios ? input.ratios.quality_score * 100 : undefined,
+    input.dataQuality ? input.dataQuality.quality_score * 100 : undefined,
+    scorePositiveRatio(input.earningsQuality?.cash_conversion_ratio, 1),
+    scorePositiveRatio(input.earningsQuality?.fcf_conversion_ratio, 1),
+  ]);
+  const riskScore = scoreRisk(input.capm, input.ratios, input.dataQuality);
+  const overallScore = Math.round(
+    averageScores([
+      valuationScore,
+      profitabilityScore,
+      growthScore,
+      qualityScore,
+      riskScore,
+    ]),
+  );
+  const signalKey =
+    overallScore >= 74 ? "constructive" : overallScore >= 55 ? "balanced" : "watchlist";
+  const thesis = [
+    input.institutionalSignals?.signal,
+    input.diagnostics?.analyst_summary,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return {
+    overallScore,
+    signalKey,
+    thesis: thesis || "Analyst scorecard is waiting for complete equity data.",
+    items: [
+      {
+        key: "valuation",
+        score: Math.round(valuationScore),
+        detail: `${input.valuation?.valuation_status ?? "--"} / MoS ${formatNullablePercent(
+          input.valuation?.margin_of_safety,
+        )}`,
+      },
+      {
+        key: "profitability",
+        score: Math.round(profitabilityScore),
+        detail: `ROE ${formatNullablePercent(input.ratios?.roe)} / ROIC ${formatNullablePercent(
+          input.ratios?.roic,
+        )}`,
+      },
+      {
+        key: "growth",
+        score: Math.round(growthScore),
+        detail: `${input.growth?.growth_profile ?? "--"} / Revenue ${formatNullablePercent(
+          input.growth?.revenue_growth,
+        )}`,
+      },
+      {
+        key: "quality",
+        score: Math.round(qualityScore),
+        detail: `${input.earningsQuality?.earnings_quality ?? "--"} / Data ${
+          input.dataQuality?.is_usable ? "usable" : "review"
+        }`,
+      },
+      {
+        key: "risk",
+        score: Math.round(riskScore),
+        detail: `Beta ${formatNullableMultiple(input.capm?.beta)} / Debt-assets ${formatNullablePercent(
+          input.ratios?.debt_to_assets,
+        )}`,
+      },
+    ],
+  };
+}
+
+function scoreValuation(
+  valuation?: EquityValuationResponse,
+  dcf?: EquityDcfResponse,
+) {
+  const marginScores = [
+    scoreMarginOfSafety(valuation?.margin_of_safety),
+    scoreMarginOfSafety(dcf?.margin_of_safety_fcff),
+    scoreMarginOfSafety(dcf?.margin_of_safety_fcfe),
+  ];
+  let score = averageScores(marginScores);
+  const status = valuation?.valuation_status.toLowerCase() ?? "";
+  if (status.includes("undervalued") || status.includes("discount")) {
+    score += 8;
+  }
+  if (status.includes("overvalued") || status.includes("premium")) {
+    score -= 8;
+  }
+  return clampScore(score);
+}
+
+function scoreMarginOfSafety(value: number | null | undefined) {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+  return clampScore(50 + value * 180);
+}
+
+function scorePositiveRatio(value: number | null | undefined, target: number) {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+  return clampScore((value / target) * 100);
+}
+
+function scoreRisk(
+  capm?: EquityCapmResponse,
+  ratios?: EquityRatiosResponse,
+  dataQuality?: EquityDataQualityResponse,
+) {
+  const betaPenalty =
+    capm?.beta === null || capm?.beta === undefined ? 8 : Math.abs(capm.beta - 1) * 35;
+  const debtPenalty =
+    ratios?.debt_to_assets === null || ratios?.debt_to_assets === undefined
+      ? 8
+      : ratios.debt_to_assets * 45;
+  const warningPenalty =
+    ((capm?.warnings.length ?? 0) + (dataQuality?.warnings.length ?? 0)) * 5;
+  return clampScore(100 - betaPenalty - debtPenalty - warningPenalty);
+}
+
+function averageScores(scores: Array<number | undefined>) {
+  const validScores = scores.filter(
+    (score): score is number => score !== undefined && Number.isFinite(score),
+  );
+  if (!validScores.length) {
+    return 50;
+  }
+  return validScores.reduce((sum, score) => sum + score, 0) / validScores.length;
+}
+
+function clampScore(score: number) {
+  return Math.max(0, Math.min(100, score));
+}
+
+function scoreTone(score: number) {
+  if (score >= 74) {
+    return "positive";
+  }
+  if (score >= 55) {
+    return "warning";
+  }
+  return "negative";
 }
 
 function formatNullablePercent(value: number | null | undefined) {

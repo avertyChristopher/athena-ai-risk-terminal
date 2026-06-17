@@ -125,6 +125,21 @@
       "revenueGrowth": "Croissance revenus",
       "valuation": "Signal de valorisation"
     },
+    "scorecard": {
+      "title": "Scorecard analyste",
+      "description": "Lecture synthetique des forces et points de vigilance selon valorisation, profitabilite, croissance, qualite et risque.",
+      "overall": "Score global",
+      "signal": "Signal analyste",
+      "valuation": "Valorisation",
+      "profitability": "Profitabilite",
+      "growth": "Croissance",
+      "quality": "Qualite",
+      "risk": "Risque",
+      "constructive": "Constructif",
+      "balanced": "Equilibre",
+      "watchlist": "Watchlist",
+      "portfolioContext": "Contexte portefeuille"
+    },
     "sections": {
       "marketOrganization": {
         "title": "Organisation de marche et instruments equity",

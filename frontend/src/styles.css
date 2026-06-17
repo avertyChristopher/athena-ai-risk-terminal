@@ -3198,6 +3198,132 @@ ul.portfolio-note-list {
   font-size: 1.55rem;
 }
 
+.equity-analyst-scorecard {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.12), rgba(138, 106, 67, 0.08)),
+    rgba(255, 255, 255, 0.84);
+  box-shadow: var(--shadow-soft);
+}
+
+.equity-analyst-scorecard__header,
+.equity-analyst-scorecard__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.equity-analyst-scorecard__header span {
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.equity-analyst-scorecard__header h2,
+.equity-analyst-scorecard__header p,
+.equity-analyst-scorecard__footer p {
+  margin: 0;
+}
+
+.equity-analyst-scorecard__header h2 {
+  margin-top: 4px;
+  font-size: 1.22rem;
+}
+
+.equity-analyst-scorecard__header p,
+.equity-analyst-scorecard__footer p {
+  max-width: 88ch;
+  color: var(--muted);
+}
+
+.equity-analyst-scorecard__footer {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.equity-analyst-scorecard__footer span {
+  flex: 0 0 auto;
+  border: 1px solid rgba(107, 150, 195, 0.18);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(107, 150, 195, 0.1);
+  color: var(--accent-strong);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.equity-score-pill {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+  min-width: 140px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.equity-score-pill strong {
+  font-size: 1.45rem;
+}
+
+.equity-score-pill small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.equity-scorecard-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.equity-scorecard-tile {
+  display: grid;
+  gap: 7px;
+  min-height: 118px;
+  border: 1px solid var(--border);
+  border-top: 3px solid rgba(107, 150, 195, 0.34);
+  border-radius: 8px;
+  padding: 13px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.equity-scorecard-tile span,
+.equity-scorecard-tile p {
+  color: var(--muted);
+}
+
+.equity-scorecard-tile p {
+  margin: 0;
+}
+
+.equity-scorecard-tile strong {
+  font-size: 1.25rem;
+}
+
+.equity-scorecard-tile--positive,
+.equity-score-pill--positive {
+  border-top-color: rgba(29, 127, 95, 0.5);
+}
+
+.equity-scorecard-tile--warning,
+.equity-score-pill--warning {
+  border-top-color: rgba(138, 106, 67, 0.5);
+}
+
+.equity-scorecard-tile--negative,
+.equity-score-pill--negative {
+  border-top-color: rgba(176, 58, 72, 0.5);
+}
+
 .equity-card {
   display: grid;
   align-content: start;
