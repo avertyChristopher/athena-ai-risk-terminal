@@ -11,6 +11,7 @@ from app.modules.volatility_lab.domain.downside_risk import (
     semi_deviation,
     semi_variance,
 )
+from app.modules.volatility_lab.domain.ewma import ewma_volatility
 from app.modules.volatility_lab.domain.portfolio_volatility import (
     portfolio_volatility,
     weighted_portfolio_returns,
@@ -26,6 +27,12 @@ from app.modules.volatility_lab.domain.volatility import (
     annualized_volatility,
     standard_deviation,
     variance,
+)
+from app.modules.volatility_lab.domain.var_models import (
+    monte_carlo_cvar,
+    monte_carlo_var,
+    parametric_cvar,
+    parametric_var,
 )
 
 
@@ -86,3 +93,30 @@ def test_risk_adjusted_metrics_are_available() -> None:
     assert tracking_error(RETURNS, BENCHMARK_RETURNS) is not None
     assert information_ratio(RETURNS, BENCHMARK_RETURNS) is not None
     assert jensen_alpha(RETURNS, BENCHMARK_RETURNS, 0.02) is not None
+
+
+def test_ewma_volatility_weights_recent_returns() -> None:
+    summary = ewma_volatility(RETURNS, lambda_decay=0.94)
+
+    assert summary["latest_volatility"] == pytest.approx(0.2515, rel=1e-3)
+    assert summary["lambda_decay"] == 0.94
+    assert summary["badge"] == "Realized"
+
+
+def test_parametric_var_and_cvar_use_normal_assumption() -> None:
+    var_value = parametric_var(RETURNS, 0.95)
+    cvar_value = parametric_cvar(RETURNS, 0.95)
+
+    assert var_value == pytest.approx(0.0285, rel=1e-2)
+    assert cvar_value > var_value
+
+
+def test_monte_carlo_var_is_deterministic_with_seed() -> None:
+    first_var = monte_carlo_var(RETURNS, 0.95, simulations=500, seed=7)
+    second_var = monte_carlo_var(RETURNS, 0.95, simulations=500, seed=7)
+    first_cvar = monte_carlo_cvar(RETURNS, 0.95, simulations=500, seed=7)
+    second_cvar = monte_carlo_cvar(RETURNS, 0.95, simulations=500, seed=7)
+
+    assert first_var == pytest.approx(second_var)
+    assert first_cvar == pytest.approx(second_cvar)
+    assert first_cvar >= first_var
