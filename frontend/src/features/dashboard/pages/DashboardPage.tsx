@@ -19,6 +19,8 @@ type Module = {
   description: string;
   status: "Live" | "Connected" | "Demo" | "Beta" | "Coming Soon";
   path: string;
+  features?: string[];
+  badges?: string[];
 };
 
 type WorkflowModule = {
@@ -100,9 +102,17 @@ const modules: Module[] = [
   },
   {
     name: "Volatility Lab",
-    description: "Inspect realized volatility, covariance, beta, VaR, CVaR and portfolio risk contribution.",
+    description: "Institutional volatility workstation with realized, EWMA, VaR/CVaR, beta, correlation and Risk Monitor-ready outputs.",
     status: "Connected",
     path: "/volatility-lab",
+    features: [
+      "Realized volatility",
+      "EWMA volatility",
+      "VaR/CVaR",
+      "Beta & correlation",
+      "Risk Monitor-ready",
+    ],
+    badges: ["CFA Level 1", "Market Data Connected", "Risk Monitor Ready"],
   },
   {
     name: "Options Pricing Lab",
@@ -206,7 +216,7 @@ export function DashboardPage() {
     },
     {
       name: "Volatility Lab",
-      description: "Measure realized volatility, covariance, beta, VaR and CVaR from the selected context.",
+      description: "Bridge Market Data and Portfolio Builder into VaR, EWMA, covariance and Risk Monitor-ready risk payloads.",
       path: "/volatility-lab",
       meta: selectedPortfolioName ? "Portfolio + asset" : workflowSymbol,
     },
@@ -259,7 +269,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title={t("workflow.connectedWorkflow")}
-        description="One selected portfolio and symbol can now move through market data, equity analysis, portfolio review, volatility analytics, pre-trade simulation and risk monitoring."
+        description="Market Data feeds Volatility Lab for Risk Monitor and Trade Simulator workflows, while Portfolio Builder can route holdings into portfolio volatility and risk contribution analytics."
       >
         <div className="dashboard-workflow-summary">
           <div>
@@ -401,6 +411,20 @@ function ModuleCard({ module }: { module: Module }) {
         </span>
         <h3>{module.name}</h3>
         <p>{module.description}</p>
+        {module.features?.length ? (
+          <ul className="dashboard-module-features">
+            {module.features.map((feature) => (
+              <li key={feature}>{feature}</li>
+            ))}
+          </ul>
+        ) : null}
+        {module.badges?.length ? (
+          <div className="dashboard-module-badges">
+            {module.badges.map((badge) => (
+              <span key={badge}>{badge}</span>
+            ))}
+          </div>
+        ) : null}
       </div>
       <strong>Open module</strong>
     </Link>
