@@ -61,8 +61,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "3/12",
-    detail: "Core analytics online",
+    value: "5/12",
+    detail: "Connected workflow online",
     tone: "neutral",
   },
 ];
@@ -87,8 +87,14 @@ const modules: Module[] = [
     path: "/portfolio-builder",
   },
   {
+    name: "Trade Simulator",
+    description: "Simulate portfolio-aware buy and sell orders before execution.",
+    status: "Live",
+    path: "/trade-simulator",
+  },
+  {
     name: "Risk Monitor",
-    description: "Track VaR, CVaR, drawdown, stress exposure and concentration risk.",
+    description: "Track VaR, CVaR, drawdown, configurable limits and stress shocks.",
     status: "Beta",
     path: "/risk-monitor",
   },
@@ -103,6 +109,36 @@ const modules: Module[] = [
     description: "Price options, inspect Greeks and evaluate payoff sensitivity.",
     status: "Coming Soon",
     path: "/options-pricing-lab",
+  },
+  {
+    name: "Rates Lab",
+    description: "Analyze yield curves, bond pricing, duration and rate shocks.",
+    status: "Coming Soon",
+    path: "/rates-lab",
+  },
+  {
+    name: "Stress Testing",
+    description: "Design scenario libraries and compare portfolio shock impacts.",
+    status: "Coming Soon",
+    path: "/stress-testing",
+  },
+  {
+    name: "Limit Center",
+    description: "Centralize risk limits, threshold monitoring and breach review.",
+    status: "Coming Soon",
+    path: "/limit-center",
+  },
+  {
+    name: "P&L Attribution",
+    description: "Explain daily P&L by position, factor, market move and trade activity.",
+    status: "Coming Soon",
+    path: "/pnl-attribution",
+  },
+  {
+    name: "Reports Center",
+    description: "Generate portfolio, risk and analytics reports for review workflows.",
+    status: "Coming Soon",
+    path: "/reports-center",
   },
 ];
 
@@ -241,7 +277,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Core workstations and planned analytics modules for the Athena terminal."
+        description="Five connected workstations are active today, with the remaining analytics modules staged for future increments."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
