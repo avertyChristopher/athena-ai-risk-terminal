@@ -9,9 +9,12 @@ from app.modules.market_data.schemas import (
     FXRateResponse,
     LatestPrice,
     LatestPricesResponse,
+    MarketDataImportRequest,
+    MarketDataImportResponse,
     MarketDataAnalyticsResponse,
     MarketAsset,
     MarketDataModuleStatus,
+    PortfolioMarketDataCoverageResponse,
     PortfolioMarketDataQualityReport,
     PricePoint,
     PricePanelResponse,
@@ -103,6 +106,22 @@ def get_aligned_returns(
     service: MarketDataService = Depends(get_market_data_service),
 ) -> ReturnsPanelResponse:
     return service.get_aligned_returns(_parse_symbols(symbols))
+
+
+@router.get("/coverage", response_model=PortfolioMarketDataCoverageResponse)
+def get_portfolio_market_data_coverage(
+    symbols: str = Query(...),
+    service: MarketDataService = Depends(get_market_data_service),
+) -> PortfolioMarketDataCoverageResponse:
+    return service.get_portfolio_coverage(_parse_symbols(symbols))
+
+
+@router.post("/import-prices", response_model=MarketDataImportResponse)
+def import_market_data_prices(
+    request: MarketDataImportRequest,
+    service: MarketDataService = Depends(get_market_data_service),
+) -> MarketDataImportResponse:
+    return service.import_prices(request)
 
 
 @router.get("/prices/{symbol}", response_model=list[PricePoint])

@@ -134,6 +134,42 @@ class PortfolioMarketDataQualityReport(BaseModel):
     warnings: list[str]
 
 
+class PortfolioMarketDataCoverageResponse(BaseModel):
+    symbols: list[str]
+    covered_symbols: list[str]
+    missing_symbols: list[str]
+    coverage_ratio: float
+    latest_price_dates: dict[str, str | None]
+    warnings: list[str]
+
+
+class MarketDataImportRow(BaseModel):
+    date: str
+    symbol: str
+    open: float
+    high: float
+    low: float
+    close: float
+    volume: int
+    name: str | None = None
+    asset_type: str = "equity"
+    currency: str = "USD"
+    sector: str = "Imported"
+    country: str = "United States"
+    exchange: str | None = None
+    industry: str | None = None
+
+
+class MarketDataImportRequest(BaseModel):
+    rows: list[MarketDataImportRow]
+
+
+class MarketDataImportResponse(BaseModel):
+    imported_rows: int
+    imported_symbols: list[str]
+    warnings: list[str]
+
+
 class BenchmarkReturnsResponse(BaseModel):
     benchmark_symbol: str
     return_type: str

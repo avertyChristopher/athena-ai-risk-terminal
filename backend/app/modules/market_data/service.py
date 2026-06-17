@@ -62,9 +62,12 @@ from app.modules.market_data.schemas import (
     FXRateResponse,
     LatestPrice,
     LatestPricesResponse,
+    MarketDataImportRequest,
+    MarketDataImportResponse,
     MarketDataAnalyticsResponse,
     MarketAsset,
     MarketDataModuleStatus,
+    PortfolioMarketDataCoverageResponse,
     MarketDataQualityReport,
     PortfolioMarketDataQualityReport,
     PricePoint,
@@ -246,6 +249,89 @@ class MarketDataService:
             quality_score=create_data_quality_score(report_dicts),
             is_valid_for_portfolio=validate_portfolio_market_data(report_dicts)
             and not missing_symbols,
+            warnings=warnings,
+        )
+
+    def get_portfolio_coverage(
+        self,
+        symbols: list[str],
+    ) -> PortfolioMarketDataCoverageResponse:
+        requested_symbols = self._normalize_unique_symbols(symbols)
+        valid_symbols, missing_symbols = self._split_valid_and_missing_symbols(
+            requested_symbols,
+        )
+        latest_price_dates: dict[str, str | None] = {}
+        warnings = []
+
+        for symbol in valid_symbols:
+            try:
+                latest_price_dates[symbol] = self.get_asset_metadata(
+                    symbol,
+                ).latest_price_date
+            except HTTPException:
+                latest_price_dates[symbol] = None
+                warnings.append(f"{symbol}: asset exists but price history is unavailable.")
+
+        warnings.extend(f"{symbol}: missing from market data coverage." for symbol in missing_symbols)
+
+        return PortfolioMarketDataCoverageResponse(
+            symbols=requested_symbols,
+            covered_symbols=valid_symbols,
+            missing_symbols=missing_symbols,
+            coverage_ratio=(len(valid_symbols) / len(requested_symbols))
+            if requested_symbols
+            else 0.0,
+            latest_price_dates=latest_price_dates,
+            warnings=warnings,
+        )
+
+    def import_prices(
+        self,
+        request: MarketDataImportRequest,
+    ) -> MarketDataImportResponse:
+        if not request.rows:
+            raise HTTPException(
+                status_code=400,
+                detail="At least one price row is required.",
+            )
+
+        warnings = []
+        rows = []
+        for row in request.rows:
+            try:
+                datetime.strptime(row.date, "%Y-%m-%d")
+            except ValueError as exc:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Invalid date format for {row.symbol}: {row.date}. Use YYYY-MM-DD.",
+                ) from exc
+
+            if min(row.open, row.high, row.low, row.close) <= 0:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"{row.symbol}: OHLC prices must be positive.",
+                )
+            if row.volume < 0:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"{row.symbol}: volume must be positive or zero.",
+                )
+            if row.high < max(row.open, row.close) or row.low > min(row.open, row.close):
+                warnings.append(f"{row.symbol.upper()} {row.date}: OHLC range looks inconsistent.")
+
+            rows.append(
+                {
+                    **row.model_dump(),
+                    "symbol": row.symbol.strip().upper(),
+                    "currency": row.currency.strip().upper(),
+                    "asset_type": row.asset_type.strip().lower(),
+                },
+            )
+
+        imported_rows, imported_symbols = self.repository.import_prices(rows)
+        return MarketDataImportResponse(
+            imported_rows=imported_rows,
+            imported_symbols=imported_symbols,
             warnings=warnings,
         )
 
@@ -473,8 +559,10 @@ class MarketDataService:
         self,
         symbols: list[str],
     ) -> tuple[list[str], list[str]]:
-        requested_symbols = [symbol.strip().upper() for symbol in symbols if symbol.strip()]
-        available_symbols = self.repository.get_supported_symbols()
+        requested_symbols = self._normalize_unique_symbols(symbols)
+        available_symbols = [
+            symbol.upper() for symbol in self.repository.get_supported_symbols()
+        ]
         missing_symbols = detect_missing_symbols(requested_symbols, available_symbols)
         valid_symbols = [
             symbol
@@ -482,6 +570,18 @@ class MarketDataService:
             if symbol not in missing_symbols
         ]
         return valid_symbols, missing_symbols
+
+    def _normalize_unique_symbols(self, symbols: list[str]) -> list[str]:
+        normalized_symbols = []
+        seen_symbols = set()
+
+        for symbol in symbols:
+            normalized_symbol = symbol.strip().upper()
+            if normalized_symbol and normalized_symbol not in seen_symbols:
+                normalized_symbols.append(normalized_symbol)
+                seen_symbols.add(normalized_symbol)
+
+        return normalized_symbols
 
     def _enrich_asset_metadata(
         self,
@@ -498,7 +598,7 @@ class MarketDataService:
             "is_index": symbol in {"SPY", "QQQ"},
             "is_fx_pair": False,
             "is_commodity": False,
-            "data_source": "demo",
+            "data_source": str(asset.get("data_source") or "demo"),
             "primary_benchmark": "SPY" if symbol != "SPY" else "QQQ",
         }
 
@@ -527,7 +627,7 @@ class MarketDataService:
             close=float(row["close"]),
             adjusted_close=float(row["adjusted_close"]),
             currency=str(asset["currency"]),
-            data_source="demo",
+            data_source=str(row.get("data_source") or asset.get("data_source") or "demo"),
             stale=str(row["symbol"]).upper() in stale_symbols,
         )
 

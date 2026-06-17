@@ -2225,6 +2225,28 @@ ul.portfolio-note-list {
   background: transparent;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.section-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  color: var(--accent-strong);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .workflow-panel {
   display: grid;
   gap: 14px;
@@ -2614,6 +2636,50 @@ ul.portfolio-note-list {
 
 .asset-summary strong {
   font-size: 1.15rem;
+}
+
+.market-data-coverage-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.market-data-coverage-panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.market-data-coverage-panel__header h2,
+.market-data-coverage-panel__header p {
+  margin: 0;
+}
+
+.market-data-coverage-panel__header h2 {
+  margin-top: 4px;
+  font-size: 1.25rem;
+}
+
+.market-data-coverage-panel__header p {
+  max-width: 80ch;
+  color: var(--muted);
+}
+
+.market-data-coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.market-data-symbol-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.market-data-import-button {
+  position: relative;
+  white-space: nowrap;
 }
 
 .asset-summary__identity strong {

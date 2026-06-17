@@ -7,6 +7,9 @@ export const endpoints = {
     `/api/market-data/returns-panel?symbols=${symbols}`,
   marketDataAlignedReturns: (symbols: string) =>
     `/api/market-data/aligned-returns?symbols=${symbols}`,
+  marketDataCoverage: (symbols: string) =>
+    `/api/market-data/coverage?symbols=${symbols}`,
+  marketDataImportPrices: "/api/market-data/import-prices",
   marketDataQualityBatch: (symbols: string, expectedCurrency = "USD") =>
     `/api/market-data/data-quality/batch?symbols=${symbols}&expected_currency=${expectedCurrency}`,
   marketDataVolatility: (symbol: string) =>

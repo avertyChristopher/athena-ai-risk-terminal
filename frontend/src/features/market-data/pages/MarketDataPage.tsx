@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { PageHeader } from "../../../components/layout/PageHeader";
 import { LoadingState } from "../../../components/ui/LoadingState";
+import { Card } from "../../../components/ui/Card";
 import { PortfolioSelector } from "../../../components/workflow/PortfolioSelector";
 import {
   SymbolSelectionMode,
@@ -14,8 +15,11 @@ import { endpoints } from "../../../lib/endpoints";
 import { useTranslation } from "../../../hooks/useTranslation";
 import {
   DataQualityResponse,
+  MarketDataImportRequest,
+  MarketDataImportResponse,
   MarketAsset,
   MarketDataAnalyticsResponse,
+  PortfolioMarketDataCoverageResponse,
   PricePoint,
   ReturnPoint,
   VolatilityResponse,
@@ -30,14 +34,18 @@ import { RiskVolatilitySection } from "../components/RiskVolatilitySection";
 
 export function MarketDataPage() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const {
+    holdings,
     selectSymbol: selectWorkflowSymbol,
     selectedHolding,
+    selectedPortfolioName,
     selectedSymbol: workflowSymbol,
   } = usePortfolioContext();
   const [selectedSymbol, setSelectedSymbol] = useState("");
   const [selectionMode, setSelectionMode] =
     useState<SymbolSelectionMode>("standalone");
+  const [importMessage, setImportMessage] = useState("");
 
   const assetsQuery = useQuery({
     queryKey: ["market-data-assets"],
@@ -68,6 +76,14 @@ export function MarketDataPage() {
       })),
     [assets],
   );
+  const portfolioSymbols = useMemo(
+    () =>
+      Array.from(
+        new Set(holdings.map((holding) => holding.symbol.trim().toUpperCase())),
+      ).filter(Boolean),
+    [holdings],
+  );
+  const portfolioSymbolsParam = portfolioSymbols.join(",");
 
   const selectedAsset = useMemo<MarketAsset | undefined>(
     () => {
@@ -109,6 +125,70 @@ export function MarketDataPage() {
   function handleSymbolChange(symbol: string) {
     setSelectedSymbol(symbol);
     selectWorkflowSymbol(symbol);
+  }
+
+  const coverageQuery = useQuery({
+    queryKey: ["market-data-coverage", portfolioSymbolsParam],
+    enabled: portfolioSymbols.length > 0,
+    queryFn: () =>
+      apiClient.get<PortfolioMarketDataCoverageResponse>(
+        endpoints.marketDataCoverage(portfolioSymbolsParam),
+      ),
+  });
+
+  const importMutation = useMutation({
+    mutationFn: (payload: MarketDataImportRequest) =>
+      apiClient.post<MarketDataImportResponse>(
+        endpoints.marketDataImportPrices,
+        payload,
+      ),
+    onSuccess: async (response) => {
+      setImportMessage(
+        t("marketData.import.success")
+          .replace("{rows}", String(response.imported_rows))
+          .replace("{symbols}", response.imported_symbols.join(", ")),
+      );
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["market-data-assets"] }),
+        queryClient.invalidateQueries({ queryKey: ["market-data-coverage"] }),
+      ]);
+
+      response.imported_symbols.forEach((symbol) => {
+        queryClient.invalidateQueries({
+          queryKey: ["market-data-prices", symbol],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["market-data-returns", symbol],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["market-data-quality", symbol],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["market-data-analytics", symbol],
+        });
+      });
+    },
+    onError: () => {
+      setImportMessage(t("marketData.import.error"));
+    },
+  });
+
+  async function handleImportFileChange(
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    try {
+      const rows = parseMarketDataCsv(await file.text());
+      importMutation.mutate({ rows });
+    } catch {
+      setImportMessage(t("marketData.import.parseError"));
+    } finally {
+      event.target.value = "";
+    }
   }
 
   const pricesQuery = useQuery({
@@ -170,6 +250,89 @@ export function MarketDataPage() {
           onSymbolChange={(symbol) => handleSymbolChange(symbol)}
         />
       </div>
+
+      <Card className="market-data-coverage-panel">
+        <div className="market-data-coverage-panel__header">
+          <div>
+            <span className="section-eyebrow">
+              {t("marketData.coverage.eyebrow")}
+            </span>
+            <h2>{t("marketData.coverage.title")}</h2>
+            <p>
+              {selectedPortfolioName
+                ? t("marketData.coverage.description").replace(
+                    "{portfolio}",
+                    selectedPortfolioName,
+                  )
+                : t("marketData.coverage.emptyPortfolio")}
+            </p>
+          </div>
+          <label className="button button--primary market-data-import-button">
+            {importMutation.isPending
+              ? t("marketData.import.loading")
+              : t("marketData.import.button")}
+            <input
+              className="visually-hidden"
+              type="file"
+              accept=".csv,text/csv"
+              disabled={importMutation.isPending}
+              onChange={handleImportFileChange}
+            />
+          </label>
+        </div>
+
+        <div className="market-data-coverage-grid">
+          <div className="metric-tile">
+            <span>{t("marketData.coverage.ratio")}</span>
+            <strong>
+              {coverageQuery.data
+                ? `${Math.round(coverageQuery.data.coverage_ratio * 100)}%`
+                : "--"}
+            </strong>
+            <small>{t("marketData.coverage.ratioHelp")}</small>
+          </div>
+          <div className="metric-tile">
+            <span>{t("marketData.coverage.covered")}</span>
+            <strong>{coverageQuery.data?.covered_symbols.length ?? 0}</strong>
+            <small>{t("marketData.coverage.coveredHelp")}</small>
+          </div>
+          <div className="metric-tile">
+            <span>{t("marketData.coverage.missing")}</span>
+            <strong>{coverageQuery.data?.missing_symbols.length ?? 0}</strong>
+            <small>{t("marketData.coverage.missingHelp")}</small>
+          </div>
+          <div className="metric-tile">
+            <span>{t("marketData.import.format")}</span>
+            <strong>CSV</strong>
+            <small>date,symbol,open,high,low,close,volume</small>
+          </div>
+        </div>
+
+        <div className="market-data-symbol-list">
+          {(coverageQuery.data?.missing_symbols.length ?? 0) > 0 ? (
+            coverageQuery.data?.missing_symbols.map((symbol) => (
+              <span className="status-pill status-pill--warn" key={symbol}>
+                {symbol}
+              </span>
+            ))
+          ) : (
+            <span className="status-pill">
+              {portfolioSymbols.length
+                ? t("marketData.coverage.allCovered")
+                : t("marketData.coverage.noSymbols")}
+            </span>
+          )}
+        </div>
+
+        {importMessage ? (
+          <p className="status-message">{importMessage}</p>
+        ) : null}
+        {coverageQuery.isError ? (
+          <p className="status-message status-message--error">
+            {t("marketData.coverage.error")}
+          </p>
+        ) : null}
+      </Card>
 
       {assetsQuery.isLoading ? <LoadingState label={t("common.loading")} /> : null}
       {assetsQuery.isError ? (
@@ -320,4 +483,68 @@ export function MarketDataPage() {
       />
     </div>
   );
+}
+
+function parseMarketDataCsv(text: string) {
+  const [headerLine, ...dataLines] = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (!headerLine) {
+    throw new Error("CSV is empty.");
+  }
+
+  const headers = headerLine.split(",").map((header) => header.trim().toLowerCase());
+  const requiredHeaders = ["date", "symbol", "open", "high", "low", "close", "volume"];
+  const hasRequiredHeaders = requiredHeaders.every((header) =>
+    headers.includes(header),
+  );
+
+  if (!hasRequiredHeaders) {
+    throw new Error("CSV headers are incomplete.");
+  }
+
+  const rows = dataLines.map((line) => {
+    const values = line.split(",").map((value) => value.trim());
+    const valueFor = (name: string) => values[headers.indexOf(name)] ?? "";
+    const optionalValueFor = (name: string) => {
+      const index = headers.indexOf(name);
+      return index >= 0 ? values[index] || undefined : undefined;
+    };
+
+    return {
+      date: valueFor("date"),
+      symbol: valueFor("symbol"),
+      open: Number(valueFor("open")),
+      high: Number(valueFor("high")),
+      low: Number(valueFor("low")),
+      close: Number(valueFor("close")),
+      volume: Number(valueFor("volume")),
+      name: optionalValueFor("name"),
+      asset_type: optionalValueFor("asset_type") ?? "equity",
+      currency: optionalValueFor("currency") ?? "USD",
+      sector: optionalValueFor("sector") ?? "Imported",
+      country: optionalValueFor("country") ?? "United States",
+      exchange: optionalValueFor("exchange"),
+      industry: optionalValueFor("industry"),
+    };
+  });
+
+  const invalidRow = rows.find(
+    (row) =>
+      !row.date ||
+      !row.symbol ||
+      !Number.isFinite(row.open) ||
+      !Number.isFinite(row.high) ||
+      !Number.isFinite(row.low) ||
+      !Number.isFinite(row.close) ||
+      !Number.isFinite(row.volume),
+  );
+
+  if (invalidRow || rows.length === 0) {
+    throw new Error("CSV contains invalid rows.");
+  }
+
+  return rows;
 }

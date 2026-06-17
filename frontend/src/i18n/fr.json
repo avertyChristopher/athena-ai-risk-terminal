@@ -418,6 +418,29 @@
     "movingAverages": "Moyennes mobiles",
     "marketContext": "Donnees de contexte marche",
     "referenceData": "Donnees de reference et liquidite",
+    "coverage": {
+      "eyebrow": "Portefeuille connecte",
+      "title": "Couverture Market Data du portefeuille",
+      "description": "Controle si les positions de {portfolio} ont des prix exploitables avant de lancer les analyses de rendement, risque et benchmark.",
+      "emptyPortfolio": "Selectionne un portefeuille pour verifier la couverture Market Data de ses positions.",
+      "ratio": "Couverture",
+      "ratioHelp": "Symboles couverts / symboles du portefeuille",
+      "covered": "Symboles couverts",
+      "coveredHelp": "Actifs avec un historique de prix disponible",
+      "missing": "Symboles manquants",
+      "missingHelp": "A importer avant analyse complete",
+      "allCovered": "Toutes les positions du portefeuille sont couvertes.",
+      "noSymbols": "Aucun symbole de portefeuille a verifier.",
+      "error": "Impossible de verifier la couverture Market Data."
+    },
+    "import": {
+      "button": "Importer prix CSV",
+      "loading": "Import en cours",
+      "format": "Format attendu",
+      "success": "{rows} lignes importees pour {symbols}.",
+      "error": "L'import Market Data a echoue.",
+      "parseError": "CSV invalide. En-tetes requis : date,symbol,open,high,low,close,volume."
+    },
     "summary": {
       "asset": "Actif selectionne",
       "latestPrice": "Dernier prix",

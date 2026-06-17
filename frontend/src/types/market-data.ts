@@ -7,6 +7,42 @@ export type MarketAsset = {
   country: string;
 };
 
+export type PortfolioMarketDataCoverageResponse = {
+  symbols: string[];
+  covered_symbols: string[];
+  missing_symbols: string[];
+  coverage_ratio: number;
+  latest_price_dates: Record<string, string | null>;
+  warnings: string[];
+};
+
+export type MarketDataImportRow = {
+  date: string;
+  symbol: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  name?: string | null;
+  asset_type?: string;
+  currency?: string;
+  sector?: string;
+  country?: string;
+  exchange?: string | null;
+  industry?: string | null;
+};
+
+export type MarketDataImportRequest = {
+  rows: MarketDataImportRow[];
+};
+
+export type MarketDataImportResponse = {
+  imported_rows: number;
+  imported_symbols: string[];
+  warnings: string[];
+};
+
 export type PricePoint = {
   date: string;
   symbol: string;

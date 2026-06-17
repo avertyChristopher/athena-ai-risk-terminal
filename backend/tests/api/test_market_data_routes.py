@@ -104,6 +104,54 @@ def test_market_data_portfolio_quality_report_flags_missing_symbols() -> None:
     assert "XXX: missing from asset master." in body["warnings"]
 
 
+def test_market_data_import_prices_adds_portfolio_coverage() -> None:
+    import_response = client.post(
+        "/api/market-data/import-prices",
+        json={
+            "rows": [
+                {
+                    "date": "2026-06-15",
+                    "symbol": "TEST",
+                    "open": 100.0,
+                    "high": 103.0,
+                    "low": 99.5,
+                    "close": 102.0,
+                    "volume": 125000,
+                    "name": "Imported Test Equity",
+                    "sector": "Testing",
+                    "country": "United States",
+                },
+                {
+                    "date": "2026-06-16",
+                    "symbol": "TEST",
+                    "open": 102.0,
+                    "high": 104.0,
+                    "low": 101.0,
+                    "close": 103.5,
+                    "volume": 130000,
+                    "name": "Imported Test Equity",
+                    "sector": "Testing",
+                    "country": "United States",
+                },
+            ],
+        },
+    )
+    coverage_response = client.get("/api/market-data/coverage?symbols=TEST,UNKNOWN")
+    latest_response = client.get("/api/market-data/latest/TEST")
+
+    assert import_response.status_code == 200
+    assert import_response.json()["imported_symbols"] == ["TEST"]
+    assert coverage_response.status_code == 200
+    coverage_body = coverage_response.json()
+    assert coverage_body["covered_symbols"] == ["TEST"]
+    assert coverage_body["missing_symbols"] == ["UNKNOWN"]
+    assert coverage_body["coverage_ratio"] == pytest.approx(0.5)
+    assert coverage_body["latest_price_dates"]["TEST"] == "2026-06-16"
+    assert latest_response.status_code == 200
+    assert latest_response.json()["close"] == pytest.approx(103.5)
+    assert latest_response.json()["data_source"] == "imported"
+
+
 def test_market_data_benchmark_fx_and_risk_free_endpoints() -> None:
     benchmark_response = client.get("/api/market-data/benchmark/SPY/returns")
     fx_response = client.get("/api/market-data/fx/latest?base=USD&quote=CAD")

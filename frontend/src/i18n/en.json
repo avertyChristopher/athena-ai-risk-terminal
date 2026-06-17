@@ -418,6 +418,29 @@
     "movingAverages": "Moving averages",
     "marketContext": "Market context data",
     "referenceData": "Reference and liquidity data",
+    "coverage": {
+      "eyebrow": "Connected portfolio",
+      "title": "Portfolio Market Data coverage",
+      "description": "Check whether positions in {portfolio} have usable prices before running return, risk and benchmark analytics.",
+      "emptyPortfolio": "Select a portfolio to verify Market Data coverage for its positions.",
+      "ratio": "Coverage",
+      "ratioHelp": "Covered symbols / portfolio symbols",
+      "covered": "Covered symbols",
+      "coveredHelp": "Assets with available price history",
+      "missing": "Missing symbols",
+      "missingHelp": "Import before full analysis",
+      "allCovered": "All portfolio positions are covered.",
+      "noSymbols": "No portfolio symbols to verify.",
+      "error": "Unable to check Market Data coverage."
+    },
+    "import": {
+      "button": "Import CSV prices",
+      "loading": "Importing",
+      "format": "Expected format",
+      "success": "{rows} rows imported for {symbols}.",
+      "error": "Market Data import failed.",
+      "parseError": "Invalid CSV. Required headers: date,symbol,open,high,low,close,volume."
+    },
     "summary": {
       "asset": "Selected asset",
       "latestPrice": "Latest price",
