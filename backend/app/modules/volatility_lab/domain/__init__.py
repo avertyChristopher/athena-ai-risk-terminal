@@ -1,0 +1,1 @@
+"""Pure volatility lab calculations."""

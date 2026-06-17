@@ -1,1 +1,1 @@
-"""Volatility Lab backend category."""
+"""CFA-style volatility and risk analytics module."""

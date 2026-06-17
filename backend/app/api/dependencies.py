@@ -26,6 +26,8 @@ from app.modules.risk_monitor.repository import RiskMonitorRepository
 from app.modules.risk_monitor.service import RiskMonitorService
 from app.modules.trade_simulator.repository import TradeSimulatorRepository
 from app.modules.trade_simulator.service import TradeSimulatorService
+from app.modules.volatility_lab.repository import VolatilityLabRepository
+from app.modules.volatility_lab.service import VolatilityLabService
 
 
 def get_db_session() -> Generator[Session, None, None]:
@@ -74,6 +76,12 @@ def get_risk_monitor_service(
     db: Session = Depends(get_db_session),
 ) -> RiskMonitorService:
     return RiskMonitorService(RiskMonitorRepository(db))
+
+
+def get_volatility_lab_service(
+    db: Session = Depends(get_db_session),
+) -> VolatilityLabService:
+    return VolatilityLabService(VolatilityLabRepository(db))
 
 
 def get_pricing_service() -> PricingService:
