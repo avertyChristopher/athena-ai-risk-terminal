@@ -43,6 +43,7 @@ export function PortfolioProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
   const [selectedPortfolioId, setSelectedPortfolioId] = useState("");
   const [selectedSymbol, setSelectedSymbol] = useState("");
+  const [autoSelectPortfolio, setAutoSelectPortfolio] = useState(true);
 
   const portfoliosQuery = useQuery({
     queryKey: ["portfolios"],
@@ -66,10 +67,10 @@ export function PortfolioProvider({ children }: PropsWithChildren) {
       (portfolio) => portfolio.id === selectedPortfolioId,
     );
 
-    if (!selectedPortfolioId || !hasSelectedPortfolio) {
+    if (autoSelectPortfolio && (!selectedPortfolioId || !hasSelectedPortfolio)) {
       setSelectedPortfolioId(portfolios[0].id);
     }
-  }, [portfolios, selectedPortfolioId]);
+  }, [autoSelectPortfolio, portfolios, selectedPortfolioId]);
 
   const selectedPortfolio = useMemo(
     () =>
@@ -108,6 +109,7 @@ export function PortfolioProvider({ children }: PropsWithChildren) {
   }, [holdings, selectedSymbol]);
 
   const selectPortfolio = useCallback((portfolioId: string) => {
+    setAutoSelectPortfolio(true);
     setSelectedPortfolioId(portfolioId);
   }, []);
 
@@ -116,6 +118,7 @@ export function PortfolioProvider({ children }: PropsWithChildren) {
   }, []);
 
   const clearSelection = useCallback(() => {
+    setAutoSelectPortfolio(false);
     setSelectedPortfolioId("");
     setSelectedSymbol("");
   }, []);
