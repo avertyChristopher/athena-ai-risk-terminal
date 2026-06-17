@@ -17,7 +17,7 @@ type Kpi = {
 type Module = {
   name: string;
   description: string;
-  status: "Live" | "Demo" | "Beta" | "Coming Soon";
+  status: "Live" | "Connected" | "Demo" | "Beta" | "Coming Soon";
   path: string;
 };
 
@@ -61,8 +61,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "5/12",
-    detail: "Connected workflow online",
+    value: "6/12",
+    detail: "Volatility analytics online",
     tone: "neutral",
   },
 ];
@@ -100,8 +100,8 @@ const modules: Module[] = [
   },
   {
     name: "Volatility Lab",
-    description: "Inspect realized volatility, rolling volatility and distribution behavior.",
-    status: "Coming Soon",
+    description: "Inspect realized volatility, covariance, beta, VaR, CVaR and portfolio risk contribution.",
+    status: "Connected",
     path: "/volatility-lab",
   },
   {
@@ -205,10 +205,22 @@ export function DashboardPage() {
       meta: `${holdings.length} holdings`,
     },
     {
+      name: "Volatility Lab",
+      description: "Measure realized volatility, covariance, beta, VaR and CVaR from the selected context.",
+      path: "/volatility-lab",
+      meta: selectedPortfolioName ? "Portfolio + asset" : workflowSymbol,
+    },
+    {
       name: "Trade Simulator",
       description: "Simulate BUY or SELL tickets against the selected portfolio context.",
       path: "/trade-simulator",
       meta: workflowPortfolioName,
+    },
+    {
+      name: "Risk Monitor",
+      description: "Review limits, stress shocks, risk contribution and benchmark active risk.",
+      path: "/risk-monitor",
+      meta: "Risk controls",
     },
   ];
 
@@ -247,7 +259,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title={t("workflow.connectedWorkflow")}
-        description="One selected portfolio and symbol can now move through market data, equity analysis, portfolio review and pre-trade simulation."
+        description="One selected portfolio and symbol can now move through market data, equity analysis, portfolio review, volatility analytics, pre-trade simulation and risk monitoring."
       >
         <div className="dashboard-workflow-summary">
           <div>
@@ -277,7 +289,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Five connected workstations are active today, with the remaining analytics modules staged for future increments."
+        description="Six connected workstations are active today, with the remaining analytics modules staged for future increments."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (

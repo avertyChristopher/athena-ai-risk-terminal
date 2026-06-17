@@ -558,6 +558,12 @@ select {
   color: var(--success);
 }
 
+.dashboard-module-status--connected {
+  border-color: rgba(69, 111, 156, 0.22);
+  background: rgba(107, 150, 195, 0.13);
+  color: var(--accent-strong);
+}
+
 .dashboard-module-status--beta,
 .dashboard-module-status--demo {
   border-color: rgba(138, 106, 67, 0.22);
