@@ -24,13 +24,12 @@ from app.modules.volatility_lab.domain.covariance import (
 from app.modules.volatility_lab.domain.distribution import distribution_summary
 from app.modules.volatility_lab.domain.downside_risk import (
     downside_deviation,
-    historical_cvar,
-    historical_var,
     max_drawdown_from_returns,
     probability_negative_return,
     semi_deviation,
     semi_variance,
 )
+from app.modules.volatility_lab.domain.ewma import ewma_volatility
 from app.modules.volatility_lab.domain.portfolio_volatility import (
     diversification_benefit,
     portfolio_volatility,
@@ -66,18 +65,31 @@ from app.modules.volatility_lab.domain.volatility import (
     standard_deviation,
     variance,
 )
+from app.modules.volatility_lab.domain.var_models import (
+    historical_cvar,
+    historical_var,
+    monte_carlo_cvar,
+    monte_carlo_var,
+    parametric_cvar,
+    parametric_var,
+)
 from app.modules.volatility_lab.repository import VolatilityLabRepository
 from app.modules.volatility_lab.schemas import (
+    AdvancedModelsStatus,
     AthenaVolatilityCommentary,
     BenchmarkRiskSummary,
     DistributionSummary,
+    DrawdownPoint,
     DownsideRiskSummary,
+    EWMAVolatilitySummary,
     MatrixSummary,
     PortfolioRiskSummary,
     ReturnSummary,
+    RiskMonitorPayload,
     RiskAdjustedSummary,
     RiskContributionItem,
     RollingVolatilityPoint,
+    VarModelSummary,
     VolatilityAssetAnalysisRequest,
     VolatilityAssetAnalysisResponse,
     VolatilityDataSource,
@@ -104,6 +116,9 @@ class VolatilityLabService:
                 "portfolio_covariance",
                 "beta_capm",
                 "historical_var_cvar",
+                "parametric_var_cvar",
+                "ewma_volatility",
+                "risk_monitor_payload",
                 "cfa_commentary",
             ],
         )
@@ -112,6 +127,7 @@ class VolatilityLabService:
         self,
         payload: VolatilityAssetAnalysisRequest,
     ) -> VolatilityAssetAnalysisResponse:
+        self._validate_date_range(payload.start_date, payload.end_date)
         symbol = payload.symbol.upper()
         benchmark_symbol = payload.benchmark_symbol.upper()
         asset_series = self._return_series_for_symbol(
@@ -125,17 +141,21 @@ class VolatilityLabService:
             payload.end_date,
         )
         fallback_used = False
+        asset_fallback_used = False
+        benchmark_fallback_used = False
         warnings = []
 
         if not asset_series:
             asset_series = self._demo_return_series(symbol)
             fallback_used = True
+            asset_fallback_used = True
             warnings.append(
                 f"{symbol}: Market Data return series unavailable; demo assumptions used.",
             )
         if not benchmark_series:
             benchmark_series = self._demo_return_series(benchmark_symbol)
             fallback_used = True
+            benchmark_fallback_used = True
             warnings.append(
                 f"{benchmark_symbol}: benchmark return series unavailable; demo assumptions used.",
             )
@@ -145,6 +165,10 @@ class VolatilityLabService:
         )
         asset_returns = aligned.get(symbol, [])
         benchmark_returns = aligned.get(benchmark_symbol, [])
+        if len(asset_returns) < payload.rolling_window:
+            warnings.append(
+                "Insufficient observations for the selected rolling window.",
+            )
         latest_price = self._latest_price(symbol, payload.start_date, payload.end_date)
         rolling_points = rolling_volatility(
             asset_returns,
@@ -186,6 +210,73 @@ class VolatilityLabService:
             annual_volatility,
             max_drawdown,
         )
+        metric_source = (
+            "deterministic_demo"
+            if asset_fallback_used
+            else "partial_data" if benchmark_fallback_used else "realized_market_data"
+        )
+        data_source = self._data_source(
+            metric_source=metric_source,
+            fallback_used=fallback_used,
+            fallback_reason=(
+                "Market Data return series unavailable or incomplete."
+                if fallback_used
+                else None
+            ),
+            observations=len(asset_returns),
+            symbols_found=[] if asset_fallback_used else [symbol],
+            symbols_missing=[
+                missing_symbol
+                for missing_symbol, missing in [
+                    (symbol, asset_fallback_used),
+                    (benchmark_symbol, benchmark_fallback_used),
+                ]
+                if missing
+            ],
+            warnings=warnings,
+        )
+        volatility_summary = self._volatility_summary(
+            asset_returns,
+            rolling_points,
+            payload.annualization_factor,
+        )
+        downside_summary = self._downside_summary(
+            asset_returns,
+            payload.confidence_level,
+            payload.annualization_factor,
+        )
+        benchmark_risk = BenchmarkRiskSummary(
+            benchmark_symbol=benchmark_symbol,
+            covariance=covariance_value,
+            correlation=correlation_value,
+            beta=beta_value,
+            capm_required_return=capm_return,
+            jensen_alpha=jensen_alpha(
+                asset_returns,
+                benchmark_returns,
+                payload.risk_free_rate,
+                payload.annualization_factor,
+            ),
+            systematic_risk_note=self._beta_note(beta_value),
+            diversification_note=self._correlation_note(correlation_value),
+        )
+        risk_adjusted_summary = self._risk_adjusted(
+            asset_returns,
+            benchmark_returns,
+            beta_value,
+            payload.risk_free_rate,
+            payload.annualization_factor,
+        )
+        ewma_summary = self._ewma_summary(
+            asset_returns,
+            payload.annualization_factor,
+            data_source,
+        )
+        var_summary = self._var_summary(
+            asset_returns,
+            payload.confidence_level,
+            self._stable_seed(symbol),
+        )
 
         return VolatilityAssetAnalysisResponse(
             symbol=symbol,
@@ -197,57 +288,36 @@ class VolatilityLabService:
                 payload.annualization_factor,
                 benchmark_returns,
             ),
-            volatility_summary=self._volatility_summary(
-                asset_returns,
-                rolling_points,
-                payload.annualization_factor,
-            ),
+            volatility_summary=volatility_summary,
             rolling_volatility=[
                 RollingVolatilityPoint.model_validate(point)
                 for point in rolling_points
             ],
-            downside_risk=self._downside_summary(
-                asset_returns,
-                payload.confidence_level,
-                payload.annualization_factor,
-            ),
-            benchmark_risk=BenchmarkRiskSummary(
-                benchmark_symbol=benchmark_symbol,
-                covariance=covariance_value,
-                correlation=correlation_value,
-                beta=beta_value,
-                capm_required_return=capm_return,
-                jensen_alpha=jensen_alpha(
-                    asset_returns,
-                    benchmark_returns,
-                    payload.risk_free_rate,
-                    payload.annualization_factor,
-                ),
-                systematic_risk_note=self._beta_note(beta_value),
-                diversification_note=self._correlation_note(correlation_value),
-            ),
+            drawdown_series=self._drawdown_series(dates, asset_returns),
+            ewma_volatility=ewma_summary,
+            var_models=var_summary,
+            downside_risk=downside_summary,
+            benchmark_risk=benchmark_risk,
             distribution=self._distribution(asset_returns),
-            risk_adjusted=self._risk_adjusted(
-                asset_returns,
-                benchmark_returns,
-                beta_value,
-                payload.risk_free_rate,
-                payload.annualization_factor,
-            ),
+            risk_adjusted=risk_adjusted_summary,
             volatility_regime=VolatilityRegimeSummary.model_validate(regime),
-            data_source=self._data_source(
-                metric_source="deterministic_demo" if fallback_used else "realized_market_data",
-                fallback_used=fallback_used,
-                fallback_reason=(
-                    "Market Data return series unavailable or incomplete."
-                    if fallback_used
-                    else None
-                ),
-                observations=len(asset_returns),
-                symbols_found=[] if fallback_used else [symbol],
-                symbols_missing=[symbol] if fallback_used else [],
-                warnings=warnings,
+            advanced_models=self._advanced_models(),
+            risk_monitor_payload=self._risk_monitor_payload(
+                confidence_level=payload.confidence_level,
+                volatility_summary=volatility_summary,
+                ewma_summary=ewma_summary,
+                var_summary=var_summary,
+                beta_value=beta_value,
+                correlation_value=correlation_value,
+                tracking_error_value=risk_adjusted_summary.tracking_error,
+                risk_adjusted=risk_adjusted_summary,
+                max_drawdown=downside_summary.max_drawdown,
+                risk_contributions=[],
+                covariance_summary=None,
+                correlation_summary=None,
+                data_source=data_source,
             ),
+            data_source=data_source,
             athena_commentary=AthenaVolatilityCommentary(
                 summary=(
                     f"{symbol} annualized return is {asset_annual_return:.1%} "
@@ -266,6 +336,7 @@ class VolatilityLabService:
         self,
         payload: VolatilityPortfolioAnalysisRequest,
     ) -> VolatilityPortfolioAnalysisResponse:
+        self._validate_date_range(payload.start_date, payload.end_date)
         portfolio = self.repository.get_portfolio(payload.portfolio_id)
         if portfolio is None:
             raise HTTPException(status_code=404, detail="Portfolio not found.")
@@ -305,15 +376,29 @@ class VolatilityLabService:
             aligned_returns,
             included_weights,
         )
+        warnings = []
+        if len(portfolio_returns) < payload.rolling_window:
+            warnings.append(
+                "Insufficient observations for the selected rolling window.",
+            )
         benchmark_symbol = payload.benchmark_symbol.upper()
         benchmark_series = self._return_series_for_symbol(
             benchmark_symbol,
             payload.start_date,
             payload.end_date,
-        ) or self._demo_return_series(benchmark_symbol)
+        )
+        benchmark_fallback_used = False
+        if not benchmark_series:
+            benchmark_fallback_used = True
+            fallback_used = True
+            benchmark_series = self._demo_return_series(benchmark_symbol)
+            warnings.append(
+                f"{benchmark_symbol}: benchmark return series unavailable; demo assumptions used.",
+            )
         benchmark_returns = self._align_to_dates(benchmark_series, dates)
         cov_matrix = covariance_matrix(aligned_returns)
         corr_matrix = correlation_matrix(aligned_returns)
+        portfolio_correlation = self._average_off_diagonal(corr_matrix)
         weight_list = [included_weights[symbol] for symbol in included_symbols]
         covariance_based_vol = portfolio_volatility(
             weight_list,
@@ -365,6 +450,71 @@ class VolatilityLabService:
             str(largest_contributor["symbol"]) if largest_contributor else None,
             tracking_error_value,
         )
+        metric_source = (
+            "deterministic_demo"
+            if fallback_used and len(missing_symbols) == len(weights)
+            else "partial_data" if fallback_used else "realized_market_data"
+        )
+        data_source = self._data_source(
+            metric_source=metric_source,
+            fallback_used=fallback_used,
+            fallback_reason=(
+                "Market Data return series unavailable or incomplete."
+                if fallback_used
+                else None
+            ),
+            observations=len(portfolio_returns),
+            symbols_found=included_symbols,
+            symbols_missing=missing_symbols
+            + ([benchmark_symbol] if benchmark_fallback_used else []),
+            warnings=warnings
+            + [
+                "Missing holdings use partial realized coverage or demo fallback."
+                for _ in [0]
+                if missing_symbols
+            ],
+        )
+        volatility_summary = self._volatility_summary(
+            portfolio_returns,
+            rolling_points,
+            payload.annualization_factor,
+        )
+        downside_summary = self._downside_summary(
+            portfolio_returns,
+            payload.confidence_level,
+            payload.annualization_factor,
+        )
+        risk_adjusted_summary = self._risk_adjusted(
+            portfolio_returns,
+            benchmark_returns,
+            portfolio_beta,
+            payload.risk_free_rate,
+            payload.annualization_factor,
+        )
+        ewma_summary = self._ewma_summary(
+            portfolio_returns,
+            payload.annualization_factor,
+            data_source,
+        )
+        var_summary = self._var_summary(
+            portfolio_returns,
+            payload.confidence_level,
+            self._stable_seed(payload.portfolio_id),
+        )
+        risk_contribution_items = [
+            RiskContributionItem.model_validate(item)
+            for item in contributions
+        ]
+        covariance_summary = {
+            "symbols": included_symbols,
+            "matrix_available": bool(cov_matrix),
+            "method": "sample_covariance",
+        }
+        correlation_summary = {
+            "symbols": included_symbols,
+            "matrix_available": bool(corr_matrix),
+            "method": "sample_correlation",
+        }
 
         return VolatilityPortfolioAnalysisResponse(
             portfolio_id=payload.portfolio_id,
@@ -378,20 +528,15 @@ class VolatilityLabService:
                 payload.annualization_factor,
                 benchmark_returns,
             ),
-            volatility_summary=self._volatility_summary(
-                portfolio_returns,
-                rolling_points,
-                payload.annualization_factor,
-            ),
+            volatility_summary=volatility_summary,
             rolling_volatility=[
                 RollingVolatilityPoint.model_validate(point)
                 for point in rolling_points
             ],
-            downside_risk=self._downside_summary(
-                portfolio_returns,
-                payload.confidence_level,
-                payload.annualization_factor,
-            ),
+            drawdown_series=self._drawdown_series(dates, portfolio_returns),
+            ewma_volatility=ewma_summary,
+            var_models=var_summary,
+            downside_risk=downside_summary,
             portfolio_risk=PortfolioRiskSummary(
                 portfolio_volatility=annualized_volatility(
                     portfolio_returns,
@@ -421,40 +566,27 @@ class VolatilityLabService:
                     "positive correlations reduce diversification benefit."
                 ),
             ),
-            risk_contribution=[
-                RiskContributionItem.model_validate(item)
-                for item in contributions
-            ],
+            risk_contribution=risk_contribution_items,
             distribution=self._distribution(portfolio_returns),
-            risk_adjusted=self._risk_adjusted(
-                portfolio_returns,
-                benchmark_returns,
-                portfolio_beta,
-                payload.risk_free_rate,
-                payload.annualization_factor,
-            ),
+            risk_adjusted=risk_adjusted_summary,
             volatility_regime=VolatilityRegimeSummary.model_validate(regime),
-            data_source=self._data_source(
-                metric_source=(
-                    "deterministic_demo"
-                    if fallback_used and len(missing_symbols) == len(weights)
-                    else "partial_data" if fallback_used else "realized_market_data"
-                ),
-                fallback_used=fallback_used,
-                fallback_reason=(
-                    "Market Data return series unavailable or incomplete."
-                    if fallback_used
-                    else None
-                ),
-                observations=len(portfolio_returns),
-                symbols_found=included_symbols,
-                symbols_missing=missing_symbols,
-                warnings=[
-                    "Missing holdings use partial realized coverage or demo fallback."
-                    for _ in [0]
-                    if fallback_used
-                ],
+            advanced_models=self._advanced_models(),
+            risk_monitor_payload=self._risk_monitor_payload(
+                confidence_level=payload.confidence_level,
+                volatility_summary=volatility_summary,
+                ewma_summary=ewma_summary,
+                var_summary=var_summary,
+                beta_value=portfolio_beta,
+                correlation_value=portfolio_correlation,
+                tracking_error_value=tracking_error_value,
+                risk_adjusted=risk_adjusted_summary,
+                max_drawdown=downside_summary.max_drawdown,
+                risk_contributions=risk_contribution_items,
+                covariance_summary=covariance_summary,
+                correlation_summary=correlation_summary,
+                data_source=data_source,
             ),
+            data_source=data_source,
             athena_commentary=AthenaVolatilityCommentary(
                 summary=(
                     f"{portfolio['name']} volatility analysis uses "
@@ -511,6 +643,148 @@ class VolatilityLabService:
     ) -> float | None:
         rows = self._filtered_price_rows(symbol, start_date, end_date)
         return float(rows[-1]["close"]) if rows else None
+
+    def _validate_date_range(
+        self,
+        start_date: str | None,
+        end_date: str | None,
+    ) -> None:
+        if start_date and end_date and start_date > end_date:
+            raise HTTPException(
+                status_code=422,
+                detail="start_date cannot be after end_date.",
+            )
+
+    def _drawdown_series(
+        self,
+        dates: list[str],
+        returns: list[float],
+    ) -> list[DrawdownPoint]:
+        wealth = 1.0
+        peak = 1.0
+        points = []
+        for point_date, point_return in zip(dates, returns):
+            wealth *= 1.0 + point_return
+            peak = max(peak, wealth)
+            points.append(
+                DrawdownPoint(
+                    date=point_date,
+                    drawdown=(wealth / peak) - 1.0,
+                ),
+            )
+        return points
+
+    def _ewma_summary(
+        self,
+        returns: list[float],
+        annualization_factor: int,
+        data_source: VolatilityDataSource,
+    ) -> EWMAVolatilitySummary:
+        summary = ewma_volatility(
+            returns,
+            lambda_decay=0.94,
+            annualization_factor=annualization_factor,
+        )
+        if data_source.metric_source == "partial_data":
+            summary["metric_source"] = "partial_data"
+            summary["badge"] = "Partial Data"
+        elif data_source.fallback_used:
+            summary["metric_source"] = "deterministic_demo"
+            summary["badge"] = "Demo assumptions"
+        return EWMAVolatilitySummary.model_validate(summary)
+
+    def _var_summary(
+        self,
+        returns: list[float],
+        confidence_level: float,
+        seed: int,
+    ) -> VarModelSummary:
+        has_observations = bool(returns)
+        return VarModelSummary(
+            confidence_level=confidence_level,
+            historical_var=historical_var(returns, confidence_level),
+            historical_cvar=historical_cvar(returns, confidence_level),
+            parametric_var=parametric_var(returns, confidence_level),
+            parametric_cvar=parametric_cvar(returns, confidence_level),
+            monte_carlo_var=monte_carlo_var(returns, confidence_level, seed=seed)
+            if has_observations
+            else None,
+            monte_carlo_cvar=monte_carlo_cvar(returns, confidence_level, seed=seed)
+            if has_observations
+            else None,
+            monte_carlo_status=(
+                "Demo Monte Carlo with deterministic normal-return simulation."
+                if has_observations
+                else "Monte Carlo VaR requires return observations."
+            ),
+            parametric_assumption=(
+                "Parametric VaR assumes normally distributed returns."
+            ),
+            monte_carlo_method=(
+                "Deterministic seeded simulation using historical mean and "
+                "sample volatility."
+            ),
+        )
+
+    def _advanced_models(self) -> AdvancedModelsStatus:
+        return AdvancedModelsStatus(
+            ewma="available",
+            garch="planned",
+            implied_volatility="requires_options_data",
+            volatility_surface="requires_options_chain",
+            options_implied_skew="requires_options_chain",
+        )
+
+    def _risk_monitor_payload(
+        self,
+        *,
+        confidence_level: float,
+        volatility_summary: VolatilitySummary,
+        ewma_summary: EWMAVolatilitySummary,
+        var_summary: VarModelSummary,
+        beta_value: float,
+        correlation_value: float,
+        tracking_error_value: float | None,
+        risk_adjusted: RiskAdjustedSummary,
+        max_drawdown: float,
+        risk_contributions: list[RiskContributionItem],
+        covariance_summary: dict[str, Any] | None,
+        correlation_summary: dict[str, Any] | None,
+        data_source: VolatilityDataSource,
+    ) -> RiskMonitorPayload:
+        return RiskMonitorPayload(
+            confidence_level=confidence_level,
+            annualized_volatility=volatility_summary.annualized_volatility,
+            ewma_volatility=ewma_summary.latest_volatility,
+            historical_var=var_summary.historical_var,
+            historical_cvar=var_summary.historical_cvar,
+            parametric_var=var_summary.parametric_var,
+            parametric_cvar=var_summary.parametric_cvar,
+            beta=beta_value,
+            correlation=correlation_value,
+            tracking_error=tracking_error_value,
+            sharpe_ratio=risk_adjusted.sharpe_ratio,
+            sortino_ratio=risk_adjusted.sortino_ratio,
+            max_drawdown=max_drawdown,
+            risk_contribution=risk_contributions,
+            covariance_summary=covariance_summary,
+            correlation_summary=correlation_summary,
+            data_source=data_source,
+            missing_symbols=data_source.symbols_missing,
+            fallback_used=data_source.fallback_used,
+        )
+
+    def _stable_seed(self, value: str) -> int:
+        return sum(ord(character) for character in value.upper()) + 42
+
+    def _average_off_diagonal(self, matrix: list[list[float]]) -> float:
+        values = [
+            matrix[row][column]
+            for row in range(len(matrix))
+            for column in range(len(matrix[row]))
+            if row != column
+        ]
+        return sum(values) / len(values) if values else 0.0
 
     def _demo_return_series(self, symbol: str) -> list[dict[str, object]]:
         seed = sum(ord(character) for character in symbol.upper())

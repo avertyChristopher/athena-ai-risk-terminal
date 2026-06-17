@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -57,6 +59,34 @@ class VolatilitySummary(BaseModel):
 class RollingVolatilityPoint(BaseModel):
     date: str
     volatility: float
+
+
+class DrawdownPoint(BaseModel):
+    date: str
+    drawdown: float
+
+
+class EWMAVolatilitySummary(BaseModel):
+    latest_volatility: float | None
+    lambda_decay: float
+    annualization_factor: int
+    observations: int
+    metric_source: str
+    badge: str
+    explanation: str
+
+
+class VarModelSummary(BaseModel):
+    confidence_level: float
+    historical_var: float
+    historical_cvar: float
+    parametric_var: float
+    parametric_cvar: float
+    monte_carlo_var: float | None
+    monte_carlo_cvar: float | None
+    monte_carlo_status: str
+    parametric_assumption: str
+    monte_carlo_method: str
 
 
 class DownsideRiskSummary(BaseModel):
@@ -132,6 +162,36 @@ class RiskContributionItem(BaseModel):
     contribution: float
 
 
+class AdvancedModelsStatus(BaseModel):
+    ewma: str
+    garch: str
+    implied_volatility: str
+    volatility_surface: str
+    options_implied_skew: str
+
+
+class RiskMonitorPayload(BaseModel):
+    confidence_level: float
+    annualized_volatility: float
+    ewma_volatility: float | None
+    historical_var: float
+    historical_cvar: float
+    parametric_var: float
+    parametric_cvar: float
+    beta: float
+    correlation: float
+    tracking_error: float | None
+    sharpe_ratio: float | None
+    sortino_ratio: float | None
+    max_drawdown: float
+    risk_contribution: list[RiskContributionItem]
+    covariance_summary: dict[str, Any] | None
+    correlation_summary: dict[str, Any] | None
+    data_source: VolatilityDataSource
+    missing_symbols: list[str]
+    fallback_used: bool
+
+
 class PortfolioRiskSummary(BaseModel):
     portfolio_volatility: float
     covariance_based_volatility: float
@@ -156,11 +216,16 @@ class VolatilityAssetAnalysisResponse(BaseModel):
     return_summary: ReturnSummary
     volatility_summary: VolatilitySummary
     rolling_volatility: list[RollingVolatilityPoint]
+    drawdown_series: list[DrawdownPoint]
+    ewma_volatility: EWMAVolatilitySummary
+    var_models: VarModelSummary
     downside_risk: DownsideRiskSummary
     benchmark_risk: BenchmarkRiskSummary
     distribution: DistributionSummary
     risk_adjusted: RiskAdjustedSummary
     volatility_regime: VolatilityRegimeSummary
+    advanced_models: AdvancedModelsStatus
+    risk_monitor_payload: RiskMonitorPayload
     data_source: VolatilityDataSource
     athena_commentary: AthenaVolatilityCommentary
 
@@ -174,6 +239,9 @@ class VolatilityPortfolioAnalysisResponse(BaseModel):
     return_summary: ReturnSummary
     volatility_summary: VolatilitySummary
     rolling_volatility: list[RollingVolatilityPoint]
+    drawdown_series: list[DrawdownPoint]
+    ewma_volatility: EWMAVolatilitySummary
+    var_models: VarModelSummary
     downside_risk: DownsideRiskSummary
     portfolio_risk: PortfolioRiskSummary
     covariance_matrix: MatrixSummary
@@ -182,5 +250,7 @@ class VolatilityPortfolioAnalysisResponse(BaseModel):
     distribution: DistributionSummary
     risk_adjusted: RiskAdjustedSummary
     volatility_regime: VolatilityRegimeSummary
+    advanced_models: AdvancedModelsStatus
+    risk_monitor_payload: RiskMonitorPayload
     data_source: VolatilityDataSource
     athena_commentary: AthenaVolatilityCommentary
