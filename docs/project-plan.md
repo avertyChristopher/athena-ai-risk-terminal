@@ -35,6 +35,40 @@ The goal is to build a serious GitHub project that can be shown on a resume, Lin
 
 # 2. Current Status / État actuel
 
+## Current implementation snapshot / Snapshot actuel
+
+The project has moved beyond the original repository-initialization phase. The
+current working foundation includes:
+
+- FastAPI backend with module-based architecture for Market Data, Equity
+  Analysis, Portfolio Builder, Risk Monitor and Trade Simulator.
+- React/TypeScript/Vite frontend with pages for `/market-data`,
+  `/equity-analysis`, `/portfolio-builder`, `/risk-monitor` and
+  `/trade-simulator`.
+- SQLite persistence through SQLAlchemy for portfolios, positions and imported
+  Market Data rows.
+- Editable Athena Demo Portfolio positions.
+- Shared frontend portfolio context with selected portfolio/symbol persisted in
+  localStorage.
+- Cross-module workflow actions from portfolio positions into Market Data,
+  Equity Analysis and Trade Simulator.
+- Market Data portfolio coverage checks and CSV price import workflow.
+- Risk Monitor connected to the selected portfolio with configurable limits and
+  stress shocks.
+- Equity Analysis analyst scorecard derived from existing valuation,
+  profitability, growth, quality and risk metrics.
+- Backend pytest and frontend production build currently used as validation
+  gates.
+
+Immediate project phase:
+
+```text
+Phase: integrated demo platform hardening
+```
+
+The historical phase plan below remains useful as a roadmap reference, but the
+implementation is now ahead of the initial Phase 0/Phase 1 text.
+
 ## Français
 
 Tu es actuellement au début du projet.

@@ -8,6 +8,52 @@
 
 ---
 
+# Current Implementation Snapshot / Snapshot d'implementation actuel
+
+As of the current refactor, Athena is no longer only a planned architecture. It
+has a working FastAPI backend, a React/TypeScript frontend and a progressive
+module-based backend migration.
+
+Implemented module architecture:
+
+```text
+backend/app/modules/
+|-- market_data/
+|-- equity_analysis/
+|-- portfolio_builder/
+|-- risk_monitor/
+|-- trade_simulator/
+`-- risk_analytics/
+```
+
+Current persistence model:
+
+```text
+SQLite via SQLAlchemy session
+|-- portfolio_builder_portfolios
+|-- portfolio_builder_positions
+|-- market_data_custom_assets
+`-- market_data_custom_prices
+```
+
+Current connected frontend workflow:
+
+```text
+Portfolio Context
+|-- selected portfolio
+|-- selected symbol
+|-- editable demo positions
+|-- localStorage UI preference persistence
+`-- cross-module navigation into Market Data, Equity Analysis, Trade Simulator and Risk Monitor
+```
+
+Important boundary: routes, schemas, services, repositories and domain logic for
+new or migrated product modules should live inside `backend/app/modules/<module>`.
+Shared infrastructure such as config, database session and API dependency wiring
+stays centralized.
+
+---
+
 # 1. Architecture Goal / Objectif de l’architecture
 
 ## English
@@ -348,6 +394,7 @@ backend/app/modules/
 │   ├── schemas.py
 │   ├── service.py
 │   ├── repository.py
+│   ├── provider/
 │   └── domain/
 ├── equity_analysis/
 │   ├── routes.py
@@ -355,12 +402,27 @@ backend/app/modules/
 │   ├── service.py
 │   ├── repository.py
 │   └── domain/
-└── portfolio_builder/
-    ├── routes.py
+├── portfolio_builder/
+│   ├── routes.py
+│   ├── schemas.py
+│   ├── service.py
+│   ├── repository.py
+│   └── domain/
+├── risk_monitor/
+│   ├── routes.py
+│   ├── schemas.py
+│   ├── service.py
+│   ├── repository.py
+│   └── domain/
+├── trade_simulator/
+│   ├── routes.py
+│   ├── schemas.py
+│   ├── service.py
+│   ├── repository.py
+│   └── domain/
+└── risk_analytics/
     ├── schemas.py
-    ├── service.py
-    ├── repository.py
-    └── domain/
+    └── service.py
 ```
 
 For migrated modules, the module folder is the source of truth. Do not recreate
@@ -374,6 +436,8 @@ backend/app/core/
 backend/app/database/
 backend/app/models/
 backend/app/api/dependencies.py
+backend/app/repositories/persistent_portfolio_store.py
+backend/app/repositories/persistent_market_data_store.py
 ```
 
 Some non-migrated features still use the older global layout. They should be
@@ -397,6 +461,9 @@ backend/
 │   │   ├── market_data/
 │   │   ├── equity_analysis/
 │   │   ├── portfolio_builder/
+│   │   ├── risk_monitor/
+│   │   ├── trade_simulator/
+│   │   ├── risk_analytics/
 │   │   └── <future_feature_module>/
 │   ├── repositories/
 │   ├── schemas/
