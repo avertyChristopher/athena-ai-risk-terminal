@@ -97,4 +97,8 @@ export const endpoints = {
   riskMonitorStatus: "/api/risk-monitor/status",
   riskMonitorAnalyze: "/api/risk-monitor/analyze",
   riskMonitorDemo: "/api/risk-monitor/demo",
+  volatilityLabStatus: "/api/volatility-lab/status",
+  volatilityLabAnalyzeAsset: "/api/volatility-lab/analyze-asset",
+  volatilityLabAnalyzePortfolio: "/api/volatility-lab/analyze-portfolio",
+  volatilityLabDemo: "/api/volatility-lab/demo",
 } as const;

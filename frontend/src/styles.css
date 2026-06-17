@@ -2193,6 +2193,112 @@ ul.portfolio-note-list {
   color: var(--muted);
 }
 
+.volatility-lab-page {
+  display: grid;
+  gap: 20px;
+}
+
+.volatility-lab-control-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  gap: 14px;
+}
+
+.volatility-lab-parameter-panel {
+  min-height: 100%;
+}
+
+.volatility-lab-mode-toggle {
+  min-width: min(360px, 100%);
+}
+
+.volatility-lab-notice {
+  align-items: flex-start;
+}
+
+.volatility-chart {
+  display: grid;
+  grid-template-columns: repeat(30, minmax(8px, 1fr));
+  align-items: end;
+  gap: 6px;
+  min-height: 220px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background:
+    linear-gradient(180deg, rgba(107, 150, 195, 0.08), transparent 42%),
+    rgba(255, 255, 255, 0.62);
+}
+
+.volatility-chart__column {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  align-items: end;
+}
+
+.volatility-chart__bar {
+  display: block;
+  width: 100%;
+  min-height: 8px;
+  border: 1px solid rgba(69, 111, 156, 0.22);
+  border-radius: 5px 5px 2px 2px;
+  background:
+    linear-gradient(180deg, rgba(107, 150, 195, 0.9), rgba(138, 106, 67, 0.62));
+  box-shadow: 0 8px 16px rgba(54, 73, 95, 0.08);
+}
+
+.volatility-histogram {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.volatility-histogram__row {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 44px;
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.volatility-histogram__row > div {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(107, 150, 195, 0.12);
+}
+
+.volatility-histogram__row > div span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--warm-brown));
+}
+
+.volatility-histogram__row strong {
+  color: var(--text);
+  text-align: right;
+}
+
+.volatility-lab-table {
+  min-width: 620px;
+}
+
+.volatility-matrix-table {
+  min-width: 760px;
+}
+
+.volatility-regime-panel > strong {
+  color: var(--text);
+  font-size: 1.2rem;
+}
+
+.volatility-lab-commentary-grid .risk-monitor-driver-list {
+  align-content: start;
+}
+
 .portfolio-form,
 .details-panel,
 .table-section,
@@ -3681,6 +3787,7 @@ ul.portfolio-note-list {
   .trade-two-column,
   .trade-commentary-grid,
   .risk-monitor-command-panel,
+  .volatility-lab-control-layout,
   .risk-monitor-overview-grid,
   .risk-monitor-two-column,
   .risk-monitor-commentary-grid {
@@ -3841,6 +3948,7 @@ ul.portfolio-note-list {
   .risk-monitor-mini-grid,
   .risk-monitor-alert-grid,
   .risk-monitor-breach-grid,
+  .volatility-lab-control-layout,
   .market-data-coverage-grid,
   .risk-monitor-control-groups,
   .risk-monitor-control-grid,
@@ -3855,11 +3963,17 @@ ul.portfolio-note-list {
   .risk-monitor-section-card__header,
   .risk-monitor-command-panel,
   .risk-monitor-controls-panel__header,
+  .volatility-histogram__row,
   .market-data-coverage-panel__header,
   .equity-analyst-scorecard__header,
   .equity-analyst-scorecard__footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .volatility-histogram__row {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   .portfolio-section-card__aside,
