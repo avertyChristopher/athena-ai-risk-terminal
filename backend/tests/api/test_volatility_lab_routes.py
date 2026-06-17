@@ -58,6 +58,7 @@ def test_volatility_lab_analyze_portfolio_returns_covariance_metrics() -> None:
     assert body["holdings_included"]
     assert body["return_summary"]["observations"] > 0
     assert body["portfolio_risk"]["covariance_based_volatility"] > 0
+    assert body["rolling_volatility"]
     assert body["covariance_matrix"]["symbols"]
     assert body["correlation_matrix"]["matrix"]
     assert body["risk_contribution"]

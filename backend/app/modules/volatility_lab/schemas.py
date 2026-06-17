@@ -173,6 +173,7 @@ class VolatilityPortfolioAnalysisResponse(BaseModel):
     holdings_missing: list[str]
     return_summary: ReturnSummary
     volatility_summary: VolatilitySummary
+    rolling_volatility: list[RollingVolatilityPoint]
     downside_risk: DownsideRiskSummary
     portfolio_risk: PortfolioRiskSummary
     covariance_matrix: MatrixSummary

@@ -383,6 +383,10 @@ class VolatilityLabService:
                 rolling_points,
                 payload.annualization_factor,
             ),
+            rolling_volatility=[
+                RollingVolatilityPoint.model_validate(point)
+                for point in rolling_points
+            ],
             downside_risk=self._downside_summary(
                 portfolio_returns,
                 payload.confidence_level,
