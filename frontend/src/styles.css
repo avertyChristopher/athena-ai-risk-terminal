@@ -541,6 +541,32 @@ select {
   color: var(--muted);
 }
 
+.dashboard-module-features {
+  display: grid;
+  gap: 5px;
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.dashboard-module-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.dashboard-module-badges span {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--accent-strong);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
 .dashboard-module-card > strong {
   color: var(--accent-strong);
   font-size: 0.9rem;
@@ -2303,6 +2329,172 @@ ul.portfolio-note-list {
 
 .volatility-lab-commentary-grid .risk-monitor-driver-list {
   align-content: start;
+}
+
+.volatility-lab-command-actions,
+.volatility-lab-export-actions,
+.volatility-lab-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.volatility-lab-command-actions {
+  display: grid;
+  justify-items: end;
+}
+
+.volatility-lab-window-buttons {
+  display: inline-flex;
+  width: fit-content;
+  gap: 6px;
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.volatility-lab-window-buttons button {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 7px 12px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.volatility-lab-window-buttons button.is-active {
+  border-color: var(--border-strong);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.volatility-lab-filter-actions {
+  margin-top: 12px;
+  justify-content: flex-start;
+}
+
+.volatility-lab-filter-messages {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.volatility-lab-filter-messages p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.volatility-lab-disclaimer {
+  margin: 0;
+  border: 1px solid rgba(138, 106, 67, 0.18);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(138, 106, 67, 0.08);
+  color: var(--warm-brown-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.volatility-drawdown-panel {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  border: 1px solid rgba(176, 58, 72, 0.14);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(176, 58, 72, 0.05);
+}
+
+.volatility-drawdown-panel > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.volatility-drawdown-panel strong {
+  color: var(--danger);
+}
+
+.volatility-drawdown-chart {
+  display: grid;
+  grid-template-columns: repeat(30, minmax(8px, 1fr));
+  align-items: start;
+  gap: 6px;
+  min-height: 120px;
+  border-top: 1px solid rgba(176, 58, 72, 0.18);
+  padding-top: 8px;
+}
+
+.volatility-drawdown-chart span {
+  display: block;
+  min-height: 6px;
+  border-radius: 2px 2px 5px 5px;
+  background: linear-gradient(180deg, rgba(176, 58, 72, 0.52), rgba(138, 106, 67, 0.32));
+}
+
+.volatility-lab-link-panel .button {
+  width: fit-content;
+}
+
+.risk-monitor-contribution-list > div {
+  position: relative;
+  overflow: hidden;
+}
+
+.risk-monitor-contribution-list > div::before {
+  position: absolute;
+  inset: 0;
+  width: calc(var(--contribution-width, 0) * 100%);
+  max-width: 100%;
+  background: rgba(107, 150, 195, 0.08);
+  content: "";
+}
+
+.risk-monitor-contribution-list > div > * {
+  position: relative;
+}
+
+.volatility-print-report {
+  display: none;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  .sidebar,
+  .topbar,
+  .page-header,
+  .volatility-lab-command-panel,
+  .volatility-lab-controls-panel,
+  .volatility-lab-notice,
+  .risk-monitor-kpi-grid,
+  .risk-monitor-tabs,
+  .risk-monitor-panel {
+    display: none !important;
+  }
+
+  .volatility-print-report {
+    display: grid;
+    gap: 16px;
+    color: #13253a;
+    padding: 24px;
+  }
+
+  .volatility-print-report h1 {
+    margin: 0;
+    font-size: 24px;
+  }
 }
 
 .portfolio-form,

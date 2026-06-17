@@ -1,5 +1,6 @@
+import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { MoneyValue } from "../../../components/finance/MoneyValue";
@@ -22,6 +23,7 @@ import type { PositionRead } from "../../../types/portfolio";
 import type {
   AthenaVolatilityCommentary,
   BenchmarkRiskSummary,
+  DrawdownPoint,
   DistributionSummary,
   DownsideRiskSummary,
   MatrixSummary,
@@ -37,6 +39,11 @@ import type {
   VolatilityRegimeSummary,
   VolatilitySummary,
 } from "../../../types/volatility";
+import { exportCsv, type CsvRow } from "../../../utils/exportCsv";
+import {
+  useVolatilityLabPreferences,
+  type VolatilityVarMethod,
+} from "../hooks/useVolatilityLabPreferences";
 
 type AnalysisMode = "asset" | "portfolio";
 type VolatilityTab =
@@ -46,6 +53,9 @@ type VolatilityTab =
   | "downside"
   | "benchmark"
   | "portfolio"
+  | "riskAdjusted"
+  | "dataQuality"
+  | "advanced"
   | "commentary";
 
 type BadgeVariant = "neutral" | "info" | "success" | "warning" | "danger";
@@ -57,11 +67,19 @@ const volatilityTabs: VolatilityTab[] = [
   "downside",
   "benchmark",
   "portfolio",
+  "riskAdjusted",
+  "dataQuality",
+  "advanced",
   "commentary",
 ];
 
 export function VolatilityLabPage() {
   const { t } = useTranslation();
+  const {
+    preferences,
+    resetPreferences,
+    updatePreferences,
+  } = useVolatilityLabPreferences();
   const {
     holdings,
     selectedHolding,
@@ -71,17 +89,28 @@ export function VolatilityLabPage() {
     selectPortfolio,
     selectSymbol,
   } = usePortfolioContext();
-  const [analysisMode, setAnalysisMode] = useState<AnalysisMode>("portfolio");
+  const [analysisMode, setAnalysisMode] = useState<AnalysisMode>(
+    preferences.analysisMode,
+  );
   const [symbolSelectionMode, setSymbolSelectionMode] =
     useState<SymbolSelectionMode>("portfolio");
-  const [selectedSymbol, setSelectedSymbol] = useState(workflowSymbol || "AAPL");
-  const [benchmarkSymbol, setBenchmarkSymbol] = useState(
-    selectedPortfolio?.benchmark || "SPY",
+  const [selectedSymbol, setSelectedSymbol] = useState(
+    workflowSymbol || preferences.selectedSymbol,
   );
-  const [rollingWindow, setRollingWindow] = useState(20);
-  const [confidenceLevel, setConfidenceLevel] = useState(0.95);
-  const [riskFreeRate, setRiskFreeRate] = useState(0.02);
+  const [benchmarkSymbol, setBenchmarkSymbol] = useState(
+    selectedPortfolio?.benchmark || preferences.benchmarkSymbol,
+  );
+  const [rollingWindow, setRollingWindow] = useState(preferences.rollingWindow);
+  const [confidenceLevel, setConfidenceLevel] = useState(
+    preferences.confidenceLevel,
+  );
+  const [riskFreeRate, setRiskFreeRate] = useState(preferences.riskFreeRate);
+  const [startDate, setStartDate] = useState(preferences.startDate);
+  const [endDate, setEndDate] = useState(preferences.endDate);
+  const [selectedVarMethod, setSelectedVarMethod] =
+    useState<VolatilityVarMethod>(preferences.selectedVarMethod);
   const [activeTab, setActiveTab] = useState<VolatilityTab>("overview");
+  const [preferenceMessage, setPreferenceMessage] = useState("");
 
   const statusQuery = useQuery({
     queryKey: ["volatility-lab-status"],
@@ -119,6 +148,16 @@ export function VolatilityLabPage() {
         .join("|"),
     [holdings],
   );
+  const dateRangeInvalid = Boolean(startDate && endDate && startDate > endDate);
+  const dateRangeTooShort = useMemo(() => {
+    if (!startDate || !endDate || dateRangeInvalid) {
+      return false;
+    }
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const days = Math.ceil((end.getTime() - start.getTime()) / 86400000);
+    return days < Math.max(rollingWindow + 1, 5);
+  }, [dateRangeInvalid, endDate, rollingWindow, startDate]);
 
   useEffect(() => {
     if (workflowSymbol && workflowSymbol !== selectedSymbol) {
@@ -131,6 +170,40 @@ export function VolatilityLabPage() {
       setBenchmarkSymbol(selectedPortfolio.benchmark);
     }
   }, [selectedPortfolio?.benchmark]);
+
+  useEffect(() => {
+    if (preferences.selectedPortfolioId && !selectedPortfolioId) {
+      selectPortfolio(preferences.selectedPortfolioId);
+    }
+  }, [preferences.selectedPortfolioId, selectPortfolio, selectedPortfolioId]);
+
+  useEffect(() => {
+    updatePreferences({
+      analysisMode,
+      selectedSymbol,
+      selectedPortfolioId: selectedPortfolio?.id ?? selectedPortfolioId,
+      benchmarkSymbol,
+      rollingWindow,
+      confidenceLevel,
+      riskFreeRate,
+      startDate,
+      endDate,
+      selectedVarMethod,
+    });
+    setPreferenceMessage(t("volatilityLab.preferences.saved"));
+  }, [
+    analysisMode,
+    benchmarkSymbol,
+    confidenceLevel,
+    endDate,
+    riskFreeRate,
+    rollingWindow,
+    selectedPortfolio?.id,
+    selectedPortfolioId,
+    selectedSymbol,
+    selectedVarMethod,
+    startDate,
+  ]);
 
   useEffect(() => {
     if (!selectedPortfolioId && holdings.length === 0) {
@@ -148,18 +221,23 @@ export function VolatilityLabPage() {
       rollingWindow,
       confidenceLevel,
       riskFreeRate,
+      startDate,
+      endDate,
       holdingsSignature,
     ],
     enabled:
-      analysisMode === "asset"
+      !dateRangeInvalid &&
+      (analysisMode === "asset"
         ? Boolean(selectedSymbol.trim())
-        : Boolean(selectedPortfolio?.id),
+        : Boolean(selectedPortfolio?.id)),
     queryFn: () => {
       const sharedPayload = {
         benchmark_symbol: benchmarkSymbol.trim().toUpperCase() || "SPY",
         rolling_window: rollingWindow,
         confidence_level: confidenceLevel,
         risk_free_rate: riskFreeRate,
+        start_date: startDate || null,
+        end_date: endDate || null,
       };
 
       if (analysisMode === "asset") {
@@ -197,6 +275,15 @@ export function VolatilityLabPage() {
     : analysisMode === "portfolio"
       ? selectedPortfolio?.name ?? t("workflow.noPortfolio")
       : selectedSymbol.toUpperCase();
+  const insufficientObservations = Boolean(
+    analysis && analysis.return_summary.observations < rollingWindow,
+  );
+  const dateRangeLabel =
+    startDate || endDate
+      ? `${startDate || t("volatilityLab.controls.openStart")} / ${
+          endDate || t("volatilityLab.controls.openEnd")
+        }`
+      : t("volatilityLab.controls.defaultRange");
 
   function handleSymbolChange(
     symbol: string,
@@ -209,6 +296,35 @@ export function VolatilityLabPage() {
     if (isPositionRead(source)) {
       setBenchmarkSymbol(selectedPortfolio?.benchmark ?? benchmarkSymbol);
     }
+  }
+
+  function handleResetFilters() {
+    setStartDate("");
+    setEndDate("");
+    setRollingWindow(20);
+    setConfidenceLevel(0.95);
+    setRiskFreeRate(0.02);
+    setSelectedVarMethod("historical");
+    setPreferenceMessage(t("volatilityLab.preferences.reset"));
+  }
+
+  function handleResetPreferences() {
+    resetPreferences();
+    setAnalysisMode("portfolio");
+    setSelectedSymbol("AAPL");
+    setBenchmarkSymbol(selectedPortfolio?.benchmark || "SPY");
+    handleResetFilters();
+  }
+
+  function handleExportCsv() {
+    if (!analysis) {
+      return;
+    }
+    exportCsv(buildCsvFilename(analysis), buildVolatilityCsvRows(analysis));
+  }
+
+  function handlePrintReport() {
+    window.print();
   }
 
   return (
@@ -224,20 +340,46 @@ export function VolatilityLabPage() {
           <h2>{t("volatilityLab.workbench.title")}</h2>
           <p>{t("volatilityLab.workbench.description")}</p>
         </div>
-        <div className="risk-monitor-badge-cluster">
-          <VolatilityStatusBadge
-            label={statusQuery.data?.status ?? t("common.loading")}
-            variant={statusQuery.data?.status === "ready" ? "success" : "warning"}
-          />
-          {(analysis?.data_source.badges ?? [
-            t("volatilityLab.badges.awaitingAnalysis"),
-          ]).map((badge) => (
+        <div className="volatility-lab-command-actions">
+          <div className="risk-monitor-badge-cluster">
             <VolatilityStatusBadge
-              key={badge}
-              label={translateSourceBadge(badge, t)}
-              variant={sourceBadgeVariant(badge)}
+              label={statusQuery.data?.status ?? t("common.loading")}
+              variant={statusQuery.data?.status === "ready" ? "success" : "warning"}
             />
-          ))}
+            <VolatilityStatusBadge
+              label={`${t("volatilityLab.dataSource.observations")}: ${
+                analysis?.return_summary.observations ?? "--"
+              }`}
+              variant={insufficientObservations ? "warning" : "info"}
+            />
+            {(analysis?.data_source.badges ?? [
+              t("volatilityLab.badges.awaitingAnalysis"),
+            ]).map((badge) => (
+              <VolatilityStatusBadge
+                key={badge}
+                label={translateSourceBadge(badge, t)}
+                variant={sourceBadgeVariant(badge)}
+              />
+            ))}
+          </div>
+          <div className="volatility-lab-export-actions">
+            <button
+              className="button button--ghost"
+              disabled={!analysis}
+              type="button"
+              onClick={handleExportCsv}
+            >
+              {t("volatilityLab.exports.csv")}
+            </button>
+            <button
+              className="button button--primary"
+              disabled={!analysis}
+              type="button"
+              onClick={handlePrintReport}
+            >
+              {t("volatilityLab.exports.report")}
+            </button>
+          </div>
         </div>
       </section>
 
@@ -320,6 +462,22 @@ export function VolatilityLabPage() {
                 />
               </label>
               <label className="form-field">
+                <span>{t("volatilityLab.controls.startDate")}</span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(event) => setStartDate(event.target.value)}
+                />
+              </label>
+              <label className="form-field">
+                <span>{t("volatilityLab.controls.endDate")}</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(event) => setEndDate(event.target.value)}
+                />
+              </label>
+              <label className="form-field">
                 <span>{t("volatilityLab.controls.confidence")}</span>
                 <input
                   max={99}
@@ -349,6 +507,82 @@ export function VolatilityLabPage() {
                   }
                 />
               </label>
+              <label className="form-field">
+                <span>{t("volatilityLab.controls.varMethod")}</span>
+                <select
+                  value={selectedVarMethod}
+                  onChange={(event) =>
+                    setSelectedVarMethod(event.target.value as VolatilityVarMethod)
+                  }
+                >
+                  <option value="historical">
+                    {t("volatilityLab.varMethods.historical")}
+                  </option>
+                  <option value="parametric">
+                    {t("volatilityLab.varMethods.parametric")}
+                  </option>
+                  <option value="monte_carlo">
+                    {t("volatilityLab.varMethods.monteCarlo")}
+                  </option>
+                </select>
+              </label>
+            </div>
+            <div className="volatility-lab-window-buttons" role="group">
+              {[20, 60, 120].map((windowValue) => (
+                <button
+                  className={rollingWindow === windowValue ? "is-active" : ""}
+                  key={windowValue}
+                  type="button"
+                  onClick={() => setRollingWindow(windowValue)}
+                >
+                  {windowValue}
+                </button>
+              ))}
+            </div>
+            <div className="volatility-lab-filter-actions">
+              <button
+                className="button button--primary"
+                disabled={dateRangeInvalid}
+                type="button"
+                onClick={() => void analysisQuery.refetch()}
+              >
+                {t("volatilityLab.controls.applyFilters")}
+              </button>
+              <button
+                className="button button--ghost"
+                type="button"
+                onClick={handleResetFilters}
+              >
+                {t("volatilityLab.controls.resetFilters")}
+              </button>
+              <button
+                className="button button--ghost"
+                type="button"
+                onClick={handleResetPreferences}
+              >
+                {t("volatilityLab.preferences.reset")}
+              </button>
+            </div>
+            <div className="volatility-lab-filter-messages">
+              <p>{preferenceMessage}</p>
+              <p>
+                {t("volatilityLab.controls.dateRange")}: {dateRangeLabel}
+              </p>
+              {dateRangeInvalid ? (
+                <p className="status-message status-message--error">
+                  {t("volatilityLab.validation.invalidDateRange")}
+                </p>
+              ) : null}
+              {dateRangeTooShort ? (
+                <p className="status-message status-message--warning">
+                  {t("volatilityLab.validation.shortDateRange")}
+                </p>
+              ) : null}
+              {insufficientObservations ? (
+                <p className="status-message status-message--warning">
+                  {t("volatilityLab.validation.insufficientObservations")}
+                </p>
+              ) : null}
             </div>
           </div>
         </div>
@@ -381,6 +615,9 @@ export function VolatilityLabPage() {
             </strong>
             <span>{analysis.athena_commentary.trade_simulator_reuse_note}</span>
           </div>
+          <p className="volatility-lab-disclaimer">
+            {t("volatilityLab.exports.disclaimer")}
+          </p>
 
           <VolatilityKpis
             analysis={analysis}
@@ -410,6 +647,7 @@ export function VolatilityLabPage() {
             ) : null}
             {activeTab === "rolling" ? (
               <RollingTab
+                drawdown={analysis.drawdown_series}
                 rolling={analysis.rolling_volatility}
                 summary={analysis.volatility_summary}
                 t={t}
@@ -421,9 +659,9 @@ export function VolatilityLabPage() {
             {activeTab === "downside" ? (
               <DownsideTab
                 downside={analysis.downside_risk}
-                riskAdjusted={analysis.risk_adjusted}
-                returns={analysis.return_summary}
+                selectedVarMethod={selectedVarMethod}
                 t={t}
+                varModels={analysis.var_models}
               />
             ) : null}
             {activeTab === "benchmark" ? (
@@ -432,10 +670,29 @@ export function VolatilityLabPage() {
             {activeTab === "portfolio" ? (
               <PortfolioTab analysis={analysis} t={t} />
             ) : null}
+            {activeTab === "riskAdjusted" ? (
+              <RiskAdjustedTab
+                riskAdjusted={analysis.risk_adjusted}
+                returns={analysis.return_summary}
+                t={t}
+              />
+            ) : null}
+            {activeTab === "dataQuality" ? (
+              <DataQualityTab analysis={analysis} t={t} />
+            ) : null}
+            {activeTab === "advanced" ? (
+              <AdvancedModelsTab analysis={analysis} t={t} />
+            ) : null}
             {activeTab === "commentary" ? (
               <CommentaryTab commentary={analysis.athena_commentary} t={t} />
             ) : null}
           </div>
+          <PrintReport
+            analysis={analysis}
+            dateRangeLabel={dateRangeLabel}
+            mode={analysisMode}
+            t={t}
+          />
         </>
       ) : null}
     </div>
@@ -465,6 +722,12 @@ function VolatilityKpis({
         value={<PercentValue value={analysis.volatility_summary.annualized_volatility} />}
         subtitle={analysis.volatility_regime.regime}
         tone={volatilityTone(analysis.volatility_summary.annualized_volatility)}
+      />
+      <VolatilityMetricCard
+        title={t("volatilityLab.kpis.ewmaVol")}
+        value={formatNullablePercent(analysis.ewma_volatility.latest_volatility)}
+        subtitle={translateSourceBadge(analysis.ewma_volatility.badge, t)}
+        tone={volatilityTone(analysis.ewma_volatility.latest_volatility ?? 0)}
       />
       <VolatilityMetricCard
         title={t("volatilityLab.kpis.rollingVol")}
@@ -546,6 +809,7 @@ function OverviewTab({
         <div className="risk-monitor-overview-grid">
           <DataSourcePanel source={analysis.data_source} t={t} />
           <RegimePanel regime={analysis.volatility_regime} t={t} />
+          <RiskMonitorLinkPanel analysis={analysis} t={t} />
         </div>
       </VolatilitySectionCard>
 
@@ -568,10 +832,12 @@ function OverviewTab({
 }
 
 function RollingTab({
+  drawdown,
   rolling,
   summary,
   t,
 }: {
+  drawdown: DrawdownPoint[];
   rolling: RollingVolatilityPoint[];
   summary: VolatilitySummary;
   t: (key: string) => string;
@@ -603,6 +869,7 @@ function RollingTab({
               </div>
             ))}
           </div>
+          <DrawdownChart drawdown={drawdown} t={t} />
           <div className="risk-monitor-mini-grid">
             <VolatilityMetricCard
               title={t("volatilityLab.table.latest")}
@@ -642,6 +909,42 @@ function RollingTab({
         />
       )}
     </VolatilitySectionCard>
+  );
+}
+
+function DrawdownChart({
+  drawdown,
+  t,
+}: {
+  drawdown: DrawdownPoint[];
+  t: (key: string) => string;
+}) {
+  const visible = drawdown.slice(-30);
+  const maxDrawdown = Math.min(...visible.map((point) => point.drawdown), 0);
+  const denominator = Math.abs(maxDrawdown) || 0.01;
+
+  if (!visible.length) {
+    return null;
+  }
+
+  return (
+    <div className="volatility-drawdown-panel">
+      <div>
+        <span>{t("volatilityLab.sections.drawdown")}</span>
+        <strong><PercentValue value={maxDrawdown} /></strong>
+      </div>
+      <div className="volatility-drawdown-chart" aria-label="Drawdown chart">
+        {visible.map((point) => (
+          <span
+            key={point.date}
+            style={{
+              height: `${Math.max(6, (Math.abs(point.drawdown) / denominator) * 100)}%`,
+            }}
+            title={`${point.date}: ${(point.drawdown * 100).toFixed(2)}%`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -719,15 +1022,17 @@ function DistributionTab({
 
 function DownsideTab({
   downside,
-  riskAdjusted,
-  returns,
+  selectedVarMethod,
   t,
+  varModels,
 }: {
   downside: DownsideRiskSummary;
-  riskAdjusted: RiskAdjustedSummary;
-  returns: ReturnSummary;
+  selectedVarMethod: VolatilityVarMethod;
   t: (key: string) => string;
+  varModels: VolatilityAnalysis["var_models"];
 }) {
+  const selectedMethodValue = selectedVarMetric(varModels, selectedVarMethod);
+
   return (
     <div className="risk-monitor-two-column">
       <VolatilitySectionCard
@@ -765,24 +1070,149 @@ function DownsideTab({
       </VolatilitySectionCard>
 
       <VolatilitySectionCard
-        title={t("volatilityLab.sections.riskAdjusted")}
-        description={t("volatilityLab.sections.riskAdjustedDescription")}
+        title={t("volatilityLab.sections.varMethodology")}
+        description={t("volatilityLab.sections.varMethodologyDescription")}
+        badges={[
+          {
+            label: t(`volatilityLab.varMethods.${selectedVarMethod}`),
+            variant: "info",
+          },
+        ]}
       >
+        <div className="risk-monitor-mini-grid">
+          <VolatilityMetricCard
+            title={t("volatilityLab.table.selectedVar")}
+            value={<PercentValue value={selectedMethodValue.varValue} />}
+          />
+          <VolatilityMetricCard
+            title={t("volatilityLab.table.selectedCvar")}
+            value={<PercentValue value={selectedMethodValue.cvarValue} />}
+          />
+          <VolatilityMetricCard
+            title={t("volatilityLab.table.confidence")}
+            value={<PercentValue value={varModels.confidence_level} />}
+          />
+        </div>
         <SimpleTable
           headers={[
             t("volatilityLab.table.metric"),
             t("volatilityLab.table.value"),
           ]}
           rows={[
-            [t("volatilityLab.table.annualizedReturn"), <PercentValue key="ann" value={returns.annualized_return} />],
-            [t("volatilityLab.table.excessReturn"), <PercentValue key="excess" value={returns.excess_return} />],
-            [t("volatilityLab.table.activeReturn"), formatNullablePercent(returns.active_return)],
-            [t("volatilityLab.table.sharpe"), formatRatio(riskAdjusted.sharpe_ratio)],
-            [t("volatilityLab.table.sortino"), formatRatio(riskAdjusted.sortino_ratio)],
-            [t("volatilityLab.table.treynor"), formatRatio(riskAdjusted.treynor_ratio)],
-            [t("volatilityLab.table.informationRatio"), formatRatio(riskAdjusted.information_ratio)],
-            [t("volatilityLab.table.trackingError"), formatNullablePercent(riskAdjusted.tracking_error)],
+            [t("volatilityLab.table.historicalVar"), <PercentValue key="hvar" value={varModels.historical_var} />],
+            [t("volatilityLab.table.historicalCvar"), <PercentValue key="hcvar" value={varModels.historical_cvar} />],
+            [t("volatilityLab.table.parametricVar"), <PercentValue key="pvar" value={varModels.parametric_var} />],
+            [t("volatilityLab.table.parametricCvar"), <PercentValue key="pcvar" value={varModels.parametric_cvar} />],
+            [t("volatilityLab.table.monteCarloVar"), formatNullablePercent(varModels.monte_carlo_var)],
+            [t("volatilityLab.table.monteCarloCvar"), formatNullablePercent(varModels.monte_carlo_cvar)],
           ]}
+        />
+        <div className="risk-monitor-note-list">
+          <p>{varModels.parametric_assumption}</p>
+          <p>{varModels.monte_carlo_status}</p>
+        </div>
+      </VolatilitySectionCard>
+    </div>
+  );
+}
+
+function RiskAdjustedTab({
+  riskAdjusted,
+  returns,
+  t,
+}: {
+  riskAdjusted: RiskAdjustedSummary;
+  returns: ReturnSummary;
+  t: (key: string) => string;
+}) {
+  return (
+    <VolatilitySectionCard
+      title={t("volatilityLab.sections.riskAdjusted")}
+      description={t("volatilityLab.sections.riskAdjustedDescription")}
+    >
+      <SimpleTable
+        headers={[
+          t("volatilityLab.table.metric"),
+          t("volatilityLab.table.value"),
+        ]}
+        rows={[
+          [t("volatilityLab.table.annualizedReturn"), <PercentValue key="ann" value={returns.annualized_return} />],
+          [t("volatilityLab.table.excessReturn"), <PercentValue key="excess" value={returns.excess_return} />],
+          [t("volatilityLab.table.activeReturn"), formatNullablePercent(returns.active_return)],
+          [t("volatilityLab.table.sharpe"), formatRatio(riskAdjusted.sharpe_ratio)],
+          [t("volatilityLab.table.sortino"), formatRatio(riskAdjusted.sortino_ratio)],
+          [t("volatilityLab.table.treynor"), formatRatio(riskAdjusted.treynor_ratio)],
+          [t("volatilityLab.table.informationRatio"), formatRatio(riskAdjusted.information_ratio)],
+          [t("volatilityLab.table.trackingError"), formatNullablePercent(riskAdjusted.tracking_error)],
+        ]}
+      />
+    </VolatilitySectionCard>
+  );
+}
+
+function DataQualityTab({
+  analysis,
+  t,
+}: {
+  analysis: VolatilityAnalysis;
+  t: (key: string) => string;
+}) {
+  return (
+    <div className="risk-monitor-two-column">
+      <VolatilitySectionCard
+        title={t("volatilityLab.sections.dataQuality")}
+        description={t("volatilityLab.sections.dataQualityDescription")}
+      >
+        <DataSourcePanel source={analysis.data_source} t={t} />
+      </VolatilitySectionCard>
+      <VolatilitySectionCard
+        title={t("volatilityLab.sections.riskMonitorLink")}
+        description={t("volatilityLab.sections.riskMonitorLinkDescription")}
+      >
+        <RiskMonitorPayloadPanel analysis={analysis} t={t} />
+      </VolatilitySectionCard>
+    </div>
+  );
+}
+
+function AdvancedModelsTab({
+  analysis,
+  t,
+}: {
+  analysis: VolatilityAnalysis;
+  t: (key: string) => string;
+}) {
+  return (
+    <div className="risk-monitor-stack">
+      <VolatilitySectionCard
+        title={t("volatilityLab.sections.advanced")}
+        description={t("volatilityLab.sections.advancedDescription")}
+      >
+        <div className="risk-monitor-mini-grid">
+          <VolatilityMetricCard
+            title={t("volatilityLab.table.ewmaVolatility")}
+            value={formatNullablePercent(analysis.ewma_volatility.latest_volatility)}
+            subtitle={analysis.ewma_volatility.explanation}
+          />
+          <VolatilityMetricCard
+            title={t("volatilityLab.table.lambda")}
+            value={analysis.ewma_volatility.lambda_decay.toFixed(2)}
+            subtitle={analysis.ewma_volatility.badge}
+          />
+        </div>
+        <SimpleTable
+          headers={[
+            t("volatilityLab.table.model"),
+            t("volatilityLab.table.status"),
+          ]}
+          rows={Object.entries(analysis.advanced_models).map(([model, status]) => [
+            model.replace(/_/g, " "),
+            <VolatilityStatusBadge
+              key={model}
+              label={advancedStatusLabel(String(status), t)}
+              variant={advancedStatusVariant(String(status))}
+            />,
+          ])}
         />
       </VolatilitySectionCard>
     </div>
@@ -968,6 +1398,63 @@ function DataSourcePanel({
   );
 }
 
+function RiskMonitorLinkPanel({
+  analysis,
+  t,
+}: {
+  analysis: VolatilityAnalysis;
+  t: (key: string) => string;
+}) {
+  return (
+    <div className="risk-monitor-driver-list volatility-lab-link-panel">
+      <h3>{t("volatilityLab.sections.riskMonitorLink")}</h3>
+      <p>{t("volatilityLab.sections.riskMonitorLinkDescription")}</p>
+      <div className="risk-monitor-badge-cluster">
+        <VolatilityStatusBadge
+          label={t("volatilityLab.badges.riskMonitorReady")}
+          variant="success"
+        />
+        <VolatilityStatusBadge
+          label={sourceLabel(analysis.risk_monitor_payload.data_source.metric_source, t)}
+          variant={sourceBadgeVariant(
+            analysis.risk_monitor_payload.data_source.metric_source,
+          )}
+        />
+      </div>
+      <Link className="button button--primary" to="/risk-monitor">
+        {t("volatilityLab.sections.openRiskMonitor")}
+      </Link>
+    </div>
+  );
+}
+
+function RiskMonitorPayloadPanel({
+  analysis,
+  t,
+}: {
+  analysis: VolatilityAnalysis;
+  t: (key: string) => string;
+}) {
+  const payload = analysis.risk_monitor_payload;
+  return (
+    <SimpleTable
+      headers={[t("volatilityLab.table.metric"), t("volatilityLab.table.value")]}
+      rows={[
+        [t("volatilityLab.table.annualizedVolatility"), <PercentValue key="vol" value={payload.annualized_volatility} />],
+        [t("volatilityLab.table.ewmaVolatility"), formatNullablePercent(payload.ewma_volatility)],
+        [t("volatilityLab.table.historicalVar"), <PercentValue key="var" value={payload.historical_var} />],
+        [t("volatilityLab.table.historicalCvar"), <PercentValue key="cvar" value={payload.historical_cvar} />],
+        [t("volatilityLab.table.parametricVar"), <PercentValue key="pvar" value={payload.parametric_var} />],
+        [t("volatilityLab.table.beta"), payload.beta.toFixed(3)],
+        [t("volatilityLab.table.correlation"), payload.correlation.toFixed(3)],
+        [t("volatilityLab.table.trackingError"), formatNullablePercent(payload.tracking_error)],
+        [t("volatilityLab.table.maxDrawdown"), <PercentValue key="dd" value={payload.max_drawdown} />],
+        [t("volatilityLab.dataSource.missingSymbols"), payload.missing_symbols.join(", ") || t("volatilityLab.dataSource.none")],
+      ]}
+    />
+  );
+}
+
 function RegimePanel({
   regime,
   t,
@@ -1082,6 +1569,7 @@ function MatrixPanel({
                   <td
                     className="data-table__numeric"
                     key={`${matrix.symbols[rowIndex]}-${matrix.symbols[columnIndex]}`}
+                    style={{ background: matrixCellBackground(value) }}
                   >
                     {value.toFixed(4)}
                   </td>
@@ -1105,7 +1593,12 @@ function ContributionList({
   return (
     <div className="risk-monitor-contribution-list">
       {contribution.map((item) => (
-        <div key={item.symbol}>
+        <div
+          key={item.symbol}
+          style={{
+            "--contribution-width": String(Math.max(0, item.contribution)),
+          } as CSSProperties}
+        >
           <span>{item.symbol}</span>
           <div>
             <strong><PercentValue value={item.contribution} /></strong>
@@ -1242,6 +1735,176 @@ function benchmarkRows(
       <PercentValue key="jensen" value={benchmark.jensen_alpha} />,
     ],
   ];
+}
+
+function PrintReport({
+  analysis,
+  dateRangeLabel,
+  mode,
+  t,
+}: {
+  analysis: VolatilityAnalysis;
+  dateRangeLabel: string;
+  mode: AnalysisMode;
+  t: (key: string) => string;
+}) {
+  return (
+    <section className="volatility-print-report">
+      <h1>{t("volatilityLab.exports.printTitle")}</h1>
+      <p>{t("volatilityLab.exports.disclaimer")}</p>
+      <dl>
+        <div>
+          <dt>{t("volatilityLab.controls.mode")}</dt>
+          <dd>
+            {mode === "portfolio"
+              ? t("volatilityLab.controls.portfolioMode")
+              : t("volatilityLab.controls.assetMode")}
+          </dd>
+        </div>
+        <div>
+          <dt>{t("volatilityLab.table.metric")}</dt>
+          <dd>{analysisTitleFromResponse(analysis)}</dd>
+        </div>
+        <div>
+          <dt>{t("volatilityLab.controls.benchmark")}</dt>
+          <dd>{analysis.benchmark_symbol}</dd>
+        </div>
+        <div>
+          <dt>{t("volatilityLab.controls.dateRange")}</dt>
+          <dd>{dateRangeLabel}</dd>
+        </div>
+      </dl>
+      <SimpleTable
+        headers={[t("volatilityLab.table.metric"), t("volatilityLab.table.value")]}
+        rows={[
+          [t("volatilityLab.kpis.annualizedVol"), <PercentValue key="print-vol" value={analysis.volatility_summary.annualized_volatility} />],
+          [t("volatilityLab.kpis.ewmaVol"), formatNullablePercent(analysis.ewma_volatility.latest_volatility)],
+          [t("volatilityLab.table.historicalVar"), <PercentValue key="print-var" value={analysis.var_models.historical_var} />],
+          [t("volatilityLab.table.historicalCvar"), <PercentValue key="print-cvar" value={analysis.var_models.historical_cvar} />],
+          [t("volatilityLab.table.beta"), analysis.risk_monitor_payload.beta.toFixed(3)],
+          [t("volatilityLab.table.sharpe"), formatRatio(analysis.risk_adjusted.sharpe_ratio)],
+          [t("volatilityLab.table.maxDrawdown"), <PercentValue key="print-dd" value={analysis.downside_risk.max_drawdown} />],
+          [t("volatilityLab.dataSource.source"), sourceLabel(analysis.data_source.metric_source, t)],
+        ]}
+      />
+      <p>{analysis.athena_commentary.summary}</p>
+      <ul>
+        {analysis.athena_commentary.key_points.map((point) => (
+          <li key={point}>{point}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function buildVolatilityCsvRows(analysis: VolatilityAnalysis): CsvRow[] {
+  const rows: CsvRow[] = [
+    csvRow("summary", "mode", isPortfolioAnalysis(analysis) ? "portfolio" : "asset"),
+    csvRow("summary", "name", analysisTitleFromResponse(analysis)),
+    csvRow("summary", "benchmark", analysis.benchmark_symbol),
+    csvRow("returns", "observations", analysis.return_summary.observations),
+    csvRow("returns", "annualized_return", analysis.return_summary.annualized_return),
+    csvRow("volatility", "annualized_volatility", analysis.volatility_summary.annualized_volatility),
+    csvRow("volatility", "ewma_volatility", analysis.ewma_volatility.latest_volatility),
+    csvRow("tail_risk", "historical_var", analysis.var_models.historical_var),
+    csvRow("tail_risk", "historical_cvar", analysis.var_models.historical_cvar),
+    csvRow("tail_risk", "parametric_var", analysis.var_models.parametric_var),
+    csvRow("tail_risk", "parametric_cvar", analysis.var_models.parametric_cvar),
+    csvRow("tail_risk", "monte_carlo_var", analysis.var_models.monte_carlo_var),
+    csvRow("tail_risk", "monte_carlo_cvar", analysis.var_models.monte_carlo_cvar),
+    csvRow("risk_adjusted", "sharpe_ratio", analysis.risk_adjusted.sharpe_ratio),
+    csvRow("risk_adjusted", "sortino_ratio", analysis.risk_adjusted.sortino_ratio),
+    csvRow("risk_adjusted", "tracking_error", analysis.risk_adjusted.tracking_error),
+    csvRow("distribution", "mean", analysis.distribution.mean),
+    csvRow("distribution", "median", analysis.distribution.median),
+    csvRow("distribution", "skewness", analysis.distribution.skewness),
+    csvRow("distribution", "kurtosis", analysis.distribution.kurtosis),
+    csvRow("data_source", "metric_source", analysis.data_source.metric_source),
+    csvRow("data_source", "fallback_used", analysis.data_source.fallback_used),
+    csvRow("data_source", "missing_symbols", analysis.data_source.symbols_missing.join("|")),
+  ];
+
+  Object.entries(analysis.distribution.percentiles).forEach(([label, value]) => {
+    rows.push(csvRow("distribution_percentiles", label, value));
+  });
+
+  if (isPortfolioAnalysis(analysis)) {
+    analysis.risk_contribution.forEach((item) => {
+      rows.push(csvRow("risk_contribution", item.symbol, item.contribution));
+      rows.push(csvRow("risk_contribution_weight", item.symbol, item.weight));
+    });
+    analysis.correlation_matrix.matrix.forEach((row, rowIndex) => {
+      row.forEach((value, columnIndex) => {
+        rows.push(
+          csvRow(
+            "correlation_matrix",
+            `${analysis.correlation_matrix.symbols[rowIndex]}_${analysis.correlation_matrix.symbols[columnIndex]}`,
+            value,
+          ),
+        );
+      });
+    });
+  }
+
+  return rows;
+}
+
+function buildCsvFilename(analysis: VolatilityAnalysis) {
+  const name = analysisTitleFromResponse(analysis)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `athena-volatility-lab-${name || "analysis"}.csv`;
+}
+
+function csvRow(section: string, metric: string, value: CsvRow["value"]): CsvRow {
+  return { section, metric, value };
+}
+
+function analysisTitleFromResponse(analysis: VolatilityAnalysis) {
+  return isPortfolioAnalysis(analysis) ? analysis.portfolio_name : analysis.symbol;
+}
+
+function selectedVarMetric(
+  varModels: VolatilityAnalysis["var_models"],
+  method: VolatilityVarMethod,
+) {
+  if (method === "parametric") {
+    return {
+      varValue: varModels.parametric_var,
+      cvarValue: varModels.parametric_cvar,
+    };
+  }
+  if (method === "monte_carlo") {
+    return {
+      varValue: varModels.monte_carlo_var ?? 0,
+      cvarValue: varModels.monte_carlo_cvar ?? 0,
+    };
+  }
+  return {
+    varValue: varModels.historical_var,
+    cvarValue: varModels.historical_cvar,
+  };
+}
+
+function advancedStatusLabel(status: string, t: (key: string) => string) {
+  if (status === "available") return t("volatilityLab.advanced.available");
+  if (status === "planned") return t("volatilityLab.advanced.planned");
+  if (status.includes("options")) return t("volatilityLab.advanced.requiresOptions");
+  return status;
+}
+
+function advancedStatusVariant(status: string): BadgeVariant {
+  if (status === "available") return "success";
+  if (status === "planned") return "info";
+  return "warning";
+}
+
+function matrixCellBackground(value: number) {
+  const intensity = Math.min(0.22, Math.abs(value) * 0.18);
+  if (value >= 0.65) return `rgba(138, 106, 67, ${intensity + 0.08})`;
+  if (value >= 0.3) return `rgba(107, 150, 195, ${intensity + 0.06})`;
+  return `rgba(29, 127, 95, ${intensity + 0.04})`;
 }
 
 function isPortfolioAnalysis(

@@ -1090,13 +1090,23 @@
       "description": "Bascule entre un titre unique et le portefeuille Athena selectionne. Les metriques se recalculent avec le benchmark et les hypotheses choisis.",
       "portfolioMode": "Portefeuille",
       "assetMode": "Actif seul",
+      "mode": "Mode",
       "asset": "Actif",
       "assetDescription": "Choisis un symbole Market Data ou reutilise une ligne du portefeuille selectionne.",
       "parameters": "Hypotheses",
       "benchmark": "Benchmark",
       "rollingWindow": "Fenetre glissante",
       "confidence": "Confiance %",
-      "riskFreeRate": "Taux sans risque %"
+      "riskFreeRate": "Taux sans risque %",
+      "startDate": "Date de debut",
+      "endDate": "Date de fin",
+      "dateRange": "Periode d'analyse",
+      "openStart": "Debut ouvert",
+      "openEnd": "Fin ouverte",
+      "defaultRange": "Historique disponible complet",
+      "applyFilters": "Appliquer les filtres",
+      "resetFilters": "Reinitialiser les filtres",
+      "varMethod": "Methode VaR"
     },
     "badges": {
       "awaitingAnalysis": "Analyse en attente",
@@ -1104,7 +1114,34 @@
       "partialData": "Donnees partielles",
       "demo": "Hypotheses demo",
       "requiresMarketData": "Requiert Market Data",
-      "deterministic": "Commentaire deterministe"
+      "deterministic": "Commentaire deterministe",
+      "riskMonitorReady": "Pret pour Risk Monitor"
+    },
+    "exports": {
+      "csv": "Exporter CSV",
+      "report": "Imprimer le rapport",
+      "printTitle": "Rapport Athena Volatility Lab",
+      "disclaimer": "Ce rapport est genere a des fins educatives et de demonstration. Il ne constitue pas un conseil en investissement."
+    },
+    "preferences": {
+      "saved": "Preferences enregistrees",
+      "reset": "Reinitialiser les preferences"
+    },
+    "validation": {
+      "invalidDateRange": "La date de debut ne peut pas etre apres la date de fin.",
+      "shortDateRange": "La periode peut etre trop courte pour la fenetre glissante selectionnee.",
+      "insufficientObservations": "Observations insuffisantes pour la fenetre d'analyse selectionnee."
+    },
+    "varMethods": {
+      "historical": "Historique",
+      "parametric": "Parametrique normale",
+      "monte_carlo": "Monte Carlo",
+      "monteCarlo": "Monte Carlo"
+    },
+    "advanced": {
+      "available": "Disponible",
+      "planned": "Planifie",
+      "requiresOptions": "Requiert donnees options"
     },
     "workflow": {
       "analyzing": "Analyse : {{name}}"
@@ -1132,11 +1169,18 @@
       "benchmarkShort": "Beta / CAPM",
       "portfolio": "Portefeuille",
       "portfolioShort": "Covariance",
+      "riskAdjusted": "Ajuste du risque",
+      "riskAdjustedShort": "Ratios",
+      "dataQuality": "Qualite donnees",
+      "dataQualityShort": "Couverture",
+      "advanced": "Modeles avances",
+      "advancedShort": "Roadmap",
       "commentary": "Commentaire",
       "commentaryShort": "Notes CFA"
     },
     "kpis": {
       "annualizedVol": "Vol annualisee",
+      "ewmaVol": "Volatilite EWMA",
       "rollingVol": "Vol glissante",
       "beta": "Beta",
       "var": "VaR",
@@ -1160,11 +1204,14 @@
       "volatilityDescription": "Variance, ecart-type, volatilite realisee et resume des statistiques glissantes.",
       "rolling": "Volatilite glissante",
       "rollingDescription": "Volatilite glissante annualisee pour la fenetre selectionnee.",
+      "drawdown": "Drawdown",
       "distribution": "Distribution des rendements",
       "percentiles": "Percentiles",
       "percentilesDescription": "Quantiles historiques pour comprendre le comportement de queue.",
       "downside": "Risque downside",
       "downsideDescription": "Semi-deviation, drawdown, VaR historique et CVaR.",
+      "varMethodology": "Methodologie VaR",
+      "varMethodologyDescription": "Estimations de risque de queue historiques, parametriques normales et Monte Carlo deterministes.",
       "riskAdjusted": "Performance ajustee du risque",
       "riskAdjustedDescription": "Sharpe, Sortino, Treynor, tracking error et information ratio.",
       "benchmark": "Benchmark et beta",
@@ -1172,6 +1219,13 @@
       "portfolio": "Moteur covariance portefeuille",
       "portfolioDescription": "Volatilite basee covariance, benefice de diversification et contribution marginale au risque par ligne.",
       "portfolioAssetModeDescription": "Les analytiques de covariance et contribution necessitent le mode portefeuille.",
+      "dataQuality": "Qualite des donnees et couverture",
+      "dataQualityDescription": "Observations, symboles manquants, statut de fallback et metadonnees de couverture Market Data.",
+      "riskMonitorLink": "Lien avec Risk Monitor",
+      "riskMonitorLinkDescription": "Volatility Lab fournit volatilite realisee, beta, VaR/CVaR, drawdown et contribution au risque reutilisables par Risk Monitor.",
+      "openRiskMonitor": "Ouvrir Risk Monitor",
+      "advanced": "Roadmap des modeles avances",
+      "advancedDescription": "EWMA est disponible maintenant; GARCH, volatilite implicite et surface de volatilite sont prepares comme elements de roadmap.",
       "commentary": "Commentaire volatilite Athena",
       "keyPoints": "Points cles",
       "cfaNotes": "Concepts CFA niveau I",
@@ -1234,7 +1288,21 @@
       "standardDeviation": "Ecart-type",
       "realizedVol": "Volatilite realisee",
       "coefficientVariation": "Coefficient de variation",
-      "referencePercentile": "Percentile reference"
+      "referencePercentile": "Percentile reference",
+      "selectedVar": "VaR selectionnee",
+      "selectedCvar": "CVaR selectionnee",
+      "confidence": "Confiance",
+      "historicalVar": "VaR historique",
+      "historicalCvar": "CVaR historique",
+      "parametricVar": "VaR parametrique",
+      "parametricCvar": "CVaR parametrique",
+      "monteCarloVar": "VaR Monte Carlo",
+      "monteCarloCvar": "CVaR Monte Carlo",
+      "ewmaVolatility": "Volatilite EWMA",
+      "lambda": "Lambda",
+      "model": "Modele",
+      "status": "Statut",
+      "annualizedVolatility": "Volatilite annualisee"
     }
   },
   "pages": {

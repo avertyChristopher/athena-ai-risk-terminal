@@ -56,6 +56,34 @@ export type RollingVolatilityPoint = {
   volatility: number;
 };
 
+export type DrawdownPoint = {
+  date: string;
+  drawdown: number;
+};
+
+export type EWMAVolatilitySummary = {
+  latest_volatility: number | null;
+  lambda_decay: number;
+  annualization_factor: number;
+  observations: number;
+  metric_source: string;
+  badge: string;
+  explanation: string;
+};
+
+export type VarModelSummary = {
+  confidence_level: number;
+  historical_var: number;
+  historical_cvar: number;
+  parametric_var: number;
+  parametric_cvar: number;
+  monte_carlo_var: number | null;
+  monte_carlo_cvar: number | null;
+  monte_carlo_status: string;
+  parametric_assumption: string;
+  monte_carlo_method: string;
+};
+
 export type DownsideRiskSummary = {
   downside_deviation: number;
   semi_variance: number;
@@ -134,6 +162,36 @@ export type RiskContributionItem = {
   contribution: number;
 };
 
+export type AdvancedModelsStatus = {
+  ewma: string;
+  garch: string;
+  implied_volatility: string;
+  volatility_surface: string;
+  options_implied_skew: string;
+};
+
+export type RiskMonitorPayload = {
+  confidence_level: number;
+  annualized_volatility: number;
+  ewma_volatility: number | null;
+  historical_var: number;
+  historical_cvar: number;
+  parametric_var: number;
+  parametric_cvar: number;
+  beta: number;
+  correlation: number;
+  tracking_error: number | null;
+  sharpe_ratio: number | null;
+  sortino_ratio: number | null;
+  max_drawdown: number;
+  risk_contribution: RiskContributionItem[];
+  covariance_summary: Record<string, unknown> | null;
+  correlation_summary: Record<string, unknown> | null;
+  data_source: VolatilityDataSource;
+  missing_symbols: string[];
+  fallback_used: boolean;
+};
+
 export type PortfolioRiskSummary = {
   portfolio_volatility: number;
   covariance_based_volatility: number;
@@ -158,11 +216,16 @@ export type VolatilityAssetAnalysisResponse = {
   return_summary: ReturnSummary;
   volatility_summary: VolatilitySummary;
   rolling_volatility: RollingVolatilityPoint[];
+  drawdown_series: DrawdownPoint[];
+  ewma_volatility: EWMAVolatilitySummary;
+  var_models: VarModelSummary;
   downside_risk: DownsideRiskSummary;
   benchmark_risk: BenchmarkRiskSummary;
   distribution: DistributionSummary;
   risk_adjusted: RiskAdjustedSummary;
   volatility_regime: VolatilityRegimeSummary;
+  advanced_models: AdvancedModelsStatus;
+  risk_monitor_payload: RiskMonitorPayload;
   data_source: VolatilityDataSource;
   athena_commentary: AthenaVolatilityCommentary;
 };
@@ -176,6 +239,9 @@ export type VolatilityPortfolioAnalysisResponse = {
   return_summary: ReturnSummary;
   volatility_summary: VolatilitySummary;
   rolling_volatility: RollingVolatilityPoint[];
+  drawdown_series: DrawdownPoint[];
+  ewma_volatility: EWMAVolatilitySummary;
+  var_models: VarModelSummary;
   downside_risk: DownsideRiskSummary;
   portfolio_risk: PortfolioRiskSummary;
   covariance_matrix: MatrixSummary;
@@ -184,6 +250,8 @@ export type VolatilityPortfolioAnalysisResponse = {
   distribution: DistributionSummary;
   risk_adjusted: RiskAdjustedSummary;
   volatility_regime: VolatilityRegimeSummary;
+  advanced_models: AdvancedModelsStatus;
+  risk_monitor_payload: RiskMonitorPayload;
   data_source: VolatilityDataSource;
   athena_commentary: AthenaVolatilityCommentary;
 };

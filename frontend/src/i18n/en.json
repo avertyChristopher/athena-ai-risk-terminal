@@ -1090,13 +1090,23 @@
       "description": "Switch between a single security and the selected Athena portfolio. Metrics recalculate with the chosen benchmark and assumptions.",
       "portfolioMode": "Portfolio",
       "assetMode": "Single asset",
+      "mode": "Mode",
       "asset": "Asset",
       "assetDescription": "Choose a Market Data symbol or reuse a holding from the selected portfolio.",
       "parameters": "Assumptions",
       "benchmark": "Benchmark",
       "rollingWindow": "Rolling window",
       "confidence": "Confidence %",
-      "riskFreeRate": "Risk-free rate %"
+      "riskFreeRate": "Risk-free rate %",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "dateRange": "Date range",
+      "openStart": "Open start",
+      "openEnd": "Open end",
+      "defaultRange": "Full available history",
+      "applyFilters": "Apply filters",
+      "resetFilters": "Reset filters",
+      "varMethod": "VaR method"
     },
     "badges": {
       "awaitingAnalysis": "Awaiting analysis",
@@ -1104,7 +1114,34 @@
       "partialData": "Partial Data",
       "demo": "Demo assumptions",
       "requiresMarketData": "Requires Market Data",
-      "deterministic": "Deterministic commentary"
+      "deterministic": "Deterministic commentary",
+      "riskMonitorReady": "Risk Monitor Ready"
+    },
+    "exports": {
+      "csv": "Export CSV",
+      "report": "Print report",
+      "printTitle": "Athena Volatility Lab Report",
+      "disclaimer": "This report is generated for educational and demo purposes. It is not investment advice."
+    },
+    "preferences": {
+      "saved": "Preferences saved",
+      "reset": "Reset preferences"
+    },
+    "validation": {
+      "invalidDateRange": "Start date cannot be after end date.",
+      "shortDateRange": "Date range may be too short for the selected rolling window.",
+      "insufficientObservations": "Insufficient observations for the selected analysis window."
+    },
+    "varMethods": {
+      "historical": "Historical",
+      "parametric": "Parametric Normal",
+      "monte_carlo": "Monte Carlo",
+      "monteCarlo": "Monte Carlo"
+    },
+    "advanced": {
+      "available": "Available",
+      "planned": "Planned",
+      "requiresOptions": "Requires Options Data"
     },
     "workflow": {
       "analyzing": "Analyzing: {{name}}"
@@ -1132,11 +1169,18 @@
       "benchmarkShort": "Beta / CAPM",
       "portfolio": "Portfolio",
       "portfolioShort": "Covariance",
+      "riskAdjusted": "Risk-Adjusted",
+      "riskAdjustedShort": "Ratios",
+      "dataQuality": "Data Quality",
+      "dataQualityShort": "Coverage",
+      "advanced": "Advanced Models",
+      "advancedShort": "Roadmap",
       "commentary": "Commentary",
       "commentaryShort": "CFA notes"
     },
     "kpis": {
       "annualizedVol": "Annualized Vol",
+      "ewmaVol": "EWMA Volatility",
       "rollingVol": "Rolling Vol",
       "beta": "Beta",
       "var": "VaR",
@@ -1160,11 +1204,14 @@
       "volatilityDescription": "Variance, standard deviation, realized volatility and rolling summary statistics.",
       "rolling": "Rolling volatility",
       "rollingDescription": "Annualized rolling volatility for the selected window.",
+      "drawdown": "Drawdown",
       "distribution": "Return distribution",
       "percentiles": "Percentiles",
       "percentilesDescription": "Historical return quantiles used to understand tail behavior.",
       "downside": "Downside risk",
       "downsideDescription": "Semi-deviation, drawdown, historical VaR and CVaR.",
+      "varMethodology": "VaR methodology",
+      "varMethodologyDescription": "Historical, parametric normal and deterministic Monte Carlo tail-risk estimates.",
       "riskAdjusted": "Risk-adjusted performance",
       "riskAdjustedDescription": "Sharpe, Sortino, Treynor, tracking error and information ratio.",
       "benchmark": "Benchmark and beta",
@@ -1172,6 +1219,13 @@
       "portfolio": "Portfolio covariance engine",
       "portfolioDescription": "Covariance-based volatility, diversification benefit and marginal risk contribution by holding.",
       "portfolioAssetModeDescription": "Covariance and contribution analytics require portfolio mode.",
+      "dataQuality": "Data quality and coverage",
+      "dataQualityDescription": "Observations, missing symbols, fallback status and Market Data coverage metadata.",
+      "riskMonitorLink": "Risk Monitor Link",
+      "riskMonitorLinkDescription": "Volatility Lab provides realized volatility, beta, VaR/CVaR, drawdown and risk contribution metrics that can be reused by Risk Monitor.",
+      "openRiskMonitor": "Open Risk Monitor",
+      "advanced": "Advanced Models Roadmap",
+      "advancedDescription": "EWMA is available now; GARCH, implied volatility and volatility surface analytics are prepared as roadmap items.",
       "commentary": "Athena volatility commentary",
       "keyPoints": "Key points",
       "cfaNotes": "CFA Level I concepts",
@@ -1234,7 +1288,21 @@
       "standardDeviation": "Std deviation",
       "realizedVol": "Realized volatility",
       "coefficientVariation": "Coefficient of variation",
-      "referencePercentile": "Reference percentile"
+      "referencePercentile": "Reference percentile",
+      "selectedVar": "Selected VaR",
+      "selectedCvar": "Selected CVaR",
+      "confidence": "Confidence",
+      "historicalVar": "Historical VaR",
+      "historicalCvar": "Historical CVaR",
+      "parametricVar": "Parametric VaR",
+      "parametricCvar": "Parametric CVaR",
+      "monteCarloVar": "Monte Carlo VaR",
+      "monteCarloCvar": "Monte Carlo CVaR",
+      "ewmaVolatility": "EWMA volatility",
+      "lambda": "Lambda",
+      "model": "Model",
+      "status": "Status",
+      "annualizedVolatility": "Annualized volatility"
     }
   },
   "pages": {
