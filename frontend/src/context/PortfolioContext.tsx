@@ -18,6 +18,9 @@ import {
   PositionRead,
 } from "../types/portfolio";
 
+const SELECTED_PORTFOLIO_STORAGE_KEY = "athena.selectedPortfolioId";
+const SELECTED_SYMBOL_STORAGE_KEY = "athena.selectedSymbol";
+
 type PortfolioContextValue = {
   selectedPortfolioId: string;
   selectedPortfolioName: string;
@@ -41,8 +44,12 @@ const PortfolioContext = createContext<PortfolioContextValue | undefined>(
 
 export function PortfolioProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
-  const [selectedPortfolioId, setSelectedPortfolioId] = useState("");
-  const [selectedSymbol, setSelectedSymbol] = useState("");
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState(() =>
+    readStoredValue(SELECTED_PORTFOLIO_STORAGE_KEY),
+  );
+  const [selectedSymbol, setSelectedSymbol] = useState(() =>
+    readStoredValue(SELECTED_SYMBOL_STORAGE_KEY),
+  );
   const [autoSelectPortfolio, setAutoSelectPortfolio] = useState(true);
 
   const portfoliosQuery = useQuery({
@@ -71,6 +78,14 @@ export function PortfolioProvider({ children }: PropsWithChildren) {
       setSelectedPortfolioId(portfolios[0].id);
     }
   }, [autoSelectPortfolio, portfolios, selectedPortfolioId]);
+
+  useEffect(() => {
+    writeStoredValue(SELECTED_PORTFOLIO_STORAGE_KEY, selectedPortfolioId);
+  }, [selectedPortfolioId]);
+
+  useEffect(() => {
+    writeStoredValue(SELECTED_SYMBOL_STORAGE_KEY, selectedSymbol);
+  }, [selectedSymbol]);
 
   const selectedPortfolio = useMemo(
     () =>
@@ -195,4 +210,25 @@ export function usePortfolioContext() {
   }
 
   return context;
+}
+
+function readStoredValue(key: string) {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return window.localStorage.getItem(key) ?? "";
+}
+
+function writeStoredValue(key: string, value: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (value) {
+    window.localStorage.setItem(key, value);
+    return;
+  }
+
+  window.localStorage.removeItem(key);
 }
