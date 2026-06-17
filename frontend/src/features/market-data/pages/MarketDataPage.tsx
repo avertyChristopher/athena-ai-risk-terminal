@@ -3,6 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 
 import { PageHeader } from "../../../components/layout/PageHeader";
 import { LoadingState } from "../../../components/ui/LoadingState";
+import { PortfolioSelector } from "../../../components/workflow/PortfolioSelector";
+import {
+  SymbolSelectionMode,
+  SymbolSelector,
+} from "../../../components/workflow/SymbolSelector";
+import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { apiClient } from "../../../lib/api-client";
 import { endpoints } from "../../../lib/endpoints";
 import { useTranslation } from "../../../hooks/useTranslation";
@@ -14,7 +20,6 @@ import {
   ReturnPoint,
   VolatilityResponse,
 } from "../../../types/market-data";
-import { AssetSearch } from "../components/AssetSearch";
 import { AssetOverviewSection } from "../components/AssetOverviewSection";
 import { AssetSummaryPanel } from "../components/AssetSummaryPanel";
 import { BenchmarkAnalysisSection } from "../components/BenchmarkAnalysisSection";
@@ -25,7 +30,14 @@ import { RiskVolatilitySection } from "../components/RiskVolatilitySection";
 
 export function MarketDataPage() {
   const { t } = useTranslation();
+  const {
+    selectSymbol: selectWorkflowSymbol,
+    selectedHolding,
+    selectedSymbol: workflowSymbol,
+  } = usePortfolioContext();
   const [selectedSymbol, setSelectedSymbol] = useState("");
+  const [selectionMode, setSelectionMode] =
+    useState<SymbolSelectionMode>("standalone");
 
   const assetsQuery = useQuery({
     queryKey: ["market-data-assets"],
@@ -35,15 +47,69 @@ export function MarketDataPage() {
   const assets = assetsQuery.data ?? [];
 
   useEffect(() => {
-    if (!selectedSymbol && assets.length > 0) {
-      setSelectedSymbol(assets[0].symbol);
+    if (workflowSymbol && workflowSymbol !== selectedSymbol) {
+      setSelectedSymbol(workflowSymbol);
     }
-  }, [assets, selectedSymbol]);
+  }, [selectedSymbol, workflowSymbol]);
 
-  const selectedAsset = useMemo(
-    () => assets.find((asset) => asset.symbol === selectedSymbol) ?? assets[0],
-    [assets, selectedSymbol],
+  useEffect(() => {
+    if (!selectedSymbol && assets.length > 0) {
+      const defaultSymbol = assets[0].symbol;
+      setSelectedSymbol(defaultSymbol);
+      selectWorkflowSymbol(defaultSymbol);
+    }
+  }, [assets, selectWorkflowSymbol, selectedSymbol]);
+
+  const standaloneOptions = useMemo(
+    () =>
+      assets.map((asset) => ({
+        symbol: asset.symbol,
+        name: asset.name,
+      })),
+    [assets],
   );
+
+  const selectedAsset = useMemo<MarketAsset | undefined>(
+    () => {
+      const trackedAsset =
+        assets.find((asset) => asset.symbol === selectedSymbol) ?? assets[0];
+
+      if (trackedAsset) {
+        return trackedAsset;
+      }
+
+      if (
+        selectedHolding &&
+        selectedHolding.symbol.toUpperCase() === selectedSymbol.toUpperCase()
+      ) {
+        return {
+          symbol: selectedHolding.symbol,
+          name: selectedHolding.asset_name,
+          asset_type: selectedHolding.asset_type,
+          currency: selectedHolding.currency,
+          sector: selectedHolding.sector,
+          country: selectedHolding.country,
+        };
+      }
+
+      return selectedSymbol
+        ? {
+            symbol: selectedSymbol,
+            name: selectedSymbol,
+            asset_type: "unknown",
+            currency: "USD",
+            sector: "Unknown",
+            country: "Unknown",
+          }
+        : undefined;
+    },
+    [assets, selectedHolding, selectedSymbol],
+  );
+
+  function handleSymbolChange(symbol: string) {
+    setSelectedSymbol(symbol);
+    selectWorkflowSymbol(symbol);
+  }
 
   const pricesQuery = useQuery({
     queryKey: ["market-data-prices", selectedSymbol],
@@ -93,14 +159,17 @@ export function MarketDataPage() {
         subtitle={t("marketData.subtitle")}
       />
 
-      {selectedAsset ? (
-        <AssetSearch
-          assets={assets}
-          selectedSymbol={selectedAsset.symbol}
-          onSelect={setSelectedSymbol}
-          label={t("marketData.asset")}
+      <div className="workflow-selector-grid">
+        <PortfolioSelector compact />
+        <SymbolSelector
+          mode={selectionMode}
+          selectedSymbol={selectedSymbol}
+          standaloneOptions={standaloneOptions}
+          title={t("marketData.asset")}
+          onModeChange={setSelectionMode}
+          onSymbolChange={(symbol) => handleSymbolChange(symbol)}
         />
-      ) : null}
+      </div>
 
       {assetsQuery.isLoading ? <LoadingState label={t("common.loading")} /> : null}
       {assetsQuery.isError ? (
