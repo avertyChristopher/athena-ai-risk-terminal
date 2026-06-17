@@ -1,15 +1,22 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
 import { EmptyState } from "../../../components/ui/EmptyState";
 import { LoadingState } from "../../../components/ui/LoadingState";
+import { PortfolioSelector } from "../../../components/workflow/PortfolioSelector";
+import {
+  StandaloneSymbolOption,
+  SymbolSelectionMode,
+  SymbolSelector,
+} from "../../../components/workflow/SymbolSelector";
+import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { apiClient } from "../../../lib/api-client";
 import { endpoints } from "../../../lib/endpoints";
 import { useTranslation } from "../../../hooks/useTranslation";
-import { PortfolioListResponse } from "../../../types/portfolio";
+import type { PositionRead } from "../../../types/portfolio";
 import {
   ImpactMetric,
   OrderType,
@@ -45,10 +52,26 @@ const rationaleOptions: TradeRationale[] = [
   "Momentum view",
 ];
 const assetTypes = ["equity", "etf", "fixed_income", "bond"];
+const tradeStandaloneOptions: StandaloneSymbolOption[] = [
+  { symbol: "NVDA", name: "NVIDIA Corporation" },
+  { symbol: "AAPL", name: "Apple Inc." },
+  { symbol: "MSFT", name: "Microsoft Corporation" },
+  { symbol: "SPY", name: "S&P 500 ETF" },
+];
 
 export function TradeSimulatorPage() {
   const { t } = useTranslation();
+  const {
+    portfolios,
+    selectedHolding,
+    selectedPortfolio: contextSelectedPortfolio,
+    selectedPortfolioId,
+    selectPortfolio,
+    selectSymbol,
+  } = usePortfolioContext();
   const [activeTab, setActiveTab] = useState<AnalysisTab>("impact");
+  const [selectionMode, setSelectionMode] =
+    useState<SymbolSelectionMode>("portfolio");
   const [formState, setFormState] = useState<TradeSimulationRequest>({
     portfolio_id: "",
     action: "BUY",
@@ -63,27 +86,51 @@ export function TradeSimulatorPage() {
     trade_rationale: "Growth opportunity",
   });
 
-  const portfoliosQuery = useQuery({
-    queryKey: ["portfolios"],
-    queryFn: () => apiClient.get<PortfolioListResponse>(endpoints.portfolios),
-  });
-
-  const portfolios = portfoliosQuery.data?.items ?? [];
-
   useEffect(() => {
-    if (!formState.portfolio_id && portfolios.length > 0) {
+    if (selectedPortfolioId && formState.portfolio_id !== selectedPortfolioId) {
+      setFormState((current) => ({
+        ...current,
+        portfolio_id: selectedPortfolioId,
+      }));
+      return;
+    }
+
+    if (!selectedPortfolioId && !formState.portfolio_id && portfolios.length > 0) {
       setFormState((current) => ({
         ...current,
         portfolio_id: portfolios[0].id,
       }));
+      selectPortfolio(portfolios[0].id);
     }
-  }, [formState.portfolio_id, portfolios]);
+  }, [
+    formState.portfolio_id,
+    portfolios,
+    selectPortfolio,
+    selectedPortfolioId,
+  ]);
+
+  useEffect(() => {
+    if (
+      selectionMode === "portfolio" &&
+      selectedHolding &&
+      formState.symbol.toUpperCase() !== selectedHolding.symbol.toUpperCase()
+    ) {
+      applyHoldingToTicket(selectedHolding);
+    }
+  }, [formState.symbol, selectedHolding, selectionMode]);
 
   const selectedPortfolio = useMemo(
     () =>
+      contextSelectedPortfolio ??
       portfolios.find((portfolio) => portfolio.id === formState.portfolio_id) ??
       portfolios[0],
-    [formState.portfolio_id, portfolios],
+    [contextSelectedPortfolio, formState.portfolio_id, portfolios],
+  );
+  const simulationPortfolioName =
+    selectedPortfolio?.name ?? t("workflow.noPortfolio");
+  const simulatingOnLabel = t("workflow.simulatingTradeOn").replace(
+    "{{name}}",
+    simulationPortfolioName,
   );
 
   const simulateMutation = useMutation({
@@ -126,6 +173,43 @@ export function TradeSimulatorPage() {
     setFormState((current) => ({ ...current, [key]: value }));
   }
 
+  function applyHoldingToTicket(holding: PositionRead) {
+    setFormState((current) => ({
+      ...current,
+      portfolio_id: selectedPortfolioId || current.portfolio_id,
+      symbol: holding.symbol,
+      asset_name: holding.asset_name,
+      asset_type: holding.asset_type,
+      estimated_price: holding.current_price,
+    }));
+    selectSymbol(holding.symbol);
+  }
+
+  function handleWorkflowSymbolChange(
+    symbol: string,
+    source?: StandaloneSymbolOption | PositionRead,
+  ) {
+    const holding = isPositionRead(source)
+      ? source
+      : selectedHolding?.symbol.toUpperCase() === symbol.toUpperCase()
+        ? selectedHolding
+        : null;
+
+    if (holding) {
+      applyHoldingToTicket(holding);
+      return;
+    }
+
+    setFormState((current) => ({
+      ...current,
+      portfolio_id: selectedPortfolioId || current.portfolio_id,
+      symbol,
+      asset_name:
+        source && "name" in source && source.name ? source.name : current.asset_name,
+    }));
+    selectSymbol(symbol);
+  }
+
   return (
     <div className="page trade-simulator-page">
       <PageHeader
@@ -155,6 +239,26 @@ export function TradeSimulatorPage() {
         </div>
       </section>
 
+      <div className="workflow-selector-grid">
+        <PortfolioSelector
+          compact
+          onPortfolioChange={(portfolioId) => updateForm("portfolio_id", portfolioId)}
+        />
+        <SymbolSelector
+          mode={selectionMode}
+          selectedSymbol={formState.symbol}
+          standaloneOptions={tradeStandaloneOptions}
+          title={t("tradeSimulator.ticket.symbol")}
+          onModeChange={setSelectionMode}
+          onSymbolChange={handleWorkflowSymbolChange}
+        />
+      </div>
+
+      <div className="workflow-notice">
+        <strong>{simulatingOnLabel}</strong>
+        <span>{t("workflow.simulationOnlyNotice")}</span>
+      </div>
+
       <div className="trade-workbench-grid">
         <TradeSectionCard
           title={t("tradeSimulator.ticket.title")}
@@ -162,20 +266,6 @@ export function TradeSimulatorPage() {
           badges={[{ label: t("tradeSimulator.badges.noExecution"), variant: "warning" }]}
         >
           <form className="trade-ticket-form" onSubmit={handleSubmit}>
-            <label className="form-field">
-              <span>{t("tradeSimulator.ticket.portfolio")}</span>
-              <select
-                value={formState.portfolio_id}
-                onChange={(event) => updateForm("portfolio_id", event.target.value)}
-              >
-                {portfolios.map((portfolio) => (
-                  <option key={portfolio.id} value={portfolio.id}>
-                    {portfolio.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
             <div className="trade-action-toggle">
               {(["BUY", "SELL"] as TradeAction[]).map((action) => (
                 <button
@@ -1011,4 +1101,10 @@ function tradeRiskBadgeVariant(label: string) {
 
 function uniqueStrings(values: string[]) {
   return values.filter((value, index) => values.indexOf(value) === index);
+}
+
+function isPositionRead(
+  source?: StandaloneSymbolOption | PositionRead,
+): source is PositionRead {
+  return Boolean(source && "current_price" in source && "portfolio_id" in source);
 }
