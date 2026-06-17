@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 import { PageHeader } from "../../../components/layout/PageHeader";
 import { EmptyState } from "../../../components/ui/EmptyState";
@@ -67,6 +68,7 @@ type SimpleRow = {
 export function PortfolioPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const {
     refreshPortfolios,
     selectPortfolio,
@@ -332,6 +334,12 @@ export function PortfolioPage() {
     void refreshPortfolios();
   }
 
+  function openPositionWorkflow(position: PositionRead, route: string) {
+    selectPortfolio(position.portfolio_id);
+    selectSymbol(position.symbol);
+    navigate(route);
+  }
+
   const tabs: PortfolioTab[] = [
     {
       id: "overview",
@@ -483,6 +491,15 @@ export function PortfolioPage() {
                 onDelete={(positionId) =>
                   deletePositionMutation.mutate(positionId)
                 }
+                onOpenMarketData={(position) =>
+                  openPositionWorkflow(position, "/market-data")
+                }
+                onOpenEquityAnalysis={(position) =>
+                  openPositionWorkflow(position, "/equity-analysis")
+                }
+                onOpenTradeSimulator={(position) =>
+                  openPositionWorkflow(position, "/trade-simulator")
+                }
                 labels={{
                   title: t("portfolio.positions.title"),
                   add: t("portfolio.positions.add"),
@@ -507,6 +524,9 @@ export function PortfolioPage() {
                   region: t("portfolio.positions.region"),
                   actions: t("portfolio.positions.actions"),
                   edit: t("portfolio.positions.edit"),
+                  marketData: t("portfolio.positions.marketData"),
+                  equity: t("portfolio.positions.equity"),
+                  trade: t("portfolio.positions.trade"),
                   delete: t("portfolio.positions.delete"),
                   emptyTitle: t("portfolio.positions.emptyTitle"),
                   emptyMessage: t("portfolio.positions.emptyMessage"),

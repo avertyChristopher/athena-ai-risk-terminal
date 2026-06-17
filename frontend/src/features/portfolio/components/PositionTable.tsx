@@ -8,6 +8,9 @@ type PositionTableProps = {
   positions: PositionRead[];
   onEdit: (position: PositionRead) => void;
   onDelete: (positionId: string) => void;
+  onOpenMarketData: (position: PositionRead) => void;
+  onOpenEquityAnalysis: (position: PositionRead) => void;
+  onOpenTradeSimulator: (position: PositionRead) => void;
   labels: {
     title: string;
     add: string;
@@ -32,6 +35,9 @@ type PositionTableProps = {
     region?: string;
     actions: string;
     edit?: string;
+    marketData?: string;
+    equity?: string;
+    trade?: string;
     delete: string;
     emptyTitle?: string;
     emptyMessage?: string;
@@ -43,6 +49,9 @@ export function PositionTable({
   positions,
   onEdit,
   onDelete,
+  onOpenMarketData,
+  onOpenEquityAnalysis,
+  onOpenTradeSimulator,
   labels,
   onAddClick,
 }: PositionTableProps) {
@@ -149,14 +158,37 @@ export function PositionTable({
                   <td>{position.region ?? "--"}</td>
                   <td className="data-table__actions">
                     <button
-                      className="button button--ghost"
+                      className="button button--ghost button--compact"
+                      type="button"
+                      onClick={() => onOpenMarketData(position)}
+                    >
+                      {labels.marketData ?? "Market Data"}
+                    </button>
+                    {position.asset_type.toLowerCase() === "equity" ? (
+                      <button
+                        className="button button--ghost button--compact"
+                        type="button"
+                        onClick={() => onOpenEquityAnalysis(position)}
+                      >
+                        {labels.equity ?? "Equity"}
+                      </button>
+                    ) : null}
+                    <button
+                      className="button button--ghost button--compact"
+                      type="button"
+                      onClick={() => onOpenTradeSimulator(position)}
+                    >
+                      {labels.trade ?? "Trade"}
+                    </button>
+                    <button
+                      className="button button--ghost button--compact"
                       type="button"
                       onClick={() => onEdit(position)}
                     >
                       {labels.edit ?? "Edit"}
                     </button>
                     <button
-                      className="button button--danger"
+                      className="button button--danger button--compact"
                       type="button"
                       onClick={() => onDelete(position.id)}
                     >

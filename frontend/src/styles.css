@@ -1381,7 +1381,9 @@ ul.portfolio-note-list {
 
 .data-table__actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  min-width: 320px;
 }
 
 .button--danger {
@@ -2223,6 +2225,12 @@ ul.portfolio-note-list {
 
 .button--ghost {
   background: transparent;
+}
+
+.button--compact {
+  min-height: 32px;
+  padding: 6px 9px;
+  font-size: 0.82rem;
 }
 
 .visually-hidden {
