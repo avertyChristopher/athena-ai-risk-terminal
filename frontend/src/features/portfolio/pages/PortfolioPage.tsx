@@ -7,6 +7,7 @@ import { EmptyState } from "../../../components/ui/EmptyState";
 import { LoadingState } from "../../../components/ui/LoadingState";
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
+import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { apiClient } from "../../../lib/api-client";
 import { endpoints } from "../../../lib/endpoints";
 import { useTranslation } from "../../../hooks/useTranslation";
@@ -64,6 +65,7 @@ type SimpleRow = {
 export function PortfolioPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { refreshPortfolios, selectPortfolio } = usePortfolioContext();
   const [selectedPortfolioId, setSelectedPortfolioId] = useState("");
   const [activeTab, setActiveTab] = useState<PortfolioTabId>("overview");
   const [isAddPositionOpen, setIsAddPositionOpen] = useState(false);
@@ -78,8 +80,9 @@ export function PortfolioPage() {
   useEffect(() => {
     if (!selectedPortfolioId && portfolios.length > 0) {
       setSelectedPortfolioId(portfolios[0].id);
+      selectPortfolio(portfolios[0].id);
     }
-  }, [portfolios, selectedPortfolioId]);
+  }, [portfolios, selectPortfolio, selectedPortfolioId]);
 
   const selectedPortfolio = useMemo(
     () =>
@@ -247,6 +250,8 @@ export function PortfolioPage() {
     onSuccess: (portfolio) => {
       queryClient.invalidateQueries({ queryKey: ["portfolios"] });
       setSelectedPortfolioId(portfolio.id);
+      selectPortfolio(portfolio.id);
+      void refreshPortfolios();
       setActiveTab("overview");
     },
   });
@@ -293,6 +298,7 @@ export function PortfolioPage() {
     ].forEach((queryKey) => {
       queryClient.invalidateQueries({ queryKey: [queryKey] });
     });
+    void refreshPortfolios();
   }
 
   const tabs: PortfolioTab[] = [
@@ -363,6 +369,7 @@ export function PortfolioPage() {
               selectedPortfolioId={selectedPortfolio.id}
               onSelect={(portfolioId) => {
                 setSelectedPortfolioId(portfolioId);
+                selectPortfolio(portfolioId);
                 setActiveTab("overview");
               }}
               label={t("portfolio.selector")}

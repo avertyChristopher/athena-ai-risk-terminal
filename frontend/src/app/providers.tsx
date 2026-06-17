@@ -4,6 +4,8 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 
+import { PortfolioProvider } from "../context/PortfolioContext";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -15,6 +17,8 @@ const queryClient = new QueryClient({
 
 export function Providers({ children }: PropsWithChildren) {
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <PortfolioProvider>{children}</PortfolioProvider>
+    </QueryClientProvider>
   );
 }
