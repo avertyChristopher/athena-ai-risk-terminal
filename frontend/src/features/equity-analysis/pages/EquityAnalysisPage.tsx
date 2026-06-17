@@ -1,8 +1,14 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { PageHeader } from "../../../components/layout/PageHeader";
 import { LoadingState } from "../../../components/ui/LoadingState";
+import { PortfolioSelector } from "../../../components/workflow/PortfolioSelector";
+import {
+  SymbolSelectionMode,
+  SymbolSelector,
+} from "../../../components/workflow/SymbolSelector";
+import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { apiClient } from "../../../lib/api-client";
 import { endpoints } from "../../../lib/endpoints";
 import {
@@ -45,7 +51,6 @@ import {
 } from "../components/CorporateGovernancePanels";
 import { EquityDiagnosticsPanel } from "../components/EquityDiagnosticsPanel";
 import { EquityMetricGrid } from "../components/EquityMetricGrid";
-import { EquitySelector } from "../components/EquitySelector";
 import { EquitySecurityProfileCard } from "../components/EquitySecurityProfileCard";
 import { FinancialSnapshotPanels } from "../components/FinancialSnapshotPanels";
 import { FundamentalsTable } from "../components/FundamentalsTable";
@@ -70,7 +75,39 @@ const EQUITY_OPTIONS = [
 
 export function EquityAnalysisPage() {
   const { t } = useTranslation();
-  const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
+  const {
+    selectedHolding,
+    selectedSymbol: workflowSymbol,
+    selectSymbol: selectWorkflowSymbol,
+  } = usePortfolioContext();
+  const [selectedSymbol, setSelectedSymbol] = useState(workflowSymbol || "AAPL");
+  const [selectionMode, setSelectionMode] =
+    useState<SymbolSelectionMode>("standalone");
+
+  useEffect(() => {
+    if (workflowSymbol && workflowSymbol !== selectedSymbol) {
+      setSelectedSymbol(workflowSymbol);
+    }
+  }, [selectedSymbol, workflowSymbol]);
+
+  useEffect(() => {
+    if (!workflowSymbol && selectedSymbol) {
+      selectWorkflowSymbol(selectedSymbol);
+    }
+  }, [selectWorkflowSymbol, selectedSymbol, workflowSymbol]);
+
+  const isUnsupportedPortfolioHolding =
+    selectionMode === "portfolio" &&
+    selectedHolding !== null &&
+    !["equity", "stock", "common_stock"].includes(
+      selectedHolding.asset_type.toLowerCase(),
+    );
+
+  function handleSymbolChange(symbol: string) {
+    const nextSymbol = symbol || "AAPL";
+    setSelectedSymbol(nextSymbol);
+    selectWorkflowSymbol(nextSymbol);
+  }
 
   const overviewQuery = useEquityQuery<EquityOverviewResponse>(
     "overview",
@@ -206,13 +243,24 @@ export function EquityAnalysisPage() {
         subtitle={t("equityAnalysis.subtitle")}
       />
 
-      <div className="equity-controls">
-        <EquitySelector
-          options={EQUITY_OPTIONS}
+      <div className="workflow-selector-grid">
+        <PortfolioSelector compact />
+        <SymbolSelector
+          mode={selectionMode}
           selectedSymbol={selectedSymbol}
-          onSelect={setSelectedSymbol}
-          label={t("equityAnalysis.selector")}
+          standaloneOptions={EQUITY_OPTIONS}
+          title={t("equityAnalysis.selector")}
+          warning={
+            isUnsupportedPortfolioHolding
+              ? t("workflow.unsupportedEquityHolding")
+              : null
+          }
+          onModeChange={setSelectionMode}
+          onSymbolChange={(symbol) => handleSymbolChange(symbol)}
         />
+      </div>
+
+      <div className="equity-controls">
         <label className="form-field equity-selector">
           <span>{t("equityAnalysis.controls.benchmark")}</span>
           <select value={overviewQuery.data?.benchmark_symbol ?? "SPY"} disabled>
