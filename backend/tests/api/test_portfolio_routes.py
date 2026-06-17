@@ -17,7 +17,7 @@ def test_portfolio_summary_uses_demo_positions() -> None:
     assert body["total_market_value"] == 77692.0
     assert body["invested_value"] == 72692.0
     assert body["largest_position"] == "NVDA"
-    assert body["data_source"] == "Athena deterministic demo portfolio store"
+    assert body["data_source"] == "Athena SQLite portfolio store seeded from demo data"
     assert body["number_of_positions"] == 5
 
 

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.repositories.demo_data_store import DemoDataStore
+from app.repositories.persistent_portfolio_store import PersistentPortfolioStore
 
 _POLICIES: dict[str, dict[str, object]] = {}
 _CONSTRAINTS: dict[str, dict[str, object]] = {}
@@ -11,25 +11,29 @@ class PortfolioRepository:
         self.db = db
 
     def list_portfolios(self) -> list[dict[str, object]]:
-        return DemoDataStore.list_portfolios()
+        return PersistentPortfolioStore.list_portfolios(self.db)
 
     def get_portfolio(self, portfolio_id: str) -> dict[str, object] | None:
-        return DemoDataStore.get_portfolio(portfolio_id)
+        return PersistentPortfolioStore.get_portfolio(self.db, portfolio_id)
 
     def create_portfolio(self, payload: dict[str, object]) -> dict[str, object]:
-        return DemoDataStore.create_portfolio(payload)
+        return PersistentPortfolioStore.create_portfolio(self.db, payload)
 
     def update_portfolio(
         self,
         portfolio_id: str,
         payload: dict[str, object],
     ) -> dict[str, object] | None:
-        return DemoDataStore.update_portfolio(portfolio_id, payload)
+        return PersistentPortfolioStore.update_portfolio(
+            self.db,
+            portfolio_id,
+            payload,
+        )
 
     def delete_portfolio(self, portfolio_id: str) -> bool:
         _POLICIES.pop(portfolio_id, None)
         _CONSTRAINTS.pop(portfolio_id, None)
-        return DemoDataStore.delete_portfolio(portfolio_id)
+        return PersistentPortfolioStore.delete_portfolio(self.db, portfolio_id)
 
     def get_policy(self, portfolio_id: str) -> dict[str, object] | None:
         policy = _POLICIES.get(portfolio_id)
@@ -61,21 +65,29 @@ class PositionRepository:
         self.db = db
 
     def list_positions(self, portfolio_id: str) -> list[dict[str, object]]:
-        return DemoDataStore.list_positions(portfolio_id)
+        return PersistentPortfolioStore.list_positions(self.db, portfolio_id)
 
     def get_position(
         self,
         portfolio_id: str,
         position_id: str,
     ) -> dict[str, object] | None:
-        return DemoDataStore.get_position(portfolio_id, position_id)
+        return PersistentPortfolioStore.get_position(
+            self.db,
+            portfolio_id,
+            position_id,
+        )
 
     def create_position(
         self,
         portfolio_id: str,
         payload: dict[str, object],
     ) -> dict[str, object]:
-        return DemoDataStore.create_position(portfolio_id, payload)
+        return PersistentPortfolioStore.create_position(
+            self.db,
+            portfolio_id,
+            payload,
+        )
 
     def update_position(
         self,
@@ -83,7 +95,16 @@ class PositionRepository:
         position_id: str,
         payload: dict[str, object],
     ) -> dict[str, object] | None:
-        return DemoDataStore.update_position(portfolio_id, position_id, payload)
+        return PersistentPortfolioStore.update_position(
+            self.db,
+            portfolio_id,
+            position_id,
+            payload,
+        )
 
     def delete_position(self, portfolio_id: str, position_id: str) -> bool:
-        return DemoDataStore.delete_position(portfolio_id, position_id)
+        return PersistentPortfolioStore.delete_position(
+            self.db,
+            portfolio_id,
+            position_id,
+        )

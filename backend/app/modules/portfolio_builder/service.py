@@ -226,7 +226,7 @@ class PortfolioService:
             largest_position_weight=calculate_largest_position_weight(invested_weights),
             top_5_holdings_weight=calculate_top_n_holdings_weight(invested_weights, 5),
             diversification_score=calculate_diversification_score(invested_weights),
-            data_source="Athena deterministic demo portfolio store",
+            data_source="Athena SQLite portfolio store seeded from demo data",
         )
 
     def get_allocation(
@@ -570,12 +570,12 @@ class PortfolioService:
             policy_alignment=policy_alignment,
             rebalancing_need=rebalancing_need,
             data_quality_limitations=[
-                "DemoDataStore is in-memory and resets on backend restart.",
+                "Portfolio and positions persist in SQLite during local development.",
                 "No live market data refresh or FX conversion is connected yet.",
                 "Benchmark, covariance and MWR analytics are placeholders.",
             ],
             next_analytical_steps=[
-                "Connect positions to persisted database tables.",
+                "Add migration tooling and user-level portfolio ownership.",
                 "Use Market Data return series for realized performance and covariance.",
                 "Add benchmark constituent weights for true active management analytics.",
             ],
@@ -640,7 +640,7 @@ class PortfolioService:
                 "Tracking error and information ratio using benchmark return history.",
             ],
             limitations=[
-                "DemoDataStore is in-memory and resets on backend restart.",
+                "Portfolio and positions persist in SQLite during local development.",
                 "No live market data refresh is triggered from Portfolio Builder.",
                 "No FX conversion is applied to cross-currency positions.",
                 "No benchmark constituent feed is connected yet.",
@@ -650,7 +650,7 @@ class PortfolioService:
                 "Placeholder",
                 "Requires Market Data",
                 "Requires Benchmark History",
-                "In-Memory Store",
+                "SQLite Store",
                 "Not Production Ready",
                 "No Live Refresh",
                 "No FX Conversion",
