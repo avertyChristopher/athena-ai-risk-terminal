@@ -1,15 +1,23 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import { PositionCreate } from "../../../types/portfolio";
+import {
+  PositionCreate,
+  PositionRead,
+  PositionUpdate,
+} from "../../../types/portfolio";
 
 type AddPositionModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onCreate: (payload: PositionCreate) => void;
+  onUpdate?: (positionId: string, payload: PositionUpdate) => void;
+  position?: PositionRead | null;
   labels: {
     title: string;
+    editTitle?: string;
     symbol: string;
     name: string;
+    displayName?: string;
     type: string;
     quantity: string;
     averagePrice: string;
@@ -17,43 +25,80 @@ type AddPositionModalProps = {
     currency: string;
     sector: string;
     country: string;
+    exchange?: string;
+    industry?: string;
+    region?: string;
     cancel: string;
     add: string;
+    update?: string;
   };
+};
+
+type PositionForm = PositionCreate & {
+  exchange: string;
+  industry: string;
+  region: string;
+};
+
+const defaultPositionForm: PositionForm = {
+  symbol: "AAPL",
+  asset_name: "Apple Inc.",
+  name: "",
+  asset_type: "equity",
+  quantity: 10,
+  average_price: 180,
+  current_price: 200,
+  currency: "USD",
+  sector: "Technology",
+  country: "United States",
+  exchange: "NASDAQ",
+  industry: "Consumer Electronics",
+  region: "North America",
 };
 
 export function AddPositionModal({
   isOpen,
   onClose,
   onCreate,
+  onUpdate,
+  position,
   labels,
 }: AddPositionModalProps) {
-  const [form, setForm] = useState<PositionCreate>({
-    symbol: "AAPL",
-    asset_name: "Apple Inc.",
-    asset_type: "equity",
-    quantity: 10,
-    average_price: 180,
-    current_price: 200,
-    currency: "USD",
-    sector: "Technology",
-    country: "United States",
-  });
+  const isEditing = Boolean(position);
+  const initialForm = useMemo(
+    () => (position ? toPositionForm(position) : defaultPositionForm),
+    [position],
+  );
+  const [form, setForm] = useState<PositionForm>(initialForm);
+
+  useEffect(() => {
+    if (isOpen) {
+      setForm(initialForm);
+    }
+  }, [initialForm, isOpen]);
 
   if (!isOpen) {
     return null;
   }
 
-  function setField<K extends keyof PositionCreate>(
+  function setField<K extends keyof PositionForm>(
     key: K,
-    value: PositionCreate[K],
+    value: PositionForm[K],
   ) {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    onCreate(form);
+    const payload = toPayload(form);
+
+    if (position && onUpdate) {
+      onUpdate(position.id, payload);
+      onClose();
+      return;
+    }
+
+    onCreate(payload as PositionCreate);
     onClose();
   }
 
@@ -61,7 +106,7 @@ export function AddPositionModal({
     <div className="modal-backdrop" role="presentation">
       <form className="modal" onSubmit={handleSubmit}>
         <div className="section-heading">
-          <h2>{labels.title}</h2>
+          <h2>{isEditing ? labels.editTitle ?? labels.title : labels.title}</h2>
           <button className="button button--ghost" type="button" onClick={onClose}>
             {labels.cancel}
           </button>
@@ -84,6 +129,13 @@ export function AddPositionModal({
             />
           </label>
           <label className="form-field">
+            <span>{labels.displayName ?? "Display name"}</span>
+            <input
+              value={form.name ?? ""}
+              onChange={(event) => setField("name", event.target.value)}
+            />
+          </label>
+          <label className="form-field">
             <span>{labels.type}</span>
             <input
               required
@@ -94,9 +146,9 @@ export function AddPositionModal({
           <label className="form-field">
             <span>{labels.quantity}</span>
             <input
-              min="0"
+              min="0.01"
               required
-              step="1"
+              step="0.01"
               type="number"
               value={form.quantity}
               onChange={(event) => setField("quantity", Number(event.target.value))}
@@ -105,7 +157,7 @@ export function AddPositionModal({
           <label className="form-field">
             <span>{labels.averagePrice}</span>
             <input
-              min="0"
+              min="0.01"
               required
               step="0.01"
               type="number"
@@ -118,7 +170,7 @@ export function AddPositionModal({
           <label className="form-field">
             <span>{labels.currentPrice}</span>
             <input
-              min="0"
+              min="0.01"
               required
               step="0.01"
               type="number"
@@ -152,11 +204,73 @@ export function AddPositionModal({
               onChange={(event) => setField("country", event.target.value)}
             />
           </label>
+          <label className="form-field">
+            <span>{labels.exchange ?? "Exchange"}</span>
+            <input
+              value={form.exchange}
+              onChange={(event) => setField("exchange", event.target.value)}
+            />
+          </label>
+          <label className="form-field">
+            <span>{labels.industry ?? "Industry"}</span>
+            <input
+              value={form.industry}
+              onChange={(event) => setField("industry", event.target.value)}
+            />
+          </label>
+          <label className="form-field">
+            <span>{labels.region ?? "Region"}</span>
+            <input
+              value={form.region}
+              onChange={(event) => setField("region", event.target.value)}
+            />
+          </label>
         </div>
         <button className="button button--primary" type="submit">
-          {labels.add}
+          {isEditing ? labels.update ?? labels.add : labels.add}
         </button>
       </form>
     </div>
   );
+}
+
+function toPositionForm(position: PositionRead): PositionForm {
+  return {
+    symbol: position.symbol,
+    asset_name: position.asset_name,
+    name: position.name ?? "",
+    asset_type: position.asset_type,
+    quantity: position.quantity,
+    average_price: position.average_price,
+    current_price: position.current_price,
+    currency: position.currency,
+    sector: position.sector,
+    country: position.country,
+    exchange: position.exchange ?? "",
+    industry: position.industry ?? "",
+    region: position.region ?? "",
+  };
+}
+
+function toPayload(form: PositionForm): PositionUpdate {
+  return {
+    symbol: form.symbol.trim().toUpperCase(),
+    asset_name: form.asset_name.trim(),
+    name: optionalText(form.name),
+    asset_type: form.asset_type.trim(),
+    quantity: form.quantity,
+    average_price: form.average_price,
+    current_price: form.current_price,
+    currency: form.currency.trim().toUpperCase(),
+    sector: form.sector.trim(),
+    country: form.country.trim(),
+    exchange: optionalText(form.exchange),
+    industry: optionalText(form.industry),
+    region: optionalText(form.region),
+  };
+}
+
+function optionalText(value: string | null | undefined) {
+  const trimmedValue = value?.trim();
+  return trimmedValue ? trimmedValue : undefined;
 }

@@ -171,6 +171,66 @@ def test_position_lifecycle_updates_portfolio_summary() -> None:
     assert updated_summary_response.json()["total_value"] == 1000
 
 
+def test_update_position_recalculates_values_and_metadata() -> None:
+    portfolio_response = client.post(
+        "/api/portfolios",
+        json={
+            "name": "Update Position Portfolio",
+            "base_currency": "USD",
+            "benchmark": "SPY",
+            "cash": 500,
+        },
+    )
+    portfolio_id = portfolio_response.json()["id"]
+
+    position_response = client.post(
+        f"/api/portfolios/{portfolio_id}/positions",
+        json={
+            "symbol": "AAPL",
+            "asset_name": "Apple Inc.",
+            "name": "Apple demo line",
+            "asset_type": "equity",
+            "quantity": 10,
+            "average_price": 180,
+            "current_price": 200,
+            "currency": "USD",
+            "sector": "Technology",
+            "country": "United States",
+            "exchange": "NASDAQ",
+            "industry": "Consumer Electronics",
+            "region": "North America",
+        },
+    )
+    position_id = position_response.json()["id"]
+
+    update_response = client.put(
+        f"/api/portfolios/{portfolio_id}/positions/{position_id}",
+        json={
+            "symbol": "MSFT",
+            "asset_name": "Microsoft Corporation",
+            "name": "Microsoft edited line",
+            "quantity": 4,
+            "average_price": 300,
+            "current_price": 350,
+            "sector": "Software",
+            "industry": "Infrastructure Software",
+        },
+    )
+
+    assert update_response.status_code == 200
+    position = update_response.json()
+    assert position["symbol"] == "MSFT"
+    assert position["asset_name"] == "Microsoft Corporation"
+    assert position["name"] == "Microsoft edited line"
+    assert position["quantity"] == 4
+    assert position["market_value"] == 1400
+    assert position["cost_basis"] == 1200
+    assert position["unrealized_pnl"] == 200
+    assert position["sector"] == "Software"
+    assert position["exchange"] == "NASDAQ"
+    assert position["industry"] == "Infrastructure Software"
+
+
 def test_position_with_negative_quantity_is_rejected() -> None:
     response = client.post(
         "/api/portfolios/pf_001/positions",

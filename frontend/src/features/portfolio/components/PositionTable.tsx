@@ -6,12 +6,14 @@ import { PortfolioStatusBadge } from "./PortfolioStatusBadge";
 
 type PositionTableProps = {
   positions: PositionRead[];
+  onEdit: (position: PositionRead) => void;
   onDelete: (positionId: string) => void;
   labels: {
     title: string;
     add: string;
     symbol: string;
     name: string;
+    displayName?: string;
     type: string;
     quantity: string;
     averagePrice: string;
@@ -25,7 +27,11 @@ type PositionTableProps = {
     currency: string;
     sector: string;
     country: string;
+    exchange?: string;
+    industry?: string;
+    region?: string;
     actions: string;
+    edit?: string;
     delete: string;
     emptyTitle?: string;
     emptyMessage?: string;
@@ -35,6 +41,7 @@ type PositionTableProps = {
 
 export function PositionTable({
   positions,
+  onEdit,
   onDelete,
   labels,
   onAddClick,
@@ -62,6 +69,7 @@ export function PositionTable({
               <tr>
                 <th>{labels.symbol}</th>
                 <th>{labels.name}</th>
+                <th>{labels.displayName ?? "Display name"}</th>
                 <th>{labels.type}</th>
                 <th>{labels.quantity}</th>
                 <th>{labels.averagePrice}</th>
@@ -74,6 +82,9 @@ export function PositionTable({
                 <th>{labels.currency}</th>
                 <th>{labels.sector}</th>
                 <th>{labels.country}</th>
+                <th>{labels.exchange ?? "Exchange"}</th>
+                <th>{labels.industry ?? "Industry"}</th>
+                <th>{labels.region ?? "Region"}</th>
                 <th>{labels.actions}</th>
               </tr>
             </thead>
@@ -82,6 +93,7 @@ export function PositionTable({
                 <tr key={position.id}>
                   <td className="data-table__symbol">{position.symbol}</td>
                   <td>{position.asset_name}</td>
+                  <td>{position.name ?? "--"}</td>
                   <td>
                     <PortfolioStatusBadge label={position.asset_type} variant="info" />
                   </td>
@@ -132,7 +144,17 @@ export function PositionTable({
                   <td>{position.currency}</td>
                   <td>{position.sector}</td>
                   <td>{position.country}</td>
-                  <td>
+                  <td>{position.exchange ?? "--"}</td>
+                  <td>{position.industry ?? "--"}</td>
+                  <td>{position.region ?? "--"}</td>
+                  <td className="data-table__actions">
+                    <button
+                      className="button button--ghost"
+                      type="button"
+                      onClick={() => onEdit(position)}
+                    >
+                      {labels.edit ?? "Edit"}
+                    </button>
                     <button
                       className="button button--danger"
                       type="button"

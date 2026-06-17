@@ -594,6 +594,7 @@
       "add": "Ajouter position",
       "symbol": "Symbole",
       "name": "Nom",
+      "displayName": "Nom affiche",
       "type": "Type",
       "quantity": "Quantite",
       "averagePrice": "Prix moyen",
@@ -607,7 +608,11 @@
       "currency": "Devise",
       "sector": "Secteur",
       "country": "Pays",
+      "exchange": "Bourse",
+      "industry": "Industrie",
+      "region": "Region",
       "actions": "Actions",
+      "edit": "Modifier",
       "delete": "Supprimer",
       "emptyTitle": "Aucune position",
       "emptyMessage": "Ajoute une position pour commencer a calculer l'allocation, la concentration et les diagnostics portefeuille."
@@ -616,6 +621,10 @@
       "title": "Ajouter position",
       "cancel": "Annuler",
       "add": "Ajouter position"
+    },
+    "editPosition": {
+      "title": "Modifier position",
+      "update": "Mettre a jour"
     },
     "allocation": {
       "assets": "Allocation par actif",

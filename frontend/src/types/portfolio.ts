@@ -69,6 +69,7 @@ export type PositionRead = {
 export type PositionCreate = {
   symbol: string;
   asset_name: string;
+  name?: string | null;
   asset_type: string;
   quantity: number;
   average_price: number;
@@ -76,7 +77,12 @@ export type PositionCreate = {
   currency: string;
   sector: string;
   country: string;
+  exchange?: string | null;
+  industry?: string | null;
+  region?: string | null;
 };
+
+export type PositionUpdate = Partial<PositionCreate>;
 
 export type PositionListResponse = {
   portfolio_id: string;

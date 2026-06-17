@@ -27,6 +27,8 @@ import {
   PolicyResponse,
   PositionCreate,
   PositionListResponse,
+  PositionRead,
+  PositionUpdate,
   RebalancingPreviewResponse,
   RiskReturnResponse,
   TargetAllocationResponse,
@@ -65,10 +67,18 @@ type SimpleRow = {
 export function PortfolioPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { refreshPortfolios, selectPortfolio } = usePortfolioContext();
+  const {
+    refreshPortfolios,
+    selectPortfolio,
+    selectSymbol,
+    selectedHolding,
+  } = usePortfolioContext();
   const [selectedPortfolioId, setSelectedPortfolioId] = useState("");
   const [activeTab, setActiveTab] = useState<PortfolioTabId>("overview");
   const [isAddPositionOpen, setIsAddPositionOpen] = useState(false);
+  const [editingPosition, setEditingPosition] = useState<PositionRead | null>(
+    null,
+  );
 
   const portfoliosQuery = useQuery({
     queryKey: ["portfolios"],
@@ -268,6 +278,27 @@ export function PortfolioPage() {
     },
   });
 
+  const updatePositionMutation = useMutation({
+    mutationFn: ({
+      positionId,
+      payload,
+    }: {
+      positionId: string;
+      payload: PositionUpdate;
+    }) =>
+      apiClient.put<PositionRead>(
+        endpoints.portfolioPosition(selectedPortfolio?.id ?? "", positionId),
+        payload,
+      ),
+    onSuccess: (position) => {
+      setEditingPosition(null);
+      invalidatePortfolioQueries();
+      if (selectedHolding?.id === position.id) {
+        selectSymbol(position.symbol);
+      }
+    },
+  });
+
   const deletePositionMutation = useMutation({
     mutationFn: (positionId: string) =>
       apiClient.delete(
@@ -448,6 +479,7 @@ export function PortfolioPage() {
               <PositionTable
                 positions={positions}
                 onAddClick={() => setIsAddPositionOpen(true)}
+                onEdit={(position) => setEditingPosition(position)}
                 onDelete={(positionId) =>
                   deletePositionMutation.mutate(positionId)
                 }
@@ -456,6 +488,7 @@ export function PortfolioPage() {
                   add: t("portfolio.positions.add"),
                   symbol: t("portfolio.positions.symbol"),
                   name: t("portfolio.positions.name"),
+                  displayName: t("portfolio.positions.displayName"),
                   type: t("portfolio.positions.type"),
                   quantity: t("portfolio.positions.quantity"),
                   averagePrice: t("portfolio.positions.averagePrice"),
@@ -469,7 +502,11 @@ export function PortfolioPage() {
                   currency: t("portfolio.positions.currency"),
                   sector: t("portfolio.positions.sector"),
                   country: t("portfolio.positions.country"),
+                  exchange: t("portfolio.positions.exchange"),
+                  industry: t("portfolio.positions.industry"),
+                  region: t("portfolio.positions.region"),
                   actions: t("portfolio.positions.actions"),
+                  edit: t("portfolio.positions.edit"),
                   delete: t("portfolio.positions.delete"),
                   emptyTitle: t("portfolio.positions.emptyTitle"),
                   emptyMessage: t("portfolio.positions.emptyMessage"),
@@ -545,8 +582,10 @@ export function PortfolioPage() {
         onCreate={(payload) => createPositionMutation.mutate(payload)}
         labels={{
           title: t("portfolio.addPosition.title"),
+          editTitle: t("portfolio.editPosition.title"),
           symbol: t("portfolio.positions.symbol"),
           name: t("portfolio.positions.name"),
+          displayName: t("portfolio.positions.displayName"),
           type: t("portfolio.positions.type"),
           quantity: t("portfolio.positions.quantity"),
           averagePrice: t("portfolio.positions.averagePrice"),
@@ -554,8 +593,42 @@ export function PortfolioPage() {
           currency: t("portfolio.positions.currency"),
           sector: t("portfolio.positions.sector"),
           country: t("portfolio.positions.country"),
+          exchange: t("portfolio.positions.exchange"),
+          industry: t("portfolio.positions.industry"),
+          region: t("portfolio.positions.region"),
           cancel: t("portfolio.addPosition.cancel"),
           add: t("portfolio.addPosition.add"),
+          update: t("portfolio.editPosition.update"),
+        }}
+      />
+
+      <AddPositionModal
+        isOpen={Boolean(editingPosition)}
+        position={editingPosition}
+        onClose={() => setEditingPosition(null)}
+        onCreate={(payload) => createPositionMutation.mutate(payload)}
+        onUpdate={(positionId, payload) =>
+          updatePositionMutation.mutate({ positionId, payload })
+        }
+        labels={{
+          title: t("portfolio.addPosition.title"),
+          editTitle: t("portfolio.editPosition.title"),
+          symbol: t("portfolio.positions.symbol"),
+          name: t("portfolio.positions.name"),
+          displayName: t("portfolio.positions.displayName"),
+          type: t("portfolio.positions.type"),
+          quantity: t("portfolio.positions.quantity"),
+          averagePrice: t("portfolio.positions.averagePrice"),
+          currentPrice: t("portfolio.positions.currentPrice"),
+          currency: t("portfolio.positions.currency"),
+          sector: t("portfolio.positions.sector"),
+          country: t("portfolio.positions.country"),
+          exchange: t("portfolio.positions.exchange"),
+          industry: t("portfolio.positions.industry"),
+          region: t("portfolio.positions.region"),
+          cancel: t("portfolio.addPosition.cancel"),
+          add: t("portfolio.addPosition.add"),
+          update: t("portfolio.editPosition.update"),
         }}
       />
     </div>

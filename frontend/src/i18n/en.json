@@ -594,6 +594,7 @@
       "add": "Add position",
       "symbol": "Symbol",
       "name": "Name",
+      "displayName": "Display name",
       "type": "Type",
       "quantity": "Quantity",
       "averagePrice": "Avg price",
@@ -607,7 +608,11 @@
       "currency": "Currency",
       "sector": "Sector",
       "country": "Country",
+      "exchange": "Exchange",
+      "industry": "Industry",
+      "region": "Region",
       "actions": "Actions",
+      "edit": "Edit",
       "delete": "Delete",
       "emptyTitle": "No positions",
       "emptyMessage": "Add a position to start calculating allocation, concentration and portfolio diagnostics."
@@ -616,6 +621,10 @@
       "title": "Add position",
       "cancel": "Cancel",
       "add": "Add position"
+    },
+    "editPosition": {
+      "title": "Edit position",
+      "update": "Update position"
     },
     "allocation": {
       "assets": "Asset allocation",
