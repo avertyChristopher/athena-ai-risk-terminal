@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
+import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { useHealth } from "../../../hooks/useHealth";
 import { useTranslation } from "../../../hooks/useTranslation";
 
@@ -18,6 +19,13 @@ type Module = {
   description: string;
   status: "Live" | "Demo" | "Beta" | "Coming Soon";
   path: string;
+};
+
+type WorkflowModule = {
+  name: string;
+  description: string;
+  path: string;
+  meta: string;
 };
 
 const kpis: Kpi[] = [
@@ -125,6 +133,12 @@ const activityRows = [
 
 export function DashboardPage() {
   const { t } = useTranslation();
+  const {
+    holdings,
+    selectedHolding,
+    selectedPortfolioName,
+    selectedSymbol,
+  } = usePortfolioContext();
   const healthQuery = useHealth();
   const isConnected = !healthQuery.isError;
   const statusLabel = healthQuery.isLoading
@@ -132,6 +146,35 @@ export function DashboardPage() {
     : isConnected
       ? "API Connected"
       : "Demo Data Online";
+  const workflowPortfolioName =
+    selectedPortfolioName || "Athena Demo Portfolio";
+  const workflowSymbol = selectedSymbol || selectedHolding?.symbol || "--";
+  const workflowModules: WorkflowModule[] = [
+    {
+      name: "Market Data",
+      description: "Inspect prices, returns, volatility and data quality for the selected symbol.",
+      path: "/market-data",
+      meta: workflowSymbol,
+    },
+    {
+      name: "Equity Analysis",
+      description: "Run stock-level valuation, fundamentals, quality and peer diagnostics.",
+      path: "/equity-analysis",
+      meta: workflowSymbol,
+    },
+    {
+      name: "Portfolio Builder",
+      description: "Review holdings, allocation, concentration, policy and portfolio risk.",
+      path: "/portfolio-builder",
+      meta: `${holdings.length} holdings`,
+    },
+    {
+      name: "Trade Simulator",
+      description: "Simulate BUY or SELL tickets against the selected portfolio context.",
+      path: "/trade-simulator",
+      meta: workflowPortfolioName,
+    },
+  ];
 
   return (
     <div className="page dashboard-page">
@@ -165,6 +208,36 @@ export function DashboardPage() {
           <KpiCard key={kpi.label} kpi={kpi} />
         ))}
       </section>
+
+      <DashboardSection
+        title={t("workflow.connectedWorkflow")}
+        description="One selected portfolio and symbol can now move through market data, equity analysis, portfolio review and pre-trade simulation."
+      >
+        <div className="dashboard-workflow-summary">
+          <div>
+            <span>{t("workflow.selectedPortfolio")}</span>
+            <strong>{workflowPortfolioName}</strong>
+          </div>
+          <div>
+            <span>{t("workflow.symbol")}</span>
+            <strong>{workflowSymbol}</strong>
+          </div>
+          <div>
+            <span>{t("workflow.positions")}</span>
+            <strong>{holdings.length}</strong>
+          </div>
+        </div>
+        <div className="dashboard-workflow-grid">
+          {workflowModules.map((module, index) => (
+            <WorkflowCard
+              key={module.name}
+              module={module}
+              step={index + 1}
+              actionLabel={t("workflow.continueWorkflow")}
+            />
+          ))}
+        </div>
+      </DashboardSection>
 
       <DashboardSection
         title="Platform Overview"
@@ -282,6 +355,30 @@ function ModuleCard({ module }: { module: Module }) {
         <p>{module.description}</p>
       </div>
       <strong>Open module</strong>
+    </Link>
+  );
+}
+
+function WorkflowCard({
+  module,
+  step,
+  actionLabel,
+}: {
+  module: WorkflowModule;
+  step: number;
+  actionLabel: string;
+}) {
+  return (
+    <Link className="dashboard-workflow-card" to={module.path}>
+      <div>
+        <span className="dashboard-workflow-step">0{step}</span>
+        <h3>{module.name}</h3>
+        <p>{module.description}</p>
+      </div>
+      <div className="dashboard-workflow-card__footer">
+        <span>{module.meta}</span>
+        <strong>{actionLabel}</strong>
+      </div>
     </Link>
   );
 }

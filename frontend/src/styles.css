@@ -571,6 +571,103 @@ select {
   color: var(--muted);
 }
 
+.dashboard-workflow-summary {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 0.6fr;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.dashboard-workflow-summary div {
+  display: grid;
+  gap: 5px;
+  min-height: 82px;
+  padding: 15px;
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.12), rgba(138, 106, 67, 0.07)),
+    rgba(255, 255, 255, 0.9);
+}
+
+.dashboard-workflow-summary span,
+.dashboard-workflow-card p,
+.dashboard-workflow-card__footer span {
+  color: var(--muted);
+}
+
+.dashboard-workflow-summary strong {
+  font-size: 1.15rem;
+}
+
+.dashboard-workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dashboard-workflow-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 230px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.82)),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.dashboard-workflow-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.dashboard-workflow-step {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid rgba(107, 150, 195, 0.26);
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: rgba(107, 150, 195, 0.12);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.dashboard-workflow-card h3,
+.dashboard-workflow-card p {
+  margin: 0;
+}
+
+.dashboard-workflow-card h3 {
+  margin-top: 12px;
+}
+
+.dashboard-workflow-card__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.dashboard-workflow-card__footer strong {
+  color: var(--accent-strong);
+  font-size: 0.88rem;
+}
+
 .dashboard-split-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -3282,6 +3379,7 @@ ul.portfolio-note-list {
   .portfolio-two-column,
   .portfolio-diagnostics-columns,
   .trade-command-panel,
+  .workflow-selector-grid,
   .trade-workbench-grid,
   .trade-two-column,
   .trade-commentary-grid,
@@ -3365,7 +3463,8 @@ ul.portfolio-note-list {
   }
 
   .dashboard-kpi-grid,
-  .dashboard-module-grid {
+  .dashboard-module-grid,
+  .dashboard-workflow-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -3429,6 +3528,9 @@ ul.portfolio-note-list {
   .portfolio-endpoint-grid,
   .portfolio-diagnostics-grid,
   .trade-analysis-tabs,
+  .workflow-selector-grid,
+  .workflow-stat-list,
+  .workflow-symbol-details,
   .trade-ticket-cost-strip,
   .trade-summary-grid,
   .trade-policy-grid,
@@ -3482,6 +3584,8 @@ ul.portfolio-note-list {
 
   .dashboard-kpi-grid,
   .dashboard-module-grid,
+  .dashboard-workflow-grid,
+  .dashboard-workflow-summary,
   .dashboard-risk-grid {
     grid-template-columns: 1fr;
   }
