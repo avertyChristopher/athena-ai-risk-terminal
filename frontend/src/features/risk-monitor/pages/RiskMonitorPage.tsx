@@ -1,16 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
+import { PortfolioSelector } from "../../../components/workflow/PortfolioSelector";
+import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { EmptyState } from "../../../components/ui/EmptyState";
 import { LoadingState } from "../../../components/ui/LoadingState";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { apiClient } from "../../../lib/api-client";
 import { endpoints } from "../../../lib/endpoints";
-import { PortfolioListResponse } from "../../../types/portfolio";
 import {
   BenchmarkRiskResponse,
   RiskContributionResponse,
@@ -43,34 +44,45 @@ const tabs: RiskMonitorTab[] = [
 
 export function RiskMonitorPage() {
   const { t } = useTranslation();
-  const [selectedPortfolioId, setSelectedPortfolioId] = useState("");
+  const {
+    holdings,
+    isLoading: isPortfolioContextLoading,
+    selectPortfolio,
+    selectedPortfolio,
+  } = usePortfolioContext();
   const [activeTab, setActiveTab] = useState<RiskMonitorTab>("overview");
 
-  const portfoliosQuery = useQuery({
-    queryKey: ["risk-monitor-portfolios"],
-    queryFn: () => apiClient.get<PortfolioListResponse>(endpoints.portfolios),
-  });
   const statusQuery = useQuery({
     queryKey: ["risk-monitor-status"],
     queryFn: () => apiClient.get<RiskModuleStatus>(endpoints.riskMonitorStatus),
   });
-  const portfolios = portfoliosQuery.data?.items ?? [];
-
-  useEffect(() => {
-    if (!selectedPortfolioId && portfolios.length > 0) {
-      setSelectedPortfolioId(portfolios[0].id);
-    }
-  }, [portfolios, selectedPortfolioId]);
-
-  const selectedPortfolio = useMemo(
+  const holdingsSignature = useMemo(
     () =>
-      portfolios.find((portfolio) => portfolio.id === selectedPortfolioId) ??
-      portfolios[0],
-    [portfolios, selectedPortfolioId],
+      holdings
+        .map(
+          (holding) =>
+            [
+              holding.id,
+              holding.symbol,
+              holding.asset_type,
+              holding.quantity,
+              holding.average_price,
+              holding.current_price,
+              holding.currency,
+              holding.sector,
+              holding.country,
+            ].join(":"),
+        )
+        .join("|"),
+    [holdings],
   );
 
   const analysisQuery = useQuery({
-    queryKey: ["risk-monitor-analysis", selectedPortfolio?.id],
+    queryKey: [
+      "risk-monitor-analysis",
+      selectedPortfolio?.id,
+      holdingsSignature,
+    ],
     enabled: Boolean(selectedPortfolio?.id),
     queryFn: () =>
       apiClient.post<RiskMonitorAnalysisResponse>(endpoints.riskMonitorAnalyze, {
@@ -81,7 +93,7 @@ export function RiskMonitorPage() {
 
   const analysis = analysisQuery.data;
   const isLoading =
-    portfoliosQuery.isLoading || statusQuery.isLoading || analysisQuery.isLoading;
+    isPortfolioContextLoading || statusQuery.isLoading || analysisQuery.isLoading;
   const baseCurrency = selectedPortfolio?.base_currency ?? "USD";
 
   return (
@@ -98,22 +110,27 @@ export function RiskMonitorPage() {
           <p>{t("riskMonitor.workbench.description")}</p>
         </div>
         <div className="risk-monitor-command-panel__controls">
-          <label className="form-field">
-            <span>{t("riskMonitor.controls.portfolio")}</span>
-            <select
-              value={selectedPortfolio?.id ?? ""}
-              onChange={(event) => {
-                setSelectedPortfolioId(event.target.value);
-                setActiveTab("overview");
-              }}
-            >
-              {portfolios.map((portfolio) => (
-                <option key={portfolio.id} value={portfolio.id}>
-                  {portfolio.name}
-                </option>
+          <PortfolioSelector
+            compact
+            showDetails={false}
+            onPortfolioChange={(portfolioId) => {
+              selectPortfolio(portfolioId);
+              setActiveTab("overview");
+            }}
+          />
+          <div className="risk-monitor-holding-strip">
+            <span>{t("riskMonitor.controls.coverage")}</span>
+            <strong>
+              {holdings.length} {t("riskMonitor.controls.positionsAnalyzed")}
+            </strong>
+            <div>
+              {holdings.map((holding) => (
+                <span className="status-pill" key={holding.id}>
+                  {holding.symbol}
+                </span>
               ))}
-            </select>
-          </label>
+            </div>
+          </div>
           <div className="risk-monitor-badge-cluster">
             <RiskStatusBadge
               label={statusQuery.data?.status ?? t("common.loading")}

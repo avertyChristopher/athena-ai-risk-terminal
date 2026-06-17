@@ -1805,6 +1805,30 @@ ul.portfolio-note-list {
   gap: 12px;
 }
 
+.risk-monitor-command-panel__controls .workflow-panel {
+  box-shadow: none;
+}
+
+.risk-monitor-holding-strip {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.risk-monitor-holding-strip > span {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.risk-monitor-holding-strip > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .risk-monitor-badge-cluster {
   display: flex;
   flex-wrap: wrap;

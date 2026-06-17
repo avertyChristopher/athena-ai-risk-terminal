@@ -904,7 +904,9 @@
       "description": "Monitor portfolio risk, concentration, liquidity, benchmark deviation and IPS-style limits from one control surface."
     },
     "controls": {
-      "portfolio": "Portfolio"
+      "portfolio": "Portfolio",
+      "coverage": "Risk coverage",
+      "positionsAnalyzed": "positions analyzed"
     },
     "empty": {
       "title": "No portfolio selected",

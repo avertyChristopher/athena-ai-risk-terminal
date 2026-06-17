@@ -904,7 +904,9 @@
       "description": "Surveille le risque portefeuille, la concentration, la liquidite, l'ecart benchmark et les limites de type IPS depuis une seule interface."
     },
     "controls": {
-      "portfolio": "Portefeuille"
+      "portfolio": "Portefeuille",
+      "coverage": "Couverture risque",
+      "positionsAnalyzed": "positions analysees"
     },
     "empty": {
       "title": "Aucun portefeuille selectionne",
