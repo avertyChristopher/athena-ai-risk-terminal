@@ -2467,6 +2467,220 @@ ul.portfolio-note-list {
   display: none;
 }
 
+.options-lab-page {
+  display: grid;
+  gap: 20px;
+}
+
+.options-lab-command-actions {
+  display: grid;
+  justify-items: end;
+  gap: 12px;
+}
+
+.options-lab-symbol-strip {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.options-lab-symbol-strip span,
+.options-lab-symbol-strip small {
+  color: var(--muted);
+}
+
+.options-lab-symbol-strip strong {
+  color: var(--text);
+}
+
+.options-lab-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.options-lab-control-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.45fr);
+  gap: 14px;
+}
+
+.options-lab-input-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.options-lab-strategy-control {
+  margin-top: 2px;
+}
+
+.options-lab-strategy-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.options-lab-strategy-grid button {
+  display: grid;
+  gap: 5px;
+  min-height: 96px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.options-lab-strategy-grid button:hover,
+.options-lab-strategy-grid button.is-active {
+  border-color: var(--border-strong);
+  background: rgba(107, 150, 195, 0.1);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-1px);
+}
+
+.options-lab-strategy-grid button strong {
+  color: var(--text);
+}
+
+.options-lab-strategy-grid button span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.options-lab-tabs {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.options-lab-kpi-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.options-lab-table {
+  min-width: 720px;
+}
+
+.options-lab-note-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.options-lab-payoff-chart,
+.options-lab-sensitivity-bars {
+  display: grid;
+  gap: 9px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.09), rgba(138, 106, 67, 0.06)),
+    rgba(255, 255, 255, 0.72);
+}
+
+.options-lab-payoff-chart > div,
+.options-lab-sensitivity-bars > div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 92px;
+  gap: 10px;
+  align-items: center;
+}
+
+.options-lab-payoff-chart span,
+.options-lab-sensitivity-bars span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.options-lab-payoff-chart > div > div,
+.options-lab-sensitivity-bars > div > div {
+  height: 13px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(107, 150, 195, 0.12);
+}
+
+.options-lab-payoff-chart i,
+.options-lab-sensitivity-bars i {
+  display: block;
+  width: var(--bar-width);
+  height: 100%;
+  border-radius: inherit;
+}
+
+.options-lab-payoff-chart i.is-positive,
+.options-lab-sensitivity-bars i {
+  background: linear-gradient(90deg, var(--success), var(--accent));
+}
+
+.options-lab-payoff-chart i.is-negative {
+  background: linear-gradient(90deg, var(--danger), var(--warm-brown));
+}
+
+.options-lab-payoff-chart strong,
+.options-lab-sensitivity-bars strong {
+  text-align: right;
+}
+
+.options-lab-workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.options-lab-workflow-step {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 13px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 246, 242, 0.72)),
+    var(--surface);
+}
+
+.options-lab-workflow-step span {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid rgba(107, 150, 195, 0.26);
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: rgba(107, 150, 195, 0.12);
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.options-lab-workflow-step h3,
+.options-lab-workflow-step p {
+  margin: 0;
+}
+
+.options-lab-workflow-step p {
+  color: var(--muted);
+}
+
+.options-lab-workflow-step strong {
+  color: var(--accent-strong);
+}
+
+.options-lab-data-source {
+  margin-top: 2px;
+}
+
 @media print {
   body {
     background: #ffffff;
@@ -3986,6 +4200,7 @@ ul.portfolio-note-list {
   .trade-commentary-grid,
   .risk-monitor-command-panel,
   .volatility-lab-control-layout,
+  .options-lab-control-layout,
   .risk-monitor-overview-grid,
   .risk-monitor-two-column,
   .risk-monitor-commentary-grid {
@@ -4004,6 +4219,11 @@ ul.portfolio-note-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .options-lab-tabs,
+  .options-lab-strategy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .portfolio-metric-grid,
   .portfolio-metric-grid--compact,
   .portfolio-endpoint-grid,
@@ -4019,6 +4239,8 @@ ul.portfolio-note-list {
   .market-data-coverage-grid,
   .risk-monitor-control-groups,
   .risk-monitor-control-grid,
+  .options-lab-input-grid,
+  .options-lab-workflow-grid,
   .equity-scorecard-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -4147,6 +4369,12 @@ ul.portfolio-note-list {
   .risk-monitor-alert-grid,
   .risk-monitor-breach-grid,
   .volatility-lab-control-layout,
+  .options-lab-control-layout,
+  .options-lab-input-grid,
+  .options-lab-strategy-grid,
+  .options-lab-tabs,
+  .options-lab-kpi-grid,
+  .options-lab-workflow-grid,
   .market-data-coverage-grid,
   .risk-monitor-control-groups,
   .risk-monitor-control-grid,
@@ -4161,6 +4389,8 @@ ul.portfolio-note-list {
   .risk-monitor-section-card__header,
   .risk-monitor-command-panel,
   .risk-monitor-controls-panel__header,
+  .options-lab-command-actions,
+  .options-lab-action-row,
   .volatility-histogram__row,
   .market-data-coverage-panel__header,
   .equity-analyst-scorecard__header,
@@ -4172,6 +4402,17 @@ ul.portfolio-note-list {
   .volatility-histogram__row {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .options-lab-payoff-chart > div,
+  .options-lab-sensitivity-bars > div {
+    grid-template-columns: 58px minmax(0, 1fr);
+  }
+
+  .options-lab-payoff-chart strong,
+  .options-lab-sensitivity-bars strong {
+    grid-column: 2;
+    text-align: left;
   }
 
   .portfolio-section-card__aside,

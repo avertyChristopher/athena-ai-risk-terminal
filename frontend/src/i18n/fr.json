@@ -1353,6 +1353,221 @@
       "correlation": "Correlation"
     }
   },
+  "optionsPricingLab": {
+    "title": "Laboratoire de pricing d'options",
+    "subtitle": "Pricing Black-Scholes, controle binomial, Greeks, parite, scenarios de payoff et strategies d'options pour le workflow Athena.",
+    "workbench": {
+      "eyebrow": "Poste derives",
+      "title": "Pricing d'options et analyse de payoff",
+      "description": "Price des contrats simples, inspecte les sensibilites et evalue des strategies deterministes avec Market Data et Volatility Lab quand les donnees sont disponibles."
+    },
+    "badges": {
+      "blackScholes": "Black-Scholes",
+      "marketData": "Lien Market Data",
+      "volatilityLab": "Lien Volatility Lab"
+    },
+    "controls": {
+      "eyebrow": "Parametrage",
+      "title": "Contrat, modele et hypotheses",
+      "description": "Selectionne un sous-jacent depuis le portefeuille ou l'univers suivi, puis ajuste strike, maturite, taux, volatilite et modele.",
+      "reset": "Reinitialiser",
+      "reprice": "Repricer",
+      "underlying": "Sous-jacent",
+      "underlyingDescription": "Choisis une ligne de portefeuille ou un symbole Market Data autonome.",
+      "contract": "Contrat option",
+      "optionType": "Type d'option",
+      "side": "Sens",
+      "model": "Modele",
+      "spot": "Prix spot",
+      "autoMarketData": "Auto depuis Market Data",
+      "strike": "Strike",
+      "expiration": "Jours avant echeance",
+      "volatility": "Volatilite %",
+      "autoVolatility": "Auto depuis Volatility Lab",
+      "riskFreeRate": "Taux sans risque %",
+      "dividendYield": "Rendement dividende %",
+      "contractSize": "Taille contrat",
+      "quantity": "Quantite",
+      "binomialSteps": "Pas binomial"
+    },
+    "labels": {
+      "call": "Call",
+      "put": "Put",
+      "long": "Long",
+      "short": "Short",
+      "blackScholes": "Black-Scholes",
+      "black_scholes": "Black-Scholes",
+      "binomial": "Binomial"
+    },
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "overviewShort": "Contrat",
+      "payoff": "Payoff",
+      "payoffShort": "Profit",
+      "greeks": "Greeks",
+      "greeksShort": "Risque",
+      "models": "Modeles",
+      "modelsShort": "BS / arbre",
+      "parity": "Parite",
+      "parityShort": "No-arb",
+      "strategy": "Strategie",
+      "strategyShort": "Multi-leg",
+      "sensitivity": "Sensibilite",
+      "sensitivityShort": "Scenarios",
+      "workflow": "Workflow",
+      "workflowShort": "Liens"
+    },
+    "kpis": {
+      "optionPrice": "Prix option",
+      "contractPremium": "Prime contrat",
+      "premiumSubtitle": "Prime x taille contrat x quantite",
+      "delta": "Delta",
+      "breakeven": "Point mort",
+      "maxLoss": "Perte max",
+      "strategyPremium": "Prime strategie"
+    },
+    "sections": {
+      "pricingSummary": "Synthese pricing",
+      "keyPoints": "Points cles",
+      "valueDecomposition": "Decomposition de valeur",
+      "valueDecompositionDescription": "Separe la prime entre valeur intrinseque, valeur temps et moneyness.",
+      "cfaConcepts": "Concepts CFA niveau I",
+      "cfaConceptsDescription": "Idees centrales des derives utilisees dans ce module.",
+      "payoff": "Scenarios payoff et profit",
+      "greeks": "Sensibilites Greeks",
+      "greeksDescription": "Exposition directionnelle, convexite, decay temps, sensibilite volatilite et sensibilite taux.",
+      "blackScholes": "Moteur Black-Scholes",
+      "blackScholesDescription": "Pricing d'option europeenne avec rendement dividende continu.",
+      "binomial": "Moteur binomial CRR",
+      "binomialDescription": "Comparaison arbre risque-neutre contre Black-Scholes.",
+      "parity": "Parite put-call",
+      "priceSensitivity": "Sensibilite au prix du sous-jacent",
+      "priceSensitivityDescription": "Valeur option recalculee sur des chocs spot deterministes.",
+      "volatilitySensitivity": "Sensibilite a la volatilite",
+      "volatilitySensitivityDescription": "Valeur option recalculee sur des chocs de volatilite.",
+      "greeksByPrice": "Greeks par prix du sous-jacent",
+      "greeksByPriceDescription": "Delta, Gamma et Vega sur des scenarios de spot."
+    },
+    "strategy": {
+      "title": "Laboratoire de strategies",
+      "active": "Strategie active",
+      "deterministic": "Scenario deterministe",
+      "netPremium": "Prime nette",
+      "maxProfit": "Gain max",
+      "maxLoss": "Perte max",
+      "commentary": "Commentaire strategie",
+      "payoffTable": "Table payoff strategie",
+      "payoffDescription": "Payoff et profit scenario pour la strategie selectionnee."
+    },
+    "strategyTypes": {
+      "covered_call": "Covered Call",
+      "protective_put": "Protective Put",
+      "long_straddle": "Long Straddle",
+      "long_strangle": "Long Strangle",
+      "bull_call_spread": "Bull Call Spread",
+      "bear_put_spread": "Bear Put Spread",
+      "collar": "Collar",
+      "cash_secured_put": "Cash-Secured Put"
+    },
+    "strategyDescriptions": {
+      "covered_call": "Overlay short call sur exposition action long.",
+      "protective_put": "Plancher downside pour une position long existante.",
+      "long_straddle": "Long call et put au meme strike.",
+      "long_strangle": "Vue volatilite via call et put OTM.",
+      "bull_call_spread": "Spread call haussier a risque defini.",
+      "bear_put_spread": "Spread put baissier a risque defini.",
+      "collar": "Put protecteur finance par un short call qui plafonne l'upside.",
+      "cash_secured_put": "Revenu de prime avec obligation potentielle d'achat."
+    },
+    "table": {
+      "metric": "Metrique",
+      "value": "Valeur",
+      "underlying": "Sous-jacent",
+      "spot": "Spot",
+      "strike": "Strike",
+      "expiration": "Echeance",
+      "days": "jours",
+      "volatility": "Volatilite",
+      "notional": "Notionnel",
+      "intrinsicValue": "Valeur intrinseque",
+      "timeValue": "Valeur temps",
+      "moneynessRatio": "Ratio moneyness",
+      "underlyingPrice": "Prix sous-jacent",
+      "payoff": "Payoff",
+      "profit": "Profit",
+      "d1": "d1",
+      "d2": "d2",
+      "assumptions": "Hypotheses",
+      "price": "Prix",
+      "upFactor": "Facteur up",
+      "downFactor": "Facteur down",
+      "riskNeutralProbability": "Probabilite risque-neutre",
+      "steps": "Pas",
+      "modelDifference": "Ecart modele",
+      "leg": "Jambe",
+      "side": "Sens",
+      "premium": "Prime",
+      "optionPrice": "Prix option"
+    },
+    "greeks": {
+      "delta": "Delta",
+      "gamma": "Gamma",
+      "thetaDaily": "Theta quotidien",
+      "thetaAnnual": "Theta annuel",
+      "vega": "Vega",
+      "rho": "Rho",
+      "deltaPerContract": "Delta par contrat",
+      "deltaAdjustedExposure": "Exposition ajustee du delta"
+    },
+    "parity": {
+      "leftSide": "Call + VA(strike)",
+      "rightSide": "Put + spot actualise",
+      "gap": "Ecart de parite"
+    },
+    "parityStatus": {
+      "aligned": "Alignee",
+      "small_deviation": "Petit ecart",
+      "potential_arbitrage": "Arbitrage potentiel"
+    },
+    "moneyness": {
+      "in_the_money": "Dans la monnaie",
+      "at_the_money": "A la monnaie",
+      "out_of_the_money": "Hors de la monnaie",
+      "unknown": "Inconnu"
+    },
+    "sources": {
+      "marketData": "Market Data",
+      "volatilityLabEwma": "Volatility Lab EWMA",
+      "volatilityLabRealized": "Volatility Lab realise",
+      "manual": "Saisie manuelle",
+      "demo": "Fallback demo",
+      "demoRate": "Proxy taux demo",
+      "demoDividend": "Proxy dividende demo"
+    },
+    "dataSource": {
+      "price": "Source prix",
+      "volatility": "Source volatilite",
+      "rates": "Source taux",
+      "fallback": "Fallback",
+      "clean": "Les inputs sont connectes ou explicitement fournis."
+    },
+    "workflow": {
+      "standalone": "Symbole autonome",
+      "title": "Integration workflow Athena",
+      "description": "Les analytiques options sont connectees au meme contexte portefeuille, market data et risque que les autres modules Athena.",
+      "marketData": "Utilise les derniers prix suivis si le spot manuel n'est pas fourni.",
+      "volatilityLab": "Utilise l'EWMA ou la volatilite realisee si la volatilite manuelle n'est pas fournie.",
+      "portfolio": "Reutilise les lignes selectionnees et le contexte portefeuille.",
+      "riskMonitor": "Les Greeks et l'exposition delta prepare un futur payload de risque options.",
+      "tradeSimulator": "Les strategies pourront devenir des tickets simules dans un increment suivant."
+    },
+    "empty": {
+      "errorTitle": "API Options Pricing Lab indisponible",
+      "errorMessage": "Lance le backend ou verifie que les endpoints options-pricing-lab sont enregistres.",
+      "strategyTitle": "Aucune strategie disponible",
+      "strategyMessage": "Choisis une strategie et verifie que les inputs de pricing sont valides."
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Données de marché",
@@ -1380,7 +1595,7 @@
     },
     "optionsPricing": {
       "title": "Laboratoire de pricing d'options",
-      "description": "Le pricing Black-Scholes, les Greeks et l'analyse des payoffs seront ajoutés ici."
+      "description": "Pricing Black-Scholes, Greeks, parite, scenarios de payoff et analytiques de strategies d'options."
     },
     "ratesLab": {
       "title": "Laboratoire des taux",

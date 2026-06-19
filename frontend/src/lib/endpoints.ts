@@ -102,4 +102,8 @@ export const endpoints = {
   volatilityLabAnalyzeAsset: "/api/volatility-lab/analyze-asset",
   volatilityLabAnalyzePortfolio: "/api/volatility-lab/analyze-portfolio",
   volatilityLabDemo: "/api/volatility-lab/demo",
+  optionsPricingLabStatus: "/api/options-pricing-lab/status",
+  optionsPricingLabPrice: "/api/options-pricing-lab/price",
+  optionsPricingLabStrategy: "/api/options-pricing-lab/strategy",
+  optionsPricingLabDemo: "/api/options-pricing-lab/demo",
 } as const;

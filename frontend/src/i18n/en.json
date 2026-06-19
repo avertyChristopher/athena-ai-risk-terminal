@@ -1353,6 +1353,221 @@
       "correlation": "Correlation"
     }
   },
+  "optionsPricingLab": {
+    "title": "Options Pricing Lab",
+    "subtitle": "Black-Scholes pricing, binomial checks, Greeks, parity, payoff scenarios and strategy analytics for the Athena workflow.",
+    "workbench": {
+      "eyebrow": "Derivatives workstation",
+      "title": "Options pricing and payoff lab",
+      "description": "Price single contracts, inspect sensitivities and evaluate deterministic option strategies with Market Data and Volatility Lab inputs when available."
+    },
+    "badges": {
+      "blackScholes": "Black-Scholes",
+      "marketData": "Market Data link",
+      "volatilityLab": "Volatility Lab link"
+    },
+    "controls": {
+      "eyebrow": "Pricing setup",
+      "title": "Contract, model and assumptions",
+      "description": "Select an underlying from the portfolio or tracked universe, then adjust strike, maturity, rates, volatility and model settings.",
+      "reset": "Reset",
+      "reprice": "Reprice",
+      "underlying": "Underlying",
+      "underlyingDescription": "Choose a portfolio holding or standalone Market Data symbol.",
+      "contract": "Option contract",
+      "optionType": "Option type",
+      "side": "Side",
+      "model": "Model",
+      "spot": "Spot price",
+      "autoMarketData": "Auto from Market Data",
+      "strike": "Strike",
+      "expiration": "Days to expiry",
+      "volatility": "Volatility %",
+      "autoVolatility": "Auto from Volatility Lab",
+      "riskFreeRate": "Risk-free rate %",
+      "dividendYield": "Dividend yield %",
+      "contractSize": "Contract size",
+      "quantity": "Quantity",
+      "binomialSteps": "Binomial steps"
+    },
+    "labels": {
+      "call": "Call",
+      "put": "Put",
+      "long": "Long",
+      "short": "Short",
+      "blackScholes": "Black-Scholes",
+      "black_scholes": "Black-Scholes",
+      "binomial": "Binomial"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "overviewShort": "Contract",
+      "payoff": "Payoff",
+      "payoffShort": "Profit",
+      "greeks": "Greeks",
+      "greeksShort": "Risk",
+      "models": "Models",
+      "modelsShort": "BS / tree",
+      "parity": "Parity",
+      "parityShort": "No-arb",
+      "strategy": "Strategy",
+      "strategyShort": "Multi-leg",
+      "sensitivity": "Sensitivity",
+      "sensitivityShort": "Scenarios",
+      "workflow": "Workflow",
+      "workflowShort": "Links"
+    },
+    "kpis": {
+      "optionPrice": "Option Price",
+      "contractPremium": "Contract Premium",
+      "premiumSubtitle": "Premium x contract size x quantity",
+      "delta": "Delta",
+      "breakeven": "Breakeven",
+      "maxLoss": "Max Loss",
+      "strategyPremium": "Strategy Premium"
+    },
+    "sections": {
+      "pricingSummary": "Pricing summary",
+      "keyPoints": "Key points",
+      "valueDecomposition": "Value decomposition",
+      "valueDecompositionDescription": "Split premium into intrinsic value, time value and moneyness.",
+      "cfaConcepts": "CFA Level I concepts",
+      "cfaConceptsDescription": "Core derivatives ideas used in this module.",
+      "payoff": "Payoff and profit scenarios",
+      "greeks": "Greek sensitivities",
+      "greeksDescription": "Directional exposure, convexity, time decay, volatility sensitivity and rate sensitivity.",
+      "blackScholes": "Black-Scholes engine",
+      "blackScholesDescription": "European option pricing with continuous dividend yield.",
+      "binomial": "Binomial CRR engine",
+      "binomialDescription": "Risk-neutral tree comparison against Black-Scholes.",
+      "parity": "Put-call parity",
+      "priceSensitivity": "Underlying price sensitivity",
+      "priceSensitivityDescription": "Option value recalculated across deterministic spot shocks.",
+      "volatilitySensitivity": "Volatility sensitivity",
+      "volatilitySensitivityDescription": "Option value recalculated across volatility shocks.",
+      "greeksByPrice": "Greeks by underlying price",
+      "greeksByPriceDescription": "Delta, Gamma and Vega across spot scenarios."
+    },
+    "strategy": {
+      "title": "Strategy lab",
+      "active": "Active strategy",
+      "deterministic": "Deterministic scenario",
+      "netPremium": "Net premium",
+      "maxProfit": "Max profit",
+      "maxLoss": "Max loss",
+      "commentary": "Strategy commentary",
+      "payoffTable": "Strategy payoff table",
+      "payoffDescription": "Scenario payoff and profit for the selected strategy."
+    },
+    "strategyTypes": {
+      "covered_call": "Covered Call",
+      "protective_put": "Protective Put",
+      "long_straddle": "Long Straddle",
+      "long_strangle": "Long Strangle",
+      "bull_call_spread": "Bull Call Spread",
+      "bear_put_spread": "Bear Put Spread",
+      "collar": "Collar",
+      "cash_secured_put": "Cash-Secured Put"
+    },
+    "strategyDescriptions": {
+      "covered_call": "Short call overlay on long stock exposure.",
+      "protective_put": "Downside floor for an existing long position.",
+      "long_straddle": "Long call and put at the same strike.",
+      "long_strangle": "Long OTM call and put volatility view.",
+      "bull_call_spread": "Defined-risk bullish call spread.",
+      "bear_put_spread": "Defined-risk bearish put spread.",
+      "collar": "Protective put financed by short call upside cap.",
+      "cash_secured_put": "Premium income with purchase obligation."
+    },
+    "table": {
+      "metric": "Metric",
+      "value": "Value",
+      "underlying": "Underlying",
+      "spot": "Spot",
+      "strike": "Strike",
+      "expiration": "Expiration",
+      "days": "days",
+      "volatility": "Volatility",
+      "notional": "Notional",
+      "intrinsicValue": "Intrinsic value",
+      "timeValue": "Time value",
+      "moneynessRatio": "Moneyness ratio",
+      "underlyingPrice": "Underlying price",
+      "payoff": "Payoff",
+      "profit": "Profit",
+      "d1": "d1",
+      "d2": "d2",
+      "assumptions": "Assumptions",
+      "price": "Price",
+      "upFactor": "Up factor",
+      "downFactor": "Down factor",
+      "riskNeutralProbability": "Risk-neutral probability",
+      "steps": "Steps",
+      "modelDifference": "Model difference",
+      "leg": "Leg",
+      "side": "Side",
+      "premium": "Premium",
+      "optionPrice": "Option price"
+    },
+    "greeks": {
+      "delta": "Delta",
+      "gamma": "Gamma",
+      "thetaDaily": "Theta daily",
+      "thetaAnnual": "Theta annual",
+      "vega": "Vega",
+      "rho": "Rho",
+      "deltaPerContract": "Delta per contract",
+      "deltaAdjustedExposure": "Delta-adjusted exposure"
+    },
+    "parity": {
+      "leftSide": "Call + PV(strike)",
+      "rightSide": "Put + discounted spot",
+      "gap": "Parity gap"
+    },
+    "parityStatus": {
+      "aligned": "Aligned",
+      "small_deviation": "Small deviation",
+      "potential_arbitrage": "Potential arbitrage"
+    },
+    "moneyness": {
+      "in_the_money": "In the money",
+      "at_the_money": "At the money",
+      "out_of_the_money": "Out of the money",
+      "unknown": "Unknown"
+    },
+    "sources": {
+      "marketData": "Market Data",
+      "volatilityLabEwma": "Volatility Lab EWMA",
+      "volatilityLabRealized": "Volatility Lab realized",
+      "manual": "Manual input",
+      "demo": "Demo fallback",
+      "demoRate": "Demo rate proxy",
+      "demoDividend": "Demo dividend proxy"
+    },
+    "dataSource": {
+      "price": "Price source",
+      "volatility": "Volatility source",
+      "rates": "Rate source",
+      "fallback": "Fallback",
+      "clean": "Inputs are connected or explicitly provided."
+    },
+    "workflow": {
+      "standalone": "Standalone symbol",
+      "title": "Athena workflow integration",
+      "description": "Options analytics are connected to the same portfolio, market data and risk workflow used by the other Athena modules.",
+      "marketData": "Uses latest tracked prices when manual spot is not provided.",
+      "volatilityLab": "Uses EWMA or realized volatility when manual volatility is not provided.",
+      "portfolio": "Reuses selected holdings and portfolio context.",
+      "riskMonitor": "Greeks and delta-adjusted exposure prepare future option risk payloads.",
+      "tradeSimulator": "Strategies can become simulated trade tickets in a later increment."
+    },
+    "empty": {
+      "errorTitle": "Options Pricing Lab API unavailable",
+      "errorMessage": "Start the backend or verify that the options-pricing-lab endpoints are registered.",
+      "strategyTitle": "No strategy available",
+      "strategyMessage": "Choose a strategy and make sure pricing inputs are valid."
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Market Data",
@@ -1380,7 +1595,7 @@
     },
     "optionsPricing": {
       "title": "Options Pricing Lab",
-      "description": "Black-Scholes pricing, Greeks, and payoff analysis will be added here."
+      "description": "Black-Scholes pricing, Greeks, parity, payoff scenarios and options strategy analytics."
     },
     "ratesLab": {
       "title": "Rates Lab",

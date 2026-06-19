@@ -1,10 +1,5 @@
-import { FeaturePlaceholderPage } from "../../shared/FeaturePlaceholderPage";
+import { OptionsPricingLabPage } from "../../options-pricing-lab/pages/OptionsPricingLabPage";
 
 export function OptionsPricingPage() {
-  return (
-    <FeaturePlaceholderPage
-      titleKey="pages.optionsPricing.title"
-      descriptionKey="pages.optionsPricing.description"
-    />
-  );
+  return <OptionsPricingLabPage />;
 }
