@@ -40,6 +40,7 @@ from app.modules.risk_monitor.schemas import (
     ConcentrationAnalysis,
     ConcentrationExposure,
     RiskAlert,
+    RiskContributionItem,
     RiskContributionResponse,
     RiskLimitBreach,
     RiskMetric,
@@ -50,6 +51,8 @@ from app.modules.risk_monitor.schemas import (
     RiskSourceMetadata,
     StressScenarioResult,
 )
+from app.modules.risk_shared.mappers import shared_payload_to_risk_source
+from app.modules.risk_shared.schemas import SharedRiskPayload
 
 
 class RiskMonitorService:
@@ -271,6 +274,158 @@ class RiskMonitorService:
             ),
         )
 
+    def analyze_from_volatility(
+        self,
+        payload: SharedRiskPayload,
+    ) -> RiskMonitorAnalysisResponse:
+        portfolio = (
+            self.repository.get_portfolio(payload.portfolio_id)
+            if payload.portfolio_id
+            else None
+        )
+        positions = (
+            self.repository.list_positions(payload.portfolio_id)
+            if payload.portfolio_id and portfolio is not None
+            else []
+        )
+        cash = float(portfolio["cash"]) if portfolio is not None else 0.0
+        decorated_positions = decorate_positions(positions, cash)
+        total_value = calculate_total_value(decorated_positions, cash)
+        cash_weight = cash / total_value if total_value else 0.0
+        top_3_weight = calculate_top_n_weight(decorated_positions, 3)
+        sector_exposures = calculate_exposure_by_key(decorated_positions, "sector")
+        asset_type_exposures = calculate_exposure_by_key(
+            decorated_positions,
+            "asset_type",
+        )
+        active_exposure = 0.0
+        expected_return = 0.0
+        volatility = payload.annualized_volatility
+        var_95 = payload.historical_var
+        cvar_95 = payload.historical_cvar
+        max_drawdown = payload.max_drawdown
+        tracking_error = payload.tracking_error
+        sharpe_ratio = payload.sharpe_ratio
+        sortino_ratio = payload.sortino_ratio
+        beta = payload.beta
+        information_ratio = calculate_information_ratio(
+            expected_return,
+            tracking_error,
+        )
+        breaches = evaluate_limit_breaches(
+            decorated_positions=decorated_positions,
+            sector_exposures=sector_exposures,
+            asset_type_exposures=asset_type_exposures,
+            cash_weight=cash_weight,
+            top_3_weight=top_3_weight,
+            volatility=volatility,
+            var_95=var_95,
+            cvar_95=cvar_95,
+            max_drawdown=max_drawdown,
+            tracking_error=tracking_error,
+            active_exposure=active_exposure,
+            limit_overrides=None,
+        )
+        stress_tests = (
+            run_stress_scenarios(decorated_positions, total_value)
+            if decorated_positions
+            else []
+        )
+        breach_severities = [str(breach["severity"]) for breach in breaches]
+        global_risk_score = calculate_risk_score(
+            volatility=volatility,
+            var_95=var_95,
+            cvar_95=cvar_95,
+            max_drawdown=max_drawdown,
+            top_3_weight=top_3_weight,
+            cash_weight=cash_weight,
+            active_exposure=active_exposure,
+            breach_severities=breach_severities,
+        )
+        global_risk_status = classify_global_risk_status(global_risk_score)
+        benchmark_warnings = [
+            "Using Volatility Lab risk payload.",
+            f"Payload generated at {payload.generated_at.isoformat()}.",
+        ]
+        if payload.fallback_used:
+            benchmark_warnings.append(
+                "Volatility Lab payload includes fallback or partial data assumptions.",
+            )
+        main_drivers = self._main_drivers(
+            decorated_positions,
+            top_3_weight,
+            breaches,
+            stress_tests,
+        )
+        if payload.warnings:
+            main_drivers = [*payload.warnings[:2], *main_drivers][:5]
+        alerts = build_risk_alerts(breaches, stress_tests)
+        commentary = build_athena_risk_commentary(
+            status=global_risk_status,
+            main_drivers=main_drivers,
+            breaches=breaches,
+            stress_tests=stress_tests,
+            benchmark_warnings=benchmark_warnings,
+        )
+
+        return RiskMonitorAnalysisResponse(
+            portfolio_id=payload.portfolio_id or payload.symbol or "volatility-payload",
+            portfolio_name=(
+                str(portfolio["name"])
+                if portfolio is not None
+                else payload.symbol or "Volatility Lab Payload"
+            ),
+            benchmark_symbol=payload.benchmark_symbol.upper(),
+            total_value=total_value,
+            global_risk_score=global_risk_score,
+            global_risk_status=global_risk_status,
+            main_drivers=main_drivers,
+            risk_metrics=self._risk_metrics(
+                expected_return=expected_return,
+                volatility=volatility,
+                var_95=var_95,
+                cvar_95=cvar_95,
+                max_drawdown=max_drawdown,
+                sharpe_ratio=sharpe_ratio,
+                sortino_ratio=sortino_ratio,
+                beta=beta,
+                tracking_error=tracking_error,
+                information_ratio=information_ratio,
+                source=payload.metric_source,
+            ),
+            concentration=self._concentration_analysis(
+                decorated_positions,
+                cash_weight,
+                top_3_weight,
+            ),
+            limit_breaches=[RiskLimitBreach.model_validate(breach) for breach in breaches],
+            stress_tests=[
+                StressScenarioResult.model_validate(scenario)
+                for scenario in stress_tests
+            ],
+            risk_contribution=self._payload_risk_contribution(payload),
+            benchmark_risk=BenchmarkRiskResponse(
+                benchmark_symbol=payload.benchmark_symbol.upper(),
+                beta=beta,
+                active_exposure=active_exposure,
+                tracking_error=tracking_error,
+                information_ratio=information_ratio,
+                active_risk_status=self._benchmark_status(
+                    active_exposure,
+                    tracking_error,
+                ),
+                warnings=benchmark_warnings,
+                badges=["Volatility Lab Payload", payload.metric_source],
+            ),
+            alerts=[RiskAlert.model_validate(alert) for alert in alerts],
+            athena_commentary=AthenaRiskCommentary.model_validate(commentary),
+            risk_source=shared_payload_to_risk_source(payload),
+            assumptions=RiskMonitorAssumptions(
+                limits=DEFAULT_RISK_LIMITS,
+                stress_shocks=DEFAULT_STRESS_SHOCKS,
+            ),
+        )
+
     def _risk_metrics(
         self,
         *,
@@ -382,6 +537,34 @@ class RiskMonitorService:
             cash_weight=cash_weight,
             concentration_score=min(1.0, top_3_weight),
             warnings=warnings,
+        )
+
+    def _payload_risk_contribution(
+        self,
+        payload: SharedRiskPayload,
+    ) -> RiskContributionResponse:
+        by_asset = [
+            RiskContributionItem(
+                name=item.symbol,
+                weight=item.weight,
+                contribution=item.contribution,
+                contribution_percent=item.contribution,
+                source="volatility_lab_payload",
+            )
+            for item in payload.risk_contribution
+        ]
+        largest = max(
+            by_asset,
+            key=lambda item: item.contribution,
+            default=None,
+        )
+        return RiskContributionResponse(
+            contribution_source="volatility_lab_payload",
+            method="Reused from Volatility Lab risk_monitor_payload.",
+            by_asset=by_asset,
+            by_sector=[],
+            largest_risk_contributor=largest.name if largest else None,
+            diversification_warning=None,
         )
 
     def _basic_drivers(
