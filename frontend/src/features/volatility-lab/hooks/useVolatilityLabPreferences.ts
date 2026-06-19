@@ -13,6 +13,7 @@ export type VolatilityLabPreferences = {
   riskFreeRate: number;
   startDate: string;
   endDate: string;
+  horizonDays: number;
   selectedVarMethod: VolatilityVarMethod;
 };
 
@@ -28,6 +29,7 @@ export const defaultVolatilityLabPreferences: VolatilityLabPreferences = {
   riskFreeRate: 0.02,
   startDate: "",
   endDate: "",
+  horizonDays: 1,
   selectedVarMethod: "historical",
 };
 

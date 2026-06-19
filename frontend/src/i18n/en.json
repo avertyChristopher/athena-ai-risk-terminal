@@ -949,6 +949,10 @@
       "coverage": "Risk coverage",
       "positionsAnalyzed": "positions analyzed"
     },
+    "volatilityPayload": {
+      "using": "Using Volatility Lab risk payload",
+      "source": "Payload source"
+    },
     "assumptions": {
       "eyebrow": "Configurable assumptions",
       "title": "Limits and stress tests",
@@ -1106,7 +1110,11 @@
       "defaultRange": "Full available history",
       "applyFilters": "Apply filters",
       "resetFilters": "Reset filters",
-      "varMethod": "VaR method"
+      "varMethod": "VaR method",
+      "varHorizon": "VaR horizon",
+      "oneDayVar": "1-day VaR",
+      "fiveDayVar": "5-day VaR",
+      "tenDayVar": "10-day VaR"
     },
     "badges": {
       "awaitingAnalysis": "Awaiting analysis",
@@ -1173,6 +1181,8 @@
       "riskAdjustedShort": "Ratios",
       "dataQuality": "Data Quality",
       "dataQualityShort": "Coverage",
+      "methodology": "Methodology",
+      "methodologyShort": "Assumptions",
       "advanced": "Advanced Models",
       "advancedShort": "Roadmap",
       "commentary": "Commentary",
@@ -1223,7 +1233,22 @@
       "dataQualityDescription": "Observations, missing symbols, fallback status and Market Data coverage metadata.",
       "riskMonitorLink": "Risk Monitor Link",
       "riskMonitorLinkDescription": "Volatility Lab provides realized volatility, beta, VaR/CVaR, drawdown and risk contribution metrics that can be reused by Risk Monitor.",
+      "sendToRiskMonitor": "Send to Risk Monitor",
+      "riskMonitorSent": "Using Volatility Lab risk payload in Risk Monitor.",
+      "riskMonitorPrepared": "Risk Monitor integration prepared. Risk Monitor can reuse this payload in a future version.",
       "openRiskMonitor": "Open Risk Monitor",
+      "portfolioCoverage": "Portfolio coverage",
+      "portfolioCoverageDescription": "Coverage shows how much of the selected portfolio has usable realized return history.",
+      "dateFilter": "Date filter",
+      "dateFilterDescription": "Backend-validated date range and observations after filtering.",
+      "returnQuality": "Invalid price observations",
+      "returnQualityDescription": "Skipped returns caused by missing, zero, negative or invalid close prices.",
+      "methodology": "Methodology and assumptions",
+      "methodologyDescription": "Transparent model assumptions for volatility, covariance, VaR, EWMA and Monte Carlo.",
+      "varBacktesting": "VaR backtesting",
+      "stressScenarios": "Stress volatility scenarios",
+      "stressScenariosDescription": "Stress scenarios are deterministic and educational.",
+      "invalidPriceObservations": "Invalid price observations",
       "advanced": "Advanced Models Roadmap",
       "advancedDescription": "EWMA is available now; GARCH, implied volatility and volatility surface analytics are prepared as roadmap items.",
       "commentary": "Athena volatility commentary",
@@ -1302,7 +1327,30 @@
       "lambda": "Lambda",
       "model": "Model",
       "status": "Status",
-      "annualizedVolatility": "Annualized volatility"
+      "annualizedVolatility": "Annualized volatility",
+      "sourceModule": "Source module",
+      "generatedAt": "Generated at",
+      "coverageRatio": "Coverage ratio",
+      "coveredHoldings": "Covered holdings",
+      "missingHoldings": "Missing holdings",
+      "missingWeight": "Missing weight",
+      "priceRows": "Price rows",
+      "validReturns": "Valid returns",
+      "skippedReturns": "Skipped returns",
+      "skippedReasons": "Skipped reasons",
+      "exceptions": "Exceptions",
+      "exceptionRate": "Exception rate",
+      "expectedExceptionRate": "Expected exception rate",
+      "scenario": "Scenario"
+    },
+    "methodology": {
+      "volatility": "Volatility",
+      "ewma": "EWMA",
+      "historical_var": "Historical VaR",
+      "parametric_var": "Parametric VaR",
+      "monte_carlo_var": "Monte Carlo VaR",
+      "covariance": "Covariance",
+      "correlation": "Correlation"
     }
   },
   "pages": {

@@ -24,6 +24,9 @@ import {
   StressShockOverrides,
   StressScenarioResult,
 } from "../../../types/risk";
+import type { RiskMonitorPayload } from "../../../types/volatility";
+
+const VOLATILITY_PAYLOAD_STORAGE_KEY = "athena.volatilityLab.riskPayload";
 
 type RiskMonitorTab =
   | "overview"
@@ -82,6 +85,7 @@ export function RiskMonitorPage() {
   const [riskControls, setRiskControls] = useState<RiskControlState>(
     DEFAULT_RISK_CONTROLS,
   );
+  const volatilityPayload = useMemo(readVolatilityPayload, []);
 
   const statusQuery = useQuery({
     queryKey: ["risk-monitor-status"],
@@ -112,17 +116,25 @@ export function RiskMonitorPage() {
     queryKey: [
       "risk-monitor-analysis",
       selectedPortfolio?.id,
+      volatilityPayload?.generated_at,
       holdingsSignature,
       riskControls,
     ],
-    enabled: Boolean(selectedPortfolio?.id),
-    queryFn: () =>
-      apiClient.post<RiskMonitorAnalysisResponse>(endpoints.riskMonitorAnalyze, {
+    enabled: Boolean(selectedPortfolio?.id || volatilityPayload),
+    queryFn: () => {
+      if (volatilityPayload) {
+        return apiClient.post<RiskMonitorAnalysisResponse>(
+          endpoints.riskMonitorAnalyzeFromVolatility,
+          volatilityPayload,
+        );
+      }
+      return apiClient.post<RiskMonitorAnalysisResponse>(endpoints.riskMonitorAnalyze, {
         portfolio_id: selectedPortfolio?.id,
         benchmark_symbol: selectedPortfolio?.benchmark ?? "SPY",
         limits: buildLimitOverrides(riskControls),
         stress_shocks: buildStressShockOverrides(riskControls),
-      }),
+      });
+    },
   });
 
   const analysis = analysisQuery.data;
@@ -178,6 +190,16 @@ export function RiskMonitorPage() {
               />
             ))}
           </div>
+          {volatilityPayload ? (
+            <div className="workflow-notice">
+              <strong>{t("riskMonitor.volatilityPayload.using")}</strong>
+              <span>
+                {t("riskMonitor.volatilityPayload.source")}:{" "}
+                {volatilityPayload.source_module} /{" "}
+                {new Date(volatilityPayload.generated_at).toLocaleString()}
+              </span>
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -1034,6 +1056,18 @@ function severityVariant(severity: string): BadgeVariant {
   if (severity === "critical" || severity === "high") return "danger";
   if (severity === "medium") return "warning";
   return "info";
+}
+
+function readVolatilityPayload(): RiskMonitorPayload | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  try {
+    const stored = window.sessionStorage.getItem(VOLATILITY_PAYLOAD_STORAGE_KEY);
+    return stored ? (JSON.parse(stored) as RiskMonitorPayload) : null;
+  } catch {
+    return null;
+  }
 }
 
 function statusBadgeVariant(status: string): BadgeVariant {

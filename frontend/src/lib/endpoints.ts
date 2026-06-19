@@ -96,6 +96,7 @@ export const endpoints = {
   tradeSimulatorSimulate: "/api/trade-simulator/simulate",
   riskMonitorStatus: "/api/risk-monitor/status",
   riskMonitorAnalyze: "/api/risk-monitor/analyze",
+  riskMonitorAnalyzeFromVolatility: "/api/risk-monitor/analyze-from-volatility",
   riskMonitorDemo: "/api/risk-monitor/demo",
   volatilityLabStatus: "/api/volatility-lab/status",
   volatilityLabAnalyzeAsset: "/api/volatility-lab/analyze-asset",

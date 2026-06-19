@@ -949,6 +949,10 @@
       "coverage": "Couverture risque",
       "positionsAnalyzed": "positions analysees"
     },
+    "volatilityPayload": {
+      "using": "Utilisation du payload Volatility Lab",
+      "source": "Source du payload"
+    },
     "assumptions": {
       "eyebrow": "Hypotheses configurables",
       "title": "Limites et stress tests",
@@ -1106,7 +1110,11 @@
       "defaultRange": "Historique disponible complet",
       "applyFilters": "Appliquer les filtres",
       "resetFilters": "Reinitialiser les filtres",
-      "varMethod": "Methode VaR"
+      "varMethod": "Methode VaR",
+      "varHorizon": "Horizon de VaR",
+      "oneDayVar": "VaR 1 jour",
+      "fiveDayVar": "VaR 5 jours",
+      "tenDayVar": "VaR 10 jours"
     },
     "badges": {
       "awaitingAnalysis": "Analyse en attente",
@@ -1173,6 +1181,8 @@
       "riskAdjustedShort": "Ratios",
       "dataQuality": "Qualite donnees",
       "dataQualityShort": "Couverture",
+      "methodology": "Methodologie",
+      "methodologyShort": "Hypotheses",
       "advanced": "Modeles avances",
       "advancedShort": "Roadmap",
       "commentary": "Commentaire",
@@ -1223,7 +1233,22 @@
       "dataQualityDescription": "Observations, symboles manquants, statut de fallback et metadonnees de couverture Market Data.",
       "riskMonitorLink": "Lien avec Risk Monitor",
       "riskMonitorLinkDescription": "Volatility Lab fournit volatilite realisee, beta, VaR/CVaR, drawdown et contribution au risque reutilisables par Risk Monitor.",
+      "sendToRiskMonitor": "Envoyer vers Risk Monitor",
+      "riskMonitorSent": "Utilisation du payload Volatility Lab dans Risk Monitor.",
+      "riskMonitorPrepared": "Integration Risk Monitor preparee. Risk Monitor pourra reutiliser ce payload dans une version future.",
       "openRiskMonitor": "Ouvrir Risk Monitor",
+      "portfolioCoverage": "Couverture du portefeuille",
+      "portfolioCoverageDescription": "La couverture indique quelle part du portefeuille a un historique de rendements exploitable.",
+      "dateFilter": "Filtre de dates",
+      "dateFilterDescription": "Periode validee par le backend et observations apres filtrage.",
+      "returnQuality": "Observations de prix invalides",
+      "returnQualityDescription": "Rendements ignores a cause de prix manquants, nuls, negatifs ou invalides.",
+      "methodology": "Methodologie et hypotheses",
+      "methodologyDescription": "Hypotheses transparentes pour volatilite, covariance, VaR, EWMA et Monte Carlo.",
+      "varBacktesting": "Backtesting de la VaR",
+      "stressScenarios": "Scenarios de stress de volatilite",
+      "stressScenariosDescription": "Les scenarios de stress sont deterministes et educatifs.",
+      "invalidPriceObservations": "Observations de prix invalides",
       "advanced": "Roadmap des modeles avances",
       "advancedDescription": "EWMA est disponible maintenant; GARCH, volatilite implicite et surface de volatilite sont prepares comme elements de roadmap.",
       "commentary": "Commentaire volatilite Athena",
@@ -1302,7 +1327,30 @@
       "lambda": "Lambda",
       "model": "Modele",
       "status": "Statut",
-      "annualizedVolatility": "Volatilite annualisee"
+      "annualizedVolatility": "Volatilite annualisee",
+      "sourceModule": "Module source",
+      "generatedAt": "Genere le",
+      "coverageRatio": "Ratio de couverture",
+      "coveredHoldings": "Positions couvertes",
+      "missingHoldings": "Positions manquantes",
+      "missingWeight": "Poids manquant",
+      "priceRows": "Lignes de prix",
+      "validReturns": "Rendements valides",
+      "skippedReturns": "Rendements ignores",
+      "skippedReasons": "Raisons d'exclusion",
+      "exceptions": "Exceptions",
+      "exceptionRate": "Taux d'exception",
+      "expectedExceptionRate": "Taux d'exception attendu",
+      "scenario": "Scenario"
+    },
+    "methodology": {
+      "volatility": "Volatilite",
+      "ewma": "EWMA",
+      "historical_var": "VaR historique",
+      "parametric_var": "VaR parametrique",
+      "monte_carlo_var": "VaR Monte Carlo",
+      "covariance": "Covariance",
+      "correlation": "Correlation"
     }
   },
   "pages": {
