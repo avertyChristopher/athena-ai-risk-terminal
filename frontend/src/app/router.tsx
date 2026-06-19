@@ -1,6 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import type { ReactNode } from "react";
 
 import { AppShell } from "../components/layout/AppShell";
+import { LoadingState } from "../components/ui/LoadingState";
 import { AiAnomaliesPage } from "../features/ai-anomalies/pages/AiAnomaliesPage";
 import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
 import { EquityAnalysisPage } from "../features/equity-analysis/pages/EquityAnalysisPage";
@@ -12,11 +15,32 @@ import { PortfolioPage } from "../features/portfolio/pages/PortfolioPage";
 import { RatesLabPage } from "../features/rates-lab/pages/RatesLabPage";
 import { ReconciliationPage } from "../features/reconciliation/pages/ReconciliationPage";
 import { ReportsPage } from "../features/reports/pages/ReportsPage";
-import { RiskMonitorPage } from "../features/risk-monitor/pages/RiskMonitorPage";
 import { SettingsPage } from "../features/settings/pages/SettingsPage";
 import { StressTestingPage } from "../features/stress-testing/pages/StressTestingPage";
-import { TradeSimulatorPage } from "../features/trade-simulator/pages/TradeSimulatorPage";
-import { VolatilityLabPage } from "../features/volatility-lab/pages/VolatilityLabPage";
+
+const RiskMonitorPage = lazy(() =>
+  import("../features/risk-monitor/pages/RiskMonitorPage").then((module) => ({
+    default: module.RiskMonitorPage,
+  })),
+);
+const TradeSimulatorPage = lazy(() =>
+  import("../features/trade-simulator/pages/TradeSimulatorPage").then((module) => ({
+    default: module.TradeSimulatorPage,
+  })),
+);
+const VolatilityLabPage = lazy(() =>
+  import("../features/volatility-lab/pages/VolatilityLabPage").then((module) => ({
+    default: module.VolatilityLabPage,
+  })),
+);
+
+function lazyRoute(element: ReactNode) {
+  return (
+    <Suspense fallback={<LoadingState label="Loading" />}>
+      {element}
+    </Suspense>
+  );
+}
 
 export const router = createBrowserRouter([
   {
@@ -28,9 +52,9 @@ export const router = createBrowserRouter([
       { path: "market-data", element: <MarketDataPage /> },
       { path: "equity-analysis", element: <EquityAnalysisPage /> },
       { path: "portfolio-builder", element: <PortfolioPage /> },
-      { path: "trade-simulator", element: <TradeSimulatorPage /> },
-      { path: "risk-monitor", element: <RiskMonitorPage /> },
-      { path: "volatility-lab", element: <VolatilityLabPage /> },
+      { path: "trade-simulator", element: lazyRoute(<TradeSimulatorPage />) },
+      { path: "risk-monitor", element: lazyRoute(<RiskMonitorPage />) },
+      { path: "volatility-lab", element: lazyRoute(<VolatilityLabPage />) },
       { path: "options-pricing-lab", element: <OptionsPricingPage /> },
       { path: "rates-lab", element: <RatesLabPage /> },
       { path: "stress-testing", element: <StressTestingPage /> },
