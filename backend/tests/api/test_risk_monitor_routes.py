@@ -64,6 +64,26 @@ def test_risk_monitor_accepts_configurable_limits_and_stress_shocks() -> None:
     assert "Technology sector shock -25%" in scenario_names
 
 
+def test_risk_monitor_can_analyze_volatility_lab_payload() -> None:
+    volatility_response = client.post(
+        "/api/volatility-lab/analyze-portfolio",
+        json={"portfolio_id": "pf_001", "benchmark_symbol": "SPY"},
+    )
+    payload = volatility_response.json()["risk_monitor_payload"]
+
+    response = client.post(
+        "/api/risk-monitor/analyze-from-volatility",
+        json=payload,
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["portfolio_id"] == "pf_001"
+    assert body["risk_source"]["metric_source"] == payload["metric_source"]
+    assert "Volatility Lab" in body["risk_source"]["badges"]
+    assert body["benchmark_risk"]["warnings"][0] == "Using Volatility Lab risk payload."
+
+
 def test_risk_monitor_demo_endpoint_uses_demo_portfolio() -> None:
     response = client.get("/api/risk-monitor/demo")
 

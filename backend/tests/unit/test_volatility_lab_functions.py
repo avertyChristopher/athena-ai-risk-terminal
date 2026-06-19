@@ -23,6 +23,10 @@ from app.modules.volatility_lab.domain.risk_adjusted import (
     treynor_ratio,
 )
 from app.modules.volatility_lab.domain.rolling_volatility import rolling_volatility
+from app.modules.volatility_lab.domain.returns import (
+    calculate_date_aligned_simple_returns,
+)
+from app.modules.volatility_lab.domain.var_backtesting import var_backtest
 from app.modules.volatility_lab.domain.volatility import (
     annualized_volatility,
     standard_deviation,
@@ -120,3 +124,53 @@ def test_monte_carlo_var_is_deterministic_with_seed() -> None:
     assert first_var == pytest.approx(second_var)
     assert first_cvar == pytest.approx(second_cvar)
     assert first_cvar >= first_var
+
+
+def test_date_aligned_returns_skip_invalid_prices_without_misalignment() -> None:
+    result = calculate_date_aligned_simple_returns(
+        [
+            {"date": "2026-01-01", "close": 100},
+            {"date": "2026-01-02", "close": 0},
+            {"date": "2026-01-03", "close": 105},
+            {"date": "2026-01-04", "close": None},
+            {"date": "2026-01-05", "close": -1},
+            {"date": "2026-01-06", "close": 110},
+            {"date": "2026-01-07", "close": 121},
+        ],
+        "TEST",
+    )
+
+    returns = result["returns"]
+    quality = result["quality"]
+    assert len(returns) == 1
+    assert returns[0]["date"] == "2026-01-07"
+    assert returns[0]["previous_date"] == "2026-01-06"
+    assert returns[0]["return"] == pytest.approx(0.10)
+    assert quality["skipped_returns"] == 5
+    assert quality["has_invalid_prices"] is True
+    assert quality["skipped_reason_counts"]["current_non_positive_close"] >= 1
+    assert quality["skipped_reason_counts"]["current_missing_close"] >= 1
+
+
+def test_parametric_var_scales_with_horizon_days() -> None:
+    one_day = parametric_var(RETURNS, 0.95, horizon_days=1)
+    ten_day = parametric_var(RETURNS, 0.95, horizon_days=10)
+
+    assert ten_day == pytest.approx(one_day * (10**0.5))
+
+
+def test_static_var_backtest_counts_exceptions() -> None:
+    returns = [-0.03, -0.02, -0.01, 0.01] * 10
+    summary = var_backtest(returns, static_var=0.015, confidence_level=0.95)
+
+    assert summary["observations"] == 40
+    assert summary["exceptions"] == 20
+    assert summary["exception_rate"] == pytest.approx(0.5)
+    assert summary["status"] == "review"
+
+
+def test_var_backtest_reports_insufficient_data() -> None:
+    summary = var_backtest(RETURNS, static_var=0.02, confidence_level=0.95)
+
+    assert summary["status"] == "insufficient_data"
+    assert summary["observations"] == len(RETURNS)

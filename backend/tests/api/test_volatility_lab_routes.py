@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -34,7 +35,13 @@ def test_volatility_lab_analyze_asset_returns_cfa_metrics() -> None:
     assert body["ewma_volatility"]["latest_volatility"] > 0
     assert body["var_models"]["parametric_var"] >= 0
     assert body["var_models"]["monte_carlo_var"] >= 0
+    assert body["var_models"]["horizon_days"] == 1
     assert body["risk_monitor_payload"]["annualized_volatility"] > 0
+    assert body["risk_monitor_payload"]["source_module"] == "volatility_lab"
+    assert body["methodology"]["ewma"]["method"] == "ewma"
+    assert body["methodology"]["parametric_var"]["method"] == "parametric_normal"
+    assert body["var_backtest"]["status"] in {"acceptable", "review", "insufficient_data"}
+    assert body["stress_scenarios"]
     assert body["advanced_models"]["ewma"] == "available"
     assert body["drawdown_series"]
 
@@ -108,6 +115,8 @@ def test_volatility_lab_analyze_portfolio_accepts_date_range() -> None:
     body = response.json()
     assert body["portfolio_id"] == "pf_001"
     assert body["risk_monitor_payload"]["covariance_summary"]["matrix_available"] is True
+    assert body["portfolio_coverage"]["coverage_ratio"] >= 0
+    assert body["methodology"]["covariance"]["method"] == "sample_covariance"
 
 
 def test_volatility_lab_rejects_invalid_date_range() -> None:
@@ -121,6 +130,35 @@ def test_volatility_lab_rejects_invalid_date_range() -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_volatility_lab_rejects_invalid_date_format() -> None:
+    response = client.post(
+        "/api/volatility-lab/analyze-asset",
+        json={
+            "symbol": "AAPL",
+            "start_date": "not-a-date",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_volatility_lab_parametric_var_scales_for_ten_day_horizon() -> None:
+    one_day = client.post(
+        "/api/volatility-lab/analyze-asset",
+        json={"symbol": "AAPL", "benchmark_symbol": "SPY", "horizon_days": 1},
+    ).json()
+    ten_day = client.post(
+        "/api/volatility-lab/analyze-asset",
+        json={"symbol": "AAPL", "benchmark_symbol": "SPY", "horizon_days": 10},
+    ).json()
+
+    assert ten_day["var_models"]["horizon_days"] == 10
+    assert ten_day["var_models"]["parametric_var"] == pytest.approx(
+        one_day["var_models"]["parametric_var"] * (10**0.5),
+    )
+    assert "square-root-of-time" in ten_day["var_models"]["parametric_horizon_note"]
 
 
 def test_volatility_lab_demo_endpoint_uses_demo_portfolio() -> None:
