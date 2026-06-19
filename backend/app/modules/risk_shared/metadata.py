@@ -1,0 +1,3 @@
+VOLATILITY_SOURCE_MODULE = "volatility_lab"
+
+RISK_PAYLOAD_VERSION = "1.0"

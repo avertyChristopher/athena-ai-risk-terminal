@@ -1,6 +1,9 @@
+from datetime import date, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
+
+from app.modules.risk_shared.schemas import SharedRiskPayload
 
 
 class VolatilityLabStatus(BaseModel):
@@ -13,23 +16,92 @@ class VolatilityLabStatus(BaseModel):
 class VolatilityAssetAnalysisRequest(BaseModel):
     symbol: str = Field(min_length=1, max_length=32)
     benchmark_symbol: str = Field(default="SPY", min_length=1, max_length=32)
-    start_date: str | None = None
-    end_date: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
     risk_free_rate: float = 0.02
     rolling_window: int = Field(default=20, ge=2, le=252)
     annualization_factor: int = Field(default=252, ge=1)
     confidence_level: float = Field(default=0.95, gt=0, lt=1)
+    horizon_days: int = Field(default=1, ge=1, le=252)
 
 
 class VolatilityPortfolioAnalysisRequest(BaseModel):
     portfolio_id: str = Field(min_length=1)
     benchmark_symbol: str = Field(default="SPY", min_length=1, max_length=32)
-    start_date: str | None = None
-    end_date: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
     risk_free_rate: float = 0.02
     rolling_window: int = Field(default=20, ge=2, le=252)
     annualization_factor: int = Field(default=252, ge=1)
     confidence_level: float = Field(default=0.95, gt=0, lt=1)
+    horizon_days: int = Field(default=1, ge=1, le=252)
+
+
+class DateFilterMetadata(BaseModel):
+    start_date: date | None
+    end_date: date | None
+    applied: bool
+    valid: bool
+    observations_after_filter: int
+    warnings: list[str]
+
+
+class ReturnQualityMetadata(BaseModel):
+    total_price_rows: int
+    valid_returns: int
+    skipped_returns: int
+    skipped_reason_counts: dict[str, int]
+    has_invalid_prices: bool
+    warnings: list[str]
+
+
+class ExcludedHolding(BaseModel):
+    symbol: str
+    weight: float
+
+
+class PortfolioCoverageMetadata(BaseModel):
+    total_holdings: int
+    covered_holdings: int
+    missing_holdings: int
+    covered_weight: float
+    missing_weight: float
+    coverage_ratio: float
+    weights_renormalized: bool
+    missing_symbols: list[str]
+    excluded_holdings: list[ExcludedHolding]
+    missing_weight_warning: str | None
+    risk_understatement_warning: str | None
+    coverage_adjusted_risk_warning: str
+
+
+class MethodologyMetadata(BaseModel):
+    volatility: dict[str, Any]
+    ewma: dict[str, Any]
+    historical_var: dict[str, Any]
+    parametric_var: dict[str, Any]
+    monte_carlo_var: dict[str, Any]
+    covariance: dict[str, Any]
+    correlation: dict[str, Any]
+
+
+class VarBacktestSummary(BaseModel):
+    observations: int
+    exceptions: int
+    exception_rate: float
+    expected_exception_rate: float
+    status: str
+    note: str
+
+
+class StressScenarioSummary(BaseModel):
+    name: str
+    volatility_multiplier: float
+    stressed_volatility: float
+    stressed_var: float
+    stressed_cvar: float
+    risk_status: str
+    note: str
 
 
 class ReturnSummary(BaseModel):
@@ -78,12 +150,15 @@ class EWMAVolatilitySummary(BaseModel):
 
 class VarModelSummary(BaseModel):
     confidence_level: float
+    horizon_days: int
     historical_var: float
     historical_cvar: float
     parametric_var: float
     parametric_cvar: float
     monte_carlo_var: float | None
     monte_carlo_cvar: float | None
+    historical_horizon_note: str
+    parametric_horizon_note: str
     monte_carlo_status: str
     parametric_assumption: str
     monte_carlo_method: str
@@ -170,26 +245,10 @@ class AdvancedModelsStatus(BaseModel):
     options_implied_skew: str
 
 
-class RiskMonitorPayload(BaseModel):
-    confidence_level: float
-    annualized_volatility: float
-    ewma_volatility: float | None
-    historical_var: float
-    historical_cvar: float
-    parametric_var: float
-    parametric_cvar: float
-    beta: float
-    correlation: float
-    tracking_error: float | None
-    sharpe_ratio: float | None
-    sortino_ratio: float | None
-    max_drawdown: float
+class RiskMonitorPayload(SharedRiskPayload):
     risk_contribution: list[RiskContributionItem]
-    covariance_summary: dict[str, Any] | None
-    correlation_summary: dict[str, Any] | None
     data_source: VolatilityDataSource
-    missing_symbols: list[str]
-    fallback_used: bool
+    confidence_level: float
 
 
 class PortfolioRiskSummary(BaseModel):
@@ -227,6 +286,11 @@ class VolatilityAssetAnalysisResponse(BaseModel):
     advanced_models: AdvancedModelsStatus
     risk_monitor_payload: RiskMonitorPayload
     data_source: VolatilityDataSource
+    date_filter: DateFilterMetadata
+    return_quality: ReturnQualityMetadata
+    methodology: MethodologyMetadata
+    var_backtest: VarBacktestSummary
+    stress_scenarios: list[StressScenarioSummary]
     athena_commentary: AthenaVolatilityCommentary
 
 
@@ -253,4 +317,10 @@ class VolatilityPortfolioAnalysisResponse(BaseModel):
     advanced_models: AdvancedModelsStatus
     risk_monitor_payload: RiskMonitorPayload
     data_source: VolatilityDataSource
+    date_filter: DateFilterMetadata
+    return_quality: ReturnQualityMetadata
+    portfolio_coverage: PortfolioCoverageMetadata
+    methodology: MethodologyMetadata
+    var_backtest: VarBacktestSummary
+    stress_scenarios: list[StressScenarioSummary]
     athena_commentary: AthenaVolatilityCommentary

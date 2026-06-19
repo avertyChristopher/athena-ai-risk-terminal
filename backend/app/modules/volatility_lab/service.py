@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from math import prod
 from typing import Any
 
@@ -43,6 +43,7 @@ from app.modules.volatility_lab.domain.returns import (
     annualized_return,
     arithmetic_mean,
     calculate_cumulative_returns,
+    calculate_date_aligned_simple_returns,
     calculate_simple_returns,
     excess_return,
     geometric_mean,
@@ -59,6 +60,10 @@ from app.modules.volatility_lab.domain.rolling_volatility import (
     rolling_summary,
     rolling_volatility,
 )
+from app.modules.volatility_lab.domain.stress_scenarios import (
+    build_volatility_stress_scenarios,
+)
+from app.modules.volatility_lab.domain.var_backtesting import var_backtest
 from app.modules.volatility_lab.domain.volatility import (
     annualized_volatility,
     coefficient_of_variation,
@@ -78,17 +83,24 @@ from app.modules.volatility_lab.schemas import (
     AdvancedModelsStatus,
     AthenaVolatilityCommentary,
     BenchmarkRiskSummary,
+    DateFilterMetadata,
     DistributionSummary,
     DrawdownPoint,
     DownsideRiskSummary,
     EWMAVolatilitySummary,
+    ExcludedHolding,
     MatrixSummary,
+    MethodologyMetadata,
+    PortfolioCoverageMetadata,
     PortfolioRiskSummary,
     ReturnSummary,
+    ReturnQualityMetadata,
     RiskMonitorPayload,
     RiskAdjustedSummary,
     RiskContributionItem,
     RollingVolatilityPoint,
+    StressScenarioSummary,
+    VarBacktestSummary,
     VarModelSummary,
     VolatilityAssetAnalysisRequest,
     VolatilityAssetAnalysisResponse,
@@ -130,12 +142,12 @@ class VolatilityLabService:
         self._validate_date_range(payload.start_date, payload.end_date)
         symbol = payload.symbol.upper()
         benchmark_symbol = payload.benchmark_symbol.upper()
-        asset_series = self._return_series_for_symbol(
+        asset_series, asset_quality = self._return_series_result_for_symbol(
             symbol,
             payload.start_date,
             payload.end_date,
         )
-        benchmark_series = self._return_series_for_symbol(
+        benchmark_series, benchmark_quality = self._return_series_result_for_symbol(
             benchmark_symbol,
             payload.start_date,
             payload.end_date,
@@ -143,7 +155,8 @@ class VolatilityLabService:
         fallback_used = False
         asset_fallback_used = False
         benchmark_fallback_used = False
-        warnings = []
+        return_quality = self._combine_return_quality([asset_quality, benchmark_quality])
+        warnings = list(return_quality.warnings)
 
         if not asset_series:
             asset_series = self._demo_return_series(symbol)
@@ -275,7 +288,39 @@ class VolatilityLabService:
         var_summary = self._var_summary(
             asset_returns,
             payload.confidence_level,
+            payload.horizon_days,
             self._stable_seed(symbol),
+        )
+        methodology = self._methodology(
+            returns=asset_returns,
+            rolling_window=payload.rolling_window,
+            annualization_factor=payload.annualization_factor,
+            confidence_level=payload.confidence_level,
+            horizon_days=payload.horizon_days,
+            var_seed=self._stable_seed(symbol),
+            covariance_observations=len(asset_returns),
+        )
+        var_backtest_summary = VarBacktestSummary.model_validate(
+            var_backtest(
+                asset_returns,
+                var_summary.historical_var,
+                payload.confidence_level,
+            ),
+        )
+        stress_scenarios = [
+            StressScenarioSummary.model_validate(scenario)
+            for scenario in build_volatility_stress_scenarios(
+                base_volatility=volatility_summary.annualized_volatility,
+                historical_var=var_summary.historical_var,
+                historical_cvar=var_summary.historical_cvar,
+                mode="asset",
+            )
+        ]
+        date_filter = self._date_filter_metadata(
+            payload.start_date,
+            payload.end_date,
+            len(asset_returns),
+            warnings,
         )
 
         return VolatilityAssetAnalysisResponse(
@@ -303,6 +348,10 @@ class VolatilityLabService:
             volatility_regime=VolatilityRegimeSummary.model_validate(regime),
             advanced_models=self._advanced_models(),
             risk_monitor_payload=self._risk_monitor_payload(
+                analysis_mode="asset",
+                portfolio_id=None,
+                symbol=symbol,
+                benchmark_symbol=benchmark_symbol,
                 confidence_level=payload.confidence_level,
                 volatility_summary=volatility_summary,
                 ewma_summary=ewma_summary,
@@ -316,8 +365,14 @@ class VolatilityLabService:
                 covariance_summary=None,
                 correlation_summary=None,
                 data_source=data_source,
+                coverage_ratio=None,
             ),
             data_source=data_source,
+            date_filter=date_filter,
+            return_quality=return_quality,
+            methodology=methodology,
+            var_backtest=var_backtest_summary,
+            stress_scenarios=stress_scenarios,
             athena_commentary=AthenaVolatilityCommentary(
                 summary=(
                     f"{symbol} annualized return is {asset_annual_return:.1%} "
@@ -345,19 +400,28 @@ class VolatilityLabService:
         weights = self._position_weights(positions)
         series_by_symbol = {}
         missing_symbols = []
+        quality_items: list[ReturnQualityMetadata] = []
 
         for symbol in weights:
-            series = self._return_series_for_symbol(
+            series, quality = self._return_series_result_for_symbol(
                 symbol,
                 payload.start_date,
                 payload.end_date,
             )
+            quality_items.append(quality)
             if series:
                 series_by_symbol[symbol] = series
             else:
                 missing_symbols.append(symbol)
 
         fallback_used = False
+        realized_symbols = list(series_by_symbol)
+        portfolio_coverage = self._portfolio_coverage(
+            positions,
+            weights,
+            missing_symbols,
+            weights_renormalized=bool(missing_symbols and series_by_symbol),
+        )
         if not series_by_symbol:
             fallback_used = True
             series_by_symbol = {
@@ -376,17 +440,21 @@ class VolatilityLabService:
             aligned_returns,
             included_weights,
         )
-        warnings = []
+        warnings = list(self._combine_return_quality(quality_items).warnings)
         if len(portfolio_returns) < payload.rolling_window:
             warnings.append(
                 "Insufficient observations for the selected rolling window.",
             )
         benchmark_symbol = payload.benchmark_symbol.upper()
-        benchmark_series = self._return_series_for_symbol(
+        benchmark_series, benchmark_quality = self._return_series_result_for_symbol(
             benchmark_symbol,
             payload.start_date,
             payload.end_date,
         )
+        return_quality = self._combine_return_quality(
+            [*quality_items, benchmark_quality],
+        )
+        warnings = list(dict.fromkeys(warnings + return_quality.warnings))
         benchmark_fallback_used = False
         if not benchmark_series:
             benchmark_fallback_used = True
@@ -464,7 +532,7 @@ class VolatilityLabService:
                 else None
             ),
             observations=len(portfolio_returns),
-            symbols_found=included_symbols,
+            symbols_found=realized_symbols,
             symbols_missing=missing_symbols
             + ([benchmark_symbol] if benchmark_fallback_used else []),
             warnings=warnings
@@ -499,6 +567,7 @@ class VolatilityLabService:
         var_summary = self._var_summary(
             portfolio_returns,
             payload.confidence_level,
+            payload.horizon_days,
             self._stable_seed(payload.portfolio_id),
         )
         risk_contribution_items = [
@@ -514,7 +583,45 @@ class VolatilityLabService:
             "symbols": included_symbols,
             "matrix_available": bool(corr_matrix),
             "method": "sample_correlation",
+            "observations": len(portfolio_returns),
         }
+        covariance_summary["observations"] = len(portfolio_returns)
+        methodology = self._methodology(
+            returns=portfolio_returns,
+            rolling_window=payload.rolling_window,
+            annualization_factor=payload.annualization_factor,
+            confidence_level=payload.confidence_level,
+            horizon_days=payload.horizon_days,
+            var_seed=self._stable_seed(payload.portfolio_id),
+            covariance_observations=len(portfolio_returns),
+        )
+        var_backtest_summary = VarBacktestSummary.model_validate(
+            var_backtest(
+                portfolio_returns,
+                var_summary.historical_var,
+                payload.confidence_level,
+            ),
+        )
+        stress_scenarios = [
+            StressScenarioSummary.model_validate(scenario)
+            for scenario in build_volatility_stress_scenarios(
+                base_volatility=volatility_summary.annualized_volatility,
+                historical_var=var_summary.historical_var,
+                historical_cvar=var_summary.historical_cvar,
+                mode="portfolio",
+                largest_holding=(
+                    str(largest_contributor["symbol"])
+                    if largest_contributor
+                    else None
+                ),
+            )
+        ]
+        date_filter = self._date_filter_metadata(
+            payload.start_date,
+            payload.end_date,
+            len(portfolio_returns),
+            warnings,
+        )
 
         return VolatilityPortfolioAnalysisResponse(
             portfolio_id=payload.portfolio_id,
@@ -572,6 +679,10 @@ class VolatilityLabService:
             volatility_regime=VolatilityRegimeSummary.model_validate(regime),
             advanced_models=self._advanced_models(),
             risk_monitor_payload=self._risk_monitor_payload(
+                analysis_mode="portfolio",
+                portfolio_id=payload.portfolio_id,
+                symbol=None,
+                benchmark_symbol=benchmark_symbol,
                 confidence_level=payload.confidence_level,
                 volatility_summary=volatility_summary,
                 ewma_summary=ewma_summary,
@@ -585,8 +696,15 @@ class VolatilityLabService:
                 covariance_summary=covariance_summary,
                 correlation_summary=correlation_summary,
                 data_source=data_source,
+                coverage_ratio=portfolio_coverage.coverage_ratio,
             ),
             data_source=data_source,
+            date_filter=date_filter,
+            return_quality=return_quality,
+            portfolio_coverage=portfolio_coverage,
+            methodology=methodology,
+            var_backtest=var_backtest_summary,
+            stress_scenarios=stress_scenarios,
             athena_commentary=AthenaVolatilityCommentary(
                 summary=(
                     f"{portfolio['name']} volatility analysis uses "
@@ -605,55 +723,178 @@ class VolatilityLabService:
     def _return_series_for_symbol(
         self,
         symbol: str,
-        start_date: str | None,
-        end_date: str | None,
+        start_date: date | None,
+        end_date: date | None,
     ) -> list[dict[str, object]]:
+        series, _ = self._return_series_result_for_symbol(
+            symbol,
+            start_date,
+            end_date,
+        )
+        return series
+
+    def _return_series_result_for_symbol(
+        self,
+        symbol: str,
+        start_date: date | None,
+        end_date: date | None,
+    ) -> tuple[list[dict[str, object]], ReturnQualityMetadata]:
         rows = self._filtered_price_rows(symbol, start_date, end_date)
-        if len(rows) < 2:
-            return []
-        closes = [float(row["close"]) for row in rows]
-        returns = calculate_simple_returns(closes)
-        return [
-            {"date": str(rows[index]["date"]), "return": returns[index - 1]}
-            for index in range(1, len(rows))
-        ]
+        result = calculate_date_aligned_simple_returns(rows, symbol)
+        return (
+            list(result["returns"]),
+            ReturnQualityMetadata.model_validate(result["quality"]),
+        )
 
     def _filtered_price_rows(
         self,
         symbol: str,
-        start_date: str | None,
-        end_date: str | None,
+        start_date: date | None,
+        end_date: date | None,
     ) -> list[dict[str, object]]:
-        rows = sorted(
-            self.repository.get_prices(symbol),
-            key=lambda row: str(row["date"]),
-        )
-        return [
-            row
-            for row in rows
-            if (start_date is None or str(row["date"]) >= start_date)
-            and (end_date is None or str(row["date"]) <= end_date)
-        ]
+        dated_rows = []
+        for row in self.repository.get_prices(symbol):
+            row_date = self._parse_row_date(row)
+            if row_date is None:
+                continue
+            dated_rows.append({**row, "date": row_date.isoformat()})
+        rows = sorted(dated_rows, key=lambda row: str(row["date"]))
+        filtered_rows = []
+        for row in rows:
+            row_date = self._parse_row_date(row)
+            if row_date is None:
+                continue
+            if start_date is not None and row_date < start_date:
+                continue
+            if end_date is not None and row_date > end_date:
+                continue
+            filtered_rows.append(row)
+        return filtered_rows
 
     def _latest_price(
         self,
         symbol: str,
-        start_date: str | None,
-        end_date: str | None,
+        start_date: date | None,
+        end_date: date | None,
     ) -> float | None:
         rows = self._filtered_price_rows(symbol, start_date, end_date)
         return float(rows[-1]["close"]) if rows else None
 
     def _validate_date_range(
         self,
-        start_date: str | None,
-        end_date: str | None,
+        start_date: date | None,
+        end_date: date | None,
     ) -> None:
         if start_date and end_date and start_date > end_date:
             raise HTTPException(
                 status_code=422,
                 detail="start_date cannot be after end_date.",
             )
+
+    def _parse_row_date(self, row: dict[str, object]) -> date | None:
+        raw_value = row.get("date")
+        if isinstance(raw_value, date):
+            return raw_value
+        if raw_value is None:
+            return None
+        try:
+            return date.fromisoformat(str(raw_value))
+        except ValueError:
+            return None
+
+    def _date_filter_metadata(
+        self,
+        start_date: date | None,
+        end_date: date | None,
+        observations: int,
+        warnings: list[str],
+    ) -> DateFilterMetadata:
+        date_warnings = []
+        if (start_date or end_date) and observations == 0:
+            date_warnings.append(
+                "Date filter returned no aligned observations; fallback may be used.",
+            )
+        date_warnings.extend(
+            warning for warning in warnings if "Insufficient observations" in warning
+        )
+        return DateFilterMetadata(
+            start_date=start_date,
+            end_date=end_date,
+            applied=bool(start_date or end_date),
+            valid=True,
+            observations_after_filter=observations,
+            warnings=list(dict.fromkeys(date_warnings)),
+        )
+
+    def _combine_return_quality(
+        self,
+        quality_items: list[ReturnQualityMetadata],
+    ) -> ReturnQualityMetadata:
+        reason_counts: dict[str, int] = {}
+        warnings: list[str] = []
+        for quality in quality_items:
+            for reason, count in quality.skipped_reason_counts.items():
+                reason_counts[reason] = reason_counts.get(reason, 0) + count
+            warnings.extend(quality.warnings)
+
+        return ReturnQualityMetadata(
+            total_price_rows=sum(item.total_price_rows for item in quality_items),
+            valid_returns=sum(item.valid_returns for item in quality_items),
+            skipped_returns=sum(item.skipped_returns for item in quality_items),
+            skipped_reason_counts=reason_counts,
+            has_invalid_prices=any(item.has_invalid_prices for item in quality_items),
+            warnings=list(dict.fromkeys(warnings)),
+        )
+
+    def _portfolio_coverage(
+        self,
+        positions: list[dict[str, object]],
+        weights: dict[str, float],
+        missing_symbols: list[str],
+        *,
+        weights_renormalized: bool,
+    ) -> PortfolioCoverageMetadata:
+        missing_weight = sum(weights.get(symbol, 0.0) for symbol in missing_symbols)
+        covered_weight = max(0.0, 1.0 - missing_weight) if weights else 0.0
+        warning_level = self._coverage_warning_level(missing_weight)
+        missing_weight_warning = (
+            f"{missing_weight:.1%} of portfolio weight has no realized return history."
+            if missing_weight > 0
+            else None
+        )
+        risk_warning = (
+            "Portfolio risk may be understated because missing holdings are excluded "
+            "from realized covariance analytics."
+            if missing_weight >= 0.05
+            else None
+        )
+        excluded_holdings = [
+            ExcludedHolding(symbol=symbol, weight=weights.get(symbol, 0.0))
+            for symbol in missing_symbols
+        ]
+        return PortfolioCoverageMetadata(
+            total_holdings=len(positions),
+            covered_holdings=max(0, len(positions) - len(missing_symbols)),
+            missing_holdings=len(missing_symbols),
+            covered_weight=covered_weight,
+            missing_weight=missing_weight,
+            coverage_ratio=covered_weight,
+            weights_renormalized=weights_renormalized,
+            missing_symbols=missing_symbols,
+            excluded_holdings=excluded_holdings,
+            missing_weight_warning=missing_weight_warning,
+            risk_understatement_warning=risk_warning,
+            coverage_adjusted_risk_warning=warning_level,
+        )
+
+    def _coverage_warning_level(self, missing_weight: float) -> str:
+        if missing_weight > 0.30:
+            return "critical"
+        if missing_weight > 0.15:
+            return "high"
+        if missing_weight >= 0.05:
+            return "medium"
+        return "low"
 
     def _drawdown_series(
         self,
@@ -697,21 +938,42 @@ class VolatilityLabService:
         self,
         returns: list[float],
         confidence_level: float,
+        horizon_days: int,
         seed: int,
     ) -> VarModelSummary:
         has_observations = bool(returns)
         return VarModelSummary(
             confidence_level=confidence_level,
+            horizon_days=horizon_days,
             historical_var=historical_var(returns, confidence_level),
             historical_cvar=historical_cvar(returns, confidence_level),
-            parametric_var=parametric_var(returns, confidence_level),
-            parametric_cvar=parametric_cvar(returns, confidence_level),
+            parametric_var=parametric_var(
+                returns,
+                confidence_level,
+                horizon_days,
+            ),
+            parametric_cvar=parametric_cvar(
+                returns,
+                confidence_level,
+                horizon_days,
+            ),
             monte_carlo_var=monte_carlo_var(returns, confidence_level, seed=seed)
             if has_observations
             else None,
             monte_carlo_cvar=monte_carlo_cvar(returns, confidence_level, seed=seed)
             if has_observations
             else None,
+            historical_horizon_note=(
+                "Historical multi-day VaR is not implemented. Current result is "
+                "one-period historical VaR."
+                if horizon_days > 1
+                else "Historical VaR is one-period VaR."
+            ),
+            parametric_horizon_note=(
+                "Parametric VaR scaled using square-root-of-time assumption."
+                if horizon_days > 1
+                else "Parametric VaR is one-period VaR."
+            ),
             monte_carlo_status=(
                 "Demo Monte Carlo with deterministic normal-return simulation."
                 if has_observations
@@ -726,6 +988,77 @@ class VolatilityLabService:
             ),
         )
 
+    def _methodology(
+        self,
+        *,
+        returns: list[float],
+        rolling_window: int,
+        annualization_factor: int,
+        confidence_level: float,
+        horizon_days: int,
+        var_seed: int,
+        covariance_observations: int,
+    ) -> MethodologyMetadata:
+        observations = len(returns)
+        sigma = standard_deviation(returns)
+        mean_return = arithmetic_mean(returns)
+        tail_count = max(0, int((1.0 - confidence_level) * observations))
+        return MethodologyMetadata(
+            volatility={
+                "method": "realized_sample_volatility",
+                "annualization_factor": annualization_factor,
+                "frequency": "daily",
+                "observations": observations,
+                "rolling_window": rolling_window,
+                "limitation": "Sample volatility can be unstable with short histories.",
+            },
+            ewma={
+                "method": "ewma",
+                "lambda_decay": 0.94,
+                "annualization_factor": annualization_factor,
+                "observations": observations,
+                "limitation": (
+                    "Responsive to recent volatility but model-dependent."
+                ),
+            },
+            historical_var={
+                "method": "historical",
+                "confidence_level": confidence_level,
+                "observations": observations,
+                "tail_count": tail_count,
+                "horizon_days": 1,
+                "limitation": "Depends on the historical sample.",
+            },
+            parametric_var={
+                "method": "parametric_normal",
+                "confidence_level": confidence_level,
+                "mean": mean_return,
+                "standard_deviation": sigma,
+                "horizon_days": horizon_days,
+                "limitation": "Assumes normally distributed returns.",
+            },
+            monte_carlo_var={
+                "method": "monte_carlo_normal",
+                "confidence_level": confidence_level,
+                "simulation_count": 2000,
+                "seed": var_seed,
+                "limitation": (
+                    "Demo model based on normal distribution, not a full "
+                    "production simulation engine."
+                ),
+            },
+            covariance={
+                "method": "sample_covariance",
+                "observations": covariance_observations,
+                "limitation": "Unstable with short samples.",
+            },
+            correlation={
+                "method": "sample_correlation",
+                "observations": covariance_observations,
+                "limitation": "Correlations can change during stress periods.",
+            },
+        )
+
     def _advanced_models(self) -> AdvancedModelsStatus:
         return AdvancedModelsStatus(
             ewma="available",
@@ -738,6 +1071,10 @@ class VolatilityLabService:
     def _risk_monitor_payload(
         self,
         *,
+        analysis_mode: str,
+        portfolio_id: str | None,
+        symbol: str | None,
+        benchmark_symbol: str,
         confidence_level: float,
         volatility_summary: VolatilitySummary,
         ewma_summary: EWMAVolatilitySummary,
@@ -751,8 +1088,13 @@ class VolatilityLabService:
         covariance_summary: dict[str, Any] | None,
         correlation_summary: dict[str, Any] | None,
         data_source: VolatilityDataSource,
+        coverage_ratio: float | None,
     ) -> RiskMonitorPayload:
         return RiskMonitorPayload(
+            portfolio_id=portfolio_id,
+            symbol=symbol,
+            benchmark_symbol=benchmark_symbol,
+            analysis_mode=analysis_mode,
             confidence_level=confidence_level,
             annualized_volatility=volatility_summary.annualized_volatility,
             ewma_volatility=ewma_summary.latest_volatility,
@@ -760,6 +1102,8 @@ class VolatilityLabService:
             historical_cvar=var_summary.historical_cvar,
             parametric_var=var_summary.parametric_var,
             parametric_cvar=var_summary.parametric_cvar,
+            monte_carlo_var=var_summary.monte_carlo_var,
+            monte_carlo_cvar=var_summary.monte_carlo_cvar,
             beta=beta_value,
             correlation=correlation_value,
             tracking_error=tracking_error_value,
@@ -770,8 +1114,12 @@ class VolatilityLabService:
             covariance_summary=covariance_summary,
             correlation_summary=correlation_summary,
             data_source=data_source,
+            metric_source=data_source.metric_source,
             missing_symbols=data_source.symbols_missing,
+            coverage_ratio=coverage_ratio,
             fallback_used=data_source.fallback_used,
+            warnings=data_source.warnings,
+            generated_at=datetime.now(UTC),
         )
 
     def _stable_seed(self, value: str) -> int:

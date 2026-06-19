@@ -1,6 +1,8 @@
 from random import Random
 from statistics import NormalDist
 
+from math import sqrt
+
 from app.modules.volatility_lab.domain.volatility import standard_deviation
 
 
@@ -21,28 +23,36 @@ def historical_cvar(returns: list[float], confidence_level: float = 0.95) -> flo
     return abs(min(sum(tail_returns) / len(tail_returns), 0.0))
 
 
-def parametric_var(returns: list[float], confidence_level: float = 0.95) -> float:
+def parametric_var(
+    returns: list[float],
+    confidence_level: float = 0.95,
+    horizon_days: int = 1,
+) -> float:
     if not returns:
         return 0.0
     mean_return = sum(returns) / len(returns)
     sigma = standard_deviation(returns)
     lower_tail_z = NormalDist().inv_cdf(1.0 - confidence_level)
     lower_tail_return = mean_return + lower_tail_z * sigma
-    return abs(min(lower_tail_return, 0.0))
+    return abs(min(lower_tail_return, 0.0)) * sqrt(max(horizon_days, 1))
 
 
-def parametric_cvar(returns: list[float], confidence_level: float = 0.95) -> float:
+def parametric_cvar(
+    returns: list[float],
+    confidence_level: float = 0.95,
+    horizon_days: int = 1,
+) -> float:
     if not returns:
         return 0.0
     mean_return = sum(returns) / len(returns)
     sigma = standard_deviation(returns)
     if sigma == 0:
-        return abs(min(mean_return, 0.0))
+        return abs(min(mean_return, 0.0)) * sqrt(max(horizon_days, 1))
     tail_probability = 1.0 - confidence_level
     lower_tail_z = NormalDist().inv_cdf(tail_probability)
     density = _standard_normal_pdf(lower_tail_z)
     expected_tail_return = mean_return - sigma * density / tail_probability
-    return abs(min(expected_tail_return, 0.0))
+    return abs(min(expected_tail_return, 0.0)) * sqrt(max(horizon_days, 1))
 
 
 def monte_carlo_var(

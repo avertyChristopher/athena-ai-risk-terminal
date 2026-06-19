@@ -10,6 +10,75 @@ def calculate_simple_returns(prices: list[float]) -> list[float]:
     ]
 
 
+def calculate_date_aligned_simple_returns(
+    price_rows: list[dict[str, Any]],
+    symbol: str = "",
+) -> dict[str, Any]:
+    observations: list[dict[str, Any]] = []
+    skipped: list[dict[str, Any]] = []
+    reason_counts: dict[str, int] = {}
+
+    for index in range(1, len(price_rows)):
+        previous_row = price_rows[index - 1]
+        current_row = price_rows[index]
+        previous_close, previous_reason = _valid_close(previous_row)
+        current_close, current_reason = _valid_close(current_row)
+
+        reasons = []
+        if previous_reason:
+            reasons.append(f"previous_{previous_reason}")
+        if current_reason:
+            reasons.append(f"current_{current_reason}")
+
+        if reasons:
+            for reason in reasons:
+                reason_counts[reason] = reason_counts.get(reason, 0) + 1
+            skipped.append(
+                {
+                    "symbol": symbol,
+                    "date": str(current_row.get("date", "")),
+                    "previous_date": str(previous_row.get("date", "")),
+                    "reasons": reasons,
+                },
+            )
+            continue
+
+        assert previous_close is not None
+        assert current_close is not None
+        return_value = (current_close / previous_close) - 1.0
+        observations.append(
+            {
+                "date": str(current_row.get("date", "")),
+                "previous_date": str(previous_row.get("date", "")),
+                "symbol": symbol,
+                "return": return_value,
+                "return_value": return_value,
+                "previous_close": previous_close,
+                "current_close": current_close,
+                "quality_flag": "valid",
+            },
+        )
+
+    warnings = []
+    if skipped:
+        warnings.append(
+            f"{symbol}: skipped {len(skipped)} return observation(s) due to invalid prices.",
+        )
+
+    return {
+        "returns": observations,
+        "skipped_observations": skipped,
+        "quality": {
+            "total_price_rows": len(price_rows),
+            "valid_returns": len(observations),
+            "skipped_returns": len(skipped),
+            "skipped_reason_counts": reason_counts,
+            "has_invalid_prices": bool(skipped),
+            "warnings": warnings,
+        },
+    }
+
+
 def calculate_cumulative_returns(returns: list[float]) -> list[float]:
     wealth = 1.0
     cumulative_returns = []
@@ -75,3 +144,15 @@ def align_return_series(
         aligned[symbol] = [values_by_date[date] for date in dates]
 
     return dates, list(series_by_symbol), aligned
+
+
+def _valid_close(row: dict[str, Any]) -> tuple[float | None, str | None]:
+    if "close" not in row or row.get("close") is None:
+        return None, "missing_close"
+    try:
+        close = float(row["close"])
+    except (TypeError, ValueError):
+        return None, "invalid_close"
+    if close <= 0:
+        return None, "non_positive_close"
+    return close, None
