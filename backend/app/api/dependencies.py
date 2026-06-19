@@ -17,6 +17,8 @@ from app.services.riskdna_service import RiskDnaService
 from app.modules.equity_analysis.service import EquityAnalysisService
 from app.modules.market_data.repository import MarketDataRepository
 from app.modules.market_data.service import MarketDataService
+from app.modules.options_pricing_lab.repository import OptionsPricingLabRepository
+from app.modules.options_pricing_lab.service import OptionsPricingLabService
 from app.modules.portfolio_builder.repository import (
     PortfolioRepository,
     PositionRepository,
@@ -82,6 +84,12 @@ def get_volatility_lab_service(
     db: Session = Depends(get_db_session),
 ) -> VolatilityLabService:
     return VolatilityLabService(VolatilityLabRepository(db))
+
+
+def get_options_pricing_lab_service(
+    db: Session = Depends(get_db_session),
+) -> OptionsPricingLabService:
+    return OptionsPricingLabService(OptionsPricingLabRepository(db))
 
 
 def get_pricing_service() -> PricingService:
