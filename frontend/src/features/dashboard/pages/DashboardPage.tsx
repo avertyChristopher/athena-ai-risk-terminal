@@ -63,8 +63,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "6/12",
-    detail: "Volatility analytics online",
+    value: "7/12",
+    detail: "Options analytics online",
     tone: "neutral",
   },
 ];
@@ -116,9 +116,17 @@ const modules: Module[] = [
   },
   {
     name: "Options Pricing Lab",
-    description: "Price options, inspect Greeks and evaluate payoff sensitivity.",
-    status: "Coming Soon",
+    description: "Price options, inspect Greeks, parity, scenario payoffs and strategy exposure.",
+    status: "Connected",
     path: "/options-pricing-lab",
+    features: [
+      "Black-Scholes",
+      "Binomial CRR",
+      "Greeks",
+      "Put-call parity",
+      "Strategy lab",
+    ],
+    badges: ["CFA Level 1", "Volatility Lab Linked", "Portfolio Context"],
   },
   {
     name: "Rates Lab",
@@ -221,6 +229,12 @@ export function DashboardPage() {
       meta: selectedPortfolioName ? "Portfolio + asset" : workflowSymbol,
     },
     {
+      name: "Options Pricing Lab",
+      description: "Use Market Data prices and Volatility Lab inputs to price options, inspect Greeks and test payoff strategies.",
+      path: "/options-pricing-lab",
+      meta: workflowSymbol,
+    },
+    {
       name: "Trade Simulator",
       description: "Simulate BUY or SELL tickets against the selected portfolio context.",
       path: "/trade-simulator",
@@ -250,8 +264,8 @@ export function DashboardPage() {
           </p>
           <p className="dashboard-hero__body">
             Athena brings together market data, single-stock analysis, portfolio
-            construction and risk monitoring in one clean research terminal for
-            finance and risk management workflows.
+            construction, options analytics and risk monitoring in one clean
+            research terminal for finance and risk management workflows.
           </p>
         </div>
         <div className="dashboard-hero__panel" aria-label="System summary">
@@ -269,7 +283,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title={t("workflow.connectedWorkflow")}
-        description="Market Data feeds Volatility Lab for Risk Monitor and Trade Simulator workflows, while Portfolio Builder can route holdings into portfolio volatility and risk contribution analytics."
+        description="Market Data feeds Volatility Lab and Options Pricing Lab, while Portfolio Builder routes holdings into portfolio volatility, payoff analysis and risk contribution workflows."
       >
         <div className="dashboard-workflow-summary">
           <div>
@@ -299,7 +313,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Six connected workstations are active today, with the remaining analytics modules staged for future increments."
+        description="Seven connected workstations are active today, with the remaining analytics modules staged for future increments."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (

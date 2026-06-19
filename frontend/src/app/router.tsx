@@ -9,7 +9,6 @@ import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
 import { EquityAnalysisPage } from "../features/equity-analysis/pages/EquityAnalysisPage";
 import { LimitsPage } from "../features/limits/pages/LimitsPage";
 import { MarketDataPage } from "../features/market-data/pages/MarketDataPage";
-import { OptionsPricingPage } from "../features/options-pricing/pages/OptionsPricingPage";
 import { PnlPage } from "../features/pnl/pages/PnlPage";
 import { PortfolioPage } from "../features/portfolio/pages/PortfolioPage";
 import { RatesLabPage } from "../features/rates-lab/pages/RatesLabPage";
@@ -31,6 +30,11 @@ const TradeSimulatorPage = lazy(() =>
 const VolatilityLabPage = lazy(() =>
   import("../features/volatility-lab/pages/VolatilityLabPage").then((module) => ({
     default: module.VolatilityLabPage,
+  })),
+);
+const OptionsPricingPage = lazy(() =>
+  import("../features/options-pricing/pages/OptionsPricingPage").then((module) => ({
+    default: module.OptionsPricingPage,
   })),
 );
 
@@ -55,7 +59,7 @@ export const router = createBrowserRouter([
       { path: "trade-simulator", element: lazyRoute(<TradeSimulatorPage />) },
       { path: "risk-monitor", element: lazyRoute(<RiskMonitorPage />) },
       { path: "volatility-lab", element: lazyRoute(<VolatilityLabPage />) },
-      { path: "options-pricing-lab", element: <OptionsPricingPage /> },
+      { path: "options-pricing-lab", element: lazyRoute(<OptionsPricingPage />) },
       { path: "rates-lab", element: <RatesLabPage /> },
       { path: "stress-testing", element: <StressTestingPage /> },
       { path: "limit-center", element: <LimitsPage /> },
