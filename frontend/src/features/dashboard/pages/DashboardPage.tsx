@@ -63,8 +63,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "7/12",
-    detail: "Options analytics online",
+    value: "8/12",
+    detail: "Fixed-income analytics online",
     tone: "neutral",
   },
 ];
@@ -138,9 +138,17 @@ const modules: Module[] = [
   },
   {
     name: "Rates Lab",
-    description: "Analyze yield curves, bond pricing, duration and rate shocks.",
-    status: "Coming Soon",
+    description: "Analyze bond pricing, yield, duration, convexity, DV01 and curve scenarios.",
+    status: "Connected",
     path: "/rates-lab",
+    features: [
+      "Bond pricing",
+      "Yield analysis",
+      "Duration & convexity",
+      "Yield curve",
+      "Rate scenarios",
+    ],
+    badges: ["CFA Level 1", "Fixed Income", "Duration", "Yield Curve", "Risk Monitor Ready"],
   },
   {
     name: "Stress Testing",
@@ -243,6 +251,12 @@ export function DashboardPage() {
       meta: workflowSymbol,
     },
     {
+      name: "Rates Lab",
+      description: "Transform bond inputs and demo curves into duration, DV01 and reusable rate-shock payloads.",
+      path: "/rates-lab",
+      meta: selectedPortfolioName ? "Portfolio + rates" : "Demo curve",
+    },
+    {
       name: "Trade Simulator",
       description: "Simulate BUY or SELL tickets against the selected portfolio context.",
       path: "/trade-simulator",
@@ -272,7 +286,7 @@ export function DashboardPage() {
           </p>
           <p className="dashboard-hero__body">
             Athena brings together market data, single-stock analysis, portfolio
-            construction, options analytics and risk monitoring in one clean
+            construction, options and fixed-income analytics, and risk monitoring in one clean
             research terminal for finance and risk management workflows.
           </p>
         </div>
@@ -291,7 +305,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title={t("workflow.connectedWorkflow")}
-        description="Market Data feeds Volatility Lab and Options Pricing Lab, while Portfolio Builder routes holdings into portfolio volatility, payoff analysis and risk contribution workflows."
+        description="Market Data and Portfolio Builder feed volatility, options and fixed-income analytics into Risk Monitor-ready workflows."
       >
         <div className="dashboard-workflow-summary">
           <div>
