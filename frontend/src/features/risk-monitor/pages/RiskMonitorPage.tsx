@@ -9,6 +9,8 @@ import { PortfolioSelector } from "../../../components/workflow/PortfolioSelecto
 import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { EmptyState } from "../../../components/ui/EmptyState";
 import { LoadingState } from "../../../components/ui/LoadingState";
+import { StatusBadge as RiskStatusBadge } from "../../../components/ui/StatusBadge";
+import type { StatusBadgeVariant as BadgeVariant } from "../../../components/ui/StatusBadge";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { apiClient } from "../../../lib/api-client";
 import { endpoints } from "../../../lib/endpoints";
@@ -897,22 +899,6 @@ function RiskSectionCard({
       </div>
       {children}
     </section>
-  );
-}
-
-type BadgeVariant = "neutral" | "info" | "success" | "warning" | "danger";
-
-function RiskStatusBadge({
-  label,
-  variant = "neutral",
-}: {
-  label: string;
-  variant?: BadgeVariant;
-}) {
-  return (
-    <span className={`risk-monitor-status-badge risk-monitor-status-badge--${variant}`}>
-      {label}
-    </span>
   );
 }
 

@@ -1,9 +1,7 @@
-type PortfolioStatusBadgeVariant =
-  | "neutral"
-  | "info"
-  | "success"
-  | "warning"
-  | "danger";
+import { StatusBadge } from "../../../components/ui/StatusBadge";
+import type { StatusBadgeVariant } from "../../../components/ui/StatusBadge";
+
+type PortfolioStatusBadgeVariant = StatusBadgeVariant;
 
 type PortfolioStatusBadgeProps = {
   label: string;
@@ -14,11 +12,7 @@ export function PortfolioStatusBadge({
   label,
   variant = "neutral",
 }: PortfolioStatusBadgeProps) {
-  return (
-    <span className={`portfolio-status-badge portfolio-status-badge--${variant}`}>
-      {label}
-    </span>
-  );
+  return <StatusBadge label={label} variant={variant} />;
 }
 
 export type { PortfolioStatusBadgeVariant };

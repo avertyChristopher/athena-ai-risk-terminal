@@ -1,9 +1,7 @@
-type TradeStatusBadgeVariant =
-  | "neutral"
-  | "info"
-  | "success"
-  | "warning"
-  | "danger";
+import { StatusBadge } from "../../../components/ui/StatusBadge";
+import type { StatusBadgeVariant } from "../../../components/ui/StatusBadge";
+
+type TradeStatusBadgeVariant = StatusBadgeVariant;
 
 type TradeStatusBadgeProps = {
   label: string;
@@ -14,11 +12,7 @@ export function TradeStatusBadge({
   label,
   variant = "neutral",
 }: TradeStatusBadgeProps) {
-  return (
-    <span className={`trade-status-badge trade-status-badge--${variant}`}>
-      {label}
-    </span>
-  );
+  return <StatusBadge label={label} variant={variant} />;
 }
 
 export type { TradeStatusBadgeVariant };

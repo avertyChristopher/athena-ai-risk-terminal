@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { PageHeader } from "../../../components/layout/PageHeader";
+import { ErrorBanner } from "../../../components/ui/ErrorBanner";
 import { LoadingState } from "../../../components/ui/LoadingState";
 import { Card } from "../../../components/ui/Card";
 import { PortfolioSelector } from "../../../components/workflow/PortfolioSelector";
@@ -328,17 +329,13 @@ export function MarketDataPage() {
           <p className="status-message">{importMessage}</p>
         ) : null}
         {coverageQuery.isError ? (
-          <p className="status-message status-message--error">
-            {t("marketData.coverage.error")}
-          </p>
+          <ErrorBanner title={t("marketData.coverage.title")} message={t("marketData.coverage.error")} />
         ) : null}
       </Card>
 
       {assetsQuery.isLoading ? <LoadingState label={t("common.loading")} /> : null}
       {assetsQuery.isError ? (
-        <p className="status-message status-message--error">
-          {t("marketData.apiError")}
-        </p>
+        <ErrorBanner title={t("marketData.title")} message={t("marketData.apiError")} />
       ) : null}
 
       <AssetSummaryPanel

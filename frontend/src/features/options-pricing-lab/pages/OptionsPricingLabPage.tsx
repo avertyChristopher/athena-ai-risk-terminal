@@ -7,6 +7,8 @@ import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
 import { EmptyState } from "../../../components/ui/EmptyState";
 import { LoadingState } from "../../../components/ui/LoadingState";
+import { StatusBadge } from "../../../components/ui/StatusBadge";
+import type { StatusBadgeVariant as BadgeVariant } from "../../../components/ui/StatusBadge";
 import {
   StandaloneSymbolOption,
   SymbolSelectionMode,
@@ -47,8 +49,6 @@ type OptionsTab =
   | "strategy"
   | "sensitivity"
   | "workflow";
-
-type BadgeVariant = "neutral" | "info" | "success" | "warning" | "danger";
 
 const tabs: OptionsTab[] = [
   "overview",
@@ -1635,20 +1635,6 @@ function MetricCard({
       <strong>{value}</strong>
       {subtitle ? <p>{subtitle}</p> : null}
     </article>
-  );
-}
-
-function StatusBadge({
-  label,
-  variant = "neutral",
-}: {
-  label: string;
-  variant?: BadgeVariant;
-}) {
-  return (
-    <span className={`risk-monitor-status-badge risk-monitor-status-badge--${variant}`}>
-      {label}
-    </span>
   );
 }
 

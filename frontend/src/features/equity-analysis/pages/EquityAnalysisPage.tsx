@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { PageHeader } from "../../../components/layout/PageHeader";
+import { ErrorBanner } from "../../../components/ui/ErrorBanner";
 import { LoadingState } from "../../../components/ui/LoadingState";
 import { PortfolioSelector } from "../../../components/workflow/PortfolioSelector";
 import {
@@ -286,9 +287,7 @@ export function EquityAnalysisPage() {
 
       {isLoading ? <LoadingState label={t("common.loading")} /> : null}
       {hasApiError ? (
-        <p className="status-message status-message--error">
-          {t("equityAnalysis.apiError")}
-        </p>
+        <ErrorBanner title={t("equityAnalysis.title")} message={t("equityAnalysis.apiError")} />
       ) : null}
 
       <section className="equity-summary equity-summary--wide">

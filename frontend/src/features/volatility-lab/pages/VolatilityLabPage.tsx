@@ -8,6 +8,8 @@ import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
 import { EmptyState } from "../../../components/ui/EmptyState";
 import { LoadingState } from "../../../components/ui/LoadingState";
+import { StatusBadge as VolatilityStatusBadge } from "../../../components/ui/StatusBadge";
+import type { StatusBadgeVariant as BadgeVariant } from "../../../components/ui/StatusBadge";
 import { PortfolioSelector } from "../../../components/workflow/PortfolioSelector";
 import {
   StandaloneSymbolOption,
@@ -65,8 +67,6 @@ type VolatilityTab =
   | "methodology"
   | "advanced"
   | "commentary";
-
-type BadgeVariant = "neutral" | "info" | "success" | "warning" | "danger";
 
 const volatilityTabs: VolatilityTab[] = [
   "overview",
@@ -1963,20 +1963,6 @@ function VolatilityMetricCard({
       <strong>{value}</strong>
       {subtitle ? <p>{subtitle}</p> : null}
     </article>
-  );
-}
-
-function VolatilityStatusBadge({
-  label,
-  variant = "neutral",
-}: {
-  label: string;
-  variant?: BadgeVariant;
-}) {
-  return (
-    <span className={`risk-monitor-status-badge risk-monitor-status-badge--${variant}`}>
-      {label}
-    </span>
   );
 }
 

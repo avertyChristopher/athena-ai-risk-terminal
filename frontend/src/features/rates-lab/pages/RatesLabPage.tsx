@@ -6,7 +6,9 @@ import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
 import { EmptyState } from "../../../components/ui/EmptyState";
+import { ErrorBanner } from "../../../components/ui/ErrorBanner";
 import { LoadingState } from "../../../components/ui/LoadingState";
+import { StatusBadge } from "../../../components/ui/StatusBadge";
 import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { apiClient } from "../../../lib/api-client";
@@ -202,10 +204,10 @@ export function RatesLabPage() {
           <p>{t("ratesLab.workbench.description")}</p>
         </div>
         <div className="risk-monitor-badge-cluster">
-          <Badge label={statusLabel} tone={hasAnyError ? "warning" : "success"} />
-          <Badge label={t("ratesLab.badges.cfa")} tone="info" />
-          <Badge label={t("ratesLab.badges.demoCurve")} tone="warning" />
-          <Badge label={t("ratesLab.badges.riskMonitor")} tone="success" />
+          <StatusBadge label={statusLabel} variant={hasAnyError ? "warning" : "success"} />
+          <StatusBadge label={t("ratesLab.badges.cfa")} variant="info" />
+          <StatusBadge label={t("ratesLab.badges.demoCurve")} variant="warning" />
+          <StatusBadge label={t("ratesLab.badges.riskMonitor")} variant="success" />
         </div>
       </section>
 
@@ -436,21 +438,17 @@ function QueryPanel<T>({ data, isError, isLoading, onRetry, render, t }: { data:
 }
 
 function QueryErrorState({ title, message, onRetry, t }: { title: string; message: string; onRetry: () => void; t: Translator }) {
-  return <div className="empty-state" role="alert"><strong>{title}</strong><p>{message}</p><button className="button button--secondary" type="button" onClick={onRetry}>{t("ratesLab.errors.retry")}</button></div>;
+  return <ErrorBanner title={title} message={message} retryLabel={t("ratesLab.errors.retry")} onRetry={onRetry} />;
 }
 
 type Translator = (key: string) => string;
 
 function Section({ title, description, badges = [], children }: { title: string; description: string; badges?: string[]; children: ReactNode }) {
-  return <section className="card risk-monitor-section-card"><div className="risk-monitor-section-card__header"><div><h2>{title}</h2><p>{description}</p></div><div className="risk-monitor-badge-cluster">{badges.map((badge) => <Badge key={badge} label={badge} tone="info" />)}</div></div>{children}</section>;
+  return <section className="card risk-monitor-section-card"><div className="risk-monitor-section-card__header"><div><h2>{title}</h2><p>{description}</p></div><div className="risk-monitor-badge-cluster">{badges.map((badge) => <StatusBadge key={badge} label={badge} variant="info" />)}</div></div>{children}</section>;
 }
 
 function Metric({ title, value, note }: { title: string; value: ReactNode; note: ReactNode }) {
   return <article className="risk-monitor-metric-card"><span>{title}</span><strong>{value}</strong><p>{note}</p></article>;
-}
-
-function Badge({ label, tone }: { label: string; tone: "success" | "info" | "warning" }) {
-  return <span className={`risk-monitor-status-badge risk-monitor-status-badge--${tone}`}>{label}</span>;
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
