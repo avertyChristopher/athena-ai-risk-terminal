@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import UTC, date, datetime
 from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
@@ -17,6 +17,7 @@ ScenarioType = Literal[
     "short_rate_down",
     "long_rate_down",
 ]
+Language = Literal["en", "fr"]
 PositiveMaturity = Annotated[float, Field(gt=0, le=100, allow_inf_nan=False)]
 FiniteRate = Annotated[float, Field(gt=-1, le=10, allow_inf_nan=False)]
 
@@ -57,6 +58,17 @@ class MethodologyMetadata(BaseModel):
     assumptions: list[str]
     limitations: list[str]
     details: dict[str, Any] = Field(default_factory=dict)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
+class DataQualityMetadata(BaseModel):
+    missing_fields: list[str] = Field(default_factory=list)
+    fallback_used: bool = False
+    demo_curve_used: bool = False
+    simplified_pricing_used: bool = False
+    dated_pricing_available: bool = True
+    warnings: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
 
 
 class DataSourceMetadata(BaseModel):
@@ -88,6 +100,7 @@ class BondInputs(BaseModel):
         le=10,
         allow_inf_nan=False,
     )
+    language: Language = "en"
 
     @model_validator(mode="after")
     def validate_periodic_yield(self) -> "BondInputs":
@@ -129,6 +142,7 @@ class BondPricingResponse(BaseModel):
     cash_flow_schedule: list[CashFlow]
     yield_assumptions: dict[str, Any]
     methodology: MethodologyMetadata
+    data_quality: DataQualityMetadata
     data_source: DataSourceMetadata
     athena_commentary: AthenaRatesCommentary
 
@@ -149,6 +163,7 @@ class YieldAnalysisRequest(BaseModel):
     beginning_price: float | None = Field(default=None, gt=0)
     ending_price: float | None = Field(default=None, gt=0)
     coupon_received: float | None = Field(default=None, ge=0)
+    language: Language = "en"
 
 
 class YieldAnalysisResponse(BaseModel):
@@ -161,6 +176,7 @@ class YieldAnalysisResponse(BaseModel):
     price_status: str
     interpretation: str
     methodology: MethodologyMetadata
+    data_quality: DataQualityMetadata
     data_source: DataSourceMetadata
     athena_commentary: AthenaRatesCommentary
 
@@ -184,6 +200,7 @@ class DurationConvexityResponse(BaseModel):
     estimated_stressed_price_duration_convexity: float
     risk_interpretation: str
     methodology: MethodologyMetadata
+    data_quality: DataQualityMetadata
     risk_monitor_payload: dict[str, Any]
     data_source: DataSourceMetadata
     athena_commentary: AthenaRatesCommentary
@@ -194,6 +211,7 @@ class YieldCurveRequest(BaseModel):
     interpolation_method: Literal["linear"] = "linear"
     requested_maturities: list[PositiveMaturity] | None = None
     curve_type: Literal["spot", "par", "treasury_demo"] = "treasury_demo"
+    language: Language = "en"
 
 
 class YieldCurveResponse(BaseModel):
@@ -206,6 +224,7 @@ class YieldCurveResponse(BaseModel):
     curve_shape: str
     curve_interpretation: str
     methodology: MethodologyMetadata
+    data_quality: DataQualityMetadata
     data_source: DataSourceMetadata
     athena_commentary: AthenaRatesCommentary
 
@@ -258,6 +277,7 @@ class RateScenarioResult(BaseModel):
 
 class RateScenarioResponse(RateScenarioResult):
     methodology: MethodologyMetadata
+    data_quality: DataQualityMetadata
     stress_testing_payload: dict[str, Any]
     data_source: DataSourceMetadata
 
@@ -292,4 +312,5 @@ class PortfolioRatesExposureResponse(BaseModel):
     missing_data_warnings: list[str]
     risk_monitor_payload: dict[str, Any]
     methodology: MethodologyMetadata
+    data_quality: DataQualityMetadata
     data_source: DataSourceMetadata

@@ -46,6 +46,7 @@ from app.modules.rates_lab.repository import RatesLabRepository
 from app.modules.rates_lab.schemas import (
     BondPricingRequest,
     BondPricingResponse,
+    DataQualityMetadata,
     DataSourceMetadata,
     DurationConvexityRequest,
     DurationConvexityResponse,
@@ -127,11 +128,13 @@ class RatesLabService:
                 "price_yield_relationship": "inverse",
             },
             methodology=self._bond_methodology(payload, date_metadata),
+            data_quality=self._pricing_data_quality(payload),
             data_source=self._manual_data_source(),
             athena_commentary=bond_commentary(
                 status,
                 payload.coupon_rate,
                 payload.yield_to_maturity,
+                language=payload.language,
             ),
         )
 
@@ -165,11 +168,20 @@ class RatesLabService:
             if bool(result["converged"])
             else None
         )
-        interpretation = {
-            "discount": "Price below par generally implies YTM above the coupon rate.",
-            "premium": "Price above par generally implies YTM below the coupon rate.",
-            "par": "Price near par generally implies YTM near the coupon rate.",
-        }[status]
+        interpretations = (
+            {
+                "discount": "Un prix sous le pair implique generalement un rendement superieur au coupon.",
+                "premium": "Un prix au-dessus du pair implique generalement un rendement inferieur au coupon.",
+                "par": "Un prix pres du pair implique generalement un rendement proche du coupon.",
+            }
+            if payload.language == "fr"
+            else {
+                "discount": "Price below par generally implies YTM above the coupon rate.",
+                "premium": "Price above par generally implies YTM below the coupon rate.",
+                "par": "Price near par generally implies YTM near the coupon rate.",
+            }
+        )
+        interpretation = interpretations[status]
         return YieldAnalysisResponse(
             yield_to_maturity=solved_yield,
             current_yield=current,
@@ -185,14 +197,26 @@ class RatesLabService:
                 limitations=["YTM assumes coupons can be reinvested at the same yield"],
                 details={
                     "solver": "bisection",
+                    "convergence_status": "converged" if result["converged"] else "not_converged",
+                    "iterations": int(result["iterations"]),
                     "warning": str(result["warning"]),
                 },
+            ),
+            data_quality=DataQualityMetadata(
+                missing_fields=(
+                    []
+                    if hpr is not None
+                    else ["beginning_price", "ending_price", "coupon_received"]
+                ),
+                warnings=([str(result["warning"])] if result["warning"] else []),
+                limitations=["Holding-period return requires optional holding data"],
             ),
             data_source=self._manual_data_source(),
             athena_commentary=bond_commentary(
                 status,
                 payload.coupon_rate,
                 solved_yield if solved_yield is not None else 0.0,
+                language=payload.language,
             ),
         )
 
@@ -226,6 +250,15 @@ class RatesLabService:
             shock,
         )
         risk_level = "high" if modified >= 8 else "moderate" if modified >= 4 else "low"
+        risk_interpretation = (
+            {
+                "high": "Sensibilite elevee aux taux d'interet.",
+                "moderate": "Sensibilite moderee aux taux d'interet.",
+                "low": "Sensibilite faible aux taux d'interet.",
+            }[risk_level]
+            if payload.language == "fr"
+            else f"{risk_level.title()} interest-rate sensitivity."
+        )
         return DurationConvexityResponse(
             price=analysis_price,
             macaulay_duration=macaulay,
@@ -238,15 +271,21 @@ class RatesLabService:
             estimated_price_change_duration_convexity=convexity_change,
             estimated_stressed_price_duration=analysis_price + duration_change,
             estimated_stressed_price_duration_convexity=analysis_price + convexity_change,
-            risk_interpretation=f"{risk_level.title()} interest-rate sensitivity.",
+            risk_interpretation=risk_interpretation,
             methodology=MethodologyMetadata(
                 method="present_value_weighted_cashflows",
                 assumptions=["Parallel yield change", "Fixed cash flows"],
                 limitations=["Duration is linear; convexity remains an approximation"],
                 details={
+                    "macaulay_method": "present_value_weighted_cashflows",
+                    "modified_duration_formula": "macaulay_duration / (1 + yield / frequency)",
+                    "convexity_method": "cashflow_convexity_approximation",
                     "dv01_method": "modified_duration_price_sensitivity",
                     "basis_point_size": 0.0001,
                 },
+            ),
+            data_quality=DataQualityMetadata(
+                limitations=["Parallel-shift duration and convexity approximation"],
             ),
             risk_monitor_payload={
                 "module": "rates_lab",
@@ -264,6 +303,7 @@ class RatesLabService:
                 payload.yield_to_maturity,
                 modified,
                 payload.rate_shock_bps,
+                payload.language,
             ),
         )
 
@@ -286,7 +326,7 @@ class RatesLabService:
         slope = curve_slope(interpolated)
         shape = classify_curve_shape(interpolated)
         source = "manual_input" if supplied_points else "demo_curve"
-        commentary = curve_commentary(shape, slope)
+        commentary = curve_commentary(shape, slope, payload.language)
         return YieldCurveResponse(
             input_curve=base_curve,
             interpolated_curve=interpolated,
@@ -304,6 +344,16 @@ class RatesLabService:
                     "Par rates are treated as spot-rate proxies in this educational beta",
                 ],
                 details={"curve_type": payload.curve_type, "source": source},
+            ),
+            data_quality=DataQualityMetadata(
+                fallback_used=not bool(supplied_points),
+                demo_curve_used=not bool(supplied_points),
+                warnings=(
+                    ["Deterministic demo curve used; live Treasury data is not connected."]
+                    if not supplied_points
+                    else []
+                ),
+                limitations=["Par rates are treated as spot-rate proxies in this beta"],
             ),
             data_source=self._curve_data_source(bool(supplied_points)),
             athena_commentary=commentary,
@@ -350,11 +400,26 @@ class RatesLabService:
             stressed_curve,
         )
         change = float(result["price_change"])
-        interpretation = (
-            "The selected shock lowers the bond price."
-            if change < 0
-            else "The selected shock raises the bond price."
-        )
+        if payload.language == "fr":
+            interpretation = (
+                "Le choc selectionne reduit le prix de l'obligation."
+                if change < 0
+                else "Le choc selectionne augmente le prix de l'obligation."
+            )
+            risk_warning = (
+                "Les scenarios sont des estimations deterministes, pas des previsions. "
+                "Les chocs non paralleles utilisent des ponderations simplifiees par maturite."
+            )
+        else:
+            interpretation = (
+                "The selected shock lowers the bond price."
+                if change < 0
+                else "The selected shock raises the bond price."
+            )
+            risk_warning = (
+                "Scenario results are deterministic estimates, not forecasts. "
+                "Non-parallel shifts use simplified maturity weights."
+            )
         return RateScenarioResponse(
             scenario_type=payload.scenario_type,
             shock_bps=payload.shock_bps,
@@ -371,18 +436,25 @@ class RatesLabService:
             base_curve=base_curve,
             stressed_curve=stressed_curve,
             scenario_interpretation=interpretation,
-            risk_warning=(
-                "Scenario results are deterministic estimates, not forecasts. "
-                "Non-parallel shifts use simplified maturity weights."
-            ),
+            risk_warning=risk_warning,
             methodology=MethodologyMetadata(
                 method="deterministic_rate_shock",
                 assumptions=["Fixed cash flows", "Immediate yield shock"],
                 limitations=["No credit-spread or optionality model"],
                 details={
+                    "scenario_type": payload.scenario_type,
                     "shock_bps": payload.shock_bps,
                     "effective_shock_bps": result["effective_shock_bps"],
+                    "base_yield_at_maturity": result["base_yield_at_maturity"],
+                    "shocked_yield_at_maturity": result["shocked_yield_at_maturity"],
+                    "shocked_curve": stressed_curve,
                 },
+            ),
+            data_quality=DataQualityMetadata(
+                fallback_used=not bool(supplied_curve),
+                demo_curve_used=not bool(supplied_curve),
+                warnings=[risk_warning],
+                limitations=["No credit-spread or embedded-option scenario model"],
             ),
             stress_testing_payload={
                 "module": "rates_lab",
@@ -487,7 +559,20 @@ class RatesLabService:
                 method="duration_weighted_portfolio_exposure",
                 assumptions=["ETF effective duration is approximated from demo metadata"],
                 limitations=["Requires security-level bond or ETF duration metadata"],
-                details={"covered_market_value": covered_value},
+                details={
+                    "covered_market_value": covered_value,
+                    "fixed_income_market_value": fixed_income_value,
+                    "metadata_coverage_ratio": (
+                        covered_value / fixed_income_value if fixed_income_value > 0 else 0.0
+                    ),
+                },
+            ),
+            data_quality=DataQualityMetadata(
+                missing_fields=warnings,
+                fallback_used=True,
+                demo_curve_used=True,
+                warnings=warnings,
+                limitations=["ETF effective duration uses deterministic demo metadata"],
             ),
             data_source=DataSourceMetadata(
                 rate_source="demo_curve",
@@ -556,6 +641,21 @@ class RatesLabService:
             fallback_used=False,
             badges=["Manual Input", "CFA Level 1"],
             warnings=[],
+        )
+
+    def _pricing_data_quality(
+        self,
+        payload: BondPricingRequest,
+    ) -> DataQualityMetadata:
+        dated = payload.settlement_date is not None and payload.maturity_date is not None
+        return DataQualityMetadata(
+            simplified_pricing_used=not dated,
+            warnings=(
+                []
+                if dated
+                else ["Simplified year-based pricing is used because dates were not supplied."]
+            ),
+            limitations=["No credit spread, default or embedded-option model"],
         )
 
     def _curve_data_source(self, manual: bool) -> DataSourceMetadata:
