@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 
 from app.api.dependencies import get_options_pricing_lab_service
 from app.modules.options_pricing_lab.schemas import (
+    ImpliedVolatilityRequest,
+    ImpliedVolatilityResponse,
     OptionPricingRequest,
     OptionPricingResponse,
     OptionsPricingLabStatus,
@@ -34,6 +36,14 @@ def analyze_option_strategy(
     service: OptionsPricingLabService = Depends(get_options_pricing_lab_service),
 ) -> OptionStrategyResponse:
     return service.analyze_strategy(payload)
+
+
+@router.post("/implied-volatility", response_model=ImpliedVolatilityResponse)
+def calculate_implied_volatility(
+    payload: ImpliedVolatilityRequest,
+    service: OptionsPricingLabService = Depends(get_options_pricing_lab_service),
+) -> ImpliedVolatilityResponse:
+    return service.calculate_implied_volatility(payload)
 
 
 @router.get("/demo", response_model=OptionPricingResponse)
