@@ -105,5 +105,6 @@ export const endpoints = {
   optionsPricingLabStatus: "/api/options-pricing-lab/status",
   optionsPricingLabPrice: "/api/options-pricing-lab/price",
   optionsPricingLabStrategy: "/api/options-pricing-lab/strategy",
+  optionsPricingLabImpliedVolatility: "/api/options-pricing-lab/implied-volatility",
   optionsPricingLabDemo: "/api/options-pricing-lab/demo",
 } as const;

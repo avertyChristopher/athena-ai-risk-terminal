@@ -1,6 +1,8 @@
 export type OptionType = "call" | "put";
 export type OptionSide = "long" | "short";
 export type PricingModel = "black_scholes" | "binomial";
+export type ParityMode = "theoretical" | "observed";
+export type StrategyLegType = "stock" | "option" | "cash";
 export type OptionStrategyType =
   | "covered_call"
   | "protective_put"
@@ -32,14 +34,25 @@ export type OptionPricingRequest = {
   binomial_steps: number;
   contract_size: number;
   quantity: number;
+  parity_mode: ParityMode;
+  observed_call_price?: number | null;
+  observed_put_price?: number | null;
+  spot_shocks?: number[];
+  volatility_shocks?: number[];
+  time_points_days?: number[] | null;
+  rate_shocks?: number[];
 };
 
 export type OptionLeg = {
-  option_type: OptionType;
+  leg_type: StrategyLegType;
+  option_type: OptionType | null;
   side: OptionSide;
-  strike: number;
-  expiration_days: number;
+  strike_price: number | null;
+  expiration_days: number | null;
   quantity: number;
+  contract_size: number;
+  underlying_price: number | null;
+  description: string;
   premium: number | null;
 };
 
@@ -52,6 +65,34 @@ export type OptionStrategyRequest = {
   strategy_type: OptionStrategyType;
   legs?: OptionLeg[];
   contract_size: number;
+  quantity: number;
+};
+
+export type ImpliedVolatilityRequest = {
+  underlying_symbol: string;
+  option_type: OptionType;
+  observed_option_price: number;
+  underlying_price?: number | null;
+  strike_price: number;
+  time_to_expiration_days: number;
+  risk_free_rate: number;
+  dividend_yield: number;
+  initial_guess?: number | null;
+  tolerance?: number;
+  max_iterations?: number;
+};
+
+export type ImpliedVolatilityResponse = {
+  implied_volatility: number | null;
+  converged: boolean;
+  iterations: number;
+  model_price_at_iv: number | null;
+  pricing_error: number | null;
+  no_arbitrage_bounds: { lower_bound: number; upper_bound: number };
+  validation_status: string;
+  warnings: string[];
+  methodology: string;
+  data_sources: DataSources | null;
 };
 
 export type DataSources = {
@@ -72,8 +113,14 @@ export type GreeksResponse = {
   vega: number;
   rho: number;
   delta_per_contract: number;
+  position_delta: number;
+  position_gamma: number;
+  position_theta_daily: number;
+  position_vega: number;
+  position_rho: number;
   delta_adjusted_exposure: number;
   interpretation: Record<string, string>;
+  unit_metadata: Record<string, string>;
 };
 
 export type OptionPayoffPoint = {
@@ -114,7 +161,7 @@ export type OptionPricingResponse = {
   pricing_summary: {
     option_price: number;
     black_scholes_price: number;
-    binomial_price: number;
+    binomial_price: number | null;
     intrinsic_value: number;
     time_value: number;
     moneyness: string;
@@ -141,20 +188,33 @@ export type OptionPricingResponse = {
       assumptions: string[];
     };
     binomial: {
-      price: number;
+      price: number | null;
       up_factor: number;
       down_factor: number;
       risk_neutral_probability: number;
       steps: number;
+      no_arbitrage_valid: boolean;
+      warning: string | null;
     };
-    model_difference: number;
+    model_difference: number | null;
   };
   parity_check: {
+    mode: ParityMode;
+    call_price: number;
+    put_price: number;
+    model_call_price: number | null;
+    model_put_price: number | null;
+    present_value_strike: number;
+    dividend_adjusted_spot: number;
     left_side: number;
     right_side: number;
     parity_gap: number;
+    absolute_gap: number;
+    percentage_gap: number;
     status: string;
+    label: string;
     note: string;
+    caveat: string;
   };
   sensitivity_analysis: {
     price: OptionSensitivityPoint[];
@@ -162,6 +222,15 @@ export type OptionPricingResponse = {
     time_decay: OptionSensitivityPoint[];
     rates: OptionSensitivityPoint[];
     greeks_by_price: OptionSensitivityPoint[];
+    scenario_metadata: {
+      spot_shocks_percent: number[];
+      volatility_shocks_percentage_points: number[];
+      rate_shocks_percentage_points: number[];
+      time_points_days: number[];
+      expiration_days: number;
+      time_scenarios_capped: boolean;
+      note: string;
+    };
   };
   methodology: Record<string, unknown>;
   assumptions: Record<string, unknown>;
@@ -184,10 +253,23 @@ export type OptionStrategyResponse = {
   legs: OptionLeg[];
   net_premium: number;
   payoff_table: OptionPayoffPoint[];
-  max_profit: number | null;
-  max_loss: number | null;
+  max_profit: StrategyRiskValue;
+  max_loss: StrategyRiskValue;
   breakeven_points: number[];
-  aggregate_greeks: Record<string, number>;
+  payoff_profile: string[];
+  risk_notes: string[];
+  stock_leg_included: boolean;
+  collateral_requirement: number;
+  aggregate_greeks: {
+    aggregate_delta: number;
+    aggregate_gamma: number;
+    aggregate_theta: number;
+    aggregate_vega: number;
+    aggregate_rho: number;
+    delta_adjusted_exposure: number;
+    legs: StrategyLegGreeks[];
+    unit_metadata: Record<string, string>;
+  };
   risk_summary: Record<string, string>;
   commentary: {
     summary: string;
@@ -196,4 +278,20 @@ export type OptionStrategyResponse = {
     limitations?: string[];
   };
   data_sources: DataSources;
+};
+
+export type StrategyRiskValue = {
+  value: number | null;
+  type: "finite" | "unlimited" | "unknown";
+  explanation: string;
+};
+
+export type StrategyLegGreeks = {
+  leg_type: StrategyLegType;
+  description: string;
+  contract_size: number;
+  quantity: number;
+  raw_greeks: Record<string, number>;
+  contract_greeks: Record<string, number>;
+  position_greeks: Record<string, number>;
 };

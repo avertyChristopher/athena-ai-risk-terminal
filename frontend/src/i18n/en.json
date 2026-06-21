@@ -1388,7 +1388,11 @@
       "dividendYield": "Dividend yield %",
       "contractSize": "Contract size",
       "quantity": "Quantity",
-      "binomialSteps": "Binomial steps"
+      "binomialSteps": "Binomial steps",
+      "parityMode": "Parity mode",
+      "observedCallPrice": "Observed call price",
+      "observedPutPrice": "Observed put price",
+      "spotShockRange": "Spot shock range +/- %"
     },
     "labels": {
       "call": "Call",
@@ -1410,6 +1414,8 @@
       "modelsShort": "BS / tree",
       "parity": "Parity",
       "parityShort": "No-arb",
+      "impliedVolatility": "Implied volatility",
+      "impliedVolatilityShort": "Observed price",
       "strategy": "Strategy",
       "strategyShort": "Multi-leg",
       "sensitivity": "Sensitivity",
@@ -1446,7 +1452,8 @@
       "volatilitySensitivity": "Volatility sensitivity",
       "volatilitySensitivityDescription": "Option value recalculated across volatility shocks.",
       "greeksByPrice": "Greeks by underlying price",
-      "greeksByPriceDescription": "Delta, Gamma and Vega across spot scenarios."
+      "greeksByPriceDescription": "Delta, Gamma and Vega across spot scenarios.",
+      "timeSensitivity": "Time decay scenarios"
     },
     "strategy": {
       "title": "Strategy lab",
@@ -1455,6 +1462,16 @@
       "netPremium": "Net premium",
       "maxProfit": "Max profit",
       "maxLoss": "Max loss",
+      "unlimited": "Unlimited",
+      "unknown": "Unknown",
+      "stockIncluded": "Stock leg included",
+      "optionsOnly": "Option legs",
+      "collateral": "Collateral requirement",
+      "breakevens": "Breakeven points",
+      "objective": "Objective",
+      "marketView": "Market view",
+      "profile": "Payoff profile",
+      "positionGreeks": "Position Greeks",
       "commentary": "Strategy commentary",
       "payoffTable": "Strategy payoff table",
       "payoffDescription": "Scenario payoff and profit for the selected strategy."
@@ -1478,6 +1495,36 @@
       "bear_put_spread": "Defined-risk bearish put spread.",
       "collar": "Protective put financed by short call upside cap.",
       "cash_secured_put": "Premium income with purchase obligation."
+    },
+    "strategyObjectives": {
+      "covered_call": "Generate income on an existing long stock position.",
+      "protective_put": "Protect a long stock position against downside.",
+      "long_straddle": "Benefit from a large move in either direction.",
+      "long_strangle": "Buy volatility with lower initial premium.",
+      "bull_call_spread": "Express a defined-risk bullish view.",
+      "bear_put_spread": "Express a defined-risk bearish view.",
+      "collar": "Reduce downside while partly financing protection.",
+      "cash_secured_put": "Earn premium while accepting purchase obligation."
+    },
+    "strategyMarketViews": {
+      "covered_call": "Neutral to moderately bullish.",
+      "protective_put": "Bullish with downside protection.",
+      "long_straddle": "Directionally neutral, volatility bullish.",
+      "long_strangle": "Directionally neutral, strongly volatility bullish.",
+      "bull_call_spread": "Moderately bullish.",
+      "bear_put_spread": "Moderately bearish.",
+      "collar": "Conservative and risk managed.",
+      "cash_secured_put": "Neutral to moderately bullish."
+    },
+    "strategyStockNotes": {
+      "covered_call": "Covered call includes long stock",
+      "protective_put": "Protective put includes long stock",
+      "collar": "Collar includes long stock"
+    },
+    "legTypes": {
+      "stock": "Stock leg",
+      "option": "Option leg",
+      "cash": "Cash leg"
     },
     "table": {
       "metric": "Metric",
@@ -1505,9 +1552,11 @@
       "steps": "Steps",
       "modelDifference": "Model difference",
       "leg": "Leg",
+      "legType": "Leg type",
       "side": "Side",
       "premium": "Premium",
-      "optionPrice": "Option price"
+      "optionPrice": "Option price",
+      "daysRemaining": "Days remaining"
     },
     "greeks": {
       "delta": "Delta",
@@ -1517,17 +1566,55 @@
       "vega": "Vega",
       "rho": "Rho",
       "deltaPerContract": "Delta per contract",
-      "deltaAdjustedExposure": "Delta-adjusted exposure"
+      "deltaAdjustedExposure": "Delta-adjusted exposure",
+      "rawDelta": "Raw Delta",
+      "positionDelta": "Position Delta",
+      "positionGamma": "Position Gamma",
+      "positionTheta": "Position daily Theta",
+      "positionVega": "Position Vega",
+      "positionRho": "Position Rho",
+      "rawGreeks": "Raw Greeks",
+      "positionGreeks": "Position Greeks"
     },
     "parity": {
       "leftSide": "Call + PV(strike)",
       "rightSide": "Put + discounted spot",
-      "gap": "Parity gap"
+      "gap": "Parity gap",
+      "percentageGap": "Percentage gap",
+      "theoretical": "Theoretical parity",
+      "observed": "Observed parity check",
+      "inputCall": "Input call price",
+      "inputPut": "Input put price",
+      "modelCall": "Model call price",
+      "modelPut": "Model put price",
+      "presentValueStrike": "PV strike",
+      "discountedSpot": "Dividend-adjusted spot"
     },
     "parityStatus": {
       "aligned": "Aligned",
       "small_deviation": "Small deviation",
+      "review": "Review",
       "potential_arbitrage": "Potential arbitrage"
+    },
+    "models": {
+      "binomialWarning": "Binomial parameters violate the no-arbitrage condition. Review volatility, rate, dividend yield or step count."
+    },
+    "scenarios": {
+      "timeCapped": "Time decay scenarios are capped at the option's current expiration.",
+      "spotAssumptions": "Spot shock assumptions"
+    },
+    "iv": {
+      "title": "Implied volatility",
+      "description": "Implied volatility is inferred from an observed market option price and validated against European no-arbitrage bounds.",
+      "observedPrice": "Observed option price",
+      "calculate": "Calculate IV",
+      "impliedVolatility": "Implied volatility",
+      "lowerBound": "Lower no-arbitrage bound",
+      "upperBound": "Upper no-arbitrage bound",
+      "modelPrice": "Model price at IV",
+      "converged": "Converged",
+      "notConverged": "Not converged",
+      "requestError": "Review the observed price and contract assumptions."
     },
     "moneyness": {
       "in_the_money": "In the money",

@@ -116,7 +116,7 @@ const modules: Module[] = [
   },
   {
     name: "Options Pricing Lab",
-    description: "Price options, inspect Greeks, parity, scenario payoffs and strategy exposure.",
+    description: "Financially corrected beta for option pricing, observed parity, implied volatility and typed multi-leg strategies.",
     status: "Connected",
     path: "/options-pricing-lab",
     features: [
@@ -125,8 +125,16 @@ const modules: Module[] = [
       "Greeks",
       "Put-call parity",
       "Strategy lab",
+      "Implied volatility",
     ],
-    badges: ["CFA Level 1", "Volatility Lab Linked", "Portfolio Context"],
+    badges: [
+      "CFA Level 1",
+      "Greeks",
+      "Strategy Lab",
+      "Implied Volatility",
+      "Beta+",
+      "Bilingual",
+    ],
   },
   {
     name: "Rates Lab",

@@ -19,6 +19,8 @@ import { endpoints } from "../../../lib/endpoints";
 import type { MarketAsset } from "../../../types/market-data";
 import type {
   DataSources,
+  ImpliedVolatilityRequest,
+  ImpliedVolatilityResponse,
   OptionPayoffPoint,
   OptionPricingRequest,
   OptionPricingResponse,
@@ -29,7 +31,9 @@ import type {
   OptionStrategyType,
   OptionType,
   OptionsPricingLabStatus,
+  ParityMode,
   PricingModel,
+  StrategyRiskValue,
 } from "../../../types/options-pricing-lab";
 import type { PositionRead } from "../../../types/portfolio";
 
@@ -39,6 +43,7 @@ type OptionsTab =
   | "greeks"
   | "models"
   | "parity"
+  | "impliedVolatility"
   | "strategy"
   | "sensitivity"
   | "workflow";
@@ -51,6 +56,7 @@ const tabs: OptionsTab[] = [
   "greeks",
   "models",
   "parity",
+  "impliedVolatility",
   "strategy",
   "sensitivity",
   "workflow",
@@ -96,6 +102,11 @@ export function OptionsPricingLabPage() {
   const [contractSize, setContractSize] = useState(100);
   const [quantity, setQuantity] = useState(1);
   const [binomialSteps, setBinomialSteps] = useState(75);
+  const [parityMode, setParityMode] = useState<ParityMode>("theoretical");
+  const [observedCallPrice, setObservedCallPrice] = useState("10");
+  const [observedPutPrice, setObservedPutPrice] = useState("5");
+  const [observedOptionPrice, setObservedOptionPrice] = useState("10");
+  const [spotShockRange, setSpotShockRange] = useState(30);
   const [activeTab, setActiveTab] = useState<OptionsTab>("overview");
 
   const statusQuery = useQuery({
@@ -142,6 +153,12 @@ export function OptionsPricingLabPage() {
       binomial_steps: clampNumber(binomialSteps, 1, 500),
       contract_size: clampNumber(contractSize, 1, 10_000),
       quantity: clampNumber(quantity, 1, 10_000),
+      parity_mode: parityMode,
+      observed_call_price:
+        parityMode === "observed" ? optionalNonNegativeNumber(observedCallPrice) : null,
+      observed_put_price:
+        parityMode === "observed" ? optionalNonNegativeNumber(observedPutPrice) : null,
+      spot_shocks: scenarioShocks(spotShockRange),
     }),
     [
       binomialSteps,
@@ -149,11 +166,15 @@ export function OptionsPricingLabPage() {
       dividendYieldPct,
       expirationDays,
       optionType,
+      observedCallPrice,
+      observedPutPrice,
+      parityMode,
       positionSide,
       pricingModel,
       quantity,
       riskFreeRatePct,
       selectedSymbol,
+      spotShockRange,
       strikePrice,
       underlyingPriceInput,
       volatilityPct,
@@ -169,6 +190,7 @@ export function OptionsPricingLabPage() {
       dividend_yield: pricePayload.dividend_yield,
       strategy_type: strategyType,
       contract_size: pricePayload.contract_size,
+      quantity: pricePayload.quantity,
     }),
     [pricePayload, strategyType],
   );
@@ -190,6 +212,31 @@ export function OptionsPricingLabPage() {
       apiClient.post<OptionStrategyResponse>(
         endpoints.optionsPricingLabStrategy,
         strategyPayload,
+      ),
+  });
+
+  const impliedVolatilityPayload = useMemo<ImpliedVolatilityRequest>(
+    () => ({
+      underlying_symbol: pricePayload.underlying_symbol,
+      option_type: pricePayload.option_type,
+      observed_option_price: optionalPositiveNumber(observedOptionPrice) ?? 0.01,
+      underlying_price: pricePayload.underlying_price,
+      strike_price: pricePayload.strike_price,
+      time_to_expiration_days: pricePayload.time_to_expiration_days,
+      risk_free_rate: pricePayload.risk_free_rate,
+      dividend_yield: pricePayload.dividend_yield,
+      initial_guess: pricePayload.volatility,
+    }),
+    [observedOptionPrice, pricePayload],
+  );
+
+  const impliedVolatilityQuery = useQuery({
+    queryKey: ["options-pricing-lab-implied-volatility", impliedVolatilityPayload],
+    enabled: false,
+    queryFn: () =>
+      apiClient.post<ImpliedVolatilityResponse>(
+        endpoints.optionsPricingLabImpliedVolatility,
+        impliedVolatilityPayload,
       ),
   });
 
@@ -229,6 +276,11 @@ export function OptionsPricingLabPage() {
     setContractSize(100);
     setQuantity(1);
     setBinomialSteps(75);
+    setParityMode("theoretical");
+    setObservedCallPrice("10");
+    setObservedPutPrice("5");
+    setObservedOptionPrice("10");
+    setSpotShockRange(30);
     setActiveTab("overview");
   }
 
@@ -456,6 +508,55 @@ export function OptionsPricingLabPage() {
                   onChange={(event) => setBinomialSteps(Number(event.target.value))}
                 />
               </label>
+              <label className="form-field">
+                <span>{t("optionsPricingLab.controls.parityMode")}</span>
+                <select
+                  value={parityMode}
+                  onChange={(event) => setParityMode(event.target.value as ParityMode)}
+                >
+                  <option value="theoretical">
+                    {t("optionsPricingLab.parity.theoretical")}
+                  </option>
+                  <option value="observed">
+                    {t("optionsPricingLab.parity.observed")}
+                  </option>
+                </select>
+              </label>
+              {parityMode === "observed" ? (
+                <>
+                  <label className="form-field">
+                    <span>{t("optionsPricingLab.controls.observedCallPrice")}</span>
+                    <input
+                      min={0}
+                      step={0.01}
+                      type="number"
+                      value={observedCallPrice}
+                      onChange={(event) => setObservedCallPrice(event.target.value)}
+                    />
+                  </label>
+                  <label className="form-field">
+                    <span>{t("optionsPricingLab.controls.observedPutPrice")}</span>
+                    <input
+                      min={0}
+                      step={0.01}
+                      type="number"
+                      value={observedPutPrice}
+                      onChange={(event) => setObservedPutPrice(event.target.value)}
+                    />
+                  </label>
+                </>
+              ) : null}
+              <label className="form-field">
+                <span>{t("optionsPricingLab.controls.spotShockRange")}</span>
+                <input
+                  max={90}
+                  min={5}
+                  step={5}
+                  type="number"
+                  value={spotShockRange}
+                  onChange={(event) => setSpotShockRange(Number(event.target.value))}
+                />
+              </label>
             </div>
           </div>
         </div>
@@ -535,6 +636,15 @@ export function OptionsPricingLabPage() {
             ) : null}
             {activeTab === "parity" ? (
               <ParityTab analysis={analysis} currency={baseCurrency} t={t} />
+            ) : null}
+            {activeTab === "impliedVolatility" ? (
+              <ImpliedVolatilityTab
+                currency={baseCurrency}
+                observedOptionPrice={observedOptionPrice}
+                query={impliedVolatilityQuery}
+                setObservedOptionPrice={setObservedOptionPrice}
+                t={t}
+              />
             ) : null}
             {activeTab === "strategy" ? (
               <StrategyTab strategy={strategy} currency={baseCurrency} t={t} />
@@ -763,6 +873,28 @@ function OverviewTab({
           </ul>
         </SectionCard>
       </div>
+      <SectionCard
+        title={t("optionsPricingLab.sections.timeSensitivity")}
+        description={t("optionsPricingLab.scenarios.timeCapped")}
+        badges={[{
+          label: `${analysis.sensitivity_analysis.scenario_metadata.expiration_days} ${t("optionsPricingLab.table.days")}`,
+          variant: "info",
+        }]}
+      >
+        <SimpleTable
+          headers={[
+            t("optionsPricingLab.table.daysRemaining"),
+            t("optionsPricingLab.table.optionPrice"),
+          ]}
+          rows={analysis.sensitivity_analysis.time_decay.map((row) => [
+            `${row.value ?? row.days ?? 0}`,
+            <MoneyValue currency={currency} key="time-price" value={row.option_price ?? 0} />,
+          ])}
+        />
+        <p className="risk-monitor-footnote">
+          {t("optionsPricingLab.scenarios.spotAssumptions")}: {analysis.sensitivity_analysis.scenario_metadata.spot_shocks_percent.join("%, ")}%
+        </p>
+      </SectionCard>
     </div>
   );
 }
@@ -857,6 +989,13 @@ function GreeksTab({
               value={analysis.greeks.delta_adjusted_exposure}
             />,
           ],
+          [t("optionsPricingLab.greeks.positionDelta"), analysis.greeks.position_delta.toFixed(2)],
+          [t("optionsPricingLab.greeks.positionGamma"), analysis.greeks.position_gamma.toFixed(4)],
+          [t("optionsPricingLab.greeks.positionTheta"), analysis.greeks.position_theta_daily.toFixed(2)],
+          [t("optionsPricingLab.greeks.positionVega"), analysis.greeks.position_vega.toFixed(2)],
+          [t("optionsPricingLab.greeks.positionRho"), analysis.greeks.position_rho.toFixed(2)],
+          [t("optionsPricingLab.controls.contractSize"), analysis.input_summary.contract_size],
+          [t("optionsPricingLab.controls.quantity"), analysis.input_summary.quantity],
         ]}
       />
     </SectionCard>
@@ -902,7 +1041,10 @@ function ModelsTab({
             t("optionsPricingLab.table.value"),
           ]}
           rows={[
-            [t("optionsPricingLab.table.price"), analysis.model_details.binomial.price.toFixed(4)],
+            [
+              t("optionsPricingLab.table.price"),
+              analysis.model_details.binomial.price?.toFixed(4) ?? "--",
+            ],
             [t("optionsPricingLab.table.upFactor"), analysis.model_details.binomial.up_factor.toFixed(5)],
             [t("optionsPricingLab.table.downFactor"), analysis.model_details.binomial.down_factor.toFixed(5)],
             [
@@ -913,9 +1055,17 @@ function ModelsTab({
               />,
             ],
             [t("optionsPricingLab.table.steps"), analysis.model_details.binomial.steps.toFixed(0)],
-            [t("optionsPricingLab.table.modelDifference"), analysis.model_details.model_difference.toFixed(4)],
+            [
+              t("optionsPricingLab.table.modelDifference"),
+              analysis.model_details.model_difference?.toFixed(4) ?? "--",
+            ],
           ]}
         />
+        {!analysis.model_details.binomial.no_arbitrage_valid ? (
+          <div className="risk-monitor-warning-list">
+            <p>{t("optionsPricingLab.models.binomialWarning")}</p>
+          </div>
+        ) : null}
       </SectionCard>
     </div>
   );
@@ -933,7 +1083,7 @@ function ParityTab({
   return (
     <SectionCard
       title={t("optionsPricingLab.sections.parity")}
-      description={analysis.parity_check.note}
+      description={`${analysis.parity_check.label}. ${analysis.parity_check.note}`}
       badges={[
         {
           label: parityStatusLabel(analysis.parity_check.status, t),
@@ -970,7 +1120,136 @@ function ParityTab({
           }
           tone={Math.abs(analysis.parity_check.parity_gap) > 1 ? "warning" : "positive"}
         />
+        <MetricCard
+          title={t("optionsPricingLab.parity.percentageGap")}
+          value={<PercentValue value={analysis.parity_check.percentage_gap} />}
+        />
       </div>
+      <SimpleTable
+        headers={[
+          t("optionsPricingLab.table.metric"),
+          t("optionsPricingLab.table.value"),
+        ]}
+        rows={[
+          [
+            t("optionsPricingLab.parity.inputCall"),
+            <MoneyValue currency={currency} key="call" value={analysis.parity_check.call_price} />,
+          ],
+          [
+            t("optionsPricingLab.parity.inputPut"),
+            <MoneyValue currency={currency} key="put" value={analysis.parity_check.put_price} />,
+          ],
+          [
+            t("optionsPricingLab.parity.modelCall"),
+            <MoneyValue currency={currency} key="model-call" value={analysis.parity_check.model_call_price ?? 0} />,
+          ],
+          [
+            t("optionsPricingLab.parity.modelPut"),
+            <MoneyValue currency={currency} key="model-put" value={analysis.parity_check.model_put_price ?? 0} />,
+          ],
+          [
+            t("optionsPricingLab.parity.presentValueStrike"),
+            <MoneyValue currency={currency} key="pv-strike" value={analysis.parity_check.present_value_strike} />,
+          ],
+          [
+            t("optionsPricingLab.parity.discountedSpot"),
+            <MoneyValue currency={currency} key="discounted-spot" value={analysis.parity_check.dividend_adjusted_spot} />,
+          ],
+        ]}
+      />
+      <p className="risk-monitor-footnote">{analysis.parity_check.caveat}</p>
+    </SectionCard>
+  );
+}
+
+function ImpliedVolatilityTab({
+  currency,
+  observedOptionPrice,
+  query,
+  setObservedOptionPrice,
+  t,
+}: {
+  currency: string;
+  observedOptionPrice: string;
+  query: {
+    data?: ImpliedVolatilityResponse;
+    isError: boolean;
+    isFetching: boolean;
+    refetch: () => Promise<unknown>;
+  };
+  setObservedOptionPrice: (value: string) => void;
+  t: (key: string) => string;
+}) {
+  const result = query.data;
+  return (
+    <SectionCard
+      title={t("optionsPricingLab.iv.title")}
+      description={t("optionsPricingLab.iv.description")}
+      badges={result ? [{
+        label: result.converged
+          ? t("optionsPricingLab.iv.converged")
+          : t("optionsPricingLab.iv.notConverged"),
+        variant: result.converged ? "success" : "warning",
+      }] : []}
+    >
+      <div className="options-lab-action-row">
+        <label className="form-field">
+          <span>{t("optionsPricingLab.iv.observedPrice")}</span>
+          <input
+            min={0.01}
+            step={0.01}
+            type="number"
+            value={observedOptionPrice}
+            onChange={(event) => setObservedOptionPrice(event.target.value)}
+          />
+        </label>
+        <button
+          className="button button--primary"
+          disabled={query.isFetching}
+          type="button"
+          onClick={() => void query.refetch()}
+        >
+          {query.isFetching
+            ? t("common.loading")
+            : t("optionsPricingLab.iv.calculate")}
+        </button>
+      </div>
+      {query.isError ? (
+        <EmptyState
+          title={t("optionsPricingLab.iv.notConverged")}
+          message={t("optionsPricingLab.iv.requestError")}
+        />
+      ) : null}
+      {result ? (
+        <>
+          <div className="risk-monitor-mini-grid">
+            <MetricCard
+              title={t("optionsPricingLab.iv.impliedVolatility")}
+              value={result.implied_volatility === null
+                ? "--"
+                : <PercentValue value={result.implied_volatility} />}
+            />
+            <MetricCard
+              title={t("optionsPricingLab.iv.lowerBound")}
+              value={<MoneyValue currency={currency} value={result.no_arbitrage_bounds.lower_bound} />}
+            />
+            <MetricCard
+              title={t("optionsPricingLab.iv.upperBound")}
+              value={<MoneyValue currency={currency} value={result.no_arbitrage_bounds.upper_bound} />}
+            />
+            <MetricCard
+              title={t("optionsPricingLab.iv.modelPrice")}
+              value={result.model_price_at_iv === null
+                ? "--"
+                : <MoneyValue currency={currency} value={result.model_price_at_iv} />}
+            />
+          </div>
+          <p className="risk-monitor-footnote">{result.methodology}</p>
+          {result.warnings.map((warning) => (
+            <p className="negative-value" key={warning}>{warning}</p>
+          ))}
+        </>
+      ) : null}
     </SectionCard>
   );
 }
@@ -1000,8 +1279,10 @@ function StrategyTab({
         description={strategy.strategy_summary.risk_profile}
         badges={[
           {
-            label: t("optionsPricingLab.strategy.deterministic"),
-            variant: "info",
+            label: strategy.stock_leg_included
+              ? t(`optionsPricingLab.strategyStockNotes.${strategy.strategy_summary.strategy_type}`)
+              : t("optionsPricingLab.strategy.optionsOnly"),
+            variant: strategy.stock_leg_included ? "success" : "info",
           },
         ]}
       >
@@ -1012,31 +1293,56 @@ function StrategyTab({
           />
           <MetricCard
             title={t("optionsPricingLab.strategy.maxProfit")}
-            value={formatNullableMoney(strategy.max_profit, currency)}
+            value={formatRiskValue(strategy.max_profit, currency, t)}
+            subtitle={strategy.max_profit.explanation}
           />
           <MetricCard
             title={t("optionsPricingLab.strategy.maxLoss")}
-            value={formatNullableMoney(strategy.max_loss, currency)}
+            value={formatRiskValue(strategy.max_loss, currency, t)}
+            subtitle={strategy.max_loss.explanation}
             tone="warning"
           />
+          <MetricCard
+            title={t("optionsPricingLab.strategy.collateral")}
+            value={<MoneyValue currency={currency} value={strategy.collateral_requirement} />}
+          />
+          <MetricCard
+            title={t("optionsPricingLab.strategy.breakevens")}
+            value={strategy.breakeven_points.length
+              ? strategy.breakeven_points.map((point) => formatMoney(point, currency)).join(" / ")
+              : "--"}
+          />
+        </div>
+        <div className="risk-monitor-driver-list">
+          <p><strong>{t("optionsPricingLab.strategy.objective")}:</strong> {t(`optionsPricingLab.strategyObjectives.${strategy.strategy_summary.strategy_type}`)}</p>
+          <p><strong>{t("optionsPricingLab.strategy.marketView")}:</strong> {t(`optionsPricingLab.strategyMarketViews.${strategy.strategy_summary.strategy_type}`)}</p>
+          <p><strong>{t("optionsPricingLab.strategy.profile")}:</strong> {strategy.payoff_profile.join(" | ")}</p>
         </div>
         <div className="risk-monitor-two-column">
           <SimpleTable
             headers={[
               t("optionsPricingLab.table.leg"),
+              t("optionsPricingLab.table.legType"),
               t("optionsPricingLab.table.side"),
               t("optionsPricingLab.table.strike"),
               t("optionsPricingLab.table.premium"),
+              t("optionsPricingLab.controls.contractSize"),
+              t("optionsPricingLab.controls.quantity"),
             ]}
             rows={strategy.legs.map((leg, index) => [
-              `${index + 1}. ${optionLabel(leg.option_type, t)}`,
+              `${index + 1}. ${leg.description}`,
+              t(`optionsPricingLab.legTypes.${leg.leg_type}`),
               sideLabel(leg.side, t),
-              <MoneyValue currency={currency} key="strike" value={leg.strike} />,
+              leg.strike_price === null
+                ? "--"
+                : <MoneyValue currency={currency} key="strike" value={leg.strike_price} />,
               <MoneyValue
                 currency={currency}
                 key="premium"
                 value={leg.premium ?? 0}
               />,
+              leg.contract_size,
+              leg.quantity,
             ])}
           />
           <div className="risk-monitor-driver-list">
@@ -1045,8 +1351,37 @@ function StrategyTab({
               <p key={point}>{point}</p>
             ))}
             <p>{strategy.risk_summary.cfa_explanation}</p>
+            {strategy.risk_notes.map((note) => <p key={note}>{note}</p>)}
           </div>
         </div>
+      </SectionCard>
+
+      <SectionCard
+        title={t("optionsPricingLab.strategy.positionGreeks")}
+        description={strategy.aggregate_greeks.unit_metadata.delta}
+      >
+        <div className="risk-monitor-mini-grid">
+          <MetricCard title={t("optionsPricingLab.greeks.delta")} value={strategy.aggregate_greeks.aggregate_delta.toFixed(2)} />
+          <MetricCard title={t("optionsPricingLab.greeks.gamma")} value={strategy.aggregate_greeks.aggregate_gamma.toFixed(4)} />
+          <MetricCard title={t("optionsPricingLab.greeks.thetaDaily")} value={strategy.aggregate_greeks.aggregate_theta.toFixed(2)} />
+          <MetricCard title={t("optionsPricingLab.greeks.deltaAdjustedExposure")} value={<MoneyValue currency={currency} value={strategy.aggregate_greeks.delta_adjusted_exposure} />} />
+        </div>
+        <SimpleTable
+          headers={[
+            t("optionsPricingLab.table.leg"),
+            t("optionsPricingLab.greeks.rawGreeks"),
+            t("optionsPricingLab.greeks.positionGreeks"),
+            t("optionsPricingLab.controls.contractSize"),
+            t("optionsPricingLab.controls.quantity"),
+          ]}
+          rows={strategy.aggregate_greeks.legs.map((leg, index) => [
+            `${index + 1}. ${leg.description}`,
+            formatGreekSet(leg.raw_greeks, 4),
+            formatGreekSet(leg.position_greeks, 2),
+            leg.contract_size,
+            leg.quantity,
+          ])}
+        />
       </SectionCard>
 
       <SectionCard
@@ -1430,6 +1765,18 @@ function optionalPositiveNumber(value: string, divisor = 1) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed / divisor : null;
 }
 
+function optionalNonNegativeNumber(value: string) {
+  if (!value.trim()) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function scenarioShocks(range: number) {
+  const boundedRange = clampNumber(range, 5, 90);
+  const midpoint = boundedRange / 2;
+  return [-boundedRange, -midpoint, 0, midpoint, boundedRange];
+}
+
 function clampNumber(value: number, minimum: number, maximum: number) {
   if (!Number.isFinite(value)) return minimum;
   return Math.min(maximum, Math.max(minimum, value));
@@ -1448,6 +1795,28 @@ function isPositionRead(
 function formatNullableMoney(value: number | null, currency: string) {
   if (value === null) return "Unlimited";
   return <MoneyValue currency={currency} value={value} />;
+}
+
+function formatRiskValue(
+  risk: StrategyRiskValue,
+  currency: string,
+  t: (key: string) => string,
+) {
+  if (risk.type === "unlimited") return t("optionsPricingLab.strategy.unlimited");
+  if (risk.type === "unknown") return t("optionsPricingLab.strategy.unknown");
+  return <MoneyValue currency={currency} value={risk.value ?? 0} />;
+}
+
+function formatMoney(value: number, currency: string) {
+  return new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+function formatGreekSet(greeks: Record<string, number>, digits: number) {
+  return `D ${greeks.delta.toFixed(digits)} | G ${greeks.gamma.toFixed(digits)} | T ${greeks.theta.toFixed(digits)} | V ${greeks.vega.toFixed(digits)} | R ${greeks.rho.toFixed(digits)}`;
 }
 
 function formatMoneyness(value: string, t: (key: string) => string) {

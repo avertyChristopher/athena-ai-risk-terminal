@@ -1388,7 +1388,11 @@
       "dividendYield": "Rendement dividende %",
       "contractSize": "Taille contrat",
       "quantity": "Quantite",
-      "binomialSteps": "Pas binomial"
+      "binomialSteps": "Pas binomial",
+      "parityMode": "Mode de parite",
+      "observedCallPrice": "Prix call observe",
+      "observedPutPrice": "Prix put observe",
+      "spotShockRange": "Amplitude choc spot +/- %"
     },
     "labels": {
       "call": "Call",
@@ -1410,6 +1414,8 @@
       "modelsShort": "BS / arbre",
       "parity": "Parite",
       "parityShort": "No-arb",
+      "impliedVolatility": "Volatilite implicite",
+      "impliedVolatilityShort": "Prix observe",
       "strategy": "Strategie",
       "strategyShort": "Multi-leg",
       "sensitivity": "Sensibilite",
@@ -1446,7 +1452,8 @@
       "volatilitySensitivity": "Sensibilite a la volatilite",
       "volatilitySensitivityDescription": "Valeur option recalculee sur des chocs de volatilite.",
       "greeksByPrice": "Greeks par prix du sous-jacent",
-      "greeksByPriceDescription": "Delta, Gamma et Vega sur des scenarios de spot."
+      "greeksByPriceDescription": "Delta, Gamma et Vega sur des scenarios de spot.",
+      "timeSensitivity": "Scenarios de decay temporel"
     },
     "strategy": {
       "title": "Laboratoire de strategies",
@@ -1455,6 +1462,16 @@
       "netPremium": "Prime nette",
       "maxProfit": "Gain max",
       "maxLoss": "Perte max",
+      "unlimited": "Illimite",
+      "unknown": "Inconnu",
+      "stockIncluded": "Jambe action incluse",
+      "optionsOnly": "Jambes option",
+      "collateral": "Exigence de collateral",
+      "breakevens": "Points morts",
+      "objective": "Objectif",
+      "marketView": "Vue de marche",
+      "profile": "Profil de payoff",
+      "positionGreeks": "Greeks de position",
       "commentary": "Commentaire strategie",
       "payoffTable": "Table payoff strategie",
       "payoffDescription": "Payoff et profit scenario pour la strategie selectionnee."
@@ -1478,6 +1495,36 @@
       "bear_put_spread": "Spread put baissier a risque defini.",
       "collar": "Put protecteur finance par un short call qui plafonne l'upside.",
       "cash_secured_put": "Revenu de prime avec obligation potentielle d'achat."
+    },
+    "strategyObjectives": {
+      "covered_call": "Generer un revenu sur une position longue en actions.",
+      "protective_put": "Proteger une position longue contre la baisse.",
+      "long_straddle": "Beneficier d'un grand mouvement dans les deux directions.",
+      "long_strangle": "Acheter de la volatilite avec une prime initiale reduite.",
+      "bull_call_spread": "Exprimer une vue haussiere a risque defini.",
+      "bear_put_spread": "Exprimer une vue baissiere a risque defini.",
+      "collar": "Limiter la baisse en financant partiellement la protection.",
+      "cash_secured_put": "Recevoir une prime en acceptant une obligation d'achat."
+    },
+    "strategyMarketViews": {
+      "covered_call": "Neutre a moderement haussiere.",
+      "protective_put": "Haussiere avec protection baissiere.",
+      "long_straddle": "Neutre en direction, haussiere en volatilite.",
+      "long_strangle": "Neutre en direction, fortement haussiere en volatilite.",
+      "bull_call_spread": "Moderement haussiere.",
+      "bear_put_spread": "Moderement baissiere.",
+      "collar": "Conservatrice et orientee gestion du risque.",
+      "cash_secured_put": "Neutre a moderement haussiere."
+    },
+    "strategyStockNotes": {
+      "covered_call": "Le covered call inclut une position longue en actions",
+      "protective_put": "Le protective put inclut une position longue en actions",
+      "collar": "Le collar inclut une position longue en actions"
+    },
+    "legTypes": {
+      "stock": "Jambe action",
+      "option": "Jambe option",
+      "cash": "Jambe cash"
     },
     "table": {
       "metric": "Metrique",
@@ -1505,9 +1552,11 @@
       "steps": "Pas",
       "modelDifference": "Ecart modele",
       "leg": "Jambe",
+      "legType": "Type de jambe",
       "side": "Sens",
       "premium": "Prime",
-      "optionPrice": "Prix option"
+      "optionPrice": "Prix option",
+      "daysRemaining": "Jours restants"
     },
     "greeks": {
       "delta": "Delta",
@@ -1517,17 +1566,55 @@
       "vega": "Vega",
       "rho": "Rho",
       "deltaPerContract": "Delta par contrat",
-      "deltaAdjustedExposure": "Exposition ajustee du delta"
+      "deltaAdjustedExposure": "Exposition ajustee au delta",
+      "rawDelta": "Delta brut",
+      "positionDelta": "Delta de position",
+      "positionGamma": "Gamma de position",
+      "positionTheta": "Theta quotidien de position",
+      "positionVega": "Vega de position",
+      "positionRho": "Rho de position",
+      "rawGreeks": "Greeks bruts",
+      "positionGreeks": "Greeks de position"
     },
     "parity": {
       "leftSide": "Call + VA(strike)",
       "rightSide": "Put + spot actualise",
-      "gap": "Ecart de parite"
+      "gap": "Ecart de parite",
+      "percentageGap": "Ecart en pourcentage",
+      "theoretical": "Parite theorique",
+      "observed": "Verification de parite observee",
+      "inputCall": "Prix call utilise",
+      "inputPut": "Prix put utilise",
+      "modelCall": "Prix call du modele",
+      "modelPut": "Prix put du modele",
+      "presentValueStrike": "Valeur actuelle du strike",
+      "discountedSpot": "Spot ajuste des dividendes"
     },
     "parityStatus": {
       "aligned": "Alignee",
       "small_deviation": "Petit ecart",
+      "review": "A verifier",
       "potential_arbitrage": "Arbitrage potentiel"
+    },
+    "models": {
+      "binomialWarning": "Les parametres binomiaux violent la condition de non-arbitrage. Verifie volatilite, taux, rendement du dividende ou nombre de pas."
+    },
+    "scenarios": {
+      "timeCapped": "Les scenarios temporels sont limites a l'echeance actuelle de l'option.",
+      "spotAssumptions": "Hypotheses de choc spot"
+    },
+    "iv": {
+      "title": "Volatilite implicite",
+      "description": "La volatilite implicite est deduite d'un prix d'option observe et validee avec les bornes europeennes de non-arbitrage.",
+      "observedPrice": "Prix d'option observe",
+      "calculate": "Calculer l'IV",
+      "impliedVolatility": "Volatilite implicite",
+      "lowerBound": "Borne basse de non-arbitrage",
+      "upperBound": "Borne haute de non-arbitrage",
+      "modelPrice": "Prix modele a l'IV",
+      "converged": "Converge",
+      "notConverged": "Non converge",
+      "requestError": "Verifie le prix observe et les hypotheses du contrat."
     },
     "moneyness": {
       "in_the_money": "Dans la monnaie",
