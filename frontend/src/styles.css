@@ -557,7 +557,7 @@ select {
   margin-top: 10px;
 }
 
-.dashboard-module-badges span {
+.dashboard-module-badges > span:not(.risk-monitor-status-badge) {
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 5px 8px;
@@ -565,6 +565,25 @@ select {
   color: var(--accent-strong);
   font-size: 0.74rem;
   font-weight: 800;
+}
+
+.dashboard-module-connections {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 5px 10px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  font-size: 0.8rem;
+}
+
+.dashboard-module-connections span {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.dashboard-module-connections p {
+  overflow-wrap: anywhere;
 }
 
 .dashboard-module-card > strong {
@@ -638,6 +657,17 @@ select {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
+}
+
+.dashboard-workflow-tracks,
+.dashboard-workflow-track {
+  display: grid;
+  gap: 16px;
+}
+
+.dashboard-workflow-track {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
 }
 
 .dashboard-workflow-card {

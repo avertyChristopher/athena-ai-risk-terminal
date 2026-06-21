@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
+import { StatusBadge } from "../../../components/ui/StatusBadge";
 import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { useHealth } from "../../../hooks/useHealth";
 import { useTranslation } from "../../../hooks/useTranslation";
@@ -17,10 +18,13 @@ type Kpi = {
 type Module = {
   name: string;
   description: string;
-  status: "Live" | "Connected" | "Demo" | "Beta" | "Coming Soon";
+  status: "Connected" | "Demo" | "Beta" | "Coming Soon";
+  maturity: "Operational" | "Beta+" | "Beta" | "Roadmap";
   path: string;
-  features?: string[];
-  badges?: string[];
+  connectedInputs: string[];
+  connectedOutputs: string[];
+  features: string[];
+  badges: string[];
 };
 
 type WorkflowModule = {
@@ -73,37 +77,63 @@ const modules: Module[] = [
   {
     name: "Market Data",
     description: "Clean prices, returns, volatility, benchmarks and data quality metrics.",
-    status: "Live",
+    status: "Connected",
+    maturity: "Operational",
     path: "/market-data",
+    connectedInputs: ["CSV imports", "Demo market feed"],
+    connectedOutputs: ["Equity", "Portfolio", "Volatility", "Rates"],
+    features: ["Price history", "Returns", "Data quality"],
+    badges: ["Market Data", "Demo", "Connected"],
   },
   {
     name: "Equity Analysis",
     description: "Analyze valuation, profitability, growth, risk and CFA-style diagnostics.",
-    status: "Live",
+    status: "Connected",
+    maturity: "Operational",
     path: "/equity-analysis",
+    connectedInputs: ["Market Data", "Selected symbol"],
+    connectedOutputs: ["Portfolio Builder"],
+    features: ["Fundamentals", "Ratios", "Valuation"],
+    badges: ["CFA Level 1", "Market Data"],
   },
   {
     name: "Portfolio Builder",
     description: "Build portfolios, monitor allocation, drift, concentration and policy fit.",
-    status: "Live",
+    status: "Connected",
+    maturity: "Operational",
     path: "/portfolio-builder",
+    connectedInputs: ["Market Data", "Equity Analysis"],
+    connectedOutputs: ["Trade Simulator", "Risk Monitor", "Rates Lab"],
+    features: ["Allocation", "Constraints", "Performance"],
+    badges: ["Portfolio Ready", "In-Memory Store"],
   },
   {
     name: "Trade Simulator",
     description: "Simulate portfolio-aware buy and sell orders before execution.",
-    status: "Live",
+    status: "Connected",
+    maturity: "Operational",
     path: "/trade-simulator",
+    connectedInputs: ["Portfolio Builder", "Market Data"],
+    connectedOutputs: ["Portfolio impact preview"],
+    features: ["Order simulation", "Before/after impact", "Suitability"],
+    badges: ["Portfolio Ready", "No Execution"],
   },
   {
     name: "Risk Monitor",
     description: "Track VaR, CVaR, drawdown, configurable limits and stress shocks.",
     status: "Beta",
+    maturity: "Beta",
     path: "/risk-monitor",
+    connectedInputs: ["Portfolio", "Volatility", "Options", "Rates"],
+    connectedOutputs: ["Limits", "Stress summaries"],
+    features: ["VaR/CVaR", "Drawdown", "Risk limits"],
+    badges: ["Beta", "Portfolio Ready"],
   },
   {
     name: "Volatility Lab",
     description: "Institutional volatility workstation with realized, EWMA, VaR/CVaR, beta, correlation and Risk Monitor-ready outputs.",
     status: "Connected",
+    maturity: "Beta+",
     path: "/volatility-lab",
     features: [
       "Realized volatility",
@@ -113,11 +143,14 @@ const modules: Module[] = [
       "Risk Monitor-ready",
     ],
     badges: ["CFA Level 1", "Market Data Connected", "Risk Monitor Ready"],
+    connectedInputs: ["Market Data", "Portfolio Builder"],
+    connectedOutputs: ["Options Pricing", "Risk Monitor"],
   },
   {
     name: "Options Pricing Lab",
     description: "Financially corrected beta for option pricing, observed parity, implied volatility and typed multi-leg strategies.",
-    status: "Connected",
+    status: "Beta",
+    maturity: "Beta+",
     path: "/options-pricing-lab",
     features: [
       "Black-Scholes",
@@ -135,11 +168,14 @@ const modules: Module[] = [
       "Beta+",
       "Bilingual",
     ],
+    connectedInputs: ["Market Data", "Volatility Lab"],
+    connectedOutputs: ["Risk Monitor-ready Greeks"],
   },
   {
     name: "Rates Lab",
     description: "Analyze bond pricing, yield, duration, convexity, DV01 and curve scenarios.",
     status: "Connected",
+    maturity: "Beta+",
     path: "/rates-lab",
     features: [
       "Bond pricing",
@@ -149,30 +185,52 @@ const modules: Module[] = [
       "Rate scenarios",
     ],
     badges: ["CFA Level 1", "Fixed Income", "Duration", "Yield Curve", "Risk Monitor Ready"],
+    connectedInputs: ["Manual bond inputs", "Portfolio Builder", "Demo curve"],
+    connectedOutputs: ["Risk Monitor", "Future Stress Testing"],
   },
   {
     name: "Stress Testing",
     description: "Design scenario libraries and compare portfolio shock impacts.",
     status: "Coming Soon",
+    maturity: "Roadmap",
     path: "/stress-testing",
+    connectedInputs: [],
+    connectedOutputs: [],
+    features: ["Scenario library", "Portfolio shocks"],
+    badges: ["Coming Soon"],
   },
   {
     name: "Limit Center",
     description: "Centralize risk limits, threshold monitoring and breach review.",
     status: "Coming Soon",
+    maturity: "Roadmap",
     path: "/limit-center",
+    connectedInputs: [],
+    connectedOutputs: [],
+    features: ["Central limits", "Breach workflow"],
+    badges: ["Coming Soon"],
   },
   {
     name: "P&L Attribution",
     description: "Explain daily P&L by position, factor, market move and trade activity.",
     status: "Coming Soon",
+    maturity: "Roadmap",
     path: "/pnl-attribution",
+    connectedInputs: [],
+    connectedOutputs: [],
+    features: ["Factor attribution", "Trade attribution"],
+    badges: ["Coming Soon"],
   },
   {
     name: "Reports Center",
     description: "Generate portfolio, risk and analytics reports for review workflows.",
     status: "Coming Soon",
+    maturity: "Roadmap",
     path: "/reports-center",
+    connectedInputs: [],
+    connectedOutputs: [],
+    features: ["Portfolio reports", "Risk reports"],
+    badges: ["Coming Soon"],
   },
 ];
 
@@ -269,6 +327,21 @@ export function DashboardPage() {
       meta: "Risk controls",
     },
   ];
+  const workflowTracks = [
+    {
+      title: "Research to portfolio",
+      modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator"],
+    },
+    {
+      title: "Derivatives risk",
+      modules: ["Market Data", "Volatility Lab", "Options Pricing Lab", "Risk Monitor"],
+    },
+    {
+      title: "Fixed-income risk",
+      modules: ["Market Data", "Rates Lab", "Risk Monitor"],
+      destination: "Future Stress Testing",
+    },
+  ];
 
   return (
     <div className="page dashboard-page">
@@ -321,21 +394,34 @@ export function DashboardPage() {
             <strong>{holdings.length}</strong>
           </div>
         </div>
-        <div className="dashboard-workflow-grid">
-          {workflowModules.map((module, index) => (
-            <WorkflowCard
-              key={module.name}
-              module={module}
-              step={index + 1}
-              actionLabel={t("workflow.continueWorkflow")}
-            />
+        <div className="dashboard-workflow-tracks">
+          {workflowTracks.map((track) => (
+            <div className="dashboard-workflow-track" key={track.title}>
+              <div className="section-heading">
+                <h3>{track.title}</h3>
+                {track.destination ? <StatusBadge label={track.destination} variant="neutral" /> : null}
+              </div>
+              <div className="dashboard-workflow-grid">
+                {track.modules.map((moduleName, index) => {
+                  const module = workflowModules.find((item) => item.name === moduleName);
+                  return module ? (
+                    <WorkflowCard
+                      key={`${track.title}-${module.name}`}
+                      module={module}
+                      step={index + 1}
+                      actionLabel={t("workflow.continueWorkflow")}
+                    />
+                  ) : null;
+                })}
+              </div>
+            </div>
           ))}
         </div>
       </DashboardSection>
 
       <DashboardSection
         title="Platform Overview"
-        description="Seven connected workstations are active today, with the remaining analytics modules staged for future increments."
+        description="Eight connected workstations are active today, with the remaining analytics modules staged for future increments."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
@@ -439,22 +525,36 @@ function KpiCard({ kpi }: { kpi: Kpi }) {
 }
 
 function ModuleCard({ module }: { module: Module }) {
+  const statusVariant = module.status === "Connected"
+    ? "success"
+    : module.status === "Beta"
+      ? "warning"
+      : module.status === "Demo"
+        ? "info"
+        : "neutral";
   return (
     <Link className="dashboard-module-card" to={module.path}>
       <div>
-        <span className={`dashboard-module-status dashboard-module-status--${module.status.toLowerCase().replace(" ", "-")}`}>
-          {module.status}
-        </span>
+        <div className="dashboard-module-badges">
+          <StatusBadge label={module.status} variant={statusVariant} />
+          <StatusBadge label={module.maturity} variant="info" />
+        </div>
         <h3>{module.name}</h3>
         <p>{module.description}</p>
-        {module.features?.length ? (
+        <div className="dashboard-module-connections">
+          <span>Inputs</span>
+          <p>{module.connectedInputs.length ? module.connectedInputs.join(" / ") : "Not connected"}</p>
+          <span>Outputs</span>
+          <p>{module.connectedOutputs.length ? module.connectedOutputs.join(" / ") : "Not connected"}</p>
+        </div>
+        {module.features.length ? (
           <ul className="dashboard-module-features">
             {module.features.map((feature) => (
               <li key={feature}>{feature}</li>
             ))}
           </ul>
         ) : null}
-        {module.badges?.length ? (
+        {module.badges.length ? (
           <div className="dashboard-module-badges">
             {module.badges.map((badge) => (
               <span key={badge}>{badge}</span>
