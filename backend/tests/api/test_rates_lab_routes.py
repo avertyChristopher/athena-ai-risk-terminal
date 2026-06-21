@@ -36,6 +36,30 @@ def test_rates_lab_bond_price_endpoint() -> None:
     assert len(body["cash_flow_schedule"]) == 10
 
 
+def test_rates_lab_dated_bond_price_and_data_quality() -> None:
+    response = client.post(
+        "/api/rates-lab/bond-price",
+        json={
+            "face_value": 1000,
+            "coupon_rate": 0.05,
+            "coupon_frequency": "semiannual",
+            "years_to_maturity": 5,
+            "yield_to_maturity": 0.05,
+            "settlement_date": "2026-03-01",
+            "maturity_date": "2030-12-31",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["clean_price"] == pytest.approx(1000, abs=0.15)
+    assert body["dirty_price"] == pytest.approx(
+        body["clean_price"] + body["accrued_interest"]
+    )
+    assert body["methodology"]["details"]["pricing_mode"] == "dated"
+    assert body["data_quality"]["simplified_pricing_used"] is False
+
+
 def test_rates_lab_yield_analysis_endpoint() -> None:
     response = client.post(
         "/api/rates-lab/yield-analysis",
@@ -99,6 +123,24 @@ def test_rates_lab_rate_scenario_endpoint() -> None:
     assert body["stress_testing_payload"]["status"] == "ready_for_future_stress_testing"
 
 
+def test_rates_lab_nonparallel_scenario_curve_matches_repricing_shock() -> None:
+    response = client.post(
+        "/api/rates-lab/rate-scenarios",
+        json={"scenario_type": "steepener", "shock_bps": 100},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    base_five_year = next(point["rate"] for point in body["base_curve"] if point["maturity"] == 5)
+    stressed_five_year = next(point["rate"] for point in body["stressed_curve"] if point["maturity"] == 5)
+    assert body["base_yield_at_maturity"] == pytest.approx(base_five_year)
+    assert body["shocked_yield_at_maturity"] == pytest.approx(stressed_five_year)
+    assert body["effective_shock_bps"] == pytest.approx(
+        (stressed_five_year - base_five_year) * 10_000
+    )
+    assert body["stressed_price"] != pytest.approx(body["base_price"])
+
+
 def test_rates_lab_portfolio_exposure_identifies_demo_bond_etf() -> None:
     response = client.post(
         "/api/rates-lab/portfolio-exposure",
@@ -120,3 +162,55 @@ def test_rates_lab_demo_endpoint() -> None:
 
     assert response.status_code == 200
     assert response.json()["cash_flow_schedule"]
+
+
+@pytest.mark.parametrize(
+    ("path", "payload"),
+    [
+        ("/api/rates-lab/yield-curve", {"requested_maturities": [-1, 1, 5]}),
+        ("/api/rates-lab/bond-price", {"coupon_frequency": "weekly"}),
+        (
+            "/api/rates-lab/rate-scenarios",
+            {
+                "yield_to_maturity": -0.9,
+                "coupon_frequency": "annual",
+                "scenario_type": "parallel_down",
+                "shock_bps": 5000,
+            },
+        ),
+        ("/api/rates-lab/bond-price", {"settlement_date": "2026-01-01"}),
+    ],
+)
+def test_rates_lab_invalid_financial_inputs_return_422(
+    path: str,
+    payload: dict[str, object],
+) -> None:
+    response = client.post(path, json=payload)
+
+    assert response.status_code == 422
+
+
+def test_rates_lab_extreme_but_calculable_yield_request_does_not_return_500() -> None:
+    response = client.post(
+        "/api/rates-lab/yield-analysis",
+        json={
+            "price": 1000,
+            "face_value": 1000,
+            "coupon_rate": 0.05,
+            "coupon_frequency": "monthly",
+            "years_to_maturity": 100,
+        },
+    )
+
+    assert response.status_code == 200
+
+
+def test_rates_lab_commentary_defaults_to_english_and_supports_french() -> None:
+    english = client.post("/api/rates-lab/bond-price", json={}).json()
+    french = client.post(
+        "/api/rates-lab/bond-price",
+        json={"language": "fr"},
+    ).json()
+
+    assert english["athena_commentary"]["summary"].startswith("The bond")
+    assert french["athena_commentary"]["summary"].startswith("L'obligation")

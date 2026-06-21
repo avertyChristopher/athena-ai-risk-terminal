@@ -1,13 +1,23 @@
+from datetime import date
+
 import pytest
 
 from app.modules.rates_lab.domain.bonds import (
+    clean_price,
+    price_dated_coupon_bond,
+    price_dated_zero_coupon_bond,
     price_coupon_bond,
     price_zero_coupon_bond,
 )
 from app.modules.rates_lab.domain.cashflows import (
+    calculate_accrued_interest,
     calculate_coupon_payment,
+    generate_dated_bond_cashflows,
+    generate_dated_coupon_schedule,
     generate_bond_cashflows,
     generate_coupon_schedule,
+    get_next_coupon_date,
+    get_previous_coupon_date,
     zero_coupon_cashflow,
 )
 from app.modules.rates_lab.domain.convexity import (
@@ -26,6 +36,8 @@ from app.modules.rates_lab.domain.duration import (
     modified_duration,
 )
 from app.modules.rates_lab.domain.scenarios import (
+    apply_curve_scenario,
+    calculate_effective_yield_shock,
     flattener_shift,
     parallel_shift,
     scenario_price_impact,
@@ -49,6 +61,79 @@ def test_coupon_payment_schedule_and_final_principal() -> None:
     assert cashflows[0]["total_cash_flow"] == 30
     assert cashflows[-1]["total_cash_flow"] == 1030
     assert cashflows[-1]["principal"] == 1000
+
+
+def test_dated_coupon_bond_clean_price_is_near_par_when_coupon_equals_yield() -> None:
+    settlement = date(2026, 3, 1)
+    maturity = date(2030, 12, 31)
+    dirty, cashflows, metadata = price_dated_coupon_bond(
+        1000,
+        0.05,
+        "semiannual",
+        settlement,
+        maturity,
+        0.05,
+    )
+    accrued = float(metadata["accrued_interest"])
+
+    assert clean_price(dirty, accrued) == pytest.approx(1000, abs=0.15)
+    assert dirty == pytest.approx(clean_price(dirty, accrued) + accrued)
+    assert accrued > 0
+    assert cashflows[0]["payment_date"] == date(2026, 6, 30)
+    assert cashflows[-1]["payment_date"] == maturity
+
+
+def test_dated_coupon_period_and_accrued_interest_boundaries() -> None:
+    maturity = date(2030, 12, 31)
+    coupon_settlement = date(2025, 12, 31)
+    between_settlement = date(2026, 3, 1)
+
+    assert generate_dated_coupon_schedule(coupon_settlement, maturity, "semiannual")[0] == date(2026, 6, 30)
+    previous = get_previous_coupon_date(coupon_settlement, maturity, "semiannual")
+    next_coupon = get_next_coupon_date(coupon_settlement, maturity, "semiannual")
+    accrued_on_coupon, accrued_days, _ = calculate_accrued_interest(
+        1000,
+        0.05,
+        "semiannual",
+        coupon_settlement,
+        previous,
+        next_coupon,
+    )
+    _, between_metadata = generate_dated_bond_cashflows(
+        1000,
+        0.05,
+        "semiannual",
+        between_settlement,
+        maturity,
+    )
+
+    assert accrued_on_coupon == pytest.approx(0)
+    assert accrued_days == 0
+    assert float(between_metadata["accrued_interest"]) > 0
+
+
+def test_dated_zero_coupon_has_no_accrued_interest() -> None:
+    dirty, cashflows, metadata = price_dated_zero_coupon_bond(
+        1000,
+        date(2026, 1, 1),
+        date(2031, 1, 1),
+        0.05,
+    )
+
+    assert dirty < 1000
+    assert cashflows[-1]["principal"] == 1000
+    assert metadata["accrued_interest"] == 0
+
+
+def test_fractional_maturity_creates_final_stub_at_actual_maturity() -> None:
+    cashflows = generate_bond_cashflows(1000, 0.05, "semiannual", 5.2)
+    duration = macaulay_duration(cashflows, 0.05, "semiannual")
+
+    assert cashflows[-2]["time_years"] == pytest.approx(5.0)
+    assert cashflows[-1]["time_years"] == pytest.approx(5.2)
+    assert cashflows[-1]["principal"] == 1000
+    assert cashflows[-1]["accrual_fraction"] == pytest.approx(0.4)
+    assert 0 < duration < 5.2
 
 
 @pytest.mark.parametrize(
@@ -198,3 +283,43 @@ def test_curve_shift_functions_return_structured_distinct_scenarios() -> None:
     assert steepener[-1]["rate"] > curve[-1]["rate"]
     assert flattener[0]["rate"] > curve[0]["rate"]
     assert flattener[-1]["rate"] < curve[-1]["rate"]
+
+
+def test_curve_scenarios_drive_the_same_effective_bond_shock() -> None:
+    curve = [
+        {"maturity": 1.0, "rate": 0.03},
+        {"maturity": 5.0, "rate": 0.04},
+        {"maturity": 10.0, "rate": 0.05},
+    ]
+    parallel = apply_curve_scenario(curve, "parallel_up", 100)
+    steepener = apply_curve_scenario(curve, "steepener", 100)
+    flattener = apply_curve_scenario(curve, "flattener", 100)
+    effective_shock = calculate_effective_yield_shock(curve, steepener, 5.0)
+
+    assert all(
+        stressed["rate"] - base["rate"] == pytest.approx(0.01)
+        for base, stressed in zip(curve, parallel)
+    )
+    assert steepener[-1]["rate"] - steepener[0]["rate"] > curve[-1]["rate"] - curve[0]["rate"]
+    assert flattener[-1]["rate"] - flattener[0]["rate"] < curve[-1]["rate"] - curve[0]["rate"]
+
+    cashflows = generate_bond_cashflows(1000, 0.05, "semiannual", 5)
+    macaulay = macaulay_duration(cashflows, 0.05, "semiannual")
+    modified = modified_duration(macaulay, 0.05, "semiannual")
+    result = scenario_price_impact(
+        1000,
+        0.05,
+        "semiannual",
+        5,
+        0.05,
+        modified,
+        convexity(cashflows, 0.05, "semiannual"),
+        "steepener",
+        100,
+        curve,
+        steepener,
+    )
+
+    assert result["effective_shock_bps"] == pytest.approx(effective_shock)
+    assert result["shocked_yield_at_maturity"] == pytest.approx(steepener[1]["rate"])
+    assert result["stressed_price"] != pytest.approx(result["base_price"])
