@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -17,6 +17,8 @@ ScenarioType = Literal[
     "short_rate_down",
     "long_rate_down",
 ]
+PositiveMaturity = Annotated[float, Field(gt=0, le=100, allow_inf_nan=False)]
+FiniteRate = Annotated[float, Field(gt=-1, le=10, allow_inf_nan=False)]
 
 
 class RatesLabStatus(BaseModel):
@@ -40,8 +42,8 @@ class CashFlow(BaseModel):
 
 
 class CurvePoint(BaseModel):
-    maturity: float = Field(gt=0)
-    rate: float = Field(gt=-1)
+    maturity: PositiveMaturity
+    rate: FiniteRate
 
 
 class ForwardRatePoint(BaseModel):
@@ -76,11 +78,28 @@ class AthenaRatesCommentary(BaseModel):
 
 class BondInputs(BaseModel):
     bond_type: BondType = "coupon_bond"
-    face_value: float = Field(default=1000, gt=0)
-    coupon_rate: float = Field(default=0.05, ge=0)
+    face_value: float = Field(default=1000, gt=0, allow_inf_nan=False)
+    coupon_rate: float = Field(default=0.05, ge=0, le=10, allow_inf_nan=False)
     coupon_frequency: CouponFrequency = "semiannual"
-    years_to_maturity: float = Field(default=5, gt=0, le=100)
-    yield_to_maturity: float = Field(default=0.045, gt=-0.99, le=10)
+    years_to_maturity: float = Field(default=5, gt=0, le=100, allow_inf_nan=False)
+    yield_to_maturity: float = Field(
+        default=0.045,
+        gt=-0.99,
+        le=10,
+        allow_inf_nan=False,
+    )
+
+    @model_validator(mode="after")
+    def validate_periodic_yield(self) -> "BondInputs":
+        frequency = {
+            "annual": 1,
+            "semiannual": 2,
+            "quarterly": 4,
+            "monthly": 12,
+        }[self.coupon_frequency]
+        if 1 + self.yield_to_maturity / frequency <= 0:
+            raise ValueError("Yield per period must be greater than -100 percent.")
+        return self
 
 
 class BondPricingRequest(BondInputs):
@@ -119,7 +138,12 @@ class YieldAnalysisRequest(BaseModel):
     face_value: float = Field(default=1000, gt=0)
     coupon_rate: float = Field(default=0.05, ge=0)
     coupon_frequency: CouponFrequency = "semiannual"
-    years_to_maturity: float = Field(default=5, gt=0, le=100)
+    years_to_maturity: float = Field(
+        default=5,
+        gt=0,
+        le=100,
+        allow_inf_nan=False,
+    )
     current_market_price: float | None = Field(default=None, gt=0)
     holding_period: float | None = Field(default=None, gt=0)
     beginning_price: float | None = Field(default=None, gt=0)
@@ -168,7 +192,7 @@ class DurationConvexityResponse(BaseModel):
 class YieldCurveRequest(BaseModel):
     curve_points: list[CurvePoint] = Field(default_factory=list)
     interpolation_method: Literal["linear"] = "linear"
-    requested_maturities: list[float] | None = None
+    requested_maturities: list[PositiveMaturity] | None = None
     curve_type: Literal["spot", "par", "treasury_demo"] = "treasury_demo"
 
 
@@ -190,6 +214,27 @@ class RateScenarioRequest(BondInputs):
     scenario_type: ScenarioType = "parallel_up"
     shock_bps: float = Field(default=100, ge=0, le=5000)
     curve_points: list[CurvePoint] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_stressed_periodic_yield(self) -> "RateScenarioRequest":
+        if self.scenario_type not in {
+            "parallel_down",
+            "short_rate_down",
+            "long_rate_down",
+        }:
+            return self
+        frequency = {
+            "annual": 1,
+            "semiannual": 2,
+            "quarterly": 4,
+            "monthly": 12,
+        }[self.coupon_frequency]
+        lowest_possible_yield = self.yield_to_maturity - self.shock_bps / 10_000
+        if 1 + lowest_possible_yield / frequency <= 0:
+            raise ValueError(
+                "The downward shock would make the periodic yield less than or equal to -100 percent."
+            )
+        return self
 
 
 class RateScenarioResult(BaseModel):

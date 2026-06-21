@@ -1,3 +1,5 @@
+from math import isfinite
+
 from app.modules.rates_lab.domain.bonds import price_coupon_bond
 from app.modules.rates_lab.domain.convexity import convexity_adjusted_price_impact
 from app.modules.rates_lab.domain.curves import interpolate_curve_linear
@@ -125,22 +127,25 @@ def apply_curve_scenario(
     shock_bps: float,
 ) -> list[dict[str, float]]:
     if scenario_type == "parallel_up":
-        return parallel_shift(curve_points, abs(shock_bps))
-    if scenario_type == "parallel_down":
-        return parallel_shift(curve_points, -abs(shock_bps))
-    if scenario_type == "steepener":
-        return steepener_shift(curve_points, abs(shock_bps))
-    if scenario_type == "flattener":
-        return flattener_shift(curve_points, abs(shock_bps))
-    if scenario_type == "short_rate_up":
-        return short_rate_shift(curve_points, abs(shock_bps))
-    if scenario_type == "short_rate_down":
-        return short_rate_shift(curve_points, -abs(shock_bps))
-    if scenario_type == "long_rate_up":
-        return long_rate_shift(curve_points, abs(shock_bps))
-    if scenario_type == "long_rate_down":
-        return long_rate_shift(curve_points, -abs(shock_bps))
-    raise ValueError(f"Unsupported scenario type: {scenario_type}.")
+        shifted = parallel_shift(curve_points, abs(shock_bps))
+    elif scenario_type == "parallel_down":
+        shifted = parallel_shift(curve_points, -abs(shock_bps))
+    elif scenario_type == "steepener":
+        shifted = steepener_shift(curve_points, abs(shock_bps))
+    elif scenario_type == "flattener":
+        shifted = flattener_shift(curve_points, abs(shock_bps))
+    elif scenario_type == "short_rate_up":
+        shifted = short_rate_shift(curve_points, abs(shock_bps))
+    elif scenario_type == "short_rate_down":
+        shifted = short_rate_shift(curve_points, -abs(shock_bps))
+    elif scenario_type == "long_rate_up":
+        shifted = long_rate_shift(curve_points, abs(shock_bps))
+    elif scenario_type == "long_rate_down":
+        shifted = long_rate_shift(curve_points, -abs(shock_bps))
+    else:
+        raise ValueError(f"Unsupported scenario type: {scenario_type}.")
+    _validate_scenario_curve(shifted)
+    return shifted
 
 
 def shift_curve(
@@ -220,3 +225,12 @@ def _fallback_curve(yield_to_maturity: float) -> list[dict[str, float]]:
         {"maturity": maturity, "rate": yield_to_maturity}
         for maturity in (0.25, 1.0, 2.0, 5.0, 10.0, 30.0)
     ]
+
+
+def _validate_scenario_curve(curve_points: list[dict[str, float]]) -> None:
+    for point in curve_points:
+        rate = float(point["rate"])
+        if not isfinite(rate) or not -1 < rate <= 10:
+            raise ValueError(
+                "The scenario produces a curve rate outside the supported range (-100%, 1000%]."
+            )

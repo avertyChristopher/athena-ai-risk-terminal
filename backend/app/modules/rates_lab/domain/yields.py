@@ -35,7 +35,7 @@ def yield_to_maturity(
         raise ValueError("Price must be positive.")
 
     frequency = frequency_per_year(coupon_frequency)
-    lower = -0.99 * frequency
+    lower = -0.99
     upper = 1.0
 
     def pricing_error(rate: float) -> float:

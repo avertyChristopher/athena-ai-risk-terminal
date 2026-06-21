@@ -1,4 +1,5 @@
 from datetime import date
+from math import isfinite
 
 from app.modules.rates_lab.domain.cashflows import (
     frequency_per_year,
@@ -23,7 +24,12 @@ def price_from_cashflows(
     valued_cashflows = []
     for cashflow in cashflows:
         periods = float(cashflow["time_years"]) * frequency
-        discount_factor = (1 + periodic_rate) ** periods
+        try:
+            discount_factor = (1 + periodic_rate) ** periods
+        except OverflowError as exc:
+            raise ValueError("Discount factor overflowed for the supplied inputs.") from exc
+        if discount_factor <= 0 or not isfinite(discount_factor):
+            raise ValueError("Discount factor is not finite for the supplied inputs.")
         pv = float(cashflow["total_cash_flow"]) / discount_factor
         present_value += pv
         valued_cashflows.append(
