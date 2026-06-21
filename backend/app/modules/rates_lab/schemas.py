@@ -123,6 +123,10 @@ class BondPricingRequest(BondInputs):
 
     @model_validator(mode="after")
     def validate_dates(self) -> "BondPricingRequest":
+        if (self.settlement_date is None) != (self.maturity_date is None):
+            raise ValueError(
+                "settlement_date and maturity_date must be supplied together."
+            )
         if (
             self.settlement_date is not None
             and self.maturity_date is not None

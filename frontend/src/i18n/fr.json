@@ -1682,6 +1682,8 @@
       "frequency": "Frequence du coupon",
       "maturity": "Annees jusqu'a l'echeance",
       "ytm": "Rendement a l'echeance %",
+      "settlementDate": "Date de reglement (facultative)",
+      "maturityDate": "Date d'echeance (facultative)",
       "marketPrice": "Prix de marche",
       "shockBps": "Choc de taux (pbs)",
       "scenarioType": "Type de scenario",
@@ -1759,6 +1761,8 @@
       "stressedPrice": "Prix stresse",
       "priceChange": "Variation de prix",
       "dv01Impact": "Estimation DV01 du choc",
+      "baseYieldAtMaturity": "Taux de base a l'echeance",
+      "shockedYieldAtMaturity": "Taux stresse a l'echeance",
       "fixedIncomeValue": "Valeur obligataire",
       "weightedDuration": "Duration ponderee",
       "portfolioDv01": "DV01 du portefeuille",
@@ -1780,10 +1784,12 @@
       "impliedNotForecast": "Taux implicites, pas des previsions",
       "beforeShock": "Avant le scenario selectionne",
       "durationEstimate": "Estimation fondee sur la duration",
+      "curveDerived": "Interpole depuis la courbe de scenario",
       "requiresMetadata": "Necessite les metadonnees obligataires ou la duration de l'ETF"
     },
     "table": {
       "period": "Periode",
+      "paymentDate": "Date de paiement",
       "time": "Temps (annees)",
       "coupon": "Coupon",
       "principal": "Principal",
@@ -1839,6 +1845,10 @@
       "rateSource": "Source du taux",
       "curveSource": "Source de la courbe",
       "method": "Methode de valorisation",
+      "pricingMode": "Mode de valorisation",
+      "datedAvailable": "Valorisation datee disponible",
+      "yes": "Oui",
+      "no": "Non",
       "frequency": "Frequence du coupon",
       "advice": "Avis d'utilisation",
       "notAdvice": "Ne constitue pas un conseil en investissement",
@@ -1846,7 +1856,22 @@
     },
     "errors": {
       "title": "API Rates Lab indisponible",
-      "message": "Verifie que le backend fonctionne et que les routes Rates Lab sont enregistrees."
+      "message": "Verifie que le backend fonctionne et que les routes Rates Lab sont enregistrees.",
+      "degradedTitle": "Le laboratoire des taux est degrade",
+      "degradedMessage": "Une ou plusieurs analyses n'ont pas pu etre actualisees. Les resultats disponibles restent visibles par onglet.",
+      "retry": "Reessayer"
+    },
+    "status": {
+      "connected": "Connecte",
+      "degraded": "Degrade"
+    },
+    "empty": {
+      "title": "Aucune analyse disponible",
+      "message": "Complete les entrees requises puis relance le calcul."
+    },
+    "pricingModes": {
+      "dated": "Valorisation par flux dates",
+      "simplified": "Valorisation simplifiee en annees"
     }
   },
   "pages": {

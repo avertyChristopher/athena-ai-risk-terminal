@@ -31,6 +31,17 @@ export type MethodologyMetadata = {
   assumptions: string[];
   limitations: string[];
   details: Record<string, unknown>;
+  generated_at: string;
+};
+
+export type DataQualityMetadata = {
+  missing_fields: string[];
+  fallback_used: boolean;
+  demo_curve_used: boolean;
+  simplified_pricing_used: boolean;
+  dated_pricing_available: boolean;
+  warnings: string[];
+  limitations: string[];
 };
 
 export type AthenaRatesCommentary = {
@@ -47,6 +58,7 @@ export type BondInputs = {
   coupon_frequency: CouponFrequency;
   years_to_maturity: number;
   yield_to_maturity: number;
+  language: "en" | "fr";
 };
 
 export type CashFlow = {
@@ -55,6 +67,8 @@ export type CashFlow = {
   coupon: number;
   principal: number;
   total_cash_flow: number;
+  payment_date?: string | null;
+  accrual_fraction: number;
   discount_factor: number;
   present_value: number;
 };
@@ -69,6 +83,7 @@ export type BondPricingResponse = {
   cash_flow_schedule: CashFlow[];
   yield_assumptions: Record<string, unknown>;
   methodology: MethodologyMetadata;
+  data_quality: DataQualityMetadata;
   data_source: DataSourceMetadata;
   athena_commentary: AthenaRatesCommentary;
 };
@@ -83,6 +98,7 @@ export type YieldAnalysisResponse = {
   price_status: string;
   interpretation: string;
   methodology: MethodologyMetadata;
+  data_quality: DataQualityMetadata;
   data_source: DataSourceMetadata;
   athena_commentary: AthenaRatesCommentary;
 };
@@ -101,6 +117,7 @@ export type DurationConvexityResponse = {
   estimated_stressed_price_duration_convexity: number;
   risk_interpretation: string;
   methodology: MethodologyMetadata;
+  data_quality: DataQualityMetadata;
   risk_monitor_payload: Record<string, unknown>;
   data_source: DataSourceMetadata;
   athena_commentary: AthenaRatesCommentary;
@@ -123,6 +140,7 @@ export type YieldCurveResponse = {
   curve_shape: string;
   curve_interpretation: string;
   methodology: MethodologyMetadata;
+  data_quality: DataQualityMetadata;
   data_source: DataSourceMetadata;
   athena_commentary: AthenaRatesCommentary;
 };
@@ -134,6 +152,9 @@ export type RateScenarioResponse = {
   stressed_price: number;
   price_change: number;
   percent_change: number;
+  base_yield_at_maturity: number;
+  shocked_yield_at_maturity: number;
+  effective_shock_bps: number;
   duration_estimate: number;
   convexity_adjusted_estimate: number;
   dv01_impact: number;
@@ -142,6 +163,7 @@ export type RateScenarioResponse = {
   scenario_interpretation: string;
   risk_warning: string;
   methodology: MethodologyMetadata;
+  data_quality: DataQualityMetadata;
   stress_testing_payload: Record<string, unknown>;
   data_source: DataSourceMetadata;
 };
@@ -171,5 +193,6 @@ export type PortfolioRatesExposureResponse = {
   missing_data_warnings: string[];
   risk_monitor_payload: Record<string, unknown>;
   methodology: MethodologyMetadata;
+  data_quality: DataQualityMetadata;
   data_source: DataSourceMetadata;
 };

@@ -1682,6 +1682,8 @@
       "frequency": "Coupon frequency",
       "maturity": "Years to maturity",
       "ytm": "Yield to maturity %",
+      "settlementDate": "Settlement date (optional)",
+      "maturityDate": "Maturity date (optional)",
       "marketPrice": "Market price",
       "shockBps": "Rate shock (bps)",
       "scenarioType": "Scenario type",
@@ -1759,6 +1761,8 @@
       "stressedPrice": "Stressed price",
       "priceChange": "Price change",
       "dv01Impact": "DV01 shock estimate",
+      "baseYieldAtMaturity": "Base curve yield at maturity",
+      "shockedYieldAtMaturity": "Shocked curve yield at maturity",
       "fixedIncomeValue": "Fixed-income value",
       "weightedDuration": "Weighted duration",
       "portfolioDv01": "Portfolio DV01",
@@ -1780,10 +1784,12 @@
       "impliedNotForecast": "Implied rates, not forecasts",
       "beforeShock": "Before the selected scenario",
       "durationEstimate": "Duration-based estimate",
+      "curveDerived": "Interpolated from the scenario curve",
       "requiresMetadata": "Requires bond or ETF duration metadata"
     },
     "table": {
       "period": "Period",
+      "paymentDate": "Payment date",
       "time": "Time (years)",
       "coupon": "Coupon",
       "principal": "Principal",
@@ -1839,6 +1845,10 @@
       "rateSource": "Rate source",
       "curveSource": "Curve source",
       "method": "Pricing method",
+      "pricingMode": "Pricing mode",
+      "datedAvailable": "Dated pricing available",
+      "yes": "Yes",
+      "no": "No",
       "frequency": "Coupon frequency",
       "advice": "Usage notice",
       "notAdvice": "Not investment advice",
@@ -1846,7 +1856,22 @@
     },
     "errors": {
       "title": "Rates Lab API unavailable",
-      "message": "Verify that the backend is running and Rates Lab routes are registered."
+      "message": "Verify that the backend is running and Rates Lab routes are registered.",
+      "degradedTitle": "Rates Lab is degraded",
+      "degradedMessage": "One or more analyses could not be refreshed. Available results remain visible by tab.",
+      "retry": "Retry"
+    },
+    "status": {
+      "connected": "Connected",
+      "degraded": "Degraded"
+    },
+    "empty": {
+      "title": "No analysis available",
+      "message": "Complete the required inputs and calculate again."
+    },
+    "pricingModes": {
+      "dated": "Dated cash-flow pricing",
+      "simplified": "Simplified year-based pricing"
     }
   },
   "pages": {

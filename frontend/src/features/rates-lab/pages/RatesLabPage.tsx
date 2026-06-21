@@ -60,8 +60,9 @@ const scenarioTypes: RateScenarioType[] = [
 ];
 
 export function RatesLabPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { portfolios, selectedPortfolioId, selectPortfolio } = usePortfolioContext();
+  const language = i18n.resolvedLanguage?.startsWith("fr") ? "fr" : "en";
   const [activeTab, setActiveTab] = useState<RatesTab>("pricing");
   const [bondType, setBondType] = useState<BondType>("coupon_bond");
   const [faceValue, setFaceValue] = useState(1000);
@@ -73,6 +74,8 @@ export function RatesLabPage() {
   const [shockBps, setShockBps] = useState(100);
   const [scenarioType, setScenarioType] =
     useState<RateScenarioType>("parallel_up");
+  const [settlementDate, setSettlementDate] = useState("");
+  const [maturityDate, setMaturityDate] = useState("");
 
   const bondInputs = useMemo<BondInputs>(
     () => ({
@@ -82,8 +85,19 @@ export function RatesLabPage() {
       coupon_frequency: frequency,
       years_to_maturity: clamp(yearsToMaturity, 0.01, 100),
       yield_to_maturity: clamp(yieldPct, -99, 1000) / 100,
+      language,
     }),
-    [bondType, couponRatePct, faceValue, frequency, yearsToMaturity, yieldPct],
+    [bondType, couponRatePct, faceValue, frequency, language, yearsToMaturity, yieldPct],
+  );
+
+  const pricingInputs = useMemo(
+    () => ({
+      ...bondInputs,
+      ...(settlementDate && maturityDate
+        ? { settlement_date: settlementDate, maturity_date: maturityDate }
+        : {}),
+    }),
+    [bondInputs, maturityDate, settlementDate],
   );
 
   const statusQuery = useQuery({
@@ -91,9 +105,9 @@ export function RatesLabPage() {
     queryFn: () => apiClient.get<RatesLabStatus>(endpoints.ratesLabStatus),
   });
   const pricingQuery = useQuery({
-    queryKey: ["rates-lab-bond-price", bondInputs],
+    queryKey: ["rates-lab-bond-price", pricingInputs],
     queryFn: () =>
-      apiClient.post<BondPricingResponse>(endpoints.ratesLabBondPrice, bondInputs),
+      apiClient.post<BondPricingResponse>(endpoints.ratesLabBondPrice, pricingInputs),
   });
   const yieldQuery = useQuery({
     queryKey: ["rates-lab-yield", bondInputs, marketPrice],
@@ -104,6 +118,7 @@ export function RatesLabPage() {
         coupon_rate: bondInputs.coupon_rate,
         coupon_frequency: bondInputs.coupon_frequency,
         years_to_maturity: bondInputs.years_to_maturity,
+        language,
       }),
   });
   const durationQuery = useQuery({
@@ -120,6 +135,7 @@ export function RatesLabPage() {
       apiClient.post<YieldCurveResponse>(endpoints.ratesLabYieldCurve, {
         curve_type: "treasury_demo",
         interpolation_method: "linear",
+        language,
       }),
   });
   const scenarioQuery = useQuery({
@@ -143,8 +159,20 @@ export function RatesLabPage() {
 
   const pricing = pricingQuery.data;
   const duration = durationQuery.data;
-  const isLoading = statusQuery.isLoading || pricingQuery.isLoading;
-  const hasError = pricingQuery.isError || durationQuery.isError || curveQuery.isError;
+  const hasAnyError = [
+    statusQuery,
+    pricingQuery,
+    yieldQuery,
+    durationQuery,
+    curveQuery,
+    scenarioQuery,
+    portfolioQuery,
+  ].some((query) => query.isError);
+  const statusLabel = hasAnyError
+    ? t("ratesLab.status.degraded")
+    : statusQuery.data?.status === "ready"
+      ? t("ratesLab.status.connected")
+      : t("common.loading");
 
   function reprice() {
     void pricingQuery.refetch();
@@ -152,6 +180,12 @@ export function RatesLabPage() {
     void durationQuery.refetch();
     void scenarioQuery.refetch();
     if (selectedPortfolioId) void portfolioQuery.refetch();
+  }
+
+  function retryAll() {
+    void statusQuery.refetch();
+    reprice();
+    void curveQuery.refetch();
   }
 
   return (
@@ -168,7 +202,7 @@ export function RatesLabPage() {
           <p>{t("ratesLab.workbench.description")}</p>
         </div>
         <div className="risk-monitor-badge-cluster">
-          <Badge label={statusQuery.data?.status ?? t("common.loading")} tone="success" />
+          <Badge label={statusLabel} tone={hasAnyError ? "warning" : "success"} />
           <Badge label={t("ratesLab.badges.cfa")} tone="info" />
           <Badge label={t("ratesLab.badges.demoCurve")} tone="warning" />
           <Badge label={t("ratesLab.badges.riskMonitor")} tone="success" />
@@ -207,6 +241,12 @@ export function RatesLabPage() {
               </Field>
               <NumberField label={t("ratesLab.controls.maturity")} min={0.01} step={0.25} value={yearsToMaturity} onChange={setYearsToMaturity} />
               <NumberField label={t("ratesLab.controls.ytm")} step={0.1} value={yieldPct} onChange={setYieldPct} />
+              <Field label={t("ratesLab.controls.settlementDate")}>
+                <input type="date" value={settlementDate} onChange={(event) => setSettlementDate(event.target.value)} />
+              </Field>
+              <Field label={t("ratesLab.controls.maturityDate")}>
+                <input type="date" value={maturityDate} onChange={(event) => setMaturityDate(event.target.value)} />
+              </Field>
             </div>
           </div>
           <div className="risk-monitor-control-group">
@@ -233,45 +273,51 @@ export function RatesLabPage() {
         </div>
       </section>
 
-      {isLoading ? <LoadingState label={t("common.loading")} /> : null}
-      {hasError ? <EmptyState title={t("ratesLab.errors.title")} message={t("ratesLab.errors.message")} /> : null}
+      {hasAnyError ? (
+        <QueryErrorState
+          message={t("ratesLab.errors.degradedMessage")}
+          onRetry={retryAll}
+          t={t}
+          title={t("ratesLab.errors.degradedTitle")}
+        />
+      ) : null}
 
       {pricing && duration ? (
-        <>
-          <div className="risk-monitor-kpi-grid">
-            <Metric title={t("ratesLab.metrics.cleanPrice")} value={<MoneyValue value={pricing.clean_price} />} note={pricing.price_status} />
-            <Metric title={t("ratesLab.metrics.ytm")} value={<PercentValue value={bondInputs.yield_to_maturity} />} note={t("ratesLab.notes.inverseRelationship")} />
-            <Metric title={t("ratesLab.metrics.modifiedDuration")} value={duration.modified_duration.toFixed(3)} note={t("ratesLab.notes.years")} />
-            <Metric title={t("ratesLab.metrics.dv01")} value={<MoneyValue value={duration.dv01} />} note={t("ratesLab.notes.perBasisPoint")} />
-          </div>
-
-          <nav className="risk-monitor-tabs rates-lab-tabs" aria-label={t("ratesLab.tabs.aria")}>
-            {tabs.map((tab) => (
-              <button
-                className={`risk-monitor-tab ${activeTab === tab ? "risk-monitor-tab--active" : ""}`}
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-              >
-                <span>{t(`ratesLab.tabs.${tab}`)}</span>
-                <small>{t(`ratesLab.tabs.${tab}Short`)}</small>
-              </button>
-            ))}
-          </nav>
-
-          <div className="risk-monitor-panel">
-            {activeTab === "pricing" ? <PricingTab pricing={pricing} t={t} /> : null}
-            {activeTab === "yield" && yieldQuery.data ? <YieldTab data={yieldQuery.data} t={t} /> : null}
-            {activeTab === "duration" ? <DurationTab data={duration} t={t} /> : null}
-            {activeTab === "curve" && curveQuery.data ? <CurveTab data={curveQuery.data} t={t} /> : null}
-            {activeTab === "scenarios" && scenarioQuery.data ? <ScenarioTab data={scenarioQuery.data} t={t} /> : null}
-            {activeTab === "portfolio" ? <PortfolioTab data={portfolioQuery.data} t={t} /> : null}
-            {activeTab === "cfa" ? <CfaTab t={t} /> : null}
-            {activeTab === "commentary" ? <CommentaryTab pricing={pricing} duration={duration} t={t} /> : null}
-            {activeTab === "quality" ? <QualityTab pricing={pricing} curve={curveQuery.data} t={t} /> : null}
-          </div>
-        </>
+        <div className="risk-monitor-kpi-grid">
+          <Metric title={t("ratesLab.metrics.cleanPrice")} value={<MoneyValue value={pricing.clean_price} />} note={pricing.price_status} />
+          <Metric title={t("ratesLab.metrics.ytm")} value={<PercentValue value={bondInputs.yield_to_maturity} />} note={t("ratesLab.notes.inverseRelationship")} />
+          <Metric title={t("ratesLab.metrics.modifiedDuration")} value={duration.modified_duration.toFixed(3)} note={t("ratesLab.notes.years")} />
+          <Metric title={t("ratesLab.metrics.dv01")} value={<MoneyValue value={duration.dv01} />} note={t("ratesLab.notes.perBasisPoint")} />
+        </div>
       ) : null}
+
+      <nav className="risk-monitor-tabs rates-lab-tabs" aria-label={t("ratesLab.tabs.aria")}>
+        {tabs.map((tab) => (
+          <button
+            className={`risk-monitor-tab ${activeTab === tab ? "risk-monitor-tab--active" : ""}`}
+            key={tab}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+          >
+            <span>{t(`ratesLab.tabs.${tab}`)}</span>
+            <small>{t(`ratesLab.tabs.${tab}Short`)}</small>
+          </button>
+        ))}
+      </nav>
+
+      <div className="risk-monitor-panel">
+        {activeTab === "pricing" ? <QueryPanel data={pricing} isError={pricingQuery.isError} isLoading={pricingQuery.isLoading} onRetry={() => void pricingQuery.refetch()} render={(data) => <PricingTab pricing={data} t={t} />} t={t} /> : null}
+        {activeTab === "yield" ? <QueryPanel data={yieldQuery.data} isError={yieldQuery.isError} isLoading={yieldQuery.isLoading} onRetry={() => void yieldQuery.refetch()} render={(data) => <YieldTab data={data} t={t} />} t={t} /> : null}
+        {activeTab === "duration" ? <QueryPanel data={duration} isError={durationQuery.isError} isLoading={durationQuery.isLoading} onRetry={() => void durationQuery.refetch()} render={(data) => <DurationTab data={data} t={t} />} t={t} /> : null}
+        {activeTab === "curve" ? <QueryPanel data={curveQuery.data} isError={curveQuery.isError} isLoading={curveQuery.isLoading} onRetry={() => void curveQuery.refetch()} render={(data) => <CurveTab data={data} t={t} />} t={t} /> : null}
+        {activeTab === "scenarios" ? <QueryPanel data={scenarioQuery.data} isError={scenarioQuery.isError} isLoading={scenarioQuery.isLoading} onRetry={() => void scenarioQuery.refetch()} render={(data) => <ScenarioTab data={data} t={t} />} t={t} /> : null}
+        {activeTab === "portfolio" ? <QueryPanel data={portfolioQuery.data} isError={portfolioQuery.isError} isLoading={portfolioQuery.isLoading} onRetry={() => void portfolioQuery.refetch()} render={(data) => <PortfolioTab data={data} t={t} />} t={t} /> : null}
+        {activeTab === "cfa" ? <CfaTab t={t} /> : null}
+        {activeTab === "commentary" && pricing && duration ? <CommentaryTab pricing={pricing} duration={duration} t={t} /> : null}
+        {activeTab === "commentary" && (!pricing || !duration) ? <EmptyState title={t("ratesLab.empty.title")} message={t("ratesLab.empty.message")} /> : null}
+        {activeTab === "quality" && pricing ? <QualityTab pricing={pricing} curve={curveQuery.data} portfolio={portfolioQuery.data} scenario={scenarioQuery.data} t={t} /> : null}
+        {activeTab === "quality" && !pricing ? <EmptyState title={t("ratesLab.empty.title")} message={t("ratesLab.empty.message")} /> : null}
+      </div>
     </div>
   );
 }
@@ -283,7 +329,7 @@ function PricingTab({ pricing, t }: { pricing: BondPricingResponse; t: Translato
       <Metric title={t("ratesLab.metrics.dirtyPrice")} value={<MoneyValue value={pricing.dirty_price} />} note={t("ratesLab.notes.includesAccrued")} />
       <Metric title={t("ratesLab.metrics.accruedInterest")} value={<MoneyValue value={pricing.accrued_interest} />} note={t("ratesLab.notes.dayCount")} />
     </div>
-    <Table headers={[t("ratesLab.table.period"), t("ratesLab.table.time"), t("ratesLab.table.coupon"), t("ratesLab.table.principal"), t("ratesLab.table.presentValue")]} rows={pricing.cash_flow_schedule.map((row) => [row.period, row.time_years.toFixed(2), <MoneyValue value={row.coupon} />, <MoneyValue value={row.principal} />, <MoneyValue value={row.present_value} />])} />
+    <Table headers={[t("ratesLab.table.period"), t("ratesLab.table.paymentDate"), t("ratesLab.table.time"), t("ratesLab.table.coupon"), t("ratesLab.table.principal"), t("ratesLab.table.presentValue")]} rows={pricing.cash_flow_schedule.map((row) => [row.period, row.payment_date ?? "--", row.time_years.toFixed(2), <MoneyValue value={row.coupon} />, <MoneyValue value={row.principal} />, <MoneyValue value={row.present_value} />])} />
   </Section>;
 }
 
@@ -333,6 +379,8 @@ function ScenarioTab({ data, t }: { data: RateScenarioResponse; t: Translator })
       <Metric title={t("ratesLab.metrics.stressedPrice")} value={<MoneyValue value={data.stressed_price} />} note={`${data.shock_bps} bps`} />
       <Metric title={t("ratesLab.metrics.priceChange")} value={<MoneyValue value={data.price_change} />} note={<PercentValue value={data.percent_change} />} />
       <Metric title={t("ratesLab.metrics.dv01Impact")} value={<MoneyValue value={data.dv01_impact} />} note={t("ratesLab.notes.durationEstimate")} />
+      <Metric title={t("ratesLab.metrics.baseYieldAtMaturity")} value={<PercentValue value={data.base_yield_at_maturity} />} note={t("ratesLab.notes.curveDerived")} />
+      <Metric title={t("ratesLab.metrics.shockedYieldAtMaturity")} value={<PercentValue value={data.shocked_yield_at_maturity} />} note={`${data.effective_shock_bps.toFixed(1)} bps`} />
     </div>
     <div className="risk-monitor-warning-list"><p>{data.risk_warning}</p></div>
   </Section>;
@@ -368,13 +416,27 @@ function CommentaryTab({ pricing, duration, t }: { pricing: BondPricingResponse;
   </Section>;
 }
 
-function QualityTab({ pricing, curve, t }: { pricing: BondPricingResponse; curve?: YieldCurveResponse; t: Translator }) {
+function QualityTab({ pricing, curve, portfolio, scenario, t }: { pricing: BondPricingResponse; curve?: YieldCurveResponse; portfolio?: PortfolioRatesExposureResponse; scenario?: RateScenarioResponse; t: Translator }) {
   const source = curve?.data_source ?? pricing.data_source;
+  const qualityBlocks = [pricing.data_quality, curve?.data_quality, scenario?.data_quality, portfolio?.data_quality].filter(Boolean);
+  const warnings = qualityBlocks.flatMap((quality) => [...(quality?.warnings ?? []), ...(quality?.limitations ?? [])]);
+  const pricingMode = String(pricing.methodology.details.pricing_mode ?? "simplified");
   return <Section title={t("ratesLab.sections.quality")} description={t("ratesLab.quality.description")} badges={source.badges}>
-    <Table headers={[t("ratesLab.table.field"), t("ratesLab.table.value")]} rows={[[t("ratesLab.quality.rateSource"), source.rate_source], [t("ratesLab.quality.curveSource"), source.curve_source], [t("ratesLab.quality.method"), pricing.methodology.method], [t("ratesLab.quality.frequency"), String(pricing.yield_assumptions.coupon_frequency)], [t("ratesLab.quality.advice"), t("ratesLab.quality.notAdvice")]]} />
+    <Table headers={[t("ratesLab.table.field"), t("ratesLab.table.value")]} rows={[[t("ratesLab.quality.pricingMode"), t(`ratesLab.pricingModes.${pricingMode}`)], [t("ratesLab.quality.rateSource"), source.rate_source], [t("ratesLab.quality.curveSource"), source.curve_source], [t("ratesLab.quality.method"), pricing.methodology.method], [t("ratesLab.quality.frequency"), String(pricing.yield_assumptions.coupon_frequency)], [t("ratesLab.quality.datedAvailable"), pricing.data_quality.dated_pricing_available ? t("ratesLab.quality.yes") : t("ratesLab.quality.no")], [t("ratesLab.quality.advice"), t("ratesLab.quality.notAdvice")]]} />
     <p className="risk-monitor-table-note">{t("ratesLab.quality.optionsReuse")}</p>
-    {[...pricing.methodology.assumptions, ...pricing.methodology.limitations, ...source.warnings].map((item) => <p className="risk-monitor-table-note" key={item}>{item}</p>)}
+    {[...new Set([...pricing.methodology.assumptions, ...pricing.methodology.limitations, ...source.warnings, ...warnings])].map((item) => <p className="risk-monitor-table-note" key={item}>{item}</p>)}
   </Section>;
+}
+
+function QueryPanel<T>({ data, isError, isLoading, onRetry, render, t }: { data: T | undefined; isError: boolean; isLoading: boolean; onRetry: () => void; render: (data: T) => ReactNode; t: Translator }) {
+  if (isLoading) return <LoadingState label={t("common.loading")} />;
+  if (isError) return <QueryErrorState title={t("ratesLab.errors.title")} message={t("ratesLab.errors.message")} onRetry={onRetry} t={t} />;
+  if (!data) return <EmptyState title={t("ratesLab.empty.title")} message={t("ratesLab.empty.message")} />;
+  return <>{render(data)}</>;
+}
+
+function QueryErrorState({ title, message, onRetry, t }: { title: string; message: string; onRetry: () => void; t: Translator }) {
+  return <div className="empty-state" role="alert"><strong>{title}</strong><p>{message}</p><button className="button button--secondary" type="button" onClick={onRetry}>{t("ratesLab.errors.retry")}</button></div>;
 }
 
 type Translator = (key: string) => string;
