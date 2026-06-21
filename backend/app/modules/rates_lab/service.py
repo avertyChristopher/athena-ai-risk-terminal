@@ -32,7 +32,10 @@ from app.modules.rates_lab.domain.duration import (
     modified_duration,
     pvbp,
 )
-from app.modules.rates_lab.domain.scenarios import scenario_price_impact, shift_curve
+from app.modules.rates_lab.domain.scenarios import (
+    apply_curve_scenario,
+    scenario_price_impact,
+)
 from app.modules.rates_lab.domain.yields import (
     current_yield,
     holding_period_return,
@@ -326,6 +329,13 @@ class RatesLabService:
             payload.yield_to_maturity,
             payload.coupon_frequency,
         )
+        supplied_curve = [point.model_dump() for point in payload.curve_points]
+        base_curve = supplied_curve or self.repository.get_demo_curve()
+        stressed_curve = apply_curve_scenario(
+            base_curve,
+            payload.scenario_type,
+            payload.shock_bps,
+        )
         result = scenario_price_impact(
             payload.face_value,
             payload.coupon_rate if payload.bond_type == "coupon_bond" else 0.0,
@@ -336,10 +346,9 @@ class RatesLabService:
             convexity_value,
             payload.scenario_type,
             payload.shock_bps,
+            base_curve,
+            stressed_curve,
         )
-        supplied_curve = [point.model_dump() for point in payload.curve_points]
-        base_curve = supplied_curve or self.repository.get_demo_curve()
-        stressed_curve = shift_curve(base_curve, payload.scenario_type, payload.shock_bps)
         change = float(result["price_change"])
         interpretation = (
             "The selected shock lowers the bond price."
@@ -353,6 +362,9 @@ class RatesLabService:
             stressed_price=float(result["stressed_price"]),
             price_change=change,
             percent_change=float(result["percent_change"]),
+            base_yield_at_maturity=float(result["base_yield_at_maturity"]),
+            shocked_yield_at_maturity=float(result["shocked_yield_at_maturity"]),
+            effective_shock_bps=float(result["effective_shock_bps"]),
             duration_estimate=float(result["duration_estimate"]),
             convexity_adjusted_estimate=float(result["convexity_adjusted_estimate"]),
             dv01_impact=float(result["dv01_impact"]),

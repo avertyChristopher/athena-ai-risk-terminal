@@ -1,5 +1,6 @@
 from app.modules.rates_lab.domain.bonds import price_coupon_bond
 from app.modules.rates_lab.domain.convexity import convexity_adjusted_price_impact
+from app.modules.rates_lab.domain.curves import interpolate_curve_linear
 from app.modules.rates_lab.domain.duration import duration_price_impact
 
 
@@ -52,10 +53,26 @@ def scenario_price_impact(
     convexity_value: float,
     scenario_type: str,
     shock_bps: float,
+    curve_points: list[dict[str, float]] | None = None,
+    shocked_curve_points: list[dict[str, float]] | None = None,
 ) -> dict[str, float | str]:
-    effective_bps = _effective_bond_shock(
+    base_curve = curve_points or _fallback_curve(yield_to_maturity)
+    shocked_curve = shocked_curve_points or apply_curve_scenario(
+        base_curve,
         scenario_type,
         shock_bps,
+    )
+    base_yield_at_maturity = interpolate_shocked_yield(
+        base_curve,
+        years_to_maturity,
+    )
+    shocked_yield_at_maturity = interpolate_shocked_yield(
+        shocked_curve,
+        years_to_maturity,
+    )
+    effective_bps = calculate_effective_yield_shock(
+        base_curve,
+        shocked_curve,
         years_to_maturity,
     )
     rate_change = effective_bps / 10_000
@@ -81,6 +98,8 @@ def scenario_price_impact(
         "effective_shock_bps": effective_bps,
         "base_yield": yield_to_maturity,
         "stressed_yield": stressed_yield,
+        "base_yield_at_maturity": base_yield_at_maturity,
+        "shocked_yield_at_maturity": shocked_yield_at_maturity,
         "base_price": base_price,
         "stressed_price": stressed_price,
         "price_change": price_change,
@@ -100,7 +119,7 @@ def scenario_price_impact(
     }
 
 
-def shift_curve(
+def apply_curve_scenario(
     curve_points: list[dict[str, float]],
     scenario_type: str,
     shock_bps: float,
@@ -124,31 +143,31 @@ def shift_curve(
     raise ValueError(f"Unsupported scenario type: {scenario_type}.")
 
 
-def _effective_bond_shock(
+def shift_curve(
+    curve_points: list[dict[str, float]],
     scenario_type: str,
     shock_bps: float,
-    maturity: float,
+) -> list[dict[str, float]]:
+    return apply_curve_scenario(curve_points, scenario_type, shock_bps)
+
+
+def interpolate_shocked_yield(
+    curve_points: list[dict[str, float]],
+    target_maturity: float,
 ) -> float:
-    magnitude = abs(shock_bps)
-    if scenario_type == "parallel_up":
-        return magnitude
-    if scenario_type == "parallel_down":
-        return -magnitude
-    long_weight = min(1.0, max(0.0, maturity / 10))
-    short_weight = 1 - long_weight
-    if scenario_type == "steepener":
-        return magnitude * (long_weight - short_weight) / 2
-    if scenario_type == "flattener":
-        return magnitude * (short_weight - long_weight) / 2
-    if scenario_type == "short_rate_up":
-        return magnitude * short_weight
-    if scenario_type == "short_rate_down":
-        return -magnitude * short_weight
-    if scenario_type == "long_rate_up":
-        return magnitude * long_weight
-    if scenario_type == "long_rate_down":
-        return -magnitude * long_weight
-    raise ValueError(f"Unsupported scenario type: {scenario_type}.")
+    return float(
+        interpolate_curve_linear(curve_points, [target_maturity])[0]["rate"]
+    )
+
+
+def calculate_effective_yield_shock(
+    base_curve: list[dict[str, float]],
+    shocked_curve: list[dict[str, float]],
+    target_maturity: float,
+) -> float:
+    base_yield = interpolate_shocked_yield(base_curve, target_maturity)
+    shocked_yield = interpolate_shocked_yield(shocked_curve, target_maturity)
+    return (shocked_yield - base_yield) * 10_000
 
 
 def _slope_shift(
@@ -194,3 +213,10 @@ def _segment_shift(
             }
         )
     return shifted
+
+
+def _fallback_curve(yield_to_maturity: float) -> list[dict[str, float]]:
+    return [
+        {"maturity": maturity, "rate": yield_to_maturity}
+        for maturity in (0.25, 1.0, 2.0, 5.0, 10.0, 30.0)
+    ]

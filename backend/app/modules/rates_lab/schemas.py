@@ -199,6 +199,9 @@ class RateScenarioResult(BaseModel):
     stressed_price: float
     price_change: float
     percent_change: float
+    base_yield_at_maturity: float
+    shocked_yield_at_maturity: float
+    effective_shock_bps: float
     duration_estimate: float
     convexity_adjusted_estimate: float
     dv01_impact: float
