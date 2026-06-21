@@ -24,6 +24,8 @@ from app.modules.portfolio_builder.repository import (
     PositionRepository,
 )
 from app.modules.portfolio_builder.service import PortfolioService, PositionService
+from app.modules.rates_lab.repository import RatesLabRepository
+from app.modules.rates_lab.service import RatesLabService
 from app.modules.risk_monitor.repository import RiskMonitorRepository
 from app.modules.risk_monitor.service import RiskMonitorService
 from app.modules.trade_simulator.repository import TradeSimulatorRepository
@@ -90,6 +92,12 @@ def get_options_pricing_lab_service(
     db: Session = Depends(get_db_session),
 ) -> OptionsPricingLabService:
     return OptionsPricingLabService(OptionsPricingLabRepository(db))
+
+
+def get_rates_lab_service(
+    db: Session = Depends(get_db_session),
+) -> RatesLabService:
+    return RatesLabService(RatesLabRepository(db))
 
 
 def get_pricing_service() -> PricingService:

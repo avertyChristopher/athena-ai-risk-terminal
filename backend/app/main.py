@@ -17,6 +17,7 @@ from app.modules.equity_analysis.routes import router as equity_router
 from app.modules.market_data.routes import router as market_data_router
 from app.modules.options_pricing_lab.routes import router as options_pricing_lab_router
 from app.modules.portfolio_builder.routes import router as portfolio_router
+from app.modules.rates_lab.routes import router as rates_lab_router
 from app.modules.risk_monitor.routes import router as risk_monitor_router
 from app.modules.trade_simulator.routes import router as trade_simulator_router
 from app.modules.volatility_lab.routes import router as volatility_lab_router
@@ -50,6 +51,7 @@ def create_app() -> FastAPI:
     app.include_router(risk_monitor_router, prefix=settings.api_prefix)
     app.include_router(volatility_lab_router, prefix=settings.api_prefix)
     app.include_router(options_pricing_lab_router, prefix=settings.api_prefix)
+    app.include_router(rates_lab_router, prefix=settings.api_prefix)
     app.include_router(trade_router, prefix=settings.api_prefix)
     app.include_router(risk_router, prefix=settings.api_prefix)
     app.include_router(pricing_router, prefix=settings.api_prefix)
