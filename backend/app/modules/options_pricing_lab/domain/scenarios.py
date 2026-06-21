@@ -11,11 +11,12 @@ def payoff_scenarios(
     premium: float,
     contract_size: int,
     quantity: int,
+    spot_shocks: list[float] | None = None,
 ) -> list[dict[str, float]]:
-    shocks = [-0.30, -0.20, -0.10, 0.0, 0.10, 0.20, 0.30]
+    shocks = spot_shocks or [-30.0, -20.0, -10.0, 0.0, 10.0, 20.0, 30.0]
     return [
         _payoff_row(
-            underlying_price * (1.0 + shock),
+            underlying_price * (1.0 + shock / 100),
             option_type,
             position_side,
             strike_price,
@@ -35,17 +36,28 @@ def sensitivity_analysis(
     risk_free_rate: float,
     volatility: float,
     dividend_yield: float,
-) -> dict[str, list[dict[str, float]]]:
-    price_shocks = [-0.20, -0.10, 0.0, 0.10, 0.20]
-    volatility_shocks = [-0.10, -0.05, 0.0, 0.05, 0.10]
-    time_days = [1, 7, 30, 60, 90]
-    rate_shocks = [-0.01, 0.0, 0.01]
+    spot_shocks: list[float] | None = None,
+    volatility_shocks: list[float] | None = None,
+    time_points_days: list[int] | None = None,
+    rate_shocks: list[float] | None = None,
+) -> dict[str, object]:
+    price_shocks = spot_shocks or [-30.0, -20.0, -10.0, 0.0, 10.0, 20.0, 30.0]
+    volatility_points = volatility_shocks or [-10.0, -5.0, 0.0, 5.0, 10.0]
+    rate_points = rate_shocks or [-1.0, 0.0, 1.0]
+    expiration_days = max(1, round(time_to_expiration_years * 365))
+    requested_time_points = time_points_days or [1, 7, 30, 60, 90]
+    time_days = sorted(
+        {
+            expiration_days,
+            *(day for day in requested_time_points if 1 <= day <= expiration_days),
+        }
+    )
 
     return {
         "price": [
             _price_row(
                 option_type,
-                underlying_price * (1 + shock),
+                underlying_price * (1 + shock / 100),
                 strike_price,
                 time_to_expiration_years,
                 risk_free_rate,
@@ -62,11 +74,11 @@ def sensitivity_analysis(
                 strike_price,
                 time_to_expiration_years,
                 risk_free_rate,
-                max(0.01, volatility + shock),
+                max(0.0001, volatility + shock / 100),
                 dividend_yield,
                 "volatility",
             )
-            for shock in volatility_shocks
+            for shock in volatility_points
         ],
         "time_decay": [
             _price_row(
@@ -88,13 +100,22 @@ def sensitivity_analysis(
                 underlying_price,
                 strike_price,
                 time_to_expiration_years,
-                max(-0.05, risk_free_rate + shock),
+                max(-0.99, risk_free_rate + shock / 100),
                 volatility,
                 dividend_yield,
                 "risk_free_rate",
             )
-            for shock in rate_shocks
+            for shock in rate_points
         ],
+        "scenario_metadata": {
+            "spot_shocks_percent": price_shocks,
+            "volatility_shocks_percentage_points": volatility_points,
+            "rate_shocks_percentage_points": rate_points,
+            "time_points_days": time_days,
+            "expiration_days": expiration_days,
+            "time_scenarios_capped": True,
+            "note": "Time decay scenarios are capped at the option's current expiration.",
+        },
     }
 
 

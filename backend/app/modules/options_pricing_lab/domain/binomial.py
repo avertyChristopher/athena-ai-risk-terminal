@@ -12,7 +12,7 @@ def binomial_option_price(
     volatility: float,
     dividend_yield: float = 0.0,
     steps: int = 50,
-) -> dict[str, float]:
+) -> dict[str, float | bool | str | None]:
     if steps < 1:
         raise ValueError("steps must be at least 1.")
     if min(underlying_price, strike_price, time_to_expiration_years, volatility) <= 0:
@@ -23,7 +23,20 @@ def binomial_option_price(
     down = 1.0 / up
     growth = exp((risk_free_rate - dividend_yield) * dt)
     probability = (growth - down) / (up - down)
-    probability = max(0.0, min(1.0, probability))
+    no_arbitrage_valid = down < growth < up
+    if not no_arbitrage_valid:
+        return {
+            "price": None,
+            "up_factor": up,
+            "down_factor": down,
+            "risk_neutral_probability": probability,
+            "steps": float(steps),
+            "no_arbitrage_valid": False,
+            "warning": (
+                "Binomial parameters violate the no-arbitrage condition. "
+                "Review volatility, rate, dividend yield or step count."
+            ),
+        }
     discount = exp(-risk_free_rate * dt)
 
     values = [
@@ -48,4 +61,6 @@ def binomial_option_price(
         "down_factor": down,
         "risk_neutral_probability": probability,
         "steps": float(steps),
+        "no_arbitrage_valid": True,
+        "warning": None,
     }

@@ -10,9 +10,13 @@ from app.modules.options_pricing_lab.domain.commentary import (
     option_commentary,
     strategy_commentary,
 )
-from app.modules.options_pricing_lab.domain.greeks import option_greeks
+from app.modules.options_pricing_lab.domain.greeks import (
+    aggregate_strategy_greeks,
+    option_greeks,
+)
 from app.modules.options_pricing_lab.domain.implied_volatility import (
     implied_volatility_placeholder,
+    solve_implied_volatility,
 )
 from app.modules.options_pricing_lab.domain.moneyness import (
     classify_moneyness,
@@ -37,11 +41,16 @@ from app.modules.options_pricing_lab.domain.scenarios import (
     payoff_scenarios,
     sensitivity_analysis,
 )
-from app.modules.options_pricing_lab.domain.strategies import strategy_summary
+from app.modules.options_pricing_lab.domain.strategies import (
+    build_predefined_strategy_legs,
+    strategy_summary,
+)
 from app.modules.options_pricing_lab.repository import OptionsPricingLabRepository
 from app.modules.options_pricing_lab.schemas import (
     DataSources,
     GreeksResponse,
+    ImpliedVolatilityRequest,
+    ImpliedVolatilityResponse,
     OptionPricingRequest,
     OptionPricingResponse,
     OptionsPricingLabStatus,
@@ -67,6 +76,7 @@ class OptionsPricingLabService:
                 "binomial_crr",
                 "greeks",
                 "put_call_parity",
+                "implied_volatility",
                 "strategy_payoff",
                 "volatility_lab_inputs",
             ],
@@ -103,13 +113,19 @@ class OptionsPricingLabService:
                 payload.dividend_yield,
                 payload.binomial_steps,
             )
+            if (
+                payload.pricing_model == "binomial"
+                and not binomial["no_arbitrage_valid"]
+            ):
+                raise ValueError(str(binomial["warning"]))
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
+        binomial_price = binomial["price"]
         option_price = (
             bs_price
             if payload.pricing_model == "black_scholes"
-            else float(binomial["price"])
+            else float(binomial_price)
         )
         intrinsic = intrinsic_value(
             underlying_price,
@@ -231,6 +247,7 @@ class OptionsPricingLabService:
                     option_price,
                     payload.contract_size,
                     payload.quantity,
+                    payload.spot_shocks,
                 ),
             },
             greeks=self._greeks_response(
@@ -261,16 +278,27 @@ class OptionsPricingLabService:
                     "assumptions": self._black_scholes_assumptions(),
                 },
                 "binomial": binomial,
-                "model_difference": bs_price - float(binomial["price"]),
+                "model_difference": (
+                    bs_price - float(binomial_price)
+                    if binomial_price is not None
+                    else None
+                ),
             },
             parity_check=put_call_parity_check(
-                call_price,
-                put_price,
+                payload.observed_call_price
+                if payload.parity_mode == "observed"
+                else call_price,
+                payload.observed_put_price
+                if payload.parity_mode == "observed"
+                else put_price,
                 underlying_price,
                 payload.strike_price,
                 years,
                 payload.risk_free_rate,
                 payload.dividend_yield,
+                mode=payload.parity_mode,
+                model_call_price=call_price,
+                model_put_price=put_price,
             ),
             sensitivity_analysis={
                 **sensitivity_analysis(
@@ -281,6 +309,10 @@ class OptionsPricingLabService:
                     payload.risk_free_rate,
                     volatility,
                     payload.dividend_yield,
+                    payload.spot_shocks,
+                    payload.volatility_shocks,
+                    payload.time_points_days,
+                    payload.rate_shocks,
                 ),
                 "greeks_by_price": greek_sensitivity(
                     payload.option_type,
@@ -324,6 +356,8 @@ class OptionsPricingLabService:
             volatility,
             payload.risk_free_rate,
             payload.dividend_yield,
+            payload.contract_size,
+            payload.quantity,
         )
         priced_legs = [
             self._price_leg(
@@ -340,8 +374,9 @@ class OptionsPricingLabService:
             underlying_price,
             priced_legs,
             payload.contract_size,
+            predefined=not bool(payload.legs),
         )
-        aggregate_greeks = self._aggregate_strategy_greeks(
+        aggregate_greeks = aggregate_strategy_greeks(
             priced_legs,
             underlying_price,
             payload.risk_free_rate,
@@ -366,6 +401,10 @@ class OptionsPricingLabService:
             max_profit=summary["max_profit"],
             max_loss=summary["max_loss"],
             breakeven_points=list(summary["breakeven_points"]),
+            payoff_profile=list(summary["payoff_profile"]),
+            risk_notes=list(summary["risk_notes"]),
+            stock_leg_included=bool(summary["stock_leg_included"]),
+            collateral_requirement=float(summary["collateral_requirement"]),
             aggregate_greeks=aggregate_greeks,
             risk_summary={
                 "cfa_explanation": self._strategy_cfa_note(payload.strategy_type),
@@ -382,6 +421,38 @@ class OptionsPricingLabService:
 
     def demo(self) -> OptionPricingResponse:
         return self.price_option(OptionPricingRequest())
+
+    def calculate_implied_volatility(
+        self,
+        payload: ImpliedVolatilityRequest,
+    ) -> ImpliedVolatilityResponse:
+        inputs = self._resolve_inputs(
+            payload.underlying_symbol,
+            payload.underlying_price,
+            payload.initial_guess,
+            payload.risk_free_rate,
+            payload.dividend_yield,
+        )
+        underlying_price = float(inputs["underlying_price"])
+        try:
+            result = solve_implied_volatility(
+                payload.observed_option_price,
+                payload.option_type,
+                underlying_price,
+                payload.strike_price,
+                payload.time_to_expiration_days / 365,
+                payload.risk_free_rate,
+                payload.dividend_yield,
+                float(inputs["volatility"]),
+                payload.tolerance,
+                payload.max_iterations,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        return ImpliedVolatilityResponse(
+            **result,
+            data_sources=inputs["data_sources"],
+        )
 
     def _resolve_inputs(
         self,
@@ -456,9 +527,15 @@ class OptionsPricingLabService:
         quantity: int,
     ) -> GreeksResponse:
         delta_per_contract = greeks["delta"] * contract_size
+        position_multiplier = contract_size * quantity
         return GreeksResponse(
             **greeks,
             delta_per_contract=delta_per_contract,
+            position_delta=greeks["delta"] * position_multiplier,
+            position_gamma=greeks["gamma"] * position_multiplier,
+            position_theta_daily=greeks["theta_daily"] * position_multiplier,
+            position_vega=greeks["vega"] * position_multiplier,
+            position_rho=greeks["rho"] * position_multiplier,
             delta_adjusted_exposure=delta_per_contract * underlying_price * quantity,
             interpretation={
                 "delta": "Delta estimates option price change for a $1 move in the underlying.",
@@ -466,6 +543,12 @@ class OptionsPricingLabService:
                 "theta": "Theta measures time decay. Long options usually have negative Theta.",
                 "vega": "Vega measures price change for a 1 percentage point volatility change.",
                 "rho": "Rho measures price change for a 1 percentage point rate change.",
+            },
+            unit_metadata={
+                "raw": "Per option share before contract and quantity scaling.",
+                "contract": "Raw Greek multiplied by contract size.",
+                "position": "Contract Greek multiplied by position quantity.",
+                "delta_adjusted_exposure": "Position Delta multiplied by underlying price.",
             },
         )
 
@@ -512,40 +595,15 @@ class OptionsPricingLabService:
         volatility: float,
         risk_free_rate: float,
         dividend_yield: float,
+        contract_size: int,
+        quantity: int,
     ) -> list[dict[str, float | int | str]]:
-        strike = round(underlying_price / 5) * 5
-        if strategy_type == "protective_put":
-            raw_legs = [{"option_type": "put", "side": "long", "strike": strike, "expiration_days": 60, "quantity": 1}]
-        elif strategy_type == "long_straddle":
-            raw_legs = [
-                {"option_type": "call", "side": "long", "strike": strike, "expiration_days": 60, "quantity": 1},
-                {"option_type": "put", "side": "long", "strike": strike, "expiration_days": 60, "quantity": 1},
-            ]
-        elif strategy_type == "long_strangle":
-            raw_legs = [
-                {"option_type": "call", "side": "long", "strike": strike * 1.05, "expiration_days": 60, "quantity": 1},
-                {"option_type": "put", "side": "long", "strike": strike * 0.95, "expiration_days": 60, "quantity": 1},
-            ]
-        elif strategy_type == "bull_call_spread":
-            raw_legs = [
-                {"option_type": "call", "side": "long", "strike": strike, "expiration_days": 60, "quantity": 1},
-                {"option_type": "call", "side": "short", "strike": strike * 1.1, "expiration_days": 60, "quantity": 1},
-            ]
-        elif strategy_type == "bear_put_spread":
-            raw_legs = [
-                {"option_type": "put", "side": "long", "strike": strike, "expiration_days": 60, "quantity": 1},
-                {"option_type": "put", "side": "short", "strike": strike * 0.9, "expiration_days": 60, "quantity": 1},
-            ]
-        elif strategy_type == "collar":
-            raw_legs = [
-                {"option_type": "put", "side": "long", "strike": strike * 0.95, "expiration_days": 60, "quantity": 1},
-                {"option_type": "call", "side": "short", "strike": strike * 1.05, "expiration_days": 60, "quantity": 1},
-            ]
-        elif strategy_type == "cash_secured_put":
-            raw_legs = [{"option_type": "put", "side": "short", "strike": strike, "expiration_days": 60, "quantity": 1}]
-        else:
-            raw_legs = [{"option_type": "call", "side": "short", "strike": strike, "expiration_days": 60, "quantity": 1}]
-
+        raw_legs = build_predefined_strategy_legs(
+            strategy_type,
+            underlying_price,
+            contract_size,
+            quantity,
+        )
         return [
             self._price_leg(
                 leg,
@@ -565,51 +623,33 @@ class OptionsPricingLabService:
         volatility: float,
         dividend_yield: float,
     ) -> dict[str, float | int | str]:
-        expiration_days = int(leg.get("expiration_days", 60))
+        leg_type = str(leg.get("leg_type", "option"))
+        expiration_value = leg.get("expiration_days")
+        expiration_days = int(expiration_value) if expiration_value is not None else None
+        strike_value = leg.get("strike_price", leg.get("strike"))
         premium = leg.get("premium")
-        if premium is None:
+        if leg_type == "option" and premium is None:
             premium = black_scholes_price(
                 str(leg["option_type"]),
                 underlying_price,
-                float(leg["strike"]),
-                expiration_days / 365,
+                float(strike_value),
+                int(expiration_days) / 365,
                 risk_free_rate,
                 volatility,
                 dividend_yield,
             )
         return {
-            "option_type": str(leg["option_type"]),
+            "leg_type": leg_type,
             "side": str(leg["side"]),
-            "strike": float(leg["strike"]),
+            "option_type": str(leg["option_type"]) if leg.get("option_type") else None,
+            "strike_price": float(strike_value) if strike_value is not None else None,
             "expiration_days": expiration_days,
             "quantity": int(leg.get("quantity", 1)),
-            "premium": float(premium),
+            "contract_size": int(leg.get("contract_size", 100)),
+            "underlying_price": float(leg.get("underlying_price") or underlying_price),
+            "description": str(leg.get("description", "")),
+            "premium": float(premium) if premium is not None else None,
         }
-
-    def _aggregate_strategy_greeks(
-        self,
-        legs: list[dict[str, float | int | str]],
-        underlying_price: float,
-        risk_free_rate: float,
-        volatility: float,
-        dividend_yield: float,
-    ) -> dict[str, float]:
-        totals = {"delta": 0.0, "gamma": 0.0, "theta_daily": 0.0, "vega": 0.0, "rho": 0.0}
-        for leg in legs:
-            greeks = option_greeks(
-                str(leg["option_type"]),
-                underlying_price,
-                float(leg["strike"]),
-                int(leg["expiration_days"]) / 365,
-                risk_free_rate,
-                volatility,
-                dividend_yield,
-                str(leg["side"]),
-            )
-            quantity = int(leg["quantity"])
-            for key in totals:
-                totals[key] += greeks[key] * quantity
-        return totals
 
     def _strategy_cfa_note(self, strategy_type: str) -> str:
         return {
