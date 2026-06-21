@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -15,6 +16,7 @@ def test_options_pricing_lab_status_is_ready() -> None:
     assert body["status"] == "ready"
     assert "black_scholes" in body["engines_available"]
     assert "greeks" in body["engines_available"]
+    assert "implied_volatility" in body["engines_available"]
 
 
 def test_options_pricing_lab_prices_single_option() -> None:
@@ -73,6 +75,93 @@ def test_options_pricing_lab_strategy_endpoint_returns_analytics() -> None:
     assert body["aggregate_greeks"]["gamma"] > 0
     assert "cfa_explanation" in body["risk_summary"]
     assert body["commentary"]["key_points"]
+
+
+def test_covered_call_endpoint_includes_stock_risk_and_scaled_greeks() -> None:
+    response = client.post(
+        "/api/options-pricing-lab/strategy",
+        json={
+            "underlying_symbol": "AAPL",
+            "underlying_price": 100,
+            "volatility": 0.2,
+            "strategy_type": "covered_call",
+            "contract_size": 100,
+            "quantity": 2,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["stock_leg_included"] is True
+    assert [leg["leg_type"] for leg in body["legs"]] == ["stock", "option"]
+    assert body["max_profit"]["type"] == "finite"
+    assert body["aggregate_greeks"]["aggregate_delta"] > 0
+    assert body["aggregate_greeks"]["legs"][0]["position_greeks"]["delta"] == 200
+
+
+def test_observed_parity_mode_uses_submitted_market_prices() -> None:
+    response = client.post(
+        "/api/options-pricing-lab/price",
+        json={
+            "underlying_price": 100,
+            "strike_price": 100,
+            "time_to_expiration_days": 365,
+            "volatility": 0.2,
+            "risk_free_rate": 0.05,
+            "dividend_yield": 0,
+            "parity_mode": "observed",
+            "observed_call_price": 12,
+            "observed_put_price": 1,
+        },
+    )
+
+    assert response.status_code == 200
+    parity = response.json()["parity_check"]
+    assert parity["mode"] == "observed"
+    assert parity["call_price"] == 12
+    assert parity["put_price"] == 1
+    assert parity["status"] == "potential_arbitrage"
+
+
+def test_implied_volatility_endpoint_recovers_known_volatility() -> None:
+    response = client.post(
+        "/api/options-pricing-lab/implied-volatility",
+        json={
+            "underlying_symbol": "AAPL",
+            "option_type": "call",
+            "observed_option_price": 10.4505835722,
+            "underlying_price": 100,
+            "strike_price": 100,
+            "time_to_expiration_days": 365,
+            "risk_free_rate": 0.05,
+            "dividend_yield": 0,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["converged"] is True
+    assert body["implied_volatility"] == pytest.approx(0.2, rel=1e-5)
+    assert body["validation_status"] == "valid"
+
+
+def test_implied_volatility_endpoint_returns_structured_invalid_bounds() -> None:
+    response = client.post(
+        "/api/options-pricing-lab/implied-volatility",
+        json={
+            "option_type": "call",
+            "observed_option_price": 101,
+            "underlying_price": 100,
+            "strike_price": 100,
+            "time_to_expiration_days": 365,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["converged"] is False
+    assert body["implied_volatility"] is None
+    assert body["validation_status"] == "outside_no_arbitrage_bounds"
 
 
 def test_options_pricing_lab_demo_endpoint_uses_default_contract() -> None:
