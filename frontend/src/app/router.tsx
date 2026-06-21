@@ -11,7 +11,6 @@ import { LimitsPage } from "../features/limits/pages/LimitsPage";
 import { MarketDataPage } from "../features/market-data/pages/MarketDataPage";
 import { PnlPage } from "../features/pnl/pages/PnlPage";
 import { PortfolioPage } from "../features/portfolio/pages/PortfolioPage";
-import { RatesLabPage } from "../features/rates-lab/pages/RatesLabPage";
 import { ReconciliationPage } from "../features/reconciliation/pages/ReconciliationPage";
 import { ReportsPage } from "../features/reports/pages/ReportsPage";
 import { SettingsPage } from "../features/settings/pages/SettingsPage";
@@ -37,6 +36,11 @@ const OptionsPricingPage = lazy(() =>
     default: module.OptionsPricingPage,
   })),
 );
+const RatesLabPage = lazy(() =>
+  import("../features/rates-lab/pages/RatesLabPage").then((module) => ({
+    default: module.RatesLabPage,
+  })),
+);
 
 function lazyRoute(element: ReactNode) {
   return (
@@ -60,7 +64,7 @@ export const router = createBrowserRouter([
       { path: "risk-monitor", element: lazyRoute(<RiskMonitorPage />) },
       { path: "volatility-lab", element: lazyRoute(<VolatilityLabPage />) },
       { path: "options-pricing-lab", element: lazyRoute(<OptionsPricingPage />) },
-      { path: "rates-lab", element: <RatesLabPage /> },
+      { path: "rates-lab", element: lazyRoute(<RatesLabPage />) },
       { path: "stress-testing", element: <StressTestingPage /> },
       { path: "limit-center", element: <LimitsPage /> },
       { path: "pnl-attribution", element: <PnlPage /> },

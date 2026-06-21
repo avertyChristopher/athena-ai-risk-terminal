@@ -1655,6 +1655,200 @@
       "strategyMessage": "Choose a strategy and make sure pricing inputs are valid."
     }
   },
+  "ratesLab": {
+    "title": "Rates Lab",
+    "subtitle": "CFA-style bond pricing, yield curves, duration, convexity and interest-rate risk analytics.",
+    "workbench": {
+      "eyebrow": "Fixed-income workstation",
+      "title": "Bond and term-structure analytics",
+      "description": "Analyze discounted cash flows, yield measures and portfolio rate sensitivity with transparent assumptions."
+    },
+    "badges": {
+      "cfa": "CFA Level 1",
+      "demoCurve": "Demo Curve",
+      "riskMonitor": "Risk Monitor Ready",
+      "deterministic": "Deterministic Commentary"
+    },
+    "controls": {
+      "eyebrow": "Rates setup",
+      "title": "Bond, yield and scenario assumptions",
+      "description": "Inputs are manual; the yield curve uses a deterministic demo fallback until Market Data supplies live rates.",
+      "calculate": "Calculate",
+      "bondInputs": "Bond inputs",
+      "riskInputs": "Yield and risk inputs",
+      "bondType": "Bond type",
+      "faceValue": "Face value",
+      "couponRate": "Coupon rate %",
+      "frequency": "Coupon frequency",
+      "maturity": "Years to maturity",
+      "ytm": "Yield to maturity %",
+      "marketPrice": "Market price",
+      "shockBps": "Rate shock (bps)",
+      "scenarioType": "Scenario type",
+      "portfolio": "Portfolio"
+    },
+    "labels": {
+      "couponBond": "Coupon bond",
+      "zeroCoupon": "Zero-coupon bond"
+    },
+    "frequency": {
+      "annual": "Annual",
+      "semiannual": "Semiannual",
+      "quarterly": "Quarterly",
+      "monthly": "Monthly"
+    },
+    "scenarioTypes": {
+      "parallel_up": "Parallel + shock",
+      "parallel_down": "Parallel - shock",
+      "steepener": "Steepener",
+      "flattener": "Flattener",
+      "short_rate_up": "Short rates up",
+      "long_rate_up": "Long rates up",
+      "short_rate_down": "Short rates down",
+      "long_rate_down": "Long rates down"
+    },
+    "tabs": {
+      "aria": "Rates Lab sections",
+      "pricing": "Bond Pricing",
+      "pricingShort": "Cash flows",
+      "yield": "Yield Analysis",
+      "yieldShort": "YTM / income",
+      "duration": "Duration & Convexity",
+      "durationShort": "Rate risk",
+      "curve": "Yield Curve",
+      "curveShort": "Term structure",
+      "scenarios": "Rate Scenarios",
+      "scenariosShort": "Shocks",
+      "portfolio": "Portfolio Exposure",
+      "portfolioShort": "Fixed income",
+      "cfa": "CFA Notes",
+      "cfaShort": "Concepts",
+      "commentary": "Athena Commentary",
+      "commentaryShort": "Interpretation",
+      "quality": "Data & Assumptions",
+      "qualityShort": "Sources"
+    },
+    "sections": {
+      "pricing": "Bond pricing and cash flows",
+      "yield": "Yield analysis",
+      "duration": "Duration, convexity and DV01",
+      "curve": "Yield curve and implied forwards",
+      "scenarios": "Deterministic rate scenario",
+      "portfolio": "Portfolio fixed-income exposure",
+      "cfa": "CFA Level I fixed-income notes",
+      "commentary": "Athena rates commentary",
+      "quality": "Data quality and assumptions"
+    },
+    "metrics": {
+      "cleanPrice": "Clean price",
+      "dirtyPrice": "Dirty price",
+      "accruedInterest": "Accrued interest",
+      "ytm": "Yield to maturity",
+      "currentYield": "Current yield",
+      "hpr": "Holding-period return",
+      "macaulayDuration": "Macaulay duration",
+      "modifiedDuration": "Modified duration",
+      "convexity": "Convexity",
+      "dv01": "DV01 / PVBP",
+      "durationImpact": "Duration price impact",
+      "convexityImpact": "Convexity-adjusted impact",
+      "curveShape": "Curve shape",
+      "curveSlope": "Curve slope",
+      "forwardPoints": "Forward intervals",
+      "basePrice": "Base price",
+      "stressedPrice": "Stressed price",
+      "priceChange": "Price change",
+      "dv01Impact": "DV01 shock estimate",
+      "fixedIncomeValue": "Fixed-income value",
+      "weightedDuration": "Weighted duration",
+      "portfolioDv01": "Portfolio DV01",
+      "shockLoss": "Estimated shock P&L"
+    },
+    "notes": {
+      "inverseRelationship": "Price and yield move inversely",
+      "years": "Years",
+      "perBasisPoint": "Dollar change for 1 bp",
+      "includesAccrued": "Clean price plus accrued interest",
+      "dayCount": "Based on the selected day-count convention",
+      "annualCouponOverPrice": "Annual coupon divided by market price",
+      "optionalInputs": "Requires beginning, ending and coupon inputs",
+      "linearSensitivity": "First-order yield sensitivity",
+      "curvature": "Second-order price-yield sensitivity",
+      "durationWarning": "Duration is a linear approximation. Convexity improves the estimate for larger rate changes.",
+      "termStructure": "Short-term versus long-term rates",
+      "longMinusShort": "Long rate minus short rate",
+      "impliedNotForecast": "Implied rates, not forecasts",
+      "beforeShock": "Before the selected scenario",
+      "durationEstimate": "Duration-based estimate",
+      "requiresMetadata": "Requires bond or ETF duration metadata"
+    },
+    "table": {
+      "period": "Period",
+      "time": "Time (years)",
+      "coupon": "Coupon",
+      "principal": "Principal",
+      "presentValue": "Present value",
+      "maturity": "Maturity",
+      "spotRate": "Spot rate",
+      "interval": "Forward interval",
+      "forwardRate": "Forward rate",
+      "holding": "Holding",
+      "marketValue": "Market value",
+      "weight": "Portfolio weight",
+      "duration": "Duration",
+      "dv01": "DV01",
+      "source": "Metadata source",
+      "field": "Field",
+      "value": "Value"
+    },
+    "curveShapes": {
+      "normal": "Normal",
+      "steep": "Steep",
+      "inverted": "Inverted",
+      "flat": "Flat"
+    },
+    "portfolio": {
+      "emptyTitle": "Portfolio exposure unavailable",
+      "emptyMessage": "Select a portfolio. Fixed-income analytics require bond metadata or ETF duration inputs."
+    },
+    "cfa": {
+      "description": "Core fixed-income relationships used by the workstation.",
+      "inverseTitle": "Price-yield relationship",
+      "inverse": "Bond price and yield move inversely.",
+      "maturityTitle": "Maturity risk",
+      "maturity": "Longer maturity generally increases duration and rate sensitivity.",
+      "couponTitle": "Coupon effect",
+      "coupon": "Lower coupon generally increases duration, all else equal.",
+      "convexityTitle": "Convexity",
+      "convexity": "Convexity improves duration estimates when rate changes are large.",
+      "dv01Title": "DV01 / PVBP",
+      "dv01": "DV01 measures the dollar price change for a one-basis-point yield move.",
+      "curveTitle": "Term structure",
+      "curve": "Yield curves compare rates across maturities and may be normal, flat or inverted.",
+      "forwardTitle": "Forward rates",
+      "forward": "Forward rates are implied future rates derived from spot rates, not forecasts.",
+      "reinvestmentTitle": "Reinvestment risk",
+      "reinvestment": "Realized return depends on the rate available for reinvesting coupon cash flows."
+    },
+    "commentary": {
+      "keyPoints": "Pricing interpretation",
+      "risk": "Interest-rate risk"
+    },
+    "quality": {
+      "description": "Sources, methodology and limitations remain visible throughout the analysis.",
+      "rateSource": "Rate source",
+      "curveSource": "Curve source",
+      "method": "Pricing method",
+      "frequency": "Coupon frequency",
+      "advice": "Usage notice",
+      "notAdvice": "Not investment advice",
+      "optionsReuse": "Risk-free rate inputs can be reused by Options Pricing Lab."
+    },
+    "errors": {
+      "title": "Rates Lab API unavailable",
+      "message": "Verify that the backend is running and Rates Lab routes are registered."
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Market Data",

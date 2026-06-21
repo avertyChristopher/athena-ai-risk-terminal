@@ -1655,6 +1655,200 @@
       "strategyMessage": "Choisis une strategie et verifie que les inputs de pricing sont valides."
     }
   },
+  "ratesLab": {
+    "title": "Laboratoire des taux",
+    "subtitle": "Valorisation obligataire, courbes de taux, duration, convexite et risque de taux inspires du CFA.",
+    "workbench": {
+      "eyebrow": "Poste obligataire",
+      "title": "Analyse des obligations et de la structure par terme",
+      "description": "Analyse les flux actualises, les rendements et la sensibilite du portefeuille avec des hypotheses transparentes."
+    },
+    "badges": {
+      "cfa": "CFA niveau 1",
+      "demoCurve": "Courbe de demonstration",
+      "riskMonitor": "Pret pour Risk Monitor",
+      "deterministic": "Commentaire deterministe"
+    },
+    "controls": {
+      "eyebrow": "Parametres de taux",
+      "title": "Hypotheses obligation, rendement et scenario",
+      "description": "Les saisies sont manuelles; une courbe demo deterministe remplace les taux Market Data en direct.",
+      "calculate": "Calculer",
+      "bondInputs": "Parametres obligataires",
+      "riskInputs": "Rendement et risque",
+      "bondType": "Type d'obligation",
+      "faceValue": "Valeur nominale",
+      "couponRate": "Taux de coupon %",
+      "frequency": "Frequence du coupon",
+      "maturity": "Annees jusqu'a l'echeance",
+      "ytm": "Rendement a l'echeance %",
+      "marketPrice": "Prix de marche",
+      "shockBps": "Choc de taux (pbs)",
+      "scenarioType": "Type de scenario",
+      "portfolio": "Portefeuille"
+    },
+    "labels": {
+      "couponBond": "Obligation a coupon",
+      "zeroCoupon": "Obligation zero-coupon"
+    },
+    "frequency": {
+      "annual": "Annuelle",
+      "semiannual": "Semestrielle",
+      "quarterly": "Trimestrielle",
+      "monthly": "Mensuelle"
+    },
+    "scenarioTypes": {
+      "parallel_up": "Choc parallele +",
+      "parallel_down": "Choc parallele -",
+      "steepener": "Steepener",
+      "flattener": "Flattener",
+      "short_rate_up": "Hausse des taux courts",
+      "long_rate_up": "Hausse des taux longs",
+      "short_rate_down": "Baisse des taux courts",
+      "long_rate_down": "Baisse des taux longs"
+    },
+    "tabs": {
+      "aria": "Sections du laboratoire des taux",
+      "pricing": "Valorisation obligataire",
+      "pricingShort": "Flux",
+      "yield": "Analyse des rendements",
+      "yieldShort": "YTM / revenu",
+      "duration": "Duration et convexite",
+      "durationShort": "Risque de taux",
+      "curve": "Courbe des taux",
+      "curveShort": "Structure par terme",
+      "scenarios": "Scenarios de taux",
+      "scenariosShort": "Chocs",
+      "portfolio": "Exposition portefeuille",
+      "portfolioShort": "Obligataire",
+      "cfa": "Notes CFA",
+      "cfaShort": "Concepts",
+      "commentary": "Commentaire Athena",
+      "commentaryShort": "Interpretation",
+      "quality": "Donnees et hypotheses",
+      "qualityShort": "Sources"
+    },
+    "sections": {
+      "pricing": "Valorisation et flux obligataires",
+      "yield": "Analyse des rendements",
+      "duration": "Duration, convexite et DV01",
+      "curve": "Courbe des taux et forwards implicites",
+      "scenarios": "Scenario de taux deterministe",
+      "portfolio": "Exposition obligataire du portefeuille",
+      "cfa": "Notes de revenu fixe CFA niveau I",
+      "commentary": "Commentaire de taux Athena",
+      "quality": "Qualite des donnees et hypotheses"
+    },
+    "metrics": {
+      "cleanPrice": "Prix clean",
+      "dirtyPrice": "Prix dirty",
+      "accruedInterest": "Interets courus",
+      "ytm": "Rendement a l'echeance",
+      "currentYield": "Rendement courant",
+      "hpr": "Rendement de periode de detention",
+      "macaulayDuration": "Duration de Macaulay",
+      "modifiedDuration": "Duration modifiee",
+      "convexity": "Convexite",
+      "dv01": "DV01 / PVBP",
+      "durationImpact": "Impact prix par duration",
+      "convexityImpact": "Impact ajuste de convexite",
+      "curveShape": "Forme de la courbe",
+      "curveSlope": "Pente de courbe",
+      "forwardPoints": "Intervalles forward",
+      "basePrice": "Prix initial",
+      "stressedPrice": "Prix stresse",
+      "priceChange": "Variation de prix",
+      "dv01Impact": "Estimation DV01 du choc",
+      "fixedIncomeValue": "Valeur obligataire",
+      "weightedDuration": "Duration ponderee",
+      "portfolioDv01": "DV01 du portefeuille",
+      "shockLoss": "P&L estime du choc"
+    },
+    "notes": {
+      "inverseRelationship": "Prix et rendement evoluent en sens inverse",
+      "years": "Annees",
+      "perBasisPoint": "Variation monetaire pour 1 pb",
+      "includesAccrued": "Prix clean plus interets courus",
+      "dayCount": "Selon la convention de calcul selectionnee",
+      "annualCouponOverPrice": "Coupon annuel divise par le prix de marche",
+      "optionalInputs": "Necessite prix initial, prix final et coupon",
+      "linearSensitivity": "Sensibilite de premier ordre",
+      "curvature": "Sensibilite de second ordre prix-rendement",
+      "durationWarning": "La duration est une approximation lineaire. La convexite ameliore l'estimation pour les grands changements de taux.",
+      "termStructure": "Taux courts compares aux taux longs",
+      "longMinusShort": "Taux long moins taux court",
+      "impliedNotForecast": "Taux implicites, pas des previsions",
+      "beforeShock": "Avant le scenario selectionne",
+      "durationEstimate": "Estimation fondee sur la duration",
+      "requiresMetadata": "Necessite les metadonnees obligataires ou la duration de l'ETF"
+    },
+    "table": {
+      "period": "Periode",
+      "time": "Temps (annees)",
+      "coupon": "Coupon",
+      "principal": "Principal",
+      "presentValue": "Valeur actuelle",
+      "maturity": "Echeance",
+      "spotRate": "Taux spot",
+      "interval": "Intervalle forward",
+      "forwardRate": "Taux forward",
+      "holding": "Position",
+      "marketValue": "Valeur de marche",
+      "weight": "Poids portefeuille",
+      "duration": "Duration",
+      "dv01": "DV01",
+      "source": "Source des metadonnees",
+      "field": "Champ",
+      "value": "Valeur"
+    },
+    "curveShapes": {
+      "normal": "Normale",
+      "steep": "Pentue",
+      "inverted": "Inversee",
+      "flat": "Plate"
+    },
+    "portfolio": {
+      "emptyTitle": "Exposition portefeuille indisponible",
+      "emptyMessage": "Selectionne un portefeuille. L'analyse necessite les metadonnees obligataires ou la duration des ETF."
+    },
+    "cfa": {
+      "description": "Relations fondamentales de revenu fixe utilisees par le poste.",
+      "inverseTitle": "Relation prix-rendement",
+      "inverse": "Le prix d'une obligation et son rendement evoluent en sens inverse.",
+      "maturityTitle": "Risque de maturite",
+      "maturity": "Une maturite plus longue augmente generalement la duration et la sensibilite aux taux.",
+      "couponTitle": "Effet du coupon",
+      "coupon": "Un coupon plus faible augmente generalement la duration, toutes choses egales.",
+      "convexityTitle": "Convexite",
+      "convexity": "La convexite ameliore l'estimation par duration pour les grands changements de taux.",
+      "dv01Title": "DV01 / PVBP",
+      "dv01": "Le DV01 mesure la variation monetaire du prix pour un mouvement de rendement d'un point de base.",
+      "curveTitle": "Structure par terme",
+      "curve": "La courbe compare les taux selon les echeances et peut etre normale, plate ou inversee.",
+      "forwardTitle": "Taux forward",
+      "forward": "Les taux forward sont des taux futurs implicites tires des taux spot, pas des previsions.",
+      "reinvestmentTitle": "Risque de reinvestissement",
+      "reinvestment": "Le rendement realise depend du taux disponible pour reinvestir les coupons."
+    },
+    "commentary": {
+      "keyPoints": "Interpretation du prix",
+      "risk": "Risque de taux"
+    },
+    "quality": {
+      "description": "Les sources, methodes et limites restent visibles dans l'analyse.",
+      "rateSource": "Source du taux",
+      "curveSource": "Source de la courbe",
+      "method": "Methode de valorisation",
+      "frequency": "Frequence du coupon",
+      "advice": "Avis d'utilisation",
+      "notAdvice": "Ne constitue pas un conseil en investissement",
+      "optionsReuse": "Les taux sans risque peuvent etre reutilises dans le Laboratoire de pricing d'options."
+    },
+    "errors": {
+      "title": "API Rates Lab indisponible",
+      "message": "Verifie que le backend fonctionne et que les routes Rates Lab sont enregistrees."
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Données de marché",

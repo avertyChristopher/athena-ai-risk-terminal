@@ -2563,6 +2563,55 @@ ul.portfolio-note-list {
   grid-template-columns: repeat(8, minmax(0, 1fr));
 }
 
+.rates-lab-tabs {
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+}
+
+.rates-curve-bars {
+  min-height: 250px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.rates-curve-bars__plot {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(42px, 1fr));
+  align-items: end;
+  gap: 8px;
+  min-height: 210px;
+  overflow-x: auto;
+}
+
+.rates-curve-bars__plot > div {
+  display: grid;
+  grid-template-rows: 160px auto auto;
+  gap: 5px;
+  align-items: end;
+  min-width: 42px;
+  text-align: center;
+}
+
+.rates-curve-bars__plot i {
+  display: block;
+  width: min(28px, 75%);
+  min-height: 18px;
+  margin: 0 auto;
+  border: 1px solid rgba(107, 150, 195, 0.42);
+  border-radius: 4px 4px 1px 1px;
+  background: rgba(107, 150, 195, 0.3);
+}
+
+.rates-curve-bars__plot span,
+.rates-curve-bars__plot strong {
+  font-size: 0.78rem;
+}
+
+.rates-curve-bars__plot span {
+  color: var(--muted);
+}
+
 .options-lab-kpi-grid {
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }

@@ -107,4 +107,12 @@ export const endpoints = {
   optionsPricingLabStrategy: "/api/options-pricing-lab/strategy",
   optionsPricingLabImpliedVolatility: "/api/options-pricing-lab/implied-volatility",
   optionsPricingLabDemo: "/api/options-pricing-lab/demo",
+  ratesLabStatus: "/api/rates-lab/status",
+  ratesLabBondPrice: "/api/rates-lab/bond-price",
+  ratesLabYieldAnalysis: "/api/rates-lab/yield-analysis",
+  ratesLabDurationConvexity: "/api/rates-lab/duration-convexity",
+  ratesLabYieldCurve: "/api/rates-lab/yield-curve",
+  ratesLabRateScenarios: "/api/rates-lab/rate-scenarios",
+  ratesLabPortfolioExposure: "/api/rates-lab/portfolio-exposure",
+  ratesLabDemo: "/api/rates-lab/demo",
 } as const;
