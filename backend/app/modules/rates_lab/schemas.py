@@ -33,6 +33,7 @@ class CashFlow(BaseModel):
     principal: float
     total_cash_flow: float
     frequency: int
+    accrual_fraction: float = 1.0
     payment_date: date | None = None
     discount_factor: float
     present_value: float

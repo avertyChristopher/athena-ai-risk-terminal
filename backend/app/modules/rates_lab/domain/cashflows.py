@@ -1,5 +1,6 @@
 from calendar import monthrange
 from datetime import date
+from math import floor, isclose
 
 
 FREQUENCIES = {
@@ -30,8 +31,12 @@ def generate_coupon_schedule(
     coupon_frequency: str,
 ) -> list[float]:
     frequency = frequency_per_year(coupon_frequency)
-    periods = max(1, round(years_to_maturity * frequency))
-    return [period / frequency for period in range(1, periods + 1)]
+    exact_periods = years_to_maturity * frequency
+    regular_periods = floor(exact_periods)
+    schedule = [period / frequency for period in range(1, regular_periods + 1)]
+    if not schedule or not isclose(schedule[-1], years_to_maturity, abs_tol=1e-12):
+        schedule.append(years_to_maturity)
+    return schedule
 
 
 def generate_bond_cashflows(
@@ -42,9 +47,16 @@ def generate_bond_cashflows(
 ) -> list[dict[str, float | int]]:
     frequency = frequency_per_year(coupon_frequency)
     schedule = generate_coupon_schedule(years_to_maturity, coupon_frequency)
-    coupon = calculate_coupon_payment(face_value, coupon_rate, coupon_frequency)
+    regular_coupon = calculate_coupon_payment(
+        face_value,
+        coupon_rate,
+        coupon_frequency,
+    )
     cashflows = []
     for period, time_years in enumerate(schedule, start=1):
+        previous_time = schedule[period - 2] if period > 1 else 0.0
+        accrual_fraction = (time_years - previous_time) * frequency
+        coupon = regular_coupon * accrual_fraction
         principal = face_value if period == len(schedule) else 0.0
         cashflows.append(
             {
@@ -54,6 +66,7 @@ def generate_bond_cashflows(
                 "principal": principal,
                 "total_cash_flow": coupon + principal,
                 "frequency": frequency,
+                "accrual_fraction": accrual_fraction,
             }
         )
     return cashflows
@@ -198,6 +211,7 @@ def generate_dated_bond_cashflows(
                 "principal": principal,
                 "total_cash_flow": coupon + principal,
                 "frequency": frequency,
+                "accrual_fraction": 1.0,
             }
         )
     return cashflows, {
