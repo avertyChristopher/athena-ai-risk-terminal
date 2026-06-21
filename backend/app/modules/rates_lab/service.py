@@ -2,11 +2,12 @@ from fastapi import HTTPException
 
 from app.modules.rates_lab.domain.bonds import (
     clean_price,
+    price_dated_coupon_bond,
+    price_dated_zero_coupon_bond,
     price_coupon_bond,
     price_zero_coupon_bond,
 )
 from app.modules.rates_lab.domain.cashflows import (
-    accrued_interest,
     generate_bond_cashflows,
     zero_coupon_cashflow,
 )
@@ -81,15 +82,31 @@ class RatesLabService:
         )
 
     def price_bond(self, payload: BondPricingRequest) -> BondPricingResponse:
-        dirty, cashflows = self._price_bond_inputs(payload)
-        accrued = accrued_interest(
-            payload.face_value,
-            payload.coupon_rate if payload.bond_type == "coupon_bond" else 0.0,
-            payload.coupon_frequency,
-            payload.settlement_date,
-            payload.maturity_date,
-            payload.day_count_convention,
-        )
+        date_metadata: dict[str, object] = {}
+        if payload.settlement_date is not None and payload.maturity_date is not None:
+            if payload.bond_type == "zero_coupon":
+                dirty, cashflows, date_metadata = price_dated_zero_coupon_bond(
+                    payload.face_value,
+                    payload.settlement_date,
+                    payload.maturity_date,
+                    payload.yield_to_maturity,
+                    payload.coupon_frequency,
+                    payload.day_count_convention,
+                )
+            else:
+                dirty, cashflows, date_metadata = price_dated_coupon_bond(
+                    payload.face_value,
+                    payload.coupon_rate,
+                    payload.coupon_frequency,
+                    payload.settlement_date,
+                    payload.maturity_date,
+                    payload.yield_to_maturity,
+                    payload.day_count_convention,
+                )
+            accrued = float(date_metadata["accrued_interest"])
+        else:
+            dirty, cashflows = self._price_bond_inputs(payload)
+            accrued = 0.0
         clean = clean_price(dirty, accrued)
         status = price_premium_discount_status(clean, payload.face_value)
         return BondPricingResponse(
@@ -106,7 +123,7 @@ class RatesLabService:
                 "coupon_frequency": payload.coupon_frequency,
                 "price_yield_relationship": "inverse",
             },
-            methodology=self._bond_methodology(payload),
+            methodology=self._bond_methodology(payload, date_metadata),
             data_source=self._manual_data_source(),
             athena_commentary=bond_commentary(
                 status,
@@ -489,15 +506,33 @@ class RatesLabService:
             ytm,
         )
 
-    def _bond_methodology(self, payload: BondPricingRequest) -> MethodologyMetadata:
+    def _bond_methodology(
+        self,
+        payload: BondPricingRequest,
+        date_metadata: dict[str, object] | None = None,
+    ) -> MethodologyMetadata:
+        dated = payload.settlement_date is not None and payload.maturity_date is not None
+        metadata = date_metadata or {}
         return MethodologyMetadata(
             method="discounted_cash_flow",
             assumptions=["Fixed coupons", "Constant yield", "No default"],
-            limitations=["No embedded-option or credit-spread model"],
+            limitations=[
+                "No embedded-option or credit-spread model",
+                *([] if dated else ["Simplified pricing uses a year-based cash-flow schedule"]),
+            ],
             details={
+                "pricing_mode": "dated" if dated else "simplified",
                 "coupon_frequency": payload.coupon_frequency,
                 "compounding_frequency": payload.coupon_frequency,
                 "day_count_convention": payload.day_count_convention,
+                "settlement_date": payload.settlement_date,
+                "maturity_date": payload.maturity_date,
+                "previous_coupon_date": metadata.get("previous_coupon_date"),
+                "next_coupon_date": metadata.get("next_coupon_date"),
+                "accrued_days": metadata.get("accrued_days", 0),
+                "coupon_period_days": metadata.get("coupon_period_days", 0),
+                "accrued_interest": metadata.get("accrued_interest", 0.0),
+                "clean_dirty_method": "clean_price_equals_dirty_price_minus_accrued_interest",
             },
         )
 

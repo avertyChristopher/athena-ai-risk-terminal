@@ -75,6 +75,140 @@ def zero_coupon_cashflow(
     ]
 
 
+def generate_dated_coupon_schedule(
+    settlement_date: date,
+    maturity_date: date,
+    coupon_frequency: str,
+) -> list[date]:
+    if settlement_date >= maturity_date:
+        raise ValueError("Settlement date must be before maturity date.")
+    frequency = frequency_per_year(coupon_frequency)
+    months = 12 // frequency
+    schedule = []
+    period_offset = 0
+    payment_date = maturity_date
+    while payment_date > settlement_date:
+        schedule.append(payment_date)
+        period_offset += 1
+        payment_date = _add_months(maturity_date, -months * period_offset)
+    return list(reversed(schedule))
+
+
+def get_previous_coupon_date(
+    settlement_date: date,
+    maturity_date: date,
+    coupon_frequency: str,
+) -> date:
+    previous, _ = _coupon_period_dates(
+        settlement_date,
+        maturity_date,
+        coupon_frequency,
+    )
+    return previous
+
+
+def get_next_coupon_date(
+    settlement_date: date,
+    maturity_date: date,
+    coupon_frequency: str,
+) -> date:
+    _, next_coupon = _coupon_period_dates(
+        settlement_date,
+        maturity_date,
+        coupon_frequency,
+    )
+    return next_coupon
+
+
+def calculate_accrued_interest(
+    face_value: float,
+    coupon_rate: float,
+    coupon_frequency: str,
+    settlement_date: date,
+    previous_coupon_date: date,
+    next_coupon_date: date,
+    day_count_convention: str = "actual_actual",
+) -> tuple[float, int, int]:
+    if not previous_coupon_date <= settlement_date < next_coupon_date:
+        raise ValueError("Settlement must fall within the supplied coupon period.")
+    accrued_days = _day_count(
+        previous_coupon_date,
+        settlement_date,
+        day_count_convention,
+    )
+    coupon_period_days = _day_count(
+        previous_coupon_date,
+        next_coupon_date,
+        day_count_convention,
+    )
+    fraction = accrued_days / max(coupon_period_days, 1)
+    amount = calculate_coupon_payment(
+        face_value,
+        coupon_rate,
+        coupon_frequency,
+    ) * fraction
+    return amount, accrued_days, coupon_period_days
+
+
+def generate_dated_bond_cashflows(
+    face_value: float,
+    coupon_rate: float,
+    coupon_frequency: str,
+    settlement_date: date,
+    maturity_date: date,
+    day_count_convention: str = "actual_actual",
+) -> tuple[list[dict[str, float | int | date]], dict[str, object]]:
+    frequency = frequency_per_year(coupon_frequency)
+    schedule = generate_dated_coupon_schedule(
+        settlement_date,
+        maturity_date,
+        coupon_frequency,
+    )
+    previous_coupon, next_coupon = _coupon_period_dates(
+        settlement_date,
+        maturity_date,
+        coupon_frequency,
+    )
+    accrued, accrued_days, coupon_period_days = calculate_accrued_interest(
+        face_value,
+        coupon_rate,
+        coupon_frequency,
+        settlement_date,
+        previous_coupon,
+        next_coupon,
+        day_count_convention,
+    )
+    days_to_next_coupon = _day_count(
+        settlement_date,
+        next_coupon,
+        day_count_convention,
+    )
+    first_period_fraction = days_to_next_coupon / max(coupon_period_days, 1)
+    coupon = calculate_coupon_payment(face_value, coupon_rate, coupon_frequency)
+    cashflows = []
+    for period, payment_date in enumerate(schedule, start=1):
+        periods_from_settlement = first_period_fraction + period - 1
+        principal = face_value if payment_date == maturity_date else 0.0
+        cashflows.append(
+            {
+                "period": period,
+                "time_years": periods_from_settlement / frequency,
+                "payment_date": payment_date,
+                "coupon": coupon,
+                "principal": principal,
+                "total_cash_flow": coupon + principal,
+                "frequency": frequency,
+            }
+        )
+    return cashflows, {
+        "previous_coupon_date": previous_coupon,
+        "next_coupon_date": next_coupon,
+        "accrued_days": accrued_days,
+        "coupon_period_days": coupon_period_days,
+        "accrued_interest": accrued,
+    }
+
+
 def accrued_interest(
     face_value: float,
     coupon_rate: float,
@@ -88,27 +222,58 @@ def accrued_interest(
     if settlement_date >= maturity_date:
         return 0.0
 
-    frequency = frequency_per_year(coupon_frequency)
-    months = 12 // frequency
-    next_coupon = maturity_date
-    previous_coupon = _add_months(next_coupon, -months)
-    while previous_coupon > settlement_date:
-        next_coupon = previous_coupon
-        previous_coupon = _add_months(next_coupon, -months)
-
-    if day_count_convention == "30_360":
-        elapsed = _days_30_360(previous_coupon, settlement_date)
-        period_days = _days_30_360(previous_coupon, next_coupon)
-    else:
-        elapsed = (settlement_date - previous_coupon).days
-        period_days = (next_coupon - previous_coupon).days
-
-    fraction = min(1.0, max(0.0, elapsed / max(period_days, 1)))
-    return calculate_coupon_payment(
+    previous_coupon, next_coupon = _coupon_period_dates(
+        settlement_date,
+        maturity_date,
+        coupon_frequency,
+    )
+    amount, _, _ = calculate_accrued_interest(
         face_value,
         coupon_rate,
         coupon_frequency,
-    ) * fraction
+        settlement_date,
+        previous_coupon,
+        next_coupon,
+        day_count_convention,
+    )
+    return amount
+
+
+def year_fraction(
+    start: date,
+    end: date,
+    day_count_convention: str = "actual_actual",
+) -> float:
+    if end <= start:
+        raise ValueError("End date must be after start date.")
+    if day_count_convention == "30_360":
+        return _days_30_360(start, end) / 360
+    return (end - start).days / 365.25
+
+
+def _coupon_period_dates(
+    settlement_date: date,
+    maturity_date: date,
+    coupon_frequency: str,
+) -> tuple[date, date]:
+    if settlement_date >= maturity_date:
+        raise ValueError("Settlement date must be before maturity date.")
+    frequency = frequency_per_year(coupon_frequency)
+    months = 12 // frequency
+    period_offset = 1
+    next_coupon = maturity_date
+    previous_coupon = _add_months(maturity_date, -months * period_offset)
+    while previous_coupon > settlement_date:
+        next_coupon = previous_coupon
+        period_offset += 1
+        previous_coupon = _add_months(maturity_date, -months * period_offset)
+    return previous_coupon, next_coupon
+
+
+def _day_count(start: date, end: date, convention: str) -> int:
+    if convention == "30_360":
+        return _days_30_360(start, end)
+    return (end - start).days
 
 
 def _add_months(value: date, months: int) -> date:
