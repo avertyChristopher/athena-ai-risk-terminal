@@ -1,3 +1,4 @@
+import type { AthenaAICommentary } from "./athena-intelligence";
 import type { OptionsRiskPayload } from "./risk-shared";
 
 export type OptionType = "call" | "put";
@@ -244,6 +245,7 @@ export type OptionPricingResponse = {
     cfa_notes: string[];
     limitations?: string[];
   };
+  athena_ai_commentary?: AthenaAICommentary | null;
 };
 
 export type OptionStrategyResponse = {
@@ -282,6 +284,7 @@ export type OptionStrategyResponse = {
     limitations?: string[];
   };
   data_sources: DataSources;
+  athena_ai_commentary?: AthenaAICommentary | null;
 };
 
 export type StrategyRiskValue = {

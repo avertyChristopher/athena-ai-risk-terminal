@@ -1,4 +1,7 @@
 import type {
+  AthenaAICommentary,
+} from "./athena-intelligence";
+import type {
   ModuleIntegrationStatus,
   OptionsRiskPayload,
   RatesRiskPayload,
@@ -165,4 +168,5 @@ export type RiskMonitorAnalysisResponse = {
   integration_statuses: ModuleIntegrationStatus[];
   rates_risk_payload: RatesRiskPayload | null;
   options_risk_payload: OptionsRiskPayload | null;
+  athena_ai_commentary?: AthenaAICommentary | null;
 };

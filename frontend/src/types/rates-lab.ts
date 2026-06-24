@@ -1,3 +1,4 @@
+import type { AthenaAICommentary } from "./athena-intelligence";
 import type { RatesRiskPayload } from "./risk-shared";
 
 export type CouponFrequency = "annual" | "semiannual" | "quarterly" | "monthly";
@@ -89,6 +90,7 @@ export type BondPricingResponse = {
   data_source: DataSourceMetadata;
   rates_risk_payload: RatesRiskPayload;
   athena_commentary: AthenaRatesCommentary;
+  athena_ai_commentary?: AthenaAICommentary | null;
 };
 
 export type YieldAnalysisResponse = {
@@ -104,6 +106,7 @@ export type YieldAnalysisResponse = {
   data_quality: DataQualityMetadata;
   data_source: DataSourceMetadata;
   athena_commentary: AthenaRatesCommentary;
+  athena_ai_commentary?: AthenaAICommentary | null;
 };
 
 export type DurationConvexityResponse = {
@@ -125,6 +128,7 @@ export type DurationConvexityResponse = {
   rates_risk_payload: RatesRiskPayload;
   data_source: DataSourceMetadata;
   athena_commentary: AthenaRatesCommentary;
+  athena_ai_commentary?: AthenaAICommentary | null;
 };
 
 export type CurvePoint = { maturity: number; rate: number };
@@ -171,6 +175,7 @@ export type RateScenarioResponse = {
   stress_testing_payload: Record<string, unknown>;
   rates_risk_payload: RatesRiskPayload;
   data_source: DataSourceMetadata;
+  athena_ai_commentary?: AthenaAICommentary | null;
 };
 
 export type FixedIncomeHolding = {
@@ -201,4 +206,5 @@ export type PortfolioRatesExposureResponse = {
   methodology: MethodologyMetadata;
   data_quality: DataQualityMetadata;
   data_source: DataSourceMetadata;
+  athena_ai_commentary?: AthenaAICommentary | null;
 };

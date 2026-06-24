@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 
+import { AthenaAICommentaryCard } from "../../../components/ai/AthenaAICommentaryCard";
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
@@ -410,12 +411,15 @@ function CfaTab({ t }: { t: Translator }) {
 }
 
 function CommentaryTab({ pricing, duration, t }: { pricing: BondPricingResponse; duration: DurationConvexityResponse; t: Translator }) {
-  return <Section title={t("ratesLab.sections.commentary")} description={pricing.athena_commentary.summary} badges={[t("ratesLab.badges.deterministic")] }>
-    <div className="risk-monitor-commentary-grid">
-      <div className="risk-monitor-driver-list"><h3>{t("ratesLab.commentary.keyPoints")}</h3>{pricing.athena_commentary.key_points.map((point) => <p key={point}>{point}</p>)}</div>
-      <div className="risk-monitor-driver-list"><h3>{t("ratesLab.commentary.risk")}</h3><p>{duration.risk_interpretation}</p>{duration.athena_commentary.cfa_notes.map((note) => <p key={note}>{note}</p>)}</div>
-    </div>
-  </Section>;
+  return <div className="risk-monitor-stack">
+    <AthenaAICommentaryCard commentary={duration.athena_ai_commentary ?? pricing.athena_ai_commentary} />
+    <Section title={t("ratesLab.sections.commentary")} description={pricing.athena_commentary.summary} badges={[t("ratesLab.badges.deterministic")] }>
+      <div className="risk-monitor-commentary-grid">
+        <div className="risk-monitor-driver-list"><h3>{t("ratesLab.commentary.keyPoints")}</h3>{pricing.athena_commentary.key_points.map((point) => <p key={point}>{point}</p>)}</div>
+        <div className="risk-monitor-driver-list"><h3>{t("ratesLab.commentary.risk")}</h3><p>{duration.risk_interpretation}</p>{duration.athena_commentary.cfa_notes.map((note) => <p key={note}>{note}</p>)}</div>
+      </div>
+    </Section>
+  </div>;
 }
 
 function QualityTab({ pricing, curve, portfolio, scenario, t }: { pricing: BondPricingResponse; curve?: YieldCurveResponse; portfolio?: PortfolioRatesExposureResponse; scenario?: RateScenarioResponse; t: Translator }) {

@@ -1,3 +1,4 @@
+import type { AthenaAICommentary } from "./athena-intelligence";
 import type { ModuleIntegrationStatus, TradeImpactPayload } from "./risk-shared";
 
 export type TradeModuleStatus = {
@@ -166,5 +167,6 @@ export type TradeSimulationResponse = {
   module_source_metadata: ModuleIntegrationStatus[];
   trade_impact_payload: TradeImpactPayload | null;
   athena_commentary: AthenaTradeCommentaryResponse;
+  athena_ai_commentary?: AthenaAICommentary | null;
   simulation_result: SimulationResultSummary;
 };

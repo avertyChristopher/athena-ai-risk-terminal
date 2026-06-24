@@ -806,6 +806,22 @@ select {
   font-size: 1.04rem;
 }
 
+.dashboard-intelligence-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dashboard-intelligence-list span {
+  border: 1px solid rgba(107, 150, 195, 0.22);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--accent-strong);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
 .dashboard-activity-card {
   align-content: start;
 }
@@ -2253,6 +2269,119 @@ ul.portfolio-note-list {
   margin: 0;
   padding-left: 18px;
   color: var(--muted);
+}
+
+.athena-ai-card {
+  display: grid;
+  gap: 16px;
+  border: 1px solid rgba(69, 111, 156, 0.24);
+  border-radius: 8px;
+  padding: 16px;
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.14), rgba(138, 106, 67, 0.08)),
+    rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-soft);
+}
+
+.athena-ai-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.athena-ai-card__eyebrow {
+  display: inline-flex;
+  margin-bottom: 7px;
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.athena-ai-card h2,
+.athena-ai-card h3,
+.athena-ai-card p,
+.athena-ai-card ul {
+  margin: 0;
+}
+
+.athena-ai-card h2 {
+  font-size: 1.15rem;
+}
+
+.athena-ai-card__header p {
+  max-width: 86ch;
+  color: var(--text);
+}
+
+.athena-ai-source-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.athena-ai-source-row span,
+.athena-ai-card__footer,
+.athena-ai-section li {
+  color: var(--muted);
+}
+
+.athena-ai-source-row div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.athena-ai-source-row strong {
+  border: 1px solid rgba(107, 150, 195, 0.22);
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(107, 150, 195, 0.1);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+}
+
+.athena-ai-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.athena-ai-section {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(107, 150, 195, 0.18);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.athena-ai-section h3 {
+  font-size: 0.93rem;
+}
+
+.athena-ai-section ul {
+  display: grid;
+  gap: 6px;
+  padding-left: 18px;
+}
+
+.athena-ai-card__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  font-size: 0.82rem;
 }
 
 .volatility-lab-page {
@@ -4560,6 +4689,10 @@ ul.portfolio-note-list {
     grid-template-columns: 1fr;
   }
 
+  .athena-ai-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .portfolio-tabs {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -4740,6 +4873,9 @@ ul.portfolio-note-list {
   .trade-section-card__header,
   .trade-command-panel,
   .risk-monitor-section-card__header,
+  .athena-ai-card__header,
+  .athena-ai-card__footer,
+  .athena-ai-source-row,
   .risk-monitor-command-panel,
   .risk-monitor-controls-panel__header,
   .options-lab-command-actions,
@@ -4750,6 +4886,14 @@ ul.portfolio-note-list {
   .equity-analyst-scorecard__footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .athena-ai-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .athena-ai-source-row div {
+    justify-content: flex-start;
   }
 
   .volatility-histogram__row {

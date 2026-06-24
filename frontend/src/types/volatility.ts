@@ -1,3 +1,5 @@
+import type { AthenaAICommentary } from "./athena-intelligence";
+
 export type VolatilityLabStatus = {
   status: string;
   module: string;
@@ -316,6 +318,7 @@ export type VolatilityAssetAnalysisResponse = {
   var_backtest: VarBacktestSummary;
   stress_scenarios: StressScenarioSummary[];
   athena_commentary: AthenaVolatilityCommentary;
+  athena_ai_commentary?: AthenaAICommentary | null;
 };
 
 export type VolatilityPortfolioAnalysisResponse = {
@@ -348,6 +351,7 @@ export type VolatilityPortfolioAnalysisResponse = {
   var_backtest: VarBacktestSummary;
   stress_scenarios: StressScenarioSummary[];
   athena_commentary: AthenaVolatilityCommentary;
+  athena_ai_commentary?: AthenaAICommentary | null;
 };
 
 export type VolatilityAnalysis =

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 
+import { AthenaAICommentaryCard } from "../../../components/ai/AthenaAICommentaryCard";
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
@@ -805,30 +806,33 @@ function CommentaryTab({
   t: (key: string) => string;
 }) {
   return (
-    <RiskSectionCard
-      title={t("riskMonitor.sections.commentary")}
-      description={analysis.athena_commentary.summary}
-      badges={[{ label: t("riskMonitor.badges.deterministic"), variant: "info" }]}
-    >
-      <div className="risk-monitor-commentary-grid">
-        <div>
-          <h3>{t("riskMonitor.sections.mainDrivers")}</h3>
-          <ul>
-            {analysis.athena_commentary.main_drivers.map((driver) => (
-              <li key={driver}>{driver}</li>
-            ))}
-          </ul>
+    <div className="risk-monitor-stack">
+      <AthenaAICommentaryCard commentary={analysis.athena_ai_commentary} />
+      <RiskSectionCard
+        title={t("riskMonitor.sections.commentary")}
+        description={analysis.athena_commentary.summary}
+        badges={[{ label: t("riskMonitor.badges.deterministic"), variant: "info" }]}
+      >
+        <div className="risk-monitor-commentary-grid">
+          <div>
+            <h3>{t("riskMonitor.sections.mainDrivers")}</h3>
+            <ul>
+              {analysis.athena_commentary.main_drivers.map((driver) => (
+                <li key={driver}>{driver}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3>{t("riskMonitor.sections.nextActions")}</h3>
+            <ul>
+              {analysis.athena_commentary.suggested_actions.map((action) => (
+                <li key={action}>{action}</li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div>
-          <h3>{t("riskMonitor.sections.nextActions")}</h3>
-          <ul>
-            {analysis.athena_commentary.suggested_actions.map((action) => (
-              <li key={action}>{action}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </RiskSectionCard>
+      </RiskSectionCard>
+    </div>
   );
 }
 

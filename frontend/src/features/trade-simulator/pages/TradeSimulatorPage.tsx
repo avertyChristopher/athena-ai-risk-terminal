@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
+import { AthenaAICommentaryCard } from "../../../components/ai/AthenaAICommentaryCard";
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
@@ -960,43 +961,46 @@ function CommentaryPanel({
   t: (key: string) => string;
 }) {
   return (
-    <TradeSectionCard
-      title={t("tradeSimulator.commentary.title")}
-      description={simulation.athena_commentary.summary}
-      badges={[
-        { label: t("tradeSimulator.badges.deterministicCommentary"), variant: "info" },
-      ]}
-    >
-      <div className="trade-commentary-grid">
-        <div className="trade-commentary-note">
-          <strong>{simulation.athena_commentary.summary}</strong>
-          <ul>
-            {simulation.athena_commentary.bullets.map((bullet) => (
-              <li key={bullet}>{bullet}</li>
-            ))}
-          </ul>
+    <div className="trade-summary-stack">
+      <AthenaAICommentaryCard commentary={simulation.athena_ai_commentary} />
+      <TradeSectionCard
+        title={t("tradeSimulator.commentary.title")}
+        description={simulation.athena_commentary.summary}
+        badges={[
+          { label: t("tradeSimulator.badges.deterministicCommentary"), variant: "info" },
+        ]}
+      >
+        <div className="trade-commentary-grid">
+          <div className="trade-commentary-note">
+            <strong>{simulation.athena_commentary.summary}</strong>
+            <ul>
+              {simulation.athena_commentary.bullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="trade-summary-stack">
+            <TradeMetricCard
+              title={t("tradeSimulator.summary.status")}
+              value={simulation.simulation_result.trade_status}
+            />
+            <TradeMetricCard
+              title={t("tradeSimulator.summary.estimatedCost")}
+              value={
+                <MoneyValue
+                  value={simulation.simulation_result.estimated_cost}
+                  currency={currency}
+                />
+              }
+            />
+            <TradeMetricCard
+              title={t("tradeSimulator.summary.notice")}
+              value={simulation.simulation_result.notice}
+            />
+          </div>
         </div>
-        <div className="trade-summary-stack">
-          <TradeMetricCard
-            title={t("tradeSimulator.summary.status")}
-            value={simulation.simulation_result.trade_status}
-          />
-          <TradeMetricCard
-            title={t("tradeSimulator.summary.estimatedCost")}
-            value={
-              <MoneyValue
-                value={simulation.simulation_result.estimated_cost}
-                currency={currency}
-              />
-            }
-          />
-          <TradeMetricCard
-            title={t("tradeSimulator.summary.notice")}
-            value={simulation.simulation_result.notice}
-          />
-        </div>
-      </div>
-    </TradeSectionCard>
+      </TradeSectionCard>
+    </div>
   );
 }
 

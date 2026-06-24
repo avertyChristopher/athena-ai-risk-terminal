@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
@@ -7,6 +8,7 @@ import { StatusBadge } from "../../../components/ui/StatusBadge";
 import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { useHealth } from "../../../hooks/useHealth";
 import { useTranslation } from "../../../hooks/useTranslation";
+import { athenaIntelligenceApi } from "../../../services/athenaIntelligenceApi";
 
 type Kpi = {
   label: string;
@@ -268,7 +270,13 @@ export function DashboardPage() {
     selectedSymbol,
   } = usePortfolioContext();
   const healthQuery = useHealth();
+  const athenaStatusQuery = useQuery({
+    queryKey: ["athena-intelligence-status"],
+    queryFn: athenaIntelligenceApi.status,
+  });
   const isConnected = !healthQuery.isError;
+  const athenaStatus = athenaStatusQuery.data;
+  const athenaProviderMode = athenaStatus?.provider_mode ?? "fallback";
   const statusLabel = healthQuery.isLoading
     ? t("common.loading")
     : isConnected
@@ -479,13 +487,29 @@ export function DashboardPage() {
       <div className="dashboard-split-grid dashboard-split-grid--wide">
         <section className="card dashboard-ai-card">
           <span className="equity-kicker">Athena Intelligence</span>
-          <h2>AI Insights</h2>
+          <div className="section-heading">
+            <h2>Athena Intelligence Engine</h2>
+            <StatusBadge
+              label={
+                athenaStatusQuery.isLoading
+                  ? t("common.loading")
+                  : athenaProviderMode === "openai"
+                    ? t("athenaIntelligence.openaiMode")
+                    : t("athenaIntelligence.fallbackMode")
+              }
+              variant={athenaProviderMode === "openai" ? "success" : "warning"}
+            />
+          </div>
           <p>
-            The demo portfolio shows strong exposure to large-cap technology
-            stocks. Volatility remains moderate, but concentration risk is
-            elevated due to NVDA, AAPL and MSFT weights. A broader allocation
-            across fixed income or defensive sectors could reduce downside risk.
+            Central synthesis layer for Risk Monitor, Volatility Lab, Options Pricing Lab,
+            Rates Lab and Trade Simulator. It generates structured commentary from module
+            payloads only, with deterministic fallback and no investment-advice wording.
           </p>
+          <div className="dashboard-intelligence-list">
+            <span>{t("athenaIntelligence.structuredPayloads")}</span>
+            <span>{t("athenaIntelligence.noSecrets")}</span>
+            <span>{t("athenaIntelligence.riskSynthesis")}</span>
+          </div>
         </section>
 
         <section className="card dashboard-activity-card">

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 
+import { AthenaAICommentaryCard } from "../../../components/ai/AthenaAICommentaryCard";
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
@@ -738,7 +739,11 @@ export function VolatilityLabPage() {
               <AdvancedModelsTab analysis={analysis} t={t} />
             ) : null}
             {activeTab === "commentary" ? (
-              <CommentaryTab commentary={analysis.athena_commentary} t={t} />
+              <CommentaryTab
+                aiCommentary={analysis.athena_ai_commentary}
+                commentary={analysis.athena_commentary}
+                t={t}
+              />
             ) : null}
           </div>
           <PrintReport
@@ -1424,33 +1429,38 @@ function PortfolioTab({
 }
 
 function CommentaryTab({
+  aiCommentary,
   commentary,
   t,
 }: {
+  aiCommentary?: VolatilityAnalysis["athena_ai_commentary"];
   commentary: AthenaVolatilityCommentary;
   t: (key: string) => string;
 }) {
   return (
-    <VolatilitySectionCard
-      title={t("volatilityLab.sections.commentary")}
-      description={commentary.summary}
-      badges={[{ label: t("volatilityLab.badges.deterministic"), variant: "info" }]}
-    >
-      <div className="risk-monitor-commentary-grid volatility-lab-commentary-grid">
-        <div className="risk-monitor-driver-list">
-          <h3>{t("volatilityLab.sections.keyPoints")}</h3>
-          {commentary.key_points.map((point) => (
-            <p key={point}>{point}</p>
-          ))}
+    <div className="risk-monitor-stack">
+      <AthenaAICommentaryCard commentary={aiCommentary} />
+      <VolatilitySectionCard
+        title={t("volatilityLab.sections.commentary")}
+        description={commentary.summary}
+        badges={[{ label: t("volatilityLab.badges.deterministic"), variant: "info" }]}
+      >
+        <div className="risk-monitor-commentary-grid volatility-lab-commentary-grid">
+          <div className="risk-monitor-driver-list">
+            <h3>{t("volatilityLab.sections.keyPoints")}</h3>
+            {commentary.key_points.map((point) => (
+              <p key={point}>{point}</p>
+            ))}
+          </div>
+          <div className="risk-monitor-driver-list">
+            <h3>{t("volatilityLab.sections.cfaNotes")}</h3>
+            {commentary.cfa_notes.map((note) => (
+              <p key={note}>{note}</p>
+            ))}
+          </div>
         </div>
-        <div className="risk-monitor-driver-list">
-          <h3>{t("volatilityLab.sections.cfaNotes")}</h3>
-          {commentary.cfa_notes.map((note) => (
-            <p key={note}>{note}</p>
-          ))}
-        </div>
-      </div>
-    </VolatilitySectionCard>
+      </VolatilitySectionCard>
+    </div>
   );
 }
 

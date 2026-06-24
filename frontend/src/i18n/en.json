@@ -55,6 +55,31 @@
       "critical": "Critical"
     }
   },
+  "athenaIntelligence": {
+    "eyebrow": "Athena Intelligence",
+    "title": "AI Risk Commentary",
+    "loading": "Generating Athena Intelligence commentary",
+    "emptyTitle": "No AI commentary available",
+    "emptyMessage": "Run an analysis to generate a structured Athena Intelligence synthesis.",
+    "mainRisks": "Main risks",
+    "riskDrivers": "Risk drivers",
+    "breaches": "Breaches",
+    "suggestedActions": "Review actions",
+    "assumptions": "Assumptions",
+    "limitations": "Limitations",
+    "confidence": "Confidence",
+    "sources": "Sources",
+    "fallbackMode": "Fallback Mode",
+    "openaiMode": "OpenAI Mode",
+    "structuredPayloads": "Structured payloads only",
+    "noSecrets": "No frontend secrets",
+    "riskSynthesis": "Risk synthesis ready",
+    "confidenceLevels": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    }
+  },
   "nav": {
     "dashboard": "Dashboard",
     "marketData": "Market Data",

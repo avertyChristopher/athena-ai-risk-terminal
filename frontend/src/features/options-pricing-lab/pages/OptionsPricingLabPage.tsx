@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 
+import { AthenaAICommentaryCard } from "../../../components/ai/AthenaAICommentaryCard";
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
 import { PageHeader } from "../../../components/layout/PageHeader";
@@ -831,6 +832,8 @@ function OverviewTab({
         </div>
       </SectionCard>
 
+      <AthenaAICommentaryCard commentary={analysis.athena_ai_commentary} />
+
       <div className="risk-monitor-two-column">
         <SectionCard
           title={t("optionsPricingLab.sections.valueDecomposition")}
@@ -1274,6 +1277,7 @@ function StrategyTab({
 
   return (
     <div className="risk-monitor-stack">
+      <AthenaAICommentaryCard commentary={strategy.athena_ai_commentary} />
       <SectionCard
         title={strategyLabel(strategy.strategy_summary.strategy_type, t)}
         description={strategy.strategy_summary.risk_profile}
