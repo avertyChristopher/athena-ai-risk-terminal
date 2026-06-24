@@ -115,4 +115,9 @@ export const endpoints = {
   ratesLabRateScenarios: "/api/rates-lab/rate-scenarios",
   ratesLabPortfolioExposure: "/api/rates-lab/portfolio-exposure",
   ratesLabDemo: "/api/rates-lab/demo",
+  stressTestingStatus: "/api/stress-testing/status",
+  stressTestingScenarios: "/api/stress-testing/scenarios",
+  stressTestingRun: "/api/stress-testing/run",
+  stressTestingCustomScenario: "/api/stress-testing/custom-scenario",
+  stressTestingDemo: "/api/stress-testing/demo",
 } as const;

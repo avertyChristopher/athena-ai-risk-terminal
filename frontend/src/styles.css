@@ -4143,6 +4143,280 @@ ul.portfolio-note-list {
   color: var(--danger);
 }
 
+.stress-testing-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.stress-command-panel {
+  align-items: flex-start;
+}
+
+.stress-controls-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.35fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.stress-control-card,
+.stress-section-card,
+.stress-integration-card,
+.stress-before-after-card {
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-soft);
+}
+
+.stress-control-card {
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.stress-control-grid,
+.stress-custom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stress-custom-grid {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(107, 150, 195, 0.07);
+}
+
+.stress-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stress-scenario-mini {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  background: var(--surface-soft);
+}
+
+.stress-scenario-mini strong,
+.stress-section-card h2,
+.stress-before-after-card strong {
+  color: var(--text);
+}
+
+.stress-scenario-mini p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.stress-kpi-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stress-tabs {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.stress-panel {
+  display: block;
+}
+
+.stress-two-column,
+.stress-three-column,
+.stress-integration-grid,
+.stress-before-after-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.stress-two-column {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stress-three-column {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stress-span-2 {
+  grid-column: 1 / -1;
+}
+
+.stress-section-card {
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.stress-definition-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0 0;
+}
+
+.stress-definition-grid div {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.stress-definition-grid dt,
+.stress-before-after-card span,
+.stress-impact-list span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stress-definition-grid dd {
+  margin: 4px 0 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.stress-score-bar {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(176, 58, 72, 0.16);
+  margin: 14px 0;
+}
+
+.stress-score-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--warning), var(--danger));
+}
+
+.stress-integration-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stress-integration-card {
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.stress-integration-card > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.stress-integration-card p,
+.stress-before-after-card p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.stress-table th,
+.stress-table td {
+  white-space: nowrap;
+}
+
+.stress-before-after-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stress-before-after-card {
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.stress-before-after-card div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.stress-before-after-card strong:last-child {
+  color: var(--danger);
+}
+
+.stress-impact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.stress-impact-list div {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.stress-impact-list div:last-child {
+  border-bottom: 0;
+}
+
+.stress-warning-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.stress-warning-list {
+  margin-top: 14px;
+}
+
+.stress-commentary-card {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 1180px) {
+  .stress-controls-grid,
+  .stress-two-column,
+  .stress-three-column,
+  .stress-integration-grid,
+  .stress-before-after-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stress-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stress-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .stress-control-grid,
+  .stress-custom-grid,
+  .stress-definition-grid,
+  .stress-kpi-grid,
+  .stress-tabs,
+  .stress-warning-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stress-actions,
+  .stress-integration-card > div,
+  .stress-impact-list div {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+}
+
 .margin-scale {
   height: 12px;
   overflow: hidden;

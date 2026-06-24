@@ -15,6 +15,8 @@
     "comingSoon": "Implementation comes next in the service and domain layers.",
     "loading": "Loading",
     "unavailable": "Unavailable",
+    "yes": "Yes",
+    "no": "No",
     "workstation": "Athena workstation",
     "institutionalDemo": "Institutional demo",
     "researchMode": "Research mode",
@@ -78,6 +80,181 @@
     "simulationOnlyNotice": "Simulation only. No trades are executed.",
     "simulatingTradeOn": "Simulating trade on: {{name}}",
     "unsupportedEquityHolding": "This holding is not a common equity. Equity Analysis is designed for stocks, so ETF or fixed income diagnostics can be incomplete."
+  },
+  "stressTesting": {
+    "title": "Stress Testing",
+    "subtitle": "Portfolio stress scenarios, multi-asset shocks and institutional risk impact analysis.",
+    "workbench": {
+      "eyebrow": "Risk management",
+      "title": "Scenario impact workstation",
+      "description": "Run portfolio stress scenarios across equities, rates, volatility, FX and credit shocks."
+    },
+    "badges": {
+      "riskManagement": "Risk Management",
+      "scenarioAnalysis": "Scenario Analysis",
+      "portfolioConnected": "Portfolio Connected",
+      "riskMonitorReady": "Risk Monitor Ready",
+      "beta": "Beta"
+    },
+    "controls": {
+      "eyebrow": "Scenario controls",
+      "title": "Stress setup",
+      "description": "Select the portfolio, scenario library, benchmark and confidence level before running the stress test.",
+      "scenario": "Scenario",
+      "benchmark": "Benchmark",
+      "confidence": "Confidence level",
+      "run": "Run stress test",
+      "reset": "Reset"
+    },
+    "scenarios": {
+      "equity_selloff": "Equity selloff",
+      "technology_shock": "Technology shock",
+      "rates_shock_up": "Rates shock up",
+      "rates_shock_down": "Rates shock down",
+      "volatility_spike": "Volatility spike",
+      "usd_shock": "USD shock",
+      "credit_spread_widening": "Credit spread widening",
+      "risk_off_combined": "Risk-off combined",
+      "liquidity_shock": "Liquidity shock",
+      "custom_scenario": "Custom scenario",
+      "customScenario": "Custom scenario"
+    },
+    "custom": {
+      "equity": "Equity shock %",
+      "technology": "Technology shock %",
+      "rate": "Rate shock bps",
+      "vol": "Volatility shock %",
+      "fx": "FX shock %",
+      "credit": "Credit spread bps"
+    },
+    "kpis": {
+      "baseValue": "Base portfolio value",
+      "stressedValue": "Stressed portfolio value",
+      "estimatedLoss": "Estimated loss",
+      "lossPercent": "Loss %",
+      "severity": "Stress severity",
+      "worstContributor": "Worst contributor",
+      "stressedVar": "Stressed VaR",
+      "stressedCvar": "Stressed CVaR",
+      "stressedVol": "Stressed volatility"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "overviewShort": "Summary",
+      "scenario": "Scenario Setup",
+      "scenarioShort": "Shocks",
+      "positions": "Position Impact",
+      "positionsShort": "Holdings",
+      "groups": "Asset & Sector",
+      "groupsShort": "Groups",
+      "risk": "Risk Metrics",
+      "riskShort": "Before / after",
+      "rates": "Rates Stress",
+      "ratesShort": "Fixed income",
+      "volOptions": "Vol & Options",
+      "volOptionsShort": "Derivatives",
+      "limits": "Limit Breaches",
+      "limitsShort": "Controls",
+      "methodology": "Methodology",
+      "methodologyShort": "Assumptions",
+      "commentary": "Athena Commentary",
+      "commentaryShort": "Summary"
+    },
+    "overview": {
+      "scenario": "Selected scenario",
+      "portfolio": "Portfolio",
+      "positions": "Positions",
+      "base": "Base value",
+      "stressed": "Stressed value",
+      "loss": "Estimated loss",
+      "lossPercent": "Loss percent",
+      "severity": "Severity framework",
+      "integrations": "Module links",
+      "integrationsTitle": "Connected stress workflow"
+    },
+    "scenario": {
+      "shocks": "Shock assumptions",
+      "assetClassShocks": "Asset class shocks",
+      "sectorShocks": "Sector shocks",
+      "symbolShocks": "Symbol shocks",
+      "crossAsset": "Cross-asset shock",
+      "assumptions": "Scenario assumptions",
+      "rateShock": "Rate shock",
+      "volShock": "Volatility shock",
+      "fxShock": "FX shock",
+      "creditShock": "Credit spread shock",
+      "liquidity": "Liquidity multiplier",
+      "noSpecificShock": "No specific shock configured."
+    },
+    "positions": {
+      "eyebrow": "Position impact",
+      "title": "Holding-level stress results",
+      "symbol": "Symbol",
+      "assetClass": "Asset class",
+      "sector": "Sector",
+      "base": "Base value",
+      "shock": "Shock applied",
+      "stressed": "Stressed value",
+      "impact": "Dollar impact",
+      "contribution": "Loss contribution"
+    },
+    "groups": {
+      "assetClass": "Impact by asset class",
+      "sector": "Sector impact",
+      "currency": "Currency impact"
+    },
+    "risk": {
+      "eyebrow": "Before / after",
+      "title": "Risk metrics before / after"
+    },
+    "rates": {
+      "eyebrow": "Rates Lab",
+      "title": "Rates & fixed-income stress",
+      "exposure": "Fixed income exposure",
+      "weight": "Fixed income weight",
+      "duration": "Estimated duration",
+      "dv01": "Estimated DV01",
+      "rateShock": "Rate shock",
+      "creditShock": "Credit shock",
+      "impact": "Rate risk impact"
+    },
+    "volOptions": {
+      "volEyebrow": "Volatility Lab",
+      "volTitle": "Volatility stress",
+      "optionsEyebrow": "Options Pricing Lab",
+      "optionsTitle": "Options stress",
+      "ready": "Options Pricing Lab ready",
+      "detected": "Option positions detected",
+      "delta": "Delta-adjusted exposure"
+    },
+    "limits": {
+      "eyebrow": "Risk controls",
+      "title": "Limit breaches",
+      "emptyTitle": "No stress limits breached",
+      "emptyMessage": "The current scenario remains within the configured deterministic thresholds."
+    },
+    "methodology": {
+      "assumptions": "Methodology & assumptions",
+      "sources": "Data sources",
+      "limitations": "Limitations",
+      "warnings": "Warnings",
+      "noWarnings": "No material warnings returned for this run."
+    },
+    "commentary": {
+      "eyebrow": "Athena commentary",
+      "title": "Deterministic stress interpretation",
+      "keyPoints": "Key points",
+      "actions": "Suggested actions"
+    },
+    "error": {
+      "title": "Stress Testing API unavailable",
+      "message": "The stress test could not be loaded. Check the backend process or retry the run.",
+      "retry": "Retry"
+    },
+    "empty": {
+      "title": "Select a portfolio",
+      "message": "Stress Testing is centered on Portfolio Builder. Select or create a portfolio before running a scenario."
+    }
   },
   "dashboard": {
     "title": "Dashboard",

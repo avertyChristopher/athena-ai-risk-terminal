@@ -14,7 +14,6 @@ import { PortfolioPage } from "../features/portfolio/pages/PortfolioPage";
 import { ReconciliationPage } from "../features/reconciliation/pages/ReconciliationPage";
 import { ReportsPage } from "../features/reports/pages/ReportsPage";
 import { SettingsPage } from "../features/settings/pages/SettingsPage";
-import { StressTestingPage } from "../features/stress-testing/pages/StressTestingPage";
 
 const RiskMonitorPage = lazy(() =>
   import("../features/risk-monitor/pages/RiskMonitorPage").then((module) => ({
@@ -41,6 +40,11 @@ const RatesLabPage = lazy(() =>
     default: module.RatesLabPage,
   })),
 );
+const StressTestingPage = lazy(() =>
+  import("../features/stress-testing/pages/StressTestingPage").then((module) => ({
+    default: module.StressTestingPage,
+  })),
+);
 
 function lazyRoute(element: ReactNode) {
   return (
@@ -65,7 +69,7 @@ export const router = createBrowserRouter([
       { path: "volatility-lab", element: lazyRoute(<VolatilityLabPage />) },
       { path: "options-pricing-lab", element: lazyRoute(<OptionsPricingPage />) },
       { path: "rates-lab", element: lazyRoute(<RatesLabPage />) },
-      { path: "stress-testing", element: <StressTestingPage /> },
+      { path: "stress-testing", element: lazyRoute(<StressTestingPage />) },
       { path: "limit-center", element: <LimitsPage /> },
       { path: "pnl-attribution", element: <PnlPage /> },
       { path: "reconciliation", element: <ReconciliationPage /> },
