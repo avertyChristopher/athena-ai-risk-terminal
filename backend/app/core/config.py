@@ -18,6 +18,9 @@ class Settings(BaseModel):
     database_url: str = "sqlite+pysqlite:///./athena.db"
     redis_url: str = "redis://localhost:6379/0"
     secret_key: str = "athena-dev-secret"
+    athena_ai_provider: str = "fallback"
+    athena_ai_model: str | None = None
+    openai_api_key: str | None = None
     allowed_origins: list[str] = Field(
         default_factory=lambda: [
             "http://localhost:5173",
@@ -38,6 +41,9 @@ def get_settings() -> Settings:
         database_url=os.getenv("DATABASE_URL", "sqlite+pysqlite:///./athena.db"),
         redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
         secret_key=os.getenv("SECRET_KEY", "athena-dev-secret"),
+        athena_ai_provider=os.getenv("ATHENA_AI_PROVIDER", "fallback"),
+        athena_ai_model=os.getenv("ATHENA_AI_MODEL"),
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
         allowed_origins=_parse_csv(
             os.getenv(
                 "BACKEND_CORS_ORIGINS",
