@@ -1,3 +1,8 @@
 VOLATILITY_SOURCE_MODULE = "volatility_lab"
+OPTIONS_SOURCE_MODULE = "options_pricing_lab"
+RATES_SOURCE_MODULE = "rates_lab"
+TRADE_SOURCE_MODULE = "trade_simulator"
+RISK_MONITOR_SOURCE_MODULE = "risk_monitor"
 
 RISK_PAYLOAD_VERSION = "1.0"
+ANALYTICS_PAYLOAD_VERSION = "1.0"
