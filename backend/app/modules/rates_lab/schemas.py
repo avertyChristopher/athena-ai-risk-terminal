@@ -3,6 +3,8 @@ from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
+from app.modules.risk_shared.schemas import RatesRiskPayload
+
 
 BondType = Literal["coupon_bond", "zero_coupon"]
 CouponFrequency = Literal["annual", "semiannual", "quarterly", "monthly"]
@@ -148,6 +150,7 @@ class BondPricingResponse(BaseModel):
     methodology: MethodologyMetadata
     data_quality: DataQualityMetadata
     data_source: DataSourceMetadata
+    rates_risk_payload: RatesRiskPayload
     athena_commentary: AthenaRatesCommentary
 
 
@@ -206,6 +209,7 @@ class DurationConvexityResponse(BaseModel):
     methodology: MethodologyMetadata
     data_quality: DataQualityMetadata
     risk_monitor_payload: dict[str, Any]
+    rates_risk_payload: RatesRiskPayload
     data_source: DataSourceMetadata
     athena_commentary: AthenaRatesCommentary
 
@@ -283,6 +287,7 @@ class RateScenarioResponse(RateScenarioResult):
     methodology: MethodologyMetadata
     data_quality: DataQualityMetadata
     stress_testing_payload: dict[str, Any]
+    rates_risk_payload: RatesRiskPayload
     data_source: DataSourceMetadata
 
 
@@ -315,6 +320,7 @@ class PortfolioRatesExposureResponse(BaseModel):
     shock_bps: float
     missing_data_warnings: list[str]
     risk_monitor_payload: dict[str, Any]
+    rates_risk_payload: RatesRiskPayload
     methodology: MethodologyMetadata
     data_quality: DataQualityMetadata
     data_source: DataSourceMetadata

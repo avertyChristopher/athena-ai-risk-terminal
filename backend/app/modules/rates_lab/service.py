@@ -61,6 +61,7 @@ from app.modules.rates_lab.schemas import (
     YieldCurveRequest,
     YieldCurveResponse,
 )
+from app.modules.risk_shared.schemas import RatesRiskPayload
 
 
 class RatesLabService:
@@ -113,6 +114,9 @@ class RatesLabService:
             accrued = 0.0
         clean = clean_price(dirty, accrued)
         status = price_premium_discount_status(clean, payload.face_value)
+        methodology = self._bond_methodology(payload, date_metadata)
+        data_quality = self._pricing_data_quality(payload)
+        data_source = self._manual_data_source()
         return BondPricingResponse(
             bond_type=payload.bond_type,
             clean_price=clean,
@@ -127,9 +131,17 @@ class RatesLabService:
                 "coupon_frequency": payload.coupon_frequency,
                 "price_yield_relationship": "inverse",
             },
-            methodology=self._bond_methodology(payload, date_metadata),
-            data_quality=self._pricing_data_quality(payload),
-            data_source=self._manual_data_source(),
+            methodology=methodology,
+            data_quality=data_quality,
+            data_source=data_source,
+            rates_risk_payload=RatesRiskPayload(
+                clean_price=clean,
+                dirty_price=dirty,
+                accrued_interest=accrued,
+                ytm=payload.yield_to_maturity,
+                methodology=methodology.method,
+                warnings=[*data_quality.warnings, *data_source.warnings],
+            ),
             athena_commentary=bond_commentary(
                 status,
                 payload.coupon_rate,
@@ -241,6 +253,8 @@ class RatesLabService:
             payload.yield_to_maturity,
             payload.coupon_frequency,
         )
+        dv01_value = dv01(analysis_price, modified)
+        pvbp_value = pvbp(analysis_price, modified)
         shock = payload.rate_shock_bps / 10_000
         duration_change = duration_price_impact(analysis_price, modified, shock)
         convexity_change = convexity_adjusted_price_impact(
@@ -264,8 +278,8 @@ class RatesLabService:
             macaulay_duration=macaulay,
             modified_duration=modified,
             convexity=convexity_value,
-            dv01=dv01(analysis_price, modified),
-            pvbp=pvbp(analysis_price, modified),
+            dv01=dv01_value,
+            pvbp=pvbp_value,
             rate_shock_bps=payload.rate_shock_bps,
             estimated_price_change_duration=duration_change,
             estimated_price_change_duration_convexity=convexity_change,
@@ -292,10 +306,25 @@ class RatesLabService:
                 "price": analysis_price,
                 "modified_duration": modified,
                 "convexity": convexity_value,
-                "dv01": dv01(analysis_price, modified),
+                "dv01": dv01_value,
                 "shock_bps": payload.rate_shock_bps,
                 "estimated_loss": min(0.0, convexity_change),
             },
+            rates_risk_payload=RatesRiskPayload(
+                clean_price=analysis_price,
+                dirty_price=analysis_price,
+                accrued_interest=0.0,
+                ytm=payload.yield_to_maturity,
+                macaulay_duration=macaulay,
+                modified_duration=modified,
+                convexity=convexity_value,
+                dv01=dv01_value,
+                pvbp=pvbp_value,
+                rate_shock_bps=payload.rate_shock_bps,
+                estimated_rate_shock_loss=min(0.0, convexity_change),
+                methodology="present_value_weighted_cashflows",
+                warnings=[],
+            ),
             data_source=self._manual_data_source(),
             athena_commentary=bond_commentary(
                 price_premium_discount_status(analysis_price, payload.face_value),
@@ -400,6 +429,8 @@ class RatesLabService:
             stressed_curve,
         )
         change = float(result["price_change"])
+        scenario_dv01 = dv01(float(result["base_price"]), modified)
+        scenario_pvbp = pvbp(float(result["base_price"]), modified)
         if payload.language == "fr":
             interpretation = (
                 "Le choc selectionne reduit le prix de l'obligation."
@@ -464,6 +495,22 @@ class RatesLabService:
                 "percent_change": result["percent_change"],
                 "status": "ready_for_future_stress_testing",
             },
+            rates_risk_payload=RatesRiskPayload(
+                clean_price=float(result["base_price"]),
+                dirty_price=float(result["base_price"]),
+                accrued_interest=0.0,
+                ytm=float(result["base_yield_at_maturity"]),
+                macaulay_duration=macaulay,
+                modified_duration=modified,
+                convexity=convexity_value,
+                dv01=scenario_dv01,
+                pvbp=scenario_pvbp,
+                curve_scenario_impact=change,
+                rate_shock_bps=float(result["effective_shock_bps"]),
+                estimated_rate_shock_loss=min(0.0, change),
+                methodology="deterministic_rate_shock",
+                warnings=[risk_warning],
+            ),
             data_source=self._curve_data_source(bool(supplied_curve)),
         )
 
@@ -555,6 +602,22 @@ class RatesLabService:
                 "estimated_loss": shock_loss,
                 "status": "risk_monitor_ready" if portfolio_dv01 is not None else "incomplete_metadata",
             },
+            rates_risk_payload=RatesRiskPayload(
+                portfolio_id=payload.portfolio_id,
+                clean_price=None,
+                dirty_price=None,
+                accrued_interest=None,
+                macaulay_duration=weighted_duration,
+                modified_duration=weighted_duration,
+                dv01=portfolio_dv01,
+                pvbp=portfolio_dv01,
+                rate_shock_bps=payload.shock_bps,
+                fixed_income_market_value=fixed_income_value,
+                fixed_income_allocation=fixed_income_value / max(total_market_value, 1.0),
+                estimated_rate_shock_loss=shock_loss,
+                methodology="duration_weighted_portfolio_exposure",
+                warnings=warnings,
+            ),
             methodology=MethodologyMetadata(
                 method="duration_weighted_portfolio_exposure",
                 assumptions=["ETF effective duration is approximated from demo metadata"],
