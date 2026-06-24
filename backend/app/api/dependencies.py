@@ -16,6 +16,8 @@ from app.services.risk_service import RiskService
 from app.services.riskdna_service import RiskDnaService
 from app.modules.athena_intelligence.service import AthenaIntelligenceService
 from app.modules.equity_analysis.service import EquityAnalysisService
+from app.modules.limit_center.repository import LimitCenterRepository
+from app.modules.limit_center.service import LimitCenterService
 from app.modules.market_data.repository import MarketDataRepository
 from app.modules.market_data.service import MarketDataService
 from app.modules.options_pricing_lab.repository import OptionsPricingLabRepository
@@ -111,6 +113,10 @@ def get_stress_testing_service(
 
 def get_athena_intelligence_service() -> AthenaIntelligenceService:
     return AthenaIntelligenceService()
+
+
+def get_limit_center_service() -> LimitCenterService:
+    return LimitCenterService(LimitCenterRepository())
 
 
 def get_pricing_service() -> PricingService:

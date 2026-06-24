@@ -15,6 +15,7 @@ AthenaModuleName = Literal[
     "trade_simulator",
     "market_data",
     "equity_analysis",
+    "limit_center",
 ]
 AthenaAnalysisMode = Literal[
     "portfolio",
@@ -23,6 +24,7 @@ AthenaAnalysisMode = Literal[
     "options",
     "rates",
     "risk",
+    "limit",
 ]
 AthenaLanguage = Literal["en", "fr"]
 AthenaStyle = Literal["concise", "professional", "educational", "executive"]

@@ -1,1 +1,1 @@
-"""Limit Center backend category."""
+"""Limit Center module."""
