@@ -18,8 +18,8 @@ type Kpi = {
 type Module = {
   name: string;
   description: string;
-  status: "Connected" | "Demo" | "Beta" | "Coming Soon";
-  maturity: "Operational" | "Beta+" | "Beta" | "Roadmap";
+  status: "Solid" | "Functional" | "Beta" | "Beta+" | "Coming Soon";
+  maturity: string;
   path: string;
   connectedInputs: string[];
   connectedOutputs: string[];
@@ -68,7 +68,7 @@ const kpis: Kpi[] = [
   {
     label: "Active Modules",
     value: "9/12",
-    detail: "Stress testing workflow online",
+    detail: "Core analytics online",
     tone: "neutral",
   },
 ];
@@ -77,8 +77,8 @@ const modules: Module[] = [
   {
     name: "Market Data",
     description: "Clean prices, returns, volatility, benchmarks and data quality metrics.",
-    status: "Connected",
-    maturity: "Operational",
+    status: "Solid",
+    maturity: "Connected",
     path: "/market-data",
     connectedInputs: ["CSV imports", "Demo market feed"],
     connectedOutputs: ["Equity", "Portfolio", "Volatility", "Rates", "Stress Testing"],
@@ -88,8 +88,8 @@ const modules: Module[] = [
   {
     name: "Equity Analysis",
     description: "Analyze valuation, profitability, growth, risk and CFA-style diagnostics.",
-    status: "Connected",
-    maturity: "Operational",
+    status: "Solid",
+    maturity: "Connected",
     path: "/equity-analysis",
     connectedInputs: ["Market Data", "Selected symbol"],
     connectedOutputs: ["Portfolio Builder"],
@@ -99,8 +99,8 @@ const modules: Module[] = [
   {
     name: "Portfolio Builder",
     description: "Build portfolios, monitor allocation, drift, concentration and policy fit.",
-    status: "Connected",
-    maturity: "Operational",
+    status: "Solid",
+    maturity: "Connected",
     path: "/portfolio-builder",
     connectedInputs: ["Market Data", "Equity Analysis"],
     connectedOutputs: ["Trade Simulator", "Risk Monitor", "Rates Lab", "Stress Testing"],
@@ -110,8 +110,8 @@ const modules: Module[] = [
   {
     name: "Trade Simulator",
     description: "Simulate portfolio-aware buy and sell orders before execution.",
-    status: "Connected",
-    maturity: "Operational",
+    status: "Functional",
+    maturity: "Connected",
     path: "/trade-simulator",
     connectedInputs: ["Portfolio Builder", "Market Data"],
     connectedOutputs: ["Portfolio impact preview"],
@@ -132,8 +132,8 @@ const modules: Module[] = [
   {
     name: "Volatility Lab",
     description: "Institutional volatility workstation with realized, EWMA, VaR/CVaR, beta, correlation and Risk Monitor-ready outputs.",
-    status: "Connected",
-    maturity: "Beta+",
+    status: "Beta+",
+    maturity: "Payload Ready",
     path: "/volatility-lab",
     features: [
       "Realized volatility",
@@ -149,7 +149,7 @@ const modules: Module[] = [
   {
     name: "Options Pricing Lab",
     description: "Financially corrected beta for option pricing, observed parity, implied volatility and typed multi-leg strategies.",
-    status: "Beta",
+    status: "Beta+",
     maturity: "Beta+",
     path: "/options-pricing-lab",
     features: [
@@ -174,8 +174,8 @@ const modules: Module[] = [
   {
     name: "Rates Lab",
     description: "Analyze bond pricing, yield, duration, convexity, DV01 and curve scenarios.",
-    status: "Connected",
-    maturity: "Beta+",
+    status: "Beta+",
+    maturity: "Payload Ready",
     path: "/rates-lab",
     features: [
       "Bond pricing",
@@ -191,7 +191,7 @@ const modules: Module[] = [
   {
     name: "Stress Testing",
     description: "Run portfolio stress scenarios across equities, rates, volatility, FX and credit shocks.",
-    status: "Connected",
+    status: "Beta",
     maturity: "Beta",
     path: "/stress-testing",
     connectedInputs: ["Portfolio Builder", "Market Data", "Volatility Lab", "Rates Lab", "Options Pricing Lab"],
@@ -434,7 +434,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Eight connected workstations are active today, with the remaining analytics modules staged for future increments."
+        description="Nine connected workstations are active today, with the remaining analytics modules staged for future increments."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
@@ -538,13 +538,11 @@ function KpiCard({ kpi }: { kpi: Kpi }) {
 }
 
 function ModuleCard({ module }: { module: Module }) {
-  const statusVariant = module.status === "Connected"
+  const statusVariant = module.status === "Solid" || module.status === "Functional"
     ? "success"
-    : module.status === "Beta"
+    : module.status === "Beta" || module.status === "Beta+"
       ? "warning"
-      : module.status === "Demo"
-        ? "info"
-        : "neutral";
+      : "neutral";
   return (
     <Link className="dashboard-module-card" to={module.path}>
       <div>
