@@ -67,8 +67,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "8/12",
-    detail: "Fixed-income analytics online",
+    value: "9/12",
+    detail: "Stress testing workflow online",
     tone: "neutral",
   },
 ];
@@ -81,7 +81,7 @@ const modules: Module[] = [
     maturity: "Operational",
     path: "/market-data",
     connectedInputs: ["CSV imports", "Demo market feed"],
-    connectedOutputs: ["Equity", "Portfolio", "Volatility", "Rates"],
+    connectedOutputs: ["Equity", "Portfolio", "Volatility", "Rates", "Stress Testing"],
     features: ["Price history", "Returns", "Data quality"],
     badges: ["Market Data", "Demo", "Connected"],
   },
@@ -103,7 +103,7 @@ const modules: Module[] = [
     maturity: "Operational",
     path: "/portfolio-builder",
     connectedInputs: ["Market Data", "Equity Analysis"],
-    connectedOutputs: ["Trade Simulator", "Risk Monitor", "Rates Lab"],
+    connectedOutputs: ["Trade Simulator", "Risk Monitor", "Rates Lab", "Stress Testing"],
     features: ["Allocation", "Constraints", "Performance"],
     badges: ["Portfolio Ready", "In-Memory Store"],
   },
@@ -125,7 +125,7 @@ const modules: Module[] = [
     maturity: "Beta",
     path: "/risk-monitor",
     connectedInputs: ["Portfolio", "Volatility", "Options", "Rates"],
-    connectedOutputs: ["Limits", "Stress summaries"],
+    connectedOutputs: ["Limits", "Stress Testing"],
     features: ["VaR/CVaR", "Drawdown", "Risk limits"],
     badges: ["Beta", "Portfolio Ready"],
   },
@@ -144,7 +144,7 @@ const modules: Module[] = [
     ],
     badges: ["CFA Level 1", "Market Data Connected", "Risk Monitor Ready"],
     connectedInputs: ["Market Data", "Portfolio Builder"],
-    connectedOutputs: ["Options Pricing", "Risk Monitor"],
+    connectedOutputs: ["Options Pricing", "Risk Monitor", "Stress Testing"],
   },
   {
     name: "Options Pricing Lab",
@@ -169,7 +169,7 @@ const modules: Module[] = [
       "Bilingual",
     ],
     connectedInputs: ["Market Data", "Volatility Lab"],
-    connectedOutputs: ["Risk Monitor-ready Greeks"],
+    connectedOutputs: ["Risk Monitor-ready Greeks", "Stress Testing"],
   },
   {
     name: "Rates Lab",
@@ -186,18 +186,18 @@ const modules: Module[] = [
     ],
     badges: ["CFA Level 1", "Fixed Income", "Duration", "Yield Curve", "Risk Monitor Ready"],
     connectedInputs: ["Manual bond inputs", "Portfolio Builder", "Demo curve"],
-    connectedOutputs: ["Risk Monitor", "Future Stress Testing"],
+    connectedOutputs: ["Risk Monitor", "Stress Testing"],
   },
   {
     name: "Stress Testing",
-    description: "Design scenario libraries and compare portfolio shock impacts.",
-    status: "Coming Soon",
-    maturity: "Roadmap",
+    description: "Run portfolio stress scenarios across equities, rates, volatility, FX and credit shocks.",
+    status: "Connected",
+    maturity: "Beta",
     path: "/stress-testing",
-    connectedInputs: [],
-    connectedOutputs: [],
-    features: ["Scenario library", "Portfolio shocks"],
-    badges: ["Coming Soon"],
+    connectedInputs: ["Portfolio Builder", "Market Data", "Volatility Lab", "Rates Lab", "Options Pricing Lab"],
+    connectedOutputs: ["Risk Monitor payload", "Limit review"],
+    features: ["Scenario library", "Portfolio shocks", "Worst contributors", "Risk payload"],
+    badges: ["Risk Management", "Scenario Analysis", "Portfolio Connected", "Risk Monitor Ready", "Beta"],
   },
   {
     name: "Limit Center",
@@ -315,6 +315,12 @@ export function DashboardPage() {
       meta: selectedPortfolioName ? "Portfolio + rates" : "Demo curve",
     },
     {
+      name: "Stress Testing",
+      description: "Run multi-asset portfolio shocks and convert stressed losses into Risk Monitor-ready payloads.",
+      path: "/stress-testing",
+      meta: selectedPortfolioName ? "Portfolio scenario" : "Scenario library",
+    },
+    {
       name: "Trade Simulator",
       description: "Simulate BUY or SELL tickets against the selected portfolio context.",
       path: "/trade-simulator",
@@ -327,19 +333,26 @@ export function DashboardPage() {
       meta: "Risk controls",
     },
   ];
-  const workflowTracks = [
+  const workflowTracks: Array<{
+    title: string;
+    modules: string[];
+    destination?: string;
+  }> = [
     {
       title: "Research to portfolio",
       modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator"],
     },
     {
       title: "Derivatives risk",
-      modules: ["Market Data", "Volatility Lab", "Options Pricing Lab", "Risk Monitor"],
+      modules: ["Market Data", "Volatility Lab", "Options Pricing Lab", "Stress Testing", "Risk Monitor"],
     },
     {
       title: "Fixed-income risk",
-      modules: ["Market Data", "Rates Lab", "Risk Monitor"],
-      destination: "Future Stress Testing",
+      modules: ["Market Data", "Rates Lab", "Stress Testing", "Risk Monitor"],
+    },
+    {
+      title: "Institutional stress workflow",
+      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Risk Monitor", "Stress Testing"],
     },
   ];
 
