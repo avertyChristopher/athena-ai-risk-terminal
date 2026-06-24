@@ -69,8 +69,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "9/12",
-    detail: "Core analytics online",
+    value: "10/12",
+    detail: "Core analytics and governance online",
     tone: "neutral",
   },
 ];
@@ -127,7 +127,7 @@ const modules: Module[] = [
     maturity: "Beta",
     path: "/risk-monitor",
     connectedInputs: ["Portfolio", "Volatility", "Options", "Rates"],
-    connectedOutputs: ["Limits", "Stress Testing"],
+    connectedOutputs: ["Limit Center", "Stress Testing"],
     features: ["VaR/CVaR", "Drawdown", "Risk limits"],
     badges: ["Beta", "Portfolio Ready"],
   },
@@ -146,7 +146,7 @@ const modules: Module[] = [
     ],
     badges: ["CFA Level 1", "Market Data Connected", "Risk Monitor Ready"],
     connectedInputs: ["Market Data", "Portfolio Builder"],
-    connectedOutputs: ["Options Pricing", "Risk Monitor", "Stress Testing"],
+    connectedOutputs: ["Options Pricing", "Risk Monitor", "Stress Testing", "Limit Center"],
   },
   {
     name: "Options Pricing Lab",
@@ -171,7 +171,7 @@ const modules: Module[] = [
       "Bilingual",
     ],
     connectedInputs: ["Market Data", "Volatility Lab"],
-    connectedOutputs: ["Risk Monitor-ready Greeks", "Stress Testing"],
+    connectedOutputs: ["Risk Monitor-ready Greeks", "Stress Testing", "Limit Center"],
   },
   {
     name: "Rates Lab",
@@ -188,7 +188,7 @@ const modules: Module[] = [
     ],
     badges: ["CFA Level 1", "Fixed Income", "Duration", "Yield Curve", "Risk Monitor Ready"],
     connectedInputs: ["Manual bond inputs", "Portfolio Builder", "Demo curve"],
-    connectedOutputs: ["Risk Monitor", "Stress Testing"],
+    connectedOutputs: ["Risk Monitor", "Stress Testing", "Limit Center"],
   },
   {
     name: "Stress Testing",
@@ -197,20 +197,20 @@ const modules: Module[] = [
     maturity: "Beta",
     path: "/stress-testing",
     connectedInputs: ["Portfolio Builder", "Market Data", "Volatility Lab", "Rates Lab", "Options Pricing Lab"],
-    connectedOutputs: ["Risk Monitor payload", "Limit review"],
+    connectedOutputs: ["Risk Monitor payload", "Limit Center"],
     features: ["Scenario library", "Portfolio shocks", "Worst contributors", "Risk payload"],
     badges: ["Risk Management", "Scenario Analysis", "Portfolio Connected", "Risk Monitor Ready", "Beta"],
   },
   {
     name: "Limit Center",
-    description: "Centralize risk limits, threshold monitoring and breach review.",
-    status: "Coming Soon",
-    maturity: "Roadmap",
+    description: "Centralize portfolio, market, stress, rates, options and trade limits with breach review.",
+    status: "Beta",
+    maturity: "Governance Beta",
     path: "/limit-center",
-    connectedInputs: [],
-    connectedOutputs: [],
-    features: ["Central limits", "Breach workflow"],
-    badges: ["Coming Soon"],
+    connectedInputs: ["Portfolio Builder", "Risk Monitor", "Stress Testing", "Volatility Lab", "Options Pricing Lab", "Rates Lab", "Trade Simulator"],
+    connectedOutputs: ["Risk governance workflow", "Reports Center future", "P&L Attribution future"],
+    features: ["Limit rules", "Breach register", "Exception workflow", "Severity engine"],
+    badges: ["Risk Governance", "Breach Register", "Exceptions", "Athena Intelligence", "Beta"],
   },
   {
     name: "P&L Attribution",
@@ -255,6 +255,7 @@ const marketRows = [
 ] as const;
 
 const activityRows = [
+  ["09:45", "Limit Center governance workflow available"],
   ["09:42", "Market data refreshed"],
   ["09:40", "Portfolio summary updated"],
   ["09:38", "Data quality check completed"],
@@ -340,6 +341,12 @@ export function DashboardPage() {
       path: "/risk-monitor",
       meta: "Risk controls",
     },
+    {
+      name: "Limit Center",
+      description: "Evaluate centralized governance limits, inspect breaches and document exception decisions.",
+      path: "/limit-center",
+      meta: "Breach workflow",
+    },
   ];
   const workflowTracks: Array<{
     title: string;
@@ -352,15 +359,20 @@ export function DashboardPage() {
     },
     {
       title: "Derivatives risk",
-      modules: ["Market Data", "Volatility Lab", "Options Pricing Lab", "Stress Testing", "Risk Monitor"],
+      modules: ["Market Data", "Volatility Lab", "Options Pricing Lab", "Stress Testing", "Risk Monitor", "Limit Center"],
     },
     {
       title: "Fixed-income risk",
-      modules: ["Market Data", "Rates Lab", "Stress Testing", "Risk Monitor"],
+      modules: ["Market Data", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center"],
     },
     {
       title: "Institutional stress workflow",
-      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Risk Monitor", "Stress Testing"],
+      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center"],
+    },
+    {
+      title: "Governance workflow",
+      modules: ["Portfolio Builder", "Trade Simulator", "Risk Monitor", "Stress Testing", "Limit Center"],
+      destination: "Limit review",
     },
   ];
 
@@ -380,7 +392,7 @@ export function DashboardPage() {
           </p>
           <p className="dashboard-hero__body">
             Athena brings together market data, single-stock analysis, portfolio
-            construction, options and fixed-income analytics, and risk monitoring in one clean
+            construction, options and fixed-income analytics, risk monitoring and limit governance in one clean
             research terminal for finance and risk management workflows.
           </p>
         </div>
@@ -399,7 +411,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title={t("workflow.connectedWorkflow")}
-        description="Market Data and Portfolio Builder feed volatility, options and fixed-income analytics into Risk Monitor-ready workflows."
+        description="Market Data and Portfolio Builder feed volatility, options, fixed-income and stress analytics into Risk Monitor and Limit Center governance workflows."
       >
         <div className="dashboard-workflow-summary">
           <div>
@@ -442,7 +454,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Nine connected workstations are active today, with the remaining analytics modules staged for future increments."
+        description="Ten connected workstations are active today, with P&L Attribution and Reports Center staged for future increments."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
@@ -502,7 +514,7 @@ export function DashboardPage() {
           </div>
           <p>
             Central synthesis layer for Risk Monitor, Volatility Lab, Options Pricing Lab,
-            Rates Lab and Trade Simulator. It generates structured commentary from module
+            Rates Lab, Trade Simulator and Limit Center. It generates structured commentary from module
             payloads only, with deterministic fallback and no investment-advice wording.
           </p>
           <div className="dashboard-intelligence-list">
