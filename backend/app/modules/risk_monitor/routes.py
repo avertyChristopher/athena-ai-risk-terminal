@@ -7,7 +7,11 @@ from app.modules.risk_monitor.schemas import (
     RiskMonitorStatus,
 )
 from app.modules.risk_monitor.service import RiskMonitorService
-from app.modules.risk_shared.schemas import SharedRiskPayload
+from app.modules.risk_shared.schemas import (
+    OptionsRiskPayload,
+    RatesRiskPayload,
+    SharedRiskPayload,
+)
 
 router = APIRouter(prefix="/risk-monitor", tags=["risk-monitor"])
 
@@ -33,6 +37,22 @@ def analyze_from_volatility_payload(
     service: RiskMonitorService = Depends(get_risk_monitor_service),
 ) -> RiskMonitorAnalysisResponse:
     return service.analyze_from_volatility(payload)
+
+
+@router.post("/analyze-from-rates", response_model=RiskMonitorAnalysisResponse)
+def analyze_from_rates_payload(
+    payload: RatesRiskPayload,
+    service: RiskMonitorService = Depends(get_risk_monitor_service),
+) -> RiskMonitorAnalysisResponse:
+    return service.analyze_from_rates(payload)
+
+
+@router.post("/analyze-from-options", response_model=RiskMonitorAnalysisResponse)
+def analyze_from_options_payload(
+    payload: OptionsRiskPayload,
+    service: RiskMonitorService = Depends(get_risk_monitor_service),
+) -> RiskMonitorAnalysisResponse:
+    return service.analyze_from_options(payload)
 
 
 @router.get("/demo", response_model=RiskMonitorAnalysisResponse)

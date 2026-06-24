@@ -1,5 +1,11 @@
 from pydantic import BaseModel, Field
 
+from app.modules.risk_shared.schemas import (
+    ModuleIntegrationStatus,
+    OptionsRiskPayload,
+    RatesRiskPayload,
+)
+
 
 class RiskMonitorStatus(BaseModel):
     status: str = "ready"
@@ -159,3 +165,6 @@ class RiskMonitorAnalysisResponse(BaseModel):
     athena_commentary: AthenaRiskCommentary
     risk_source: RiskSourceMetadata
     assumptions: RiskMonitorAssumptions
+    integration_statuses: list[ModuleIntegrationStatus] = Field(default_factory=list)
+    rates_risk_payload: RatesRiskPayload | None = None
+    options_risk_payload: OptionsRiskPayload | None = None

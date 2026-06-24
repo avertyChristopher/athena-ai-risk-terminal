@@ -52,7 +52,13 @@ from app.modules.risk_monitor.schemas import (
     StressScenarioResult,
 )
 from app.modules.risk_shared.mappers import shared_payload_to_risk_source
-from app.modules.risk_shared.schemas import SharedRiskPayload
+from app.modules.risk_shared.schemas import (
+    ModuleIntegrationStatus,
+    OptionsRiskPayload,
+    RatesRiskPayload,
+    SharedRiskPayload,
+)
+from app.modules.risk_shared.status import integration_status
 
 
 class RiskMonitorService:
@@ -73,6 +79,9 @@ class RiskMonitorService:
                 "deterministic_demo_fallback",
                 "risk_metrics",
                 "concentration_analysis",
+                "volatility_lab_payload_consumer",
+                "rates_lab_payload_consumer",
+                "options_pricing_payload_consumer",
             ],
         )
 
@@ -272,6 +281,10 @@ class RiskMonitorService:
                 limits=applied_limits,
                 stress_shocks=applied_stress_shocks,
             ),
+            integration_statuses=self._integration_statuses(
+                market_warnings=realized_risk.quality_warnings,
+                market_payload_available=not realized_risk.fallback_used,
+            ),
         )
 
     def analyze_from_volatility(
@@ -424,7 +437,39 @@ class RiskMonitorService:
                 limits=DEFAULT_RISK_LIMITS,
                 stress_shocks=DEFAULT_STRESS_SHOCKS,
             ),
+            integration_statuses=self._integration_statuses(
+                volatility_payload=payload,
+                market_warnings=payload.warnings,
+                market_payload_available=not payload.fallback_used,
+            ),
         )
+
+    def analyze_from_rates(
+        self,
+        payload: RatesRiskPayload,
+    ) -> RiskMonitorAnalysisResponse:
+        if payload.portfolio_id:
+            analysis = self.analyze(
+                RiskMonitorAnalyzeRequest(portfolio_id=payload.portfolio_id),
+            )
+            analysis.rates_risk_payload = payload
+            analysis.integration_statuses = self._integration_statuses(
+                rates_payload=payload,
+            )
+            analysis.main_drivers = [self._rates_driver(payload), *analysis.main_drivers][:5]
+            analysis.risk_metrics = [
+                *analysis.risk_metrics,
+                *self._rates_payload_metrics(payload),
+            ]
+            return analysis
+
+        return self._standalone_rates_analysis(payload)
+
+    def analyze_from_options(
+        self,
+        payload: OptionsRiskPayload,
+    ) -> RiskMonitorAnalysisResponse:
+        return self._standalone_options_analysis(payload)
 
     def _risk_metrics(
         self,
@@ -453,6 +498,140 @@ class RiskMonitorService:
             self._metric("Tracking error", tracking_error, source, "Active return volatility versus benchmark."),
             self._metric("Information ratio", information_ratio, source, "Active return per unit of tracking error."),
         ]
+
+    def _rates_payload_metrics(self, payload: RatesRiskPayload) -> list[RiskMetric]:
+        return [
+            self._metric("Modified duration", payload.modified_duration, "rates_lab_payload", "Fixed-income price sensitivity to a 100% yield move."),
+            self._metric("Convexity", payload.convexity, "rates_lab_payload", "Second-order bond price sensitivity to yield changes."),
+            self._metric("DV01", payload.dv01, "rates_lab_payload", "Estimated dollar value of a one-basis-point rate move."),
+            self._metric("+/- rate scenario loss", payload.estimated_rate_shock_loss, "rates_lab_payload", "Estimated portfolio or instrument impact from the supplied rate shock."),
+        ]
+
+    def _options_payload_metrics(self, payload: OptionsRiskPayload) -> list[RiskMetric]:
+        return [
+            self._metric("Delta-adjusted exposure", payload.delta_adjusted_exposure, "options_pricing_payload", "Option exposure adjusted by position Delta."),
+            self._metric("Gamma", payload.gamma, "options_pricing_payload", "Change in Delta for a $1 move in the underlying."),
+            self._metric("Theta", payload.theta, "options_pricing_payload", "Estimated daily time decay."),
+            self._metric("Vega", payload.vega, "options_pricing_payload", "Option value sensitivity to a 1 percentage point volatility move."),
+            self._metric("Rho", payload.rho, "options_pricing_payload", "Option value sensitivity to a 1 percentage point rate move."),
+            self._metric("Max loss", payload.max_loss, "options_pricing_payload", "Analytical maximum loss when available."),
+        ]
+
+    def _standalone_rates_analysis(
+        self,
+        payload: RatesRiskPayload,
+    ) -> RiskMonitorAnalysisResponse:
+        total_value = max(
+            abs(payload.fixed_income_market_value or 0.0),
+            abs(payload.dirty_price or payload.clean_price or 0.0),
+            abs(payload.estimated_rate_shock_loss or 0.0),
+            1.0,
+        )
+        stress_tests = []
+        if payload.estimated_rate_shock_loss is not None:
+            stress_tests.append(
+                StressScenarioResult(
+                    name=f"{payload.rate_shock_bps or 0:g} bps rate shock",
+                    estimated_impact_percent=payload.estimated_rate_shock_loss / total_value,
+                    estimated_loss=payload.estimated_rate_shock_loss,
+                    most_affected_holdings=[payload.symbol or "fixed_income_payload"],
+                    severity="medium" if payload.estimated_rate_shock_loss < 0 else "low",
+                    explanation="Rates Lab fixed-income payload consumed by Risk Monitor.",
+                ),
+            )
+        drivers = [self._rates_driver(payload)]
+        if payload.warnings:
+            drivers = [*payload.warnings[:2], *drivers][:5]
+
+        return RiskMonitorAnalysisResponse(
+            portfolio_id=payload.portfolio_id or payload.symbol or "rates-payload",
+            portfolio_name=payload.symbol or "Rates Lab Payload",
+            benchmark_symbol="SPY",
+            total_value=total_value,
+            global_risk_score=55 if payload.warnings else 45,
+            global_risk_status=classify_global_risk_status(55 if payload.warnings else 45),
+            main_drivers=drivers,
+            risk_metrics=self._rates_payload_metrics(payload),
+            concentration=self._empty_concentration("Standalone Rates Lab payload; no Portfolio Builder positions supplied."),
+            limit_breaches=[],
+            stress_tests=stress_tests,
+            risk_contribution=self._payload_contribution(
+                name=payload.symbol or "fixed_income_payload",
+                source="rates_lab_payload",
+            ),
+            benchmark_risk=self._empty_benchmark("Rates payload does not include benchmark-relative equity risk."),
+            alerts=[],
+            athena_commentary=AthenaRiskCommentary(
+                summary="Risk Monitor consumed a Rates Lab fixed-income risk payload.",
+                main_drivers=drivers,
+                suggested_actions=["Review DV01, duration and supplied rate-shock loss before changing fixed-income exposure."],
+            ),
+            risk_source=self._standalone_risk_source(
+                metric_source="rates_lab_payload",
+                warnings=payload.warnings,
+                badges=["Rates Lab Payload", "Fixed Income Risk Available"],
+            ),
+            assumptions=RiskMonitorAssumptions(
+                limits=DEFAULT_RISK_LIMITS,
+                stress_shocks=DEFAULT_STRESS_SHOCKS,
+            ),
+            integration_statuses=self._integration_statuses(rates_payload=payload),
+            rates_risk_payload=payload,
+        )
+
+    def _standalone_options_analysis(
+        self,
+        payload: OptionsRiskPayload,
+    ) -> RiskMonitorAnalysisResponse:
+        total_value = max(
+            abs(payload.delta_adjusted_exposure or 0.0),
+            abs(payload.option_price or 0.0),
+            abs(payload.max_loss or 0.0),
+            1.0,
+        )
+        drivers = [
+            f"{payload.underlying_symbol} option exposure has Delta-adjusted notional of {(payload.delta_adjusted_exposure or 0.0):,.2f}.",
+        ]
+        if payload.vega is not None:
+            drivers.append(f"Vega exposure is {payload.vega:,.2f}.")
+        if payload.warnings:
+            drivers = [*payload.warnings[:2], *drivers][:5]
+
+        return RiskMonitorAnalysisResponse(
+            portfolio_id=payload.underlying_symbol,
+            portfolio_name=payload.strategy_name or f"{payload.underlying_symbol} Option Payload",
+            benchmark_symbol="SPY",
+            total_value=total_value,
+            global_risk_score=65 if payload.max_loss is None else 50,
+            global_risk_status=classify_global_risk_status(65 if payload.max_loss is None else 50),
+            main_drivers=drivers,
+            risk_metrics=self._options_payload_metrics(payload),
+            concentration=self._empty_concentration("Standalone Options Pricing payload; no Portfolio Builder positions supplied."),
+            limit_breaches=[],
+            stress_tests=[],
+            risk_contribution=self._payload_contribution(
+                name=payload.underlying_symbol,
+                source="options_pricing_payload",
+            ),
+            benchmark_risk=self._empty_benchmark("Options payload does not include benchmark-relative equity risk."),
+            alerts=[],
+            athena_commentary=AthenaRiskCommentary(
+                summary="Risk Monitor consumed an Options Pricing Lab derivatives risk payload.",
+                main_drivers=drivers,
+                suggested_actions=["Review Delta, Vega, Theta and max-loss exposure before adding the strategy to a portfolio."],
+            ),
+            risk_source=self._standalone_risk_source(
+                metric_source="options_pricing_payload",
+                warnings=payload.warnings,
+                badges=["Options Pricing Payload", "Greeks Ready"],
+            ),
+            assumptions=RiskMonitorAssumptions(
+                limits=DEFAULT_RISK_LIMITS,
+                stress_shocks=DEFAULT_STRESS_SHOCKS,
+            ),
+            integration_statuses=self._integration_statuses(options_payload=payload),
+            options_risk_payload=payload,
+        )
 
     def _metric(
         self,
@@ -566,6 +745,141 @@ class RiskMonitorService:
             largest_risk_contributor=largest.name if largest else None,
             diversification_warning=None,
         )
+
+    def _payload_contribution(
+        self,
+        *,
+        name: str,
+        source: str,
+    ) -> RiskContributionResponse:
+        return RiskContributionResponse(
+            contribution_source=source,
+            method="Standalone module payload contribution placeholder.",
+            by_asset=[
+                RiskContributionItem(
+                    name=name,
+                    weight=1.0,
+                    contribution=1.0,
+                    contribution_percent=1.0,
+                    source=source,
+                ),
+            ],
+            by_sector=[],
+            largest_risk_contributor=name,
+            diversification_warning="Requires Portfolio Builder positions for diversified contribution.",
+        )
+
+    def _empty_concentration(self, warning: str) -> ConcentrationAnalysis:
+        return ConcentrationAnalysis(
+            largest_position=None,
+            top_3_weight=0.0,
+            top_5_weight=0.0,
+            sector_exposures=[],
+            asset_type_exposures=[],
+            cash_weight=0.0,
+            concentration_score=0.0,
+            warnings=[warning],
+        )
+
+    def _empty_benchmark(self, warning: str) -> BenchmarkRiskResponse:
+        return BenchmarkRiskResponse(
+            benchmark_symbol="SPY",
+            beta=None,
+            active_exposure=0.0,
+            tracking_error=None,
+            information_ratio=None,
+            active_risk_status="Requires portfolio context",
+            warnings=[warning],
+            badges=["Requires Portfolio Builder"],
+        )
+
+    def _standalone_risk_source(
+        self,
+        *,
+        metric_source: str,
+        warnings: list[str],
+        badges: list[str],
+    ) -> RiskSourceMetadata:
+        return RiskSourceMetadata(
+            metric_source=metric_source,
+            fallback_used=False,
+            fallback_reason=None,
+            observations=0,
+            symbols_found=[],
+            symbols_missing=[],
+            quality_warnings=warnings,
+            badges=badges,
+        )
+
+    def _rates_driver(self, payload: RatesRiskPayload) -> str:
+        if payload.estimated_rate_shock_loss is not None:
+            return (
+                f"Rate shock of {payload.rate_shock_bps or 0:g} bps implies "
+                f"{payload.estimated_rate_shock_loss:,.2f} estimated loss."
+            )
+        if payload.dv01 is not None:
+            return f"DV01 is {payload.dv01:,.2f}; fixed-income rate sensitivity is available."
+        return "Rates Lab payload available, but duration/DV01 metadata is partial."
+
+    def _integration_statuses(
+        self,
+        *,
+        volatility_payload: SharedRiskPayload | None = None,
+        rates_payload: RatesRiskPayload | None = None,
+        options_payload: OptionsRiskPayload | None = None,
+        market_warnings: list[str] | None = None,
+        market_payload_available: bool = True,
+    ) -> list[ModuleIntegrationStatus]:
+        return [
+            integration_status(
+                module="Portfolio Builder",
+                status="Connected",
+                data_source="portfolio_builder",
+                payload_available=True,
+            ),
+            integration_status(
+                module="Market Data",
+                status="Connected" if market_payload_available else "Connected with fallback",
+                data_source="market_data",
+                payload_available=market_payload_available,
+                warnings=market_warnings,
+                required_data=[] if market_payload_available else ["Price and return history"],
+            ),
+            integration_status(
+                module="Volatility Lab",
+                status="Payload Available" if volatility_payload else "Connected",
+                data_source="volatility_lab",
+                payload_available=volatility_payload is not None,
+                generated_at=volatility_payload.generated_at if volatility_payload else None,
+                warnings=volatility_payload.warnings if volatility_payload else [],
+                required_data=[] if volatility_payload else ["RiskAnalyticsPayload"],
+            ),
+            integration_status(
+                module="Rates Lab",
+                status="Fixed Income Risk Available" if rates_payload else "Connected",
+                data_source="rates_lab",
+                payload_available=rates_payload is not None,
+                generated_at=rates_payload.generated_at if rates_payload else None,
+                warnings=rates_payload.warnings if rates_payload else [],
+                required_data=[] if rates_payload else ["RatesRiskPayload"],
+            ),
+            integration_status(
+                module="Options Pricing Lab",
+                status="Greeks Ready" if options_payload else "Connected",
+                data_source="options_pricing_lab",
+                payload_available=options_payload is not None,
+                generated_at=options_payload.generated_at if options_payload else None,
+                warnings=options_payload.warnings if options_payload else [],
+                required_data=[] if options_payload else ["OptionsRiskPayload"],
+            ),
+            integration_status(
+                module="Trade Simulator",
+                status="Pre-Trade Warnings Ready",
+                data_source="trade_simulator",
+                payload_available=False,
+                required_data=["TradeImpactPayload"],
+            ),
+        ]
 
     def _basic_drivers(
         self,
