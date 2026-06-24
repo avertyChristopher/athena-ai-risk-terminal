@@ -1115,6 +1115,22 @@ class VolatilityLabService:
             correlation_summary=correlation_summary,
             data_source=data_source,
             metric_source=data_source.metric_source,
+            methodology={
+                "volatility": "annualized realized volatility from aligned simple returns",
+                "ewma": "exponentially weighted moving average with lambda decay",
+                "var_cvar": "historical, parametric normal and deterministic Monte Carlo models",
+                "covariance": "sample covariance for portfolio mode",
+            },
+            assumptions=[
+                "Returns are computed from available Market Data close prices.",
+                "Portfolio weights are renormalized when holdings have partial coverage.",
+                "Demo return series are deterministic when Market Data is unavailable.",
+            ],
+            limitations=[
+                "No GARCH, volatility surface or live options-implied volatility feed.",
+                "Short histories can make covariance, beta and VaR estimates unstable.",
+                "Payload is analytical and does not execute portfolio changes.",
+            ],
             missing_symbols=data_source.symbols_missing,
             coverage_ratio=coverage_ratio,
             fallback_used=data_source.fallback_used,
