@@ -2105,6 +2105,190 @@
       "simplified": "Simplified year-based pricing"
     }
   },
+  "limitCenter": {
+    "eyebrow": "Risk Governance",
+    "title": "Limit Center",
+    "subtitle": "Centralized risk limits, breaches, exceptions and governance workflow.",
+    "tabsLabel": "Limit Center sections",
+    "selectedPortfolio": "Selected portfolio",
+    "sourceModule": "Source module",
+    "evaluateLimits": "Evaluate limits",
+    "refreshBreaches": "Refresh breaches",
+    "totalRules": "Total Rules",
+    "activeRules": "Active Rules",
+    "openBreaches": "Open Breaches",
+    "criticalBreaches": "Critical Breaches",
+    "approvedExceptions": "Approved Exceptions",
+    "resolvedBreaches": "Resolved Breaches",
+    "highestSeverity": "Highest Severity",
+    "modulesConnected": "Modules Connected",
+    "rulesLibrary": "Rules Library",
+    "breachRegister": "Breach Register",
+    "reviewWorkflow": "Review Workflow",
+    "sourceModules": "Source Modules",
+    "severityGovernance": "Severity & Governance",
+    "severity": "Severity",
+    "governance": "Governance",
+    "riskLimits": "Risk limits",
+    "ruleId": "Rule ID",
+    "ruleName": "Rule name",
+    "category": "Category",
+    "metric": "Metric",
+    "operator": "Operator",
+    "limitValue": "Limit value",
+    "enabled": "Enabled",
+    "actions": "Actions",
+    "edit": "Edit",
+    "enable": "Enable",
+    "disable": "Disable",
+    "delete": "Delete",
+    "status": "Status",
+    "breachId": "Breach ID",
+    "currentValue": "Current value",
+    "createdAt": "Created date",
+    "suggestedAction": "Suggested action",
+    "reviewNote": "Review note",
+    "ruleEnabled": "Rule enabled",
+    "ruleDisabled": "Rule disabled",
+    "all": "All",
+    "none": "None",
+    "connected": "Connected",
+    "payloadAvailable": "Payload available",
+    "breachesLower": "breaches",
+    "rulesLower": "rules",
+    "noBreachesTitle": "No breaches in scope",
+    "noBreachesMessage": "Current evaluated values are inside active rules or require more payload data.",
+    "notInvestmentAdvice": "Not investment advice",
+    "controls": {
+      "title": "Limit evaluation",
+      "evaluateTitle": "Evaluate source payload"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "overviewShort": "Status",
+      "rules": "Rules Library",
+      "rulesShort": "Rules",
+      "breaches": "Breach Register",
+      "breachesShort": "Register",
+      "workflow": "Review Workflow",
+      "workflowShort": "Review",
+      "sources": "Source Modules",
+      "sourcesShort": "Inputs",
+      "severity": "Severity",
+      "severityShort": "Governance",
+      "methodology": "Methodology",
+      "methodologyShort": "Assumptions",
+      "commentary": "Athena Commentary",
+      "commentaryShort": "AI"
+    },
+    "overview": {
+      "title": "Limit status overview",
+      "description": "Portfolio-level limit evaluation from structured module payloads.",
+      "summary": "Evaluation summary"
+    },
+    "rules": {
+      "description": "Create, edit, enable, disable and delete governance rules.",
+      "create": "Create rule",
+      "editing": "Editing rule",
+      "save": "Save rule",
+      "reset": "Reset form",
+      "tableTitle": "Active governance rules",
+      "tableDescription": "Rules are evaluated only against compatible source modules."
+    },
+    "breaches": {
+      "description": "Filter and select open, reviewed, approved and resolved breaches."
+    },
+    "workflow": {
+      "emptyTitle": "No breach selected",
+      "emptyMessage": "Select a breach from the register to review it.",
+      "noHistory": "No review history yet."
+    },
+    "sources": {
+      "description": "Limit Center consumes structured payloads from Athena analytics modules."
+    },
+    "governance": {
+      "description": "Severity escalates with materiality, critical loss patterns and multiple high breaches.",
+      "low": "Small threshold deviation or watchlist item.",
+      "medium": "Meaningful breach requiring analyst review.",
+      "high": "Material breach requiring risk manager attention.",
+      "critical": "Severe breach, unlimited loss, or stress loss requiring immediate governance review.",
+      "cfaTitle": "Governance note",
+      "cfaNote": "A limit framework links risk appetite, constraints, monitoring and documented exception decisions."
+    },
+    "methodology": {
+      "title": "Methodology & Assumptions",
+      "description": "Limit Center uses deterministic rules and structured payloads before durable workflow persistence is added.",
+      "demoPersistenceTitle": "Demo persistence",
+      "demoPersistence": "Rules, breaches and review history use in-memory demo persistence in this version.",
+      "rulesetTitle": "Ruleset source",
+      "ruleset": "Default rules are deterministic governance thresholds and can be extended from the Rules Library.",
+      "payloadTitle": "Payload source",
+      "payload": "Evaluations use supplied module payloads from Portfolio Builder, Risk Monitor, Volatility, Options, Rates, Stress Testing and Trade Simulator.",
+      "fallbackTitle": "Fallback behavior",
+      "fallback": "Athena Intelligence uses deterministic fallback commentary when an AI provider is unavailable.",
+      "missingDataTitle": "Missing data",
+      "missingData": "Missing payload fields are returned as warnings instead of failing the evaluation.",
+      "notAdviceTitle": "Not investment advice",
+      "notAdvice": "Outputs are risk governance analytics and do not constitute investment advice."
+    },
+    "errors": {
+      "evaluateTitle": "Limit evaluation failed",
+      "evaluateMessage": "The source payload could not be evaluated. Check the API connection and payload shape."
+    },
+    "modules": {
+      "portfolio_builder": "Portfolio Builder",
+      "risk_monitor": "Risk Monitor",
+      "volatility_lab": "Volatility Lab",
+      "options_pricing_lab": "Options Pricing Lab",
+      "rates_lab": "Rates Lab",
+      "stress_testing": "Stress Testing",
+      "trade_simulator": "Trade Simulator",
+      "limit_center": "Limit Center"
+    },
+    "categories": {
+      "portfolio": "Portfolio",
+      "risk": "Risk",
+      "stress": "Stress",
+      "fixed_income": "Fixed income",
+      "options": "Options",
+      "trade": "Trade"
+    },
+    "severities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "statuses": {
+      "open": "Open",
+      "under_review": "Under review",
+      "approved_exception": "Approved exception",
+      "rejected": "Rejected",
+      "resolved": "Resolved"
+    },
+    "overallStatuses": {
+      "within_limits": "Within limits",
+      "watchlist": "Watchlist",
+      "breached": "Breached",
+      "severe_breach": "Severe breach",
+      "critical_breach": "Critical breach"
+    },
+    "operators": {
+      "greater_than": ">",
+      "greater_than_or_equal": ">=",
+      "less_than": "<",
+      "less_than_or_equal": "<=",
+      "equal": "=",
+      "not_equal": "!="
+    },
+    "reviewActions": {
+      "mark_under_review": "Mark under review",
+      "approve_exception": "Approve exception",
+      "reject": "Reject",
+      "resolve": "Resolve",
+      "reopen": "Reopen"
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Market Data",

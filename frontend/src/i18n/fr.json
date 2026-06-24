@@ -2105,6 +2105,190 @@
       "simplified": "Valorisation simplifiee en annees"
     }
   },
+  "limitCenter": {
+    "eyebrow": "Gouvernance du risque",
+    "title": "Centre des limites",
+    "subtitle": "Limites de risque centralisees, depassements, exceptions et workflow de gouvernance.",
+    "tabsLabel": "Sections du centre des limites",
+    "selectedPortfolio": "Portefeuille selectionne",
+    "sourceModule": "Module source",
+    "evaluateLimits": "Evaluer les limites",
+    "refreshBreaches": "Actualiser les depassements",
+    "totalRules": "Regles totales",
+    "activeRules": "Regles actives",
+    "openBreaches": "Depassements ouverts",
+    "criticalBreaches": "Depassements critiques",
+    "approvedExceptions": "Exceptions approuvees",
+    "resolvedBreaches": "Depassements resolus",
+    "highestSeverity": "Severite maximale",
+    "modulesConnected": "Modules connectes",
+    "rulesLibrary": "Bibliotheque de regles",
+    "breachRegister": "Registre des depassements",
+    "reviewWorkflow": "Workflow de revue",
+    "sourceModules": "Modules sources",
+    "severityGovernance": "Severite et gouvernance",
+    "severity": "Severite",
+    "governance": "Gouvernance",
+    "riskLimits": "Limites de risque",
+    "ruleId": "ID de regle",
+    "ruleName": "Nom de regle",
+    "category": "Categorie",
+    "metric": "Metrique",
+    "operator": "Operateur",
+    "limitValue": "Valeur limite",
+    "enabled": "Active",
+    "actions": "Actions",
+    "edit": "Modifier",
+    "enable": "Activer",
+    "disable": "Desactiver",
+    "delete": "Supprimer",
+    "status": "Statut",
+    "breachId": "ID depassement",
+    "currentValue": "Valeur courante",
+    "createdAt": "Date de creation",
+    "suggestedAction": "Action suggeree",
+    "reviewNote": "Note de revue",
+    "ruleEnabled": "Regle active",
+    "ruleDisabled": "Regle inactive",
+    "all": "Tous",
+    "none": "Aucun",
+    "connected": "Connecte",
+    "payloadAvailable": "Payload disponible",
+    "breachesLower": "depassements",
+    "rulesLower": "regles",
+    "noBreachesTitle": "Aucun depassement dans le perimetre",
+    "noBreachesMessage": "Les valeurs evaluees respectent les regles actives ou necessitent plus de donnees.",
+    "notInvestmentAdvice": "Ne constitue pas un conseil en investissement",
+    "controls": {
+      "title": "Evaluation des limites",
+      "evaluateTitle": "Evaluer le payload source"
+    },
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "overviewShort": "Statut",
+      "rules": "Bibliotheque de regles",
+      "rulesShort": "Regles",
+      "breaches": "Registre des depassements",
+      "breachesShort": "Registre",
+      "workflow": "Workflow de revue",
+      "workflowShort": "Revue",
+      "sources": "Modules sources",
+      "sourcesShort": "Entrees",
+      "severity": "Severite",
+      "severityShort": "Gouvernance",
+      "methodology": "Methodologie",
+      "methodologyShort": "Hypotheses",
+      "commentary": "Commentaire Athena",
+      "commentaryShort": "IA"
+    },
+    "overview": {
+      "title": "Vue d'ensemble des limites",
+      "description": "Evaluation des limites portefeuille a partir des payloads structures des modules.",
+      "summary": "Synthese de l'evaluation"
+    },
+    "rules": {
+      "description": "Creer, modifier, activer, desactiver et supprimer des regles de gouvernance.",
+      "create": "Creer une regle",
+      "editing": "Regle en modification",
+      "save": "Enregistrer la regle",
+      "reset": "Reinitialiser le formulaire",
+      "tableTitle": "Regles de gouvernance actives",
+      "tableDescription": "Les regles sont evaluees uniquement contre les modules sources compatibles."
+    },
+    "breaches": {
+      "description": "Filtrer et selectionner les depassements ouverts, revus, approuves et resolus."
+    },
+    "workflow": {
+      "emptyTitle": "Aucun depassement selectionne",
+      "emptyMessage": "Selectionne un depassement dans le registre pour le revoir.",
+      "noHistory": "Aucun historique de revue pour le moment."
+    },
+    "sources": {
+      "description": "Le Centre des limites consomme les payloads structures des modules analytiques Athena."
+    },
+    "governance": {
+      "description": "La severite augmente selon la materialite, les pertes critiques et les depassements multiples.",
+      "low": "Petit ecart de seuil ou point de surveillance.",
+      "medium": "Depassement significatif necessitant une revue analyste.",
+      "high": "Depassement materiel necessitant l'attention du risk manager.",
+      "critical": "Depassement severe, perte illimitee ou perte de stress necessitant une revue immediate.",
+      "cfaTitle": "Note de gouvernance",
+      "cfaNote": "Un cadre de limites relie l'appetit pour le risque, les contraintes, le suivi et les decisions d'exception documentees."
+    },
+    "methodology": {
+      "title": "Methodologie et hypotheses",
+      "description": "Le Centre des limites utilise des regles deterministes et des payloads structures avant l'ajout d'une persistance durable.",
+      "demoPersistenceTitle": "Persistance demo",
+      "demoPersistence": "Les regles, depassements et historiques de revue utilisent une persistance demo en memoire dans cette version.",
+      "rulesetTitle": "Source des regles",
+      "ruleset": "Les regles par defaut sont des seuils de gouvernance deterministes et peuvent etre etendues depuis la bibliotheque.",
+      "payloadTitle": "Source des payloads",
+      "payload": "Les evaluations utilisent les payloads fournis par Portfolio Builder, Risk Monitor, Volatility, Options, Rates, Stress Testing et Trade Simulator.",
+      "fallbackTitle": "Comportement fallback",
+      "fallback": "Athena Intelligence utilise un commentaire deterministe lorsque le fournisseur IA est indisponible.",
+      "missingDataTitle": "Donnees manquantes",
+      "missingData": "Les champs absents sont retournes comme avertissements au lieu de bloquer l'evaluation.",
+      "notAdviceTitle": "Pas un conseil en investissement",
+      "notAdvice": "Les sorties sont des analytiques de gouvernance du risque et ne constituent pas un conseil en investissement."
+    },
+    "errors": {
+      "evaluateTitle": "Echec de l'evaluation des limites",
+      "evaluateMessage": "Le payload source n'a pas pu etre evalue. Verifie la connexion API et la structure du payload."
+    },
+    "modules": {
+      "portfolio_builder": "Portfolio Builder",
+      "risk_monitor": "Risk Monitor",
+      "volatility_lab": "Volatility Lab",
+      "options_pricing_lab": "Options Pricing Lab",
+      "rates_lab": "Rates Lab",
+      "stress_testing": "Stress Testing",
+      "trade_simulator": "Trade Simulator",
+      "limit_center": "Centre des limites"
+    },
+    "categories": {
+      "portfolio": "Portefeuille",
+      "risk": "Risque",
+      "stress": "Stress",
+      "fixed_income": "Revenu fixe",
+      "options": "Options",
+      "trade": "Trade"
+    },
+    "severities": {
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Elevee",
+      "critical": "Critique"
+    },
+    "statuses": {
+      "open": "Ouvert",
+      "under_review": "En revue",
+      "approved_exception": "Exception approuvee",
+      "rejected": "Rejete",
+      "resolved": "Resolu"
+    },
+    "overallStatuses": {
+      "within_limits": "Dans les limites",
+      "watchlist": "Surveillance",
+      "breached": "Depassement",
+      "severe_breach": "Depassement severe",
+      "critical_breach": "Depassement critique"
+    },
+    "operators": {
+      "greater_than": ">",
+      "greater_than_or_equal": ">=",
+      "less_than": "<",
+      "less_than_or_equal": "<=",
+      "equal": "=",
+      "not_equal": "!="
+    },
+    "reviewActions": {
+      "mark_under_review": "Marquer en revue",
+      "approve_exception": "Approuver l'exception",
+      "reject": "Rejeter",
+      "resolve": "Resoudre",
+      "reopen": "Rouvrir"
+    }
+  },
   "pages": {
     "marketData": {
       "title": "Données de marché",

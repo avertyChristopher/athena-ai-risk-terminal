@@ -1,10 +1,5 @@
-import { FeaturePlaceholderPage } from "../../shared/FeaturePlaceholderPage";
+import { LimitCenterPage } from "../../limit-center/pages/LimitCenterPage";
 
 export function LimitsPage() {
-  return (
-    <FeaturePlaceholderPage
-      titleKey="pages.limits.title"
-      descriptionKey="pages.limits.description"
-    />
-  );
+  return <LimitCenterPage />;
 }

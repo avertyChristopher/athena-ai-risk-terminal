@@ -127,4 +127,15 @@ export const endpoints = {
   stressTestingRun: "/api/stress-testing/run",
   stressTestingCustomScenario: "/api/stress-testing/custom-scenario",
   stressTestingDemo: "/api/stress-testing/demo",
+  limitCenterStatus: "/api/limit-center/status",
+  limitCenterRules: "/api/limit-center/rules",
+  limitCenterRule: (ruleId: string) => `/api/limit-center/rules/${ruleId}`,
+  limitCenterEvaluate: "/api/limit-center/evaluate",
+  limitCenterEvaluateModulePayload: "/api/limit-center/evaluate-module-payload",
+  limitCenterBreaches: "/api/limit-center/breaches",
+  limitCenterBreach: (breachId: string) => `/api/limit-center/breaches/${breachId}`,
+  limitCenterBreachReview: (breachId: string) =>
+    `/api/limit-center/breaches/${breachId}/review`,
+  limitCenterSourceModules: "/api/limit-center/source-modules",
+  limitCenterDemo: "/api/limit-center/demo",
 } as const;

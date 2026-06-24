@@ -4587,6 +4587,111 @@ ul.portfolio-note-list {
   line-height: 1.45;
 }
 
+.limit-center-page {
+  display: grid;
+  gap: 20px;
+}
+
+.limit-center-command-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  gap: 14px;
+}
+
+.limit-center-control-card {
+  display: grid;
+  gap: 14px;
+}
+
+.limit-center-tabs {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.limit-center-rule-form,
+.limit-center-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.limit-center-wide-field {
+  grid-column: span 2;
+}
+
+.limit-center-source-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.limit-center-source-grid ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.limit-center-breach-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.limit-center-breach-strip article {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.limit-center-breach-strip strong,
+.limit-center-breach-strip span {
+  overflow-wrap: anywhere;
+}
+
+.limit-center-breach-strip span {
+  color: var(--muted);
+}
+
+.limit-center-table {
+  min-width: 1120px;
+}
+
+.limit-center-table tbody tr {
+  cursor: pointer;
+}
+
+.limit-center-selected-row {
+  background: rgba(107, 150, 195, 0.12);
+}
+
+.limit-center-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.limit-center-review-history {
+  display: grid;
+  gap: 10px;
+}
+
+.limit-center-review-history article {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.limit-center-review-history span,
+.limit-center-review-history p {
+  margin: 0;
+  color: var(--muted);
+}
+
 
 .equity-diagnostic-badges {
   display: grid;
@@ -4676,6 +4781,7 @@ ul.portfolio-note-list {
   .portfolio-two-column,
   .portfolio-diagnostics-columns,
   .trade-command-panel,
+  .limit-center-command-panel,
   .workflow-selector-grid,
   .trade-workbench-grid,
   .trade-two-column,
@@ -4685,7 +4791,8 @@ ul.portfolio-note-list {
   .options-lab-control-layout,
   .risk-monitor-overview-grid,
   .risk-monitor-two-column,
-  .risk-monitor-commentary-grid {
+  .risk-monitor-commentary-grid,
+  .limit-center-source-grid {
     grid-template-columns: 1fr;
   }
 
@@ -4725,6 +4832,10 @@ ul.portfolio-note-list {
   .market-data-coverage-grid,
   .risk-monitor-control-groups,
   .risk-monitor-control-grid,
+  .limit-center-tabs,
+  .limit-center-rule-form,
+  .limit-center-filter-grid,
+  .limit-center-breach-strip,
   .options-lab-input-grid,
   .options-lab-workflow-grid,
   .equity-scorecard-grid {
@@ -4845,6 +4956,7 @@ ul.portfolio-note-list {
   .workflow-selector-grid,
   .workflow-stat-list,
   .workflow-symbol-details,
+  .limit-center-command-panel,
   .trade-ticket-cost-strip,
   .trade-summary-grid,
   .trade-policy-grid,
@@ -4864,6 +4976,11 @@ ul.portfolio-note-list {
   .market-data-coverage-grid,
   .risk-monitor-control-groups,
   .risk-monitor-control-grid,
+  .limit-center-tabs,
+  .limit-center-rule-form,
+  .limit-center-filter-grid,
+  .limit-center-breach-strip,
+  .limit-center-source-grid,
   .equity-scorecard-grid {
     grid-template-columns: 1fr;
   }
@@ -4872,6 +4989,7 @@ ul.portfolio-note-list {
   .portfolio-rebalancing-preview__summary,
   .trade-section-card__header,
   .trade-command-panel,
+  .limit-center-command-panel,
   .risk-monitor-section-card__header,
   .athena-ai-card__header,
   .athena-ai-card__footer,
@@ -4894,6 +5012,10 @@ ul.portfolio-note-list {
 
   .athena-ai-source-row div {
     justify-content: flex-start;
+  }
+
+  .limit-center-wide-field {
+    grid-column: span 1;
   }
 
   .volatility-histogram__row {

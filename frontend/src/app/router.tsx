@@ -7,7 +7,6 @@ import { LoadingState } from "../components/ui/LoadingState";
 import { AiAnomaliesPage } from "../features/ai-anomalies/pages/AiAnomaliesPage";
 import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
 import { EquityAnalysisPage } from "../features/equity-analysis/pages/EquityAnalysisPage";
-import { LimitsPage } from "../features/limits/pages/LimitsPage";
 import { MarketDataPage } from "../features/market-data/pages/MarketDataPage";
 import { PnlPage } from "../features/pnl/pages/PnlPage";
 import { PortfolioPage } from "../features/portfolio/pages/PortfolioPage";
@@ -45,6 +44,11 @@ const StressTestingPage = lazy(() =>
     default: module.StressTestingPage,
   })),
 );
+const LimitCenterPage = lazy(() =>
+  import("../features/limit-center/pages/LimitCenterPage").then((module) => ({
+    default: module.LimitCenterPage,
+  })),
+);
 
 function lazyRoute(element: ReactNode) {
   return (
@@ -70,7 +74,7 @@ export const router = createBrowserRouter([
       { path: "options-pricing-lab", element: lazyRoute(<OptionsPricingPage />) },
       { path: "rates-lab", element: lazyRoute(<RatesLabPage />) },
       { path: "stress-testing", element: lazyRoute(<StressTestingPage />) },
-      { path: "limit-center", element: <LimitsPage /> },
+      { path: "limit-center", element: lazyRoute(<LimitCenterPage />) },
       { path: "pnl-attribution", element: <PnlPage /> },
       { path: "reconciliation", element: <ReconciliationPage /> },
       { path: "ai-anomaly-center", element: <AiAnomaliesPage /> },
