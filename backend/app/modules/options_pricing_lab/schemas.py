@@ -4,6 +4,8 @@ from typing import Any, Literal
 
 from pydantic import AliasChoices, BaseModel, Field, model_validator
 
+from app.modules.risk_shared.schemas import OptionsRiskPayload
+
 
 OptionType = Literal["call", "put"]
 PositionSide = Literal["long", "short"]
@@ -185,6 +187,7 @@ class OptionPricingResponse(BaseModel):
     pricing_summary: dict[str, Any]
     payoff_summary: dict[str, Any]
     greeks: GreeksResponse
+    risk_payload: OptionsRiskPayload
     model_details: dict[str, Any]
     parity_check: dict[str, Any]
     sensitivity_analysis: dict[str, Any]
@@ -213,6 +216,7 @@ class OptionStrategyResponse(BaseModel):
     stock_leg_included: bool
     collateral_requirement: float
     aggregate_greeks: dict[str, Any]
+    risk_payload: OptionsRiskPayload
     risk_summary: dict[str, Any]
     commentary: dict[str, Any]
     data_sources: DataSources

@@ -57,6 +57,7 @@ from app.modules.options_pricing_lab.schemas import (
     OptionStrategyRequest,
     OptionStrategyResponse,
 )
+from app.modules.risk_shared.schemas import OptionsRiskPayload
 
 
 class OptionsPricingLabService:
@@ -194,6 +195,36 @@ class OptionsPricingLabService:
             greeks["vega"],
             str(risk_summary["risk_note"]),
         )
+        greeks_response = self._greeks_response(
+            greeks,
+            underlying_price,
+            payload.contract_size,
+            payload.quantity,
+        )
+        option_time_value = time_value(option_price, intrinsic)
+        methodology = self._methodology(payload.pricing_model)
+        data_sources = inputs["data_sources"]
+        risk_payload = OptionsRiskPayload(
+            underlying_symbol=payload.underlying_symbol.upper(),
+            option_type=payload.option_type,
+            position_side=payload.position_side,
+            option_price=option_price,
+            intrinsic_value=intrinsic,
+            time_value=option_time_value,
+            moneyness=moneyness,
+            delta=greeks_response.position_delta,
+            gamma=greeks_response.position_gamma,
+            theta=greeks_response.position_theta_daily,
+            vega=greeks_response.position_vega,
+            rho=greeks_response.position_rho,
+            delta_adjusted_exposure=greeks_response.delta_adjusted_exposure,
+            max_profit=risk_summary["max_profit"],
+            max_loss=risk_summary["max_loss"],
+            breakeven_points=[breakeven],
+            implied_volatility=volatility,
+            methodology=methodology,
+            warnings=list(data_sources.warnings),
+        )
 
         return OptionPricingResponse(
             input_summary={
@@ -214,7 +245,7 @@ class OptionsPricingLabService:
                 "black_scholes_price": bs_price,
                 "binomial_price": binomial["price"],
                 "intrinsic_value": intrinsic,
-                "time_value": time_value(option_price, intrinsic),
+                "time_value": option_time_value,
                 "moneyness": moneyness,
                 "moneyness_ratio": moneyness_ratio(
                     underlying_price,
@@ -250,12 +281,8 @@ class OptionsPricingLabService:
                     payload.spot_shocks,
                 ),
             },
-            greeks=self._greeks_response(
-                greeks,
-                underlying_price,
-                payload.contract_size,
-                payload.quantity,
-            ),
+            greeks=greeks_response,
+            risk_payload=risk_payload,
             model_details={
                 "selected_model": payload.pricing_model,
                 "black_scholes": {
@@ -325,7 +352,7 @@ class OptionsPricingLabService:
                     payload.position_side,
                 ),
             },
-            methodology=self._methodology(payload.pricing_model),
+            methodology=methodology,
             assumptions={
                 "implied_volatility": implied_volatility_placeholder(),
                 "american_option_note": (
@@ -333,7 +360,7 @@ class OptionsPricingLabService:
                 ),
                 "not_investment_advice": True,
             },
-            data_sources=inputs["data_sources"],
+            data_sources=data_sources,
             athena_commentary=commentary,
         )
 
@@ -387,6 +414,28 @@ class OptionsPricingLabService:
             payload.strategy_type,
             str(summary["risk_profile"]),
         )
+        data_sources = inputs["data_sources"]
+        risk_payload = OptionsRiskPayload(
+            underlying_symbol=payload.underlying_symbol.upper(),
+            strategy_name=payload.strategy_type,
+            option_price=float(summary["net_premium"]),
+            delta=float(aggregate_greeks["aggregate_delta"]),
+            gamma=float(aggregate_greeks["aggregate_gamma"]),
+            theta=float(aggregate_greeks["aggregate_theta"]),
+            vega=float(aggregate_greeks["aggregate_vega"]),
+            rho=float(aggregate_greeks["aggregate_rho"]),
+            delta_adjusted_exposure=float(aggregate_greeks["delta_adjusted_exposure"]),
+            max_profit=summary["max_profit"]["value"],
+            max_loss=summary["max_loss"]["value"],
+            breakeven_points=list(summary["breakeven_points"]),
+            implied_volatility=volatility,
+            methodology={
+                "method": "predefined_or_user_supplied_strategy_payoff",
+                "strategy_type": payload.strategy_type,
+                "greeks": "position_greeks_scaled_by_contract_size_and_quantity",
+            },
+            warnings=[*list(summary["risk_notes"]), *list(data_sources.warnings)],
+        )
 
         return OptionStrategyResponse(
             strategy_summary={
@@ -406,6 +455,7 @@ class OptionsPricingLabService:
             stock_leg_included=bool(summary["stock_leg_included"]),
             collateral_requirement=float(summary["collateral_requirement"]),
             aggregate_greeks=aggregate_greeks,
+            risk_payload=risk_payload,
             risk_summary={
                 "cfa_explanation": self._strategy_cfa_note(payload.strategy_type),
                 "trade_simulator_note": (
@@ -416,7 +466,7 @@ class OptionsPricingLabService:
                 ),
             },
             commentary=commentary,
-            data_sources=inputs["data_sources"],
+            data_sources=data_sources,
         )
 
     def demo(self) -> OptionPricingResponse:
