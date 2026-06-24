@@ -3,6 +3,7 @@ from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
+from app.modules.athena_intelligence.schemas import AthenaAICommentary
 from app.modules.risk_shared.schemas import RatesRiskPayload
 
 
@@ -152,6 +153,7 @@ class BondPricingResponse(BaseModel):
     data_source: DataSourceMetadata
     rates_risk_payload: RatesRiskPayload
     athena_commentary: AthenaRatesCommentary
+    athena_ai_commentary: AthenaAICommentary | None = None
 
 
 class YieldAnalysisRequest(BaseModel):
@@ -212,6 +214,7 @@ class DurationConvexityResponse(BaseModel):
     rates_risk_payload: RatesRiskPayload
     data_source: DataSourceMetadata
     athena_commentary: AthenaRatesCommentary
+    athena_ai_commentary: AthenaAICommentary | None = None
 
 
 class YieldCurveRequest(BaseModel):
@@ -289,6 +292,7 @@ class RateScenarioResponse(RateScenarioResult):
     stress_testing_payload: dict[str, Any]
     rates_risk_payload: RatesRiskPayload
     data_source: DataSourceMetadata
+    athena_ai_commentary: AthenaAICommentary | None = None
 
 
 class PortfolioRatesExposureRequest(BaseModel):
@@ -324,3 +328,4 @@ class PortfolioRatesExposureResponse(BaseModel):
     methodology: MethodologyMetadata
     data_quality: DataQualityMetadata
     data_source: DataSourceMetadata
+    athena_ai_commentary: AthenaAICommentary | None = None

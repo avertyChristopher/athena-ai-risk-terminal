@@ -2,6 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.modules.athena_intelligence.schemas import AthenaAICommentary
 from app.modules.risk_shared.schemas import ModuleIntegrationStatus, TradeImpactPayload
 
 
@@ -173,4 +174,5 @@ class TradeSimulationResponse(BaseModel):
     module_source_metadata: list[ModuleIntegrationStatus] = Field(default_factory=list)
     trade_impact_payload: TradeImpactPayload | None = None
     athena_commentary: AthenaTradeCommentaryResponse
+    athena_ai_commentary: AthenaAICommentary | None = None
     simulation_result: SimulationResultSummary

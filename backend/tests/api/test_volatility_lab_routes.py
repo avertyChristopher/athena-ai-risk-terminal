@@ -39,6 +39,8 @@ def test_volatility_lab_analyze_asset_returns_cfa_metrics() -> None:
     assert body["risk_monitor_payload"]["annualized_volatility"] > 0
     assert body["risk_monitor_payload"]["source_module"] == "volatility_lab"
     assert body["risk_monitor_payload"]["module_name"] == "volatility_lab"
+    assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
+    assert "not investment advice" in body["athena_ai_commentary"]["disclaimer"]
     assert body["risk_monitor_payload"]["methodology"]["ewma"].startswith("exponentially")
     assert body["risk_monitor_payload"]["assumptions"]
     assert body["risk_monitor_payload"]["limitations"]
@@ -98,6 +100,7 @@ def test_volatility_lab_analyze_portfolio_returns_covariance_metrics() -> None:
     assert body["correlation_matrix"]["matrix"]
     assert body["risk_contribution"]
     assert body["athena_commentary"]["cfa_notes"]
+    assert body["athena_ai_commentary"]["source_modules"] == ["volatility_lab"]
     assert body["ewma_volatility"]["latest_volatility"] > 0
     assert body["var_models"]["parametric_cvar"] >= body["var_models"]["parametric_var"]
     assert body["risk_monitor_payload"]["risk_contribution"]

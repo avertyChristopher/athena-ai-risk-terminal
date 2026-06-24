@@ -39,6 +39,8 @@ def test_risk_monitor_analyze_returns_surveillance_dashboard() -> None:
     assert body["risk_contribution"]["by_asset"]
     assert body["benchmark_risk"]["benchmark_symbol"] == "SPY"
     assert body["athena_commentary"]["summary"]
+    assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
+    assert "not investment advice" in body["athena_ai_commentary"]["disclaimer"]
     assert body["risk_source"]["metric_source"] == "realized_market_data"
     assert body["assumptions"]["limits"]["max_portfolio_volatility"] == 0.20
     assert any(
@@ -86,6 +88,7 @@ def test_risk_monitor_can_analyze_volatility_lab_payload() -> None:
     assert body["risk_source"]["metric_source"] == payload["metric_source"]
     assert "Volatility Lab" in body["risk_source"]["badges"]
     assert body["benchmark_risk"]["warnings"][0] == "Using Volatility Lab risk payload."
+    assert body["athena_ai_commentary"]["source_modules"] == ["risk_monitor"]
     assert any(
         status["module"] == "Volatility Lab" and status["payload_available"] is True
         for status in body["integration_statuses"]
@@ -108,6 +111,7 @@ def test_risk_monitor_can_analyze_rates_lab_payload() -> None:
     body = response.json()
     assert body["portfolio_id"] == "pf_001"
     assert body["rates_risk_payload"]["module_name"] == "rates_lab"
+    assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
     assert any(metric["name"] == "DV01" for metric in body["risk_metrics"])
     assert any(
         status["module"] == "Rates Lab" and status["payload_available"] is True
@@ -135,6 +139,7 @@ def test_risk_monitor_can_analyze_options_pricing_payload() -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["options_risk_payload"]["module_name"] == "options_pricing_lab"
+    assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
     assert any(metric["name"] == "Delta-adjusted exposure" for metric in body["risk_metrics"])
     assert any(
         status["module"] == "Options Pricing Lab" and status["payload_available"] is True

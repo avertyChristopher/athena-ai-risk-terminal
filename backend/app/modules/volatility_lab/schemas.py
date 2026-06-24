@@ -3,6 +3,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from app.modules.athena_intelligence.schemas import AthenaAICommentary
 from app.modules.risk_shared.schemas import SharedRiskPayload
 
 
@@ -292,6 +293,7 @@ class VolatilityAssetAnalysisResponse(BaseModel):
     var_backtest: VarBacktestSummary
     stress_scenarios: list[StressScenarioSummary]
     athena_commentary: AthenaVolatilityCommentary
+    athena_ai_commentary: AthenaAICommentary | None = None
 
 
 class VolatilityPortfolioAnalysisResponse(BaseModel):
@@ -324,3 +326,4 @@ class VolatilityPortfolioAnalysisResponse(BaseModel):
     var_backtest: VarBacktestSummary
     stress_scenarios: list[StressScenarioSummary]
     athena_commentary: AthenaVolatilityCommentary
+    athena_ai_commentary: AthenaAICommentary | None = None

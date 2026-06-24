@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 
+from app.modules.athena_intelligence.integration import attach_athena_ai_commentary
 from app.modules.market_data.repository import MarketDataRepository
 from app.modules.risk_analytics.service import RiskAnalyticsService
 from app.modules.risk_monitor.domain.alerts import build_risk_alerts
@@ -232,7 +233,7 @@ class RiskMonitorService:
             benchmark_warnings=benchmark_warnings,
         )
 
-        return RiskMonitorAnalysisResponse(
+        response = RiskMonitorAnalysisResponse(
             portfolio_id=payload.portfolio_id,
             portfolio_name=str(portfolio["name"]),
             benchmark_symbol=payload.benchmark_symbol.upper(),
@@ -285,6 +286,11 @@ class RiskMonitorService:
                 market_warnings=realized_risk.quality_warnings,
                 market_payload_available=not realized_risk.fallback_used,
             ),
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="risk_monitor",
+            analysis_mode="risk",
         )
 
     def analyze_from_volatility(
@@ -381,7 +387,7 @@ class RiskMonitorService:
             benchmark_warnings=benchmark_warnings,
         )
 
-        return RiskMonitorAnalysisResponse(
+        response = RiskMonitorAnalysisResponse(
             portfolio_id=payload.portfolio_id or payload.symbol or "volatility-payload",
             portfolio_name=(
                 str(portfolio["name"])
@@ -443,6 +449,11 @@ class RiskMonitorService:
                 market_payload_available=not payload.fallback_used,
             ),
         )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="risk_monitor",
+            analysis_mode="risk",
+        )
 
     def analyze_from_rates(
         self,
@@ -461,7 +472,11 @@ class RiskMonitorService:
                 *analysis.risk_metrics,
                 *self._rates_payload_metrics(payload),
             ]
-            return analysis
+            return attach_athena_ai_commentary(
+                analysis,
+                module_name="risk_monitor",
+                analysis_mode="rates",
+            )
 
         return self._standalone_rates_analysis(payload)
 
@@ -543,7 +558,7 @@ class RiskMonitorService:
         if payload.warnings:
             drivers = [*payload.warnings[:2], *drivers][:5]
 
-        return RiskMonitorAnalysisResponse(
+        response = RiskMonitorAnalysisResponse(
             portfolio_id=payload.portfolio_id or payload.symbol or "rates-payload",
             portfolio_name=payload.symbol or "Rates Lab Payload",
             benchmark_symbol="SPY",
@@ -578,6 +593,11 @@ class RiskMonitorService:
             integration_statuses=self._integration_statuses(rates_payload=payload),
             rates_risk_payload=payload,
         )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="risk_monitor",
+            analysis_mode="rates",
+        )
 
     def _standalone_options_analysis(
         self,
@@ -597,7 +617,7 @@ class RiskMonitorService:
         if payload.warnings:
             drivers = [*payload.warnings[:2], *drivers][:5]
 
-        return RiskMonitorAnalysisResponse(
+        response = RiskMonitorAnalysisResponse(
             portfolio_id=payload.underlying_symbol,
             portfolio_name=payload.strategy_name or f"{payload.underlying_symbol} Option Payload",
             benchmark_symbol="SPY",
@@ -631,6 +651,11 @@ class RiskMonitorService:
             ),
             integration_statuses=self._integration_statuses(options_payload=payload),
             options_risk_payload=payload,
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="risk_monitor",
+            analysis_mode="options",
         )
 
     def _metric(

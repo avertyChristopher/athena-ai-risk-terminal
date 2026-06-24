@@ -54,6 +54,8 @@ def test_options_pricing_lab_prices_single_option() -> None:
     assert body["data_sources"]["underlying_price_source"] == "manual_input"
     assert body["data_sources"]["volatility_source"] == "manual_input"
     assert body["athena_commentary"]["key_points"]
+    assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
+    assert "not investment advice" in body["athena_ai_commentary"]["disclaimer"]
 
 
 def test_options_pricing_lab_strategy_endpoint_returns_analytics() -> None:
@@ -82,6 +84,7 @@ def test_options_pricing_lab_strategy_endpoint_returns_analytics() -> None:
     assert body["risk_payload"]["breakeven_points"] == body["breakeven_points"]
     assert "cfa_explanation" in body["risk_summary"]
     assert body["commentary"]["key_points"]
+    assert body["athena_ai_commentary"]["source_modules"] == ["options_pricing_lab"]
 
 
 def test_covered_call_endpoint_includes_stock_risk_and_scaled_greeks() -> None:

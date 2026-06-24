@@ -59,6 +59,8 @@ def test_trade_simulator_returns_full_pre_trade_analysis() -> None:
     assert body["trade_impact_payload"]["portfolio_id"] == "pf_001"
     assert body["trade_impact_payload"]["before_weights"]
     assert body["trade_impact_payload"]["after_risk"]["portfolio_volatility"] is not None
+    assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
+    assert "not investment advice" in body["athena_ai_commentary"]["disclaimer"]
 
 
 def test_trade_simulator_falls_back_when_market_returns_are_missing() -> None:

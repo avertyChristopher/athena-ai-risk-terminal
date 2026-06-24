@@ -4,6 +4,7 @@ from typing import Any
 
 from fastapi import HTTPException
 
+from app.modules.athena_intelligence.integration import attach_athena_ai_commentary
 from app.modules.volatility_lab.domain.beta import (
     calculate_beta,
     capm_required_return,
@@ -323,7 +324,7 @@ class VolatilityLabService:
             warnings,
         )
 
-        return VolatilityAssetAnalysisResponse(
+        response = VolatilityAssetAnalysisResponse(
             symbol=symbol,
             benchmark_symbol=benchmark_symbol,
             latest_price=latest_price,
@@ -385,6 +386,11 @@ class VolatilityLabService:
                 ),
                 cfa_notes=self._cfa_notes(),
             ),
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="volatility_lab",
+            analysis_mode="symbol",
         )
 
     def analyze_portfolio(
@@ -623,7 +629,7 @@ class VolatilityLabService:
             warnings,
         )
 
-        return VolatilityPortfolioAnalysisResponse(
+        response = VolatilityPortfolioAnalysisResponse(
             portfolio_id=payload.portfolio_id,
             portfolio_name=str(portfolio["name"]),
             benchmark_symbol=benchmark_symbol,
@@ -718,6 +724,11 @@ class VolatilityLabService:
                 ),
                 cfa_notes=self._cfa_notes(),
             ),
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="volatility_lab",
+            analysis_mode="portfolio",
         )
 
     def _return_series_for_symbol(

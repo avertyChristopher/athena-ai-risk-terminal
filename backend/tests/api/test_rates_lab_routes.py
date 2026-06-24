@@ -37,6 +37,8 @@ def test_rates_lab_bond_price_endpoint() -> None:
     assert body["rates_risk_payload"]["module_name"] == "rates_lab"
     assert body["rates_risk_payload"]["clean_price"] == pytest.approx(body["clean_price"])
     assert body["rates_risk_payload"]["ytm"] == 0.05
+    assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
+    assert "not investment advice" in body["athena_ai_commentary"]["disclaimer"]
 
 
 def test_rates_lab_dated_bond_price_and_data_quality() -> None:
@@ -101,6 +103,7 @@ def test_rates_lab_duration_convexity_endpoint() -> None:
     assert body["risk_monitor_payload"]["module"] == "rates_lab"
     assert body["rates_risk_payload"]["modified_duration"] == pytest.approx(body["modified_duration"])
     assert body["rates_risk_payload"]["dv01"] == pytest.approx(body["dv01"])
+    assert body["athena_ai_commentary"]["source_modules"] == ["rates_lab"]
 
 
 def test_rates_lab_yield_curve_endpoint() -> None:
@@ -128,6 +131,7 @@ def test_rates_lab_rate_scenario_endpoint() -> None:
     assert body["stress_testing_payload"]["status"] == "ready_for_future_stress_testing"
     assert body["rates_risk_payload"]["curve_scenario_impact"] == pytest.approx(body["price_change"])
     assert body["rates_risk_payload"]["rate_shock_bps"] == pytest.approx(body["effective_shock_bps"])
+    assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
 
 
 def test_rates_lab_nonparallel_scenario_curve_matches_repricing_shock() -> None:
@@ -164,6 +168,7 @@ def test_rates_lab_portfolio_exposure_identifies_demo_bond_etf() -> None:
     assert body["risk_monitor_payload"]["status"] == "risk_monitor_ready"
     assert body["rates_risk_payload"]["portfolio_id"] == "pf_001"
     assert body["rates_risk_payload"]["dv01"] == pytest.approx(body["estimated_portfolio_dv01"])
+    assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
 
 
 def test_rates_lab_demo_endpoint() -> None:

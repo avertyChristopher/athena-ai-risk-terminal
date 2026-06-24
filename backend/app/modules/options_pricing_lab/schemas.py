@@ -4,6 +4,7 @@ from typing import Any, Literal
 
 from pydantic import AliasChoices, BaseModel, Field, model_validator
 
+from app.modules.athena_intelligence.schemas import AthenaAICommentary
 from app.modules.risk_shared.schemas import OptionsRiskPayload
 
 
@@ -195,6 +196,7 @@ class OptionPricingResponse(BaseModel):
     assumptions: dict[str, Any]
     data_sources: DataSources
     athena_commentary: dict[str, Any]
+    athena_ai_commentary: AthenaAICommentary | None = None
 
 
 class StrategyRiskValue(BaseModel):
@@ -220,3 +222,4 @@ class OptionStrategyResponse(BaseModel):
     risk_summary: dict[str, Any]
     commentary: dict[str, Any]
     data_sources: DataSources
+    athena_ai_commentary: AthenaAICommentary | None = None

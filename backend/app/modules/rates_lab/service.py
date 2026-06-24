@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 
+from app.modules.athena_intelligence.integration import attach_athena_ai_commentary
 from app.modules.rates_lab.domain.bonds import (
     clean_price,
     price_dated_coupon_bond,
@@ -117,7 +118,7 @@ class RatesLabService:
         methodology = self._bond_methodology(payload, date_metadata)
         data_quality = self._pricing_data_quality(payload)
         data_source = self._manual_data_source()
-        return BondPricingResponse(
+        response = BondPricingResponse(
             bond_type=payload.bond_type,
             clean_price=clean,
             dirty_price=dirty,
@@ -148,6 +149,13 @@ class RatesLabService:
                 payload.yield_to_maturity,
                 language=payload.language,
             ),
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="rates_lab",
+            analysis_mode="rates",
+            payload=response.rates_risk_payload.model_dump(mode="json"),
+            language=payload.language,
         )
 
     def analyze_yield(
@@ -273,7 +281,7 @@ class RatesLabService:
             if payload.language == "fr"
             else f"{risk_level.title()} interest-rate sensitivity."
         )
-        return DurationConvexityResponse(
+        response = DurationConvexityResponse(
             price=analysis_price,
             macaulay_duration=macaulay,
             modified_duration=modified,
@@ -334,6 +342,13 @@ class RatesLabService:
                 payload.rate_shock_bps,
                 payload.language,
             ),
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="rates_lab",
+            analysis_mode="rates",
+            payload=response.rates_risk_payload.model_dump(mode="json"),
+            language=payload.language,
         )
 
     def analyze_yield_curve(self, payload: YieldCurveRequest) -> YieldCurveResponse:
@@ -451,7 +466,7 @@ class RatesLabService:
                 "Scenario results are deterministic estimates, not forecasts. "
                 "Non-parallel shifts use simplified maturity weights."
             )
-        return RateScenarioResponse(
+        response = RateScenarioResponse(
             scenario_type=payload.scenario_type,
             shock_bps=payload.shock_bps,
             base_price=float(result["base_price"]),
@@ -512,6 +527,13 @@ class RatesLabService:
                 warnings=[risk_warning],
             ),
             data_source=self._curve_data_source(bool(supplied_curve)),
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="rates_lab",
+            analysis_mode="rates",
+            payload=response.rates_risk_payload.model_dump(mode="json"),
+            language=payload.language,
         )
 
     def analyze_portfolio_exposure(
@@ -581,7 +603,7 @@ class RatesLabService:
         )
         if not holdings:
             warnings.append("No fixed-income or bond-like holdings were identified.")
-        return PortfolioRatesExposureResponse(
+        response = PortfolioRatesExposureResponse(
             portfolio_id=payload.portfolio_id,
             portfolio_name=str(portfolio["name"]),
             fixed_income_holdings=holdings,
@@ -645,6 +667,12 @@ class RatesLabService:
                 badges=["Portfolio Builder", "Demo Duration", "Risk Monitor Ready"],
                 warnings=warnings,
             ),
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="rates_lab",
+            analysis_mode="rates",
+            payload=response.rates_risk_payload.model_dump(mode="json"),
         )
 
     def demo(self) -> BondPricingResponse:

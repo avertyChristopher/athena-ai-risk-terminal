@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 
+from app.modules.athena_intelligence.integration import attach_athena_ai_commentary
 from app.modules.options_pricing_lab.domain.binomial import binomial_option_price
 from app.modules.options_pricing_lab.domain.black_scholes import (
     black_scholes_price,
@@ -226,7 +227,7 @@ class OptionsPricingLabService:
             warnings=list(data_sources.warnings),
         )
 
-        return OptionPricingResponse(
+        response = OptionPricingResponse(
             input_summary={
                 "underlying_symbol": payload.underlying_symbol.upper(),
                 "underlying_price": underlying_price,
@@ -363,6 +364,12 @@ class OptionsPricingLabService:
             data_sources=data_sources,
             athena_commentary=commentary,
         )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="options_pricing_lab",
+            analysis_mode="options",
+            payload=risk_payload.model_dump(mode="json"),
+        )
 
     def analyze_strategy(
         self,
@@ -437,7 +444,7 @@ class OptionsPricingLabService:
             warnings=[*list(summary["risk_notes"]), *list(data_sources.warnings)],
         )
 
-        return OptionStrategyResponse(
+        response = OptionStrategyResponse(
             strategy_summary={
                 "strategy_type": payload.strategy_type,
                 "underlying_symbol": payload.underlying_symbol.upper(),
@@ -467,6 +474,12 @@ class OptionsPricingLabService:
             },
             commentary=commentary,
             data_sources=data_sources,
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="options_pricing_lab",
+            analysis_mode="options",
+            payload=risk_payload.model_dump(mode="json"),
         )
 
     def demo(self) -> OptionPricingResponse:

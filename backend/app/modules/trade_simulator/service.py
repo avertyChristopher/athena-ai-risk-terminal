@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 
+from app.modules.athena_intelligence.integration import attach_athena_ai_commentary
 from app.modules.market_data.repository import MarketDataRepository
 from app.modules.risk_analytics.schemas import RealizedRiskResult
 from app.modules.risk_analytics.service import RiskAnalyticsService
@@ -278,7 +279,7 @@ class TradeSimulatorService:
             ],
         )
 
-        return TradeSimulationResponse(
+        response = TradeSimulationResponse(
             trade_ticket=ticket,
             pre_trade_impact=PreTradeImpactResponse(
                 metrics=self._portfolio_impact_metrics(metrics_before, metrics_after),
@@ -391,6 +392,12 @@ class TradeSimulatorService:
                 suitability_result=suitability_status,
                 notice="Simulation only. No trades are executed.",
             ),
+        )
+        return attach_athena_ai_commentary(
+            response,
+            module_name="trade_simulator",
+            analysis_mode="trade",
+            payload=trade_impact_payload.model_dump(mode="json"),
         )
 
     def _portfolio_impact_metrics(
