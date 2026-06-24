@@ -53,6 +53,8 @@ from app.modules.trade_simulator.schemas import (
     TradeTicketSummary,
     TransactionCostAnalysisResponse,
 )
+from app.modules.risk_shared.schemas import ModuleIntegrationStatus, TradeImpactPayload
+from app.modules.risk_shared.status import integration_status
 
 
 class TradeSimulatorService:
@@ -247,6 +249,34 @@ class TradeSimulatorService:
             suitability_status=suitability_status,
             warnings=constraint_warnings,
         )
+        module_source_metadata = self._module_source_metadata(
+            risk_source,
+            asset_metadata,
+        )
+        trade_impact_payload = TradeImpactPayload(
+            portfolio_id=payload.portfolio_id,
+            action=payload.action,
+            symbol=symbol,
+            estimated_trade_value=gross_trade_value,
+            before_weights=self._weights_by_symbol(decorated_before, "portfolio_weight"),
+            after_weights=self._weights_by_symbol(decorated_after, "portfolio_weight"),
+            before_risk=self._risk_snapshot(metrics_before),
+            after_risk=self._risk_snapshot(metrics_after),
+            constraints=[warning.model_dump() for warning in response_warnings],
+            suitability_status=suitability_status,
+            transaction_costs={
+                "commission": commission,
+                "fees": fees,
+                "spread_cost": spread_cost,
+                "slippage": slippage,
+                "market_impact": market_impact,
+                "total_implementation_cost": total_cost,
+            },
+            warnings=[
+                *[warning.message for warning in response_warnings],
+                *list(risk_source["quality_warnings"]),
+            ],
+        )
 
         return TradeSimulationResponse(
             trade_ticket=ticket,
@@ -337,6 +367,8 @@ class TradeSimulatorService:
                 ),
                 badge="Requires benchmark constituent feed",
             ),
+            module_source_metadata=module_source_metadata,
+            trade_impact_payload=trade_impact_payload,
             athena_commentary=AthenaTradeCommentaryResponse(
                 summary=athena_summary,
                 bullets=[
@@ -650,6 +682,94 @@ class TradeSimulatorService:
                 "VaR, CVaR, Sharpe ratio and tracking error when benchmark history is available."
             ),
             "badges": badges,
+        }
+
+    def _module_source_metadata(
+        self,
+        risk_source: dict[str, object],
+        asset_metadata: dict[str, object],
+    ) -> list[ModuleIntegrationStatus]:
+        realized_available = not bool(risk_source["fallback_used"])
+        missing_symbols = list(risk_source["symbols_missing"])
+        quality_warnings = list(risk_source["quality_warnings"])
+        return [
+            integration_status(
+                module="Portfolio Builder",
+                status="Connected",
+                data_source="portfolio_builder",
+                payload_available=True,
+            ),
+            integration_status(
+                module="Market Data",
+                status="Connected" if realized_available else "Connected with fallback",
+                data_source="market_data",
+                payload_available=realized_available,
+                warnings=quality_warnings,
+                required_data=[] if realized_available else ["Return history"],
+            ),
+            integration_status(
+                module="Volatility Lab",
+                status="Risk metrics reused" if realized_available else "Fallback used",
+                data_source="risk_analytics",
+                payload_available=realized_available,
+                warnings=quality_warnings,
+                required_data=[] if realized_available else missing_symbols,
+            ),
+            integration_status(
+                module="Equity Analysis",
+                status="Metadata available" if asset_metadata else "Connected",
+                data_source="asset_metadata",
+                payload_available=bool(asset_metadata),
+                required_data=[] if asset_metadata else ["Equity signal payload"],
+            ),
+            integration_status(
+                module="Options Pricing Lab",
+                status="Connected",
+                data_source="options_pricing_lab",
+                payload_available=False,
+                required_data=["OptionsRiskPayload for option trades"],
+            ),
+            integration_status(
+                module="Rates Lab",
+                status="Connected",
+                data_source="rates_lab",
+                payload_available=False,
+                required_data=["RatesRiskPayload for fixed-income trades"],
+            ),
+            integration_status(
+                module="Risk Monitor",
+                status="Projected warnings ready",
+                data_source="trade_simulator",
+                payload_available=True,
+            ),
+        ]
+
+    def _risk_snapshot(
+        self,
+        metrics: dict[str, float | str],
+    ) -> dict[str, float | None]:
+        portfolio_value = float(metrics["portfolio_value"])
+        volatility = float(metrics["portfolio_volatility"])
+        expected_return = float(metrics["expected_return"])
+        tracking_error = estimate_tracking_error(
+            expected_return,
+            float(metrics["largest_position_weight"]),
+        )
+        return {
+            "portfolio_value": portfolio_value,
+            "expected_return": expected_return,
+            "portfolio_volatility": volatility,
+            "portfolio_beta": float(metrics["portfolio_beta"]),
+            "var_95": estimate_var_95(portfolio_value, volatility),
+            "cvar_95": estimate_cvar_95(portfolio_value, volatility),
+            "max_drawdown": estimate_max_drawdown(volatility),
+            "tracking_error": tracking_error,
+            "information_ratio": calculate_information_ratio(
+                expected_return,
+                tracking_error,
+            ),
+            "largest_position_weight": float(metrics["largest_position_weight"]),
+            "cash_weight": float(metrics["cash_weight"]),
         }
 
     def _realized_risk_available(

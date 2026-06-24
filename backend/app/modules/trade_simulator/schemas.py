@@ -2,6 +2,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.modules.risk_shared.schemas import ModuleIntegrationStatus, TradeImpactPayload
+
 
 TradeAction = Literal["BUY", "SELL"]
 OrderType = Literal["Market", "Limit", "Stop"]
@@ -168,5 +170,7 @@ class TradeSimulationResponse(BaseModel):
     transaction_cost_analysis: TransactionCostAnalysisResponse
     execution_quality: ExecutionQualityResponse
     benchmark_active_risk: BenchmarkActiveRiskResponse
+    module_source_metadata: list[ModuleIntegrationStatus] = Field(default_factory=list)
+    trade_impact_payload: TradeImpactPayload | None = None
     athena_commentary: AthenaTradeCommentaryResponse
     simulation_result: SimulationResultSummary
