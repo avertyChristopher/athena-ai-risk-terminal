@@ -1,3 +1,5 @@
+import type { ModuleIntegrationStatus, TradeImpactPayload } from "./risk-shared";
+
 export type TradeModuleStatus = {
   status: string;
   module: string;
@@ -161,6 +163,8 @@ export type TradeSimulationResponse = {
   transaction_cost_analysis: TransactionCostAnalysisResponse;
   execution_quality: ExecutionQualityResponse;
   benchmark_active_risk: BenchmarkActiveRiskResponse;
+  module_source_metadata: ModuleIntegrationStatus[];
+  trade_impact_payload: TradeImpactPayload | null;
   athena_commentary: AthenaTradeCommentaryResponse;
   simulation_result: SimulationResultSummary;
 };

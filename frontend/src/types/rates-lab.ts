@@ -1,3 +1,5 @@
+import type { RatesRiskPayload } from "./risk-shared";
+
 export type CouponFrequency = "annual" | "semiannual" | "quarterly" | "monthly";
 export type BondType = "coupon_bond" | "zero_coupon";
 export type RateScenarioType =
@@ -85,6 +87,7 @@ export type BondPricingResponse = {
   methodology: MethodologyMetadata;
   data_quality: DataQualityMetadata;
   data_source: DataSourceMetadata;
+  rates_risk_payload: RatesRiskPayload;
   athena_commentary: AthenaRatesCommentary;
 };
 
@@ -119,6 +122,7 @@ export type DurationConvexityResponse = {
   methodology: MethodologyMetadata;
   data_quality: DataQualityMetadata;
   risk_monitor_payload: Record<string, unknown>;
+  rates_risk_payload: RatesRiskPayload;
   data_source: DataSourceMetadata;
   athena_commentary: AthenaRatesCommentary;
 };
@@ -165,6 +169,7 @@ export type RateScenarioResponse = {
   methodology: MethodologyMetadata;
   data_quality: DataQualityMetadata;
   stress_testing_payload: Record<string, unknown>;
+  rates_risk_payload: RatesRiskPayload;
   data_source: DataSourceMetadata;
 };
 
@@ -192,6 +197,7 @@ export type PortfolioRatesExposureResponse = {
   shock_bps: number;
   missing_data_warnings: string[];
   risk_monitor_payload: Record<string, unknown>;
+  rates_risk_payload: RatesRiskPayload;
   methodology: MethodologyMetadata;
   data_quality: DataQualityMetadata;
   data_source: DataSourceMetadata;

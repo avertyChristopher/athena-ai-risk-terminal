@@ -1,0 +1,80 @@
+export type ModuleIntegrationStatus = {
+  module: string;
+  status: string;
+  data_source: string;
+  payload_available: boolean;
+  generated_at: string | null;
+  warnings: string[];
+  required_data: string[];
+};
+
+export type OptionsRiskPayload = {
+  payload_version: string;
+  source_module: string;
+  module_name: string;
+  underlying_symbol: string;
+  strategy_name: string | null;
+  option_type: string | null;
+  position_side: string | null;
+  option_price: number | null;
+  intrinsic_value: number | null;
+  time_value: number | null;
+  moneyness: string | null;
+  delta: number | null;
+  gamma: number | null;
+  theta: number | null;
+  vega: number | null;
+  rho: number | null;
+  delta_adjusted_exposure: number | null;
+  max_profit: number | null;
+  max_loss: number | null;
+  breakeven_points: number[];
+  implied_volatility: number | null;
+  methodology: string | Record<string, unknown> | null;
+  warnings: string[];
+  generated_at: string;
+};
+
+export type RatesRiskPayload = {
+  payload_version: string;
+  source_module: string;
+  module_name: string;
+  portfolio_id: string | null;
+  symbol: string | null;
+  clean_price: number | null;
+  dirty_price: number | null;
+  accrued_interest: number | null;
+  ytm: number | null;
+  macaulay_duration: number | null;
+  modified_duration: number | null;
+  convexity: number | null;
+  dv01: number | null;
+  pvbp: number | null;
+  curve_scenario_impact: number | null;
+  rate_shock_bps: number | null;
+  fixed_income_market_value: number | null;
+  fixed_income_allocation: number | null;
+  estimated_rate_shock_loss: number | null;
+  methodology: string | Record<string, unknown> | null;
+  warnings: string[];
+  generated_at: string;
+};
+
+export type TradeImpactPayload = {
+  payload_version: string;
+  source_module: string;
+  module_name: string;
+  portfolio_id: string;
+  action: string;
+  symbol: string;
+  estimated_trade_value: number;
+  before_weights: Record<string, number>;
+  after_weights: Record<string, number>;
+  before_risk: Record<string, number | null>;
+  after_risk: Record<string, number | null>;
+  constraints: Record<string, unknown>[];
+  suitability_status: string;
+  transaction_costs: Record<string, number>;
+  warnings: string[];
+  generated_at: string;
+};

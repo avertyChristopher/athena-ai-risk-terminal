@@ -1,3 +1,5 @@
+import type { OptionsRiskPayload } from "./risk-shared";
+
 export type OptionType = "call" | "put";
 export type OptionSide = "long" | "short";
 export type PricingModel = "black_scholes" | "binomial";
@@ -180,6 +182,7 @@ export type OptionPricingResponse = {
     payoff_table: OptionPayoffPoint[];
   };
   greeks: GreeksResponse;
+  risk_payload: OptionsRiskPayload;
   model_details: {
     selected_model: PricingModel;
     black_scholes: {
@@ -270,6 +273,7 @@ export type OptionStrategyResponse = {
     legs: StrategyLegGreeks[];
     unit_metadata: Record<string, string>;
   };
+  risk_payload: OptionsRiskPayload;
   risk_summary: Record<string, string>;
   commentary: {
     summary: string;

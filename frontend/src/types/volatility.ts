@@ -240,6 +240,7 @@ export type AdvancedModelsStatus = {
 export type RiskMonitorPayload = {
   payload_version: string;
   source_module: string;
+  module_name: string;
   portfolio_id: string | null;
   symbol: string | null;
   benchmark_symbol: string;
@@ -264,6 +265,9 @@ export type RiskMonitorPayload = {
   correlation_summary: Record<string, unknown> | null;
   data_source: VolatilityDataSource;
   metric_source: string;
+  methodology: string | Record<string, unknown> | null;
+  assumptions: string[];
+  limitations: string[];
   missing_symbols: string[];
   coverage_ratio: number | null;
   fallback_used: boolean;

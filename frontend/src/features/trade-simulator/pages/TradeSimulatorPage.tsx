@@ -17,6 +17,7 @@ import { apiClient } from "../../../lib/api-client";
 import { endpoints } from "../../../lib/endpoints";
 import { useTranslation } from "../../../hooks/useTranslation";
 import type { PositionRead } from "../../../types/portfolio";
+import type { ModuleIntegrationStatus } from "../../../types/risk-shared";
 import {
   ImpactMetric,
   OrderType,
@@ -518,6 +519,10 @@ export function TradeSimulatorPage() {
                   variant: tradeRiskBadgeVariant(badge),
                 }))}
               >
+                <ConnectedInputsPanel
+                  statuses={simulation.module_source_metadata}
+                  t={t}
+                />
                 <RiskImpactSourcePanel
                   riskImpact={simulation.risk_impact}
                   t={t}
@@ -683,6 +688,44 @@ function RiskImpactSourcePanel({
         <p>{t("tradeSimulator.riskSource.explanation")}</p>
         {warnings.map((warning) => (
           <p key={warning}>{warning}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ConnectedInputsPanel({
+  statuses,
+  t,
+}: {
+  statuses: ModuleIntegrationStatus[];
+  t: (key: string) => string;
+}) {
+  if (!statuses.length) {
+    return null;
+  }
+
+  return (
+    <div className="trade-summary-stack">
+      <div className="trade-cost-grid">
+        {statuses.map((status) => (
+          <TradeMetricCard
+            key={status.module}
+            title={status.module}
+            value={status.status}
+            subtitle={
+              status.required_data.length
+                ? `${t("common.requiresData")}: ${status.required_data.join(", ")}`
+                : t("common.payloadAvailable")
+            }
+            tone={
+              status.payload_available
+                ? "positive"
+                : status.required_data.length
+                  ? "warning"
+                  : "neutral"
+            }
+          />
         ))}
       </div>
     </div>

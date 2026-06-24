@@ -1,3 +1,9 @@
+import type {
+  ModuleIntegrationStatus,
+  OptionsRiskPayload,
+  RatesRiskPayload,
+} from "./risk-shared";
+
 export type RiskModuleStatus = {
   status: string;
   module: string;
@@ -156,4 +162,7 @@ export type RiskMonitorAnalysisResponse = {
   athena_commentary: AthenaRiskCommentary;
   risk_source: RiskSourceMetadata;
   assumptions: RiskMonitorAssumptions;
+  integration_statuses: ModuleIntegrationStatus[];
+  rates_risk_payload: RatesRiskPayload | null;
+  options_risk_payload: OptionsRiskPayload | null;
 };

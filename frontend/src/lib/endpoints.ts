@@ -97,6 +97,8 @@ export const endpoints = {
   riskMonitorStatus: "/api/risk-monitor/status",
   riskMonitorAnalyze: "/api/risk-monitor/analyze",
   riskMonitorAnalyzeFromVolatility: "/api/risk-monitor/analyze-from-volatility",
+  riskMonitorAnalyzeFromRates: "/api/risk-monitor/analyze-from-rates",
+  riskMonitorAnalyzeFromOptions: "/api/risk-monitor/analyze-from-options",
   riskMonitorDemo: "/api/risk-monitor/demo",
   volatilityLabStatus: "/api/volatility-lab/status",
   volatilityLabAnalyzeAsset: "/api/volatility-lab/analyze-asset",

@@ -26,6 +26,7 @@ import {
   StressShockOverrides,
   StressScenarioResult,
 } from "../../../types/risk";
+import type { ModuleIntegrationStatus } from "../../../types/risk-shared";
 import type { RiskMonitorPayload } from "../../../types/volatility";
 
 const VOLATILITY_PAYLOAD_STORAGE_KEY = "athena.volatilityLab.riskPayload";
@@ -493,6 +494,8 @@ function OverviewTab({
         </div>
       </RiskSectionCard>
 
+      <IntegrationStatusPanel statuses={analysis.integration_statuses} t={t} />
+
       <div className="risk-monitor-two-column">
         <RiskSectionCard
           title={t("riskMonitor.sections.concentration")}
@@ -867,6 +870,64 @@ function RiskDataSourcePanel({
   );
 }
 
+function IntegrationStatusPanel({
+  statuses,
+  t,
+}: {
+  statuses: ModuleIntegrationStatus[];
+  t: (key: string) => string;
+}) {
+  if (!statuses.length) {
+    return null;
+  }
+
+  return (
+    <RiskSectionCard
+      title={t("riskMonitor.sections.integrationStatus")}
+      description={t("riskMonitor.sections.integrationStatusDescription")}
+    >
+      <div className="risk-monitor-mini-grid">
+        {statuses.map((status) => (
+          <article className="risk-monitor-driver-list" key={status.module}>
+            <div className="risk-monitor-badge-cluster">
+              <RiskStatusBadge
+                label={status.status}
+                variant={integrationStatusVariant(status)}
+              />
+              <RiskStatusBadge
+                label={
+                  status.payload_available
+                    ? t("common.payloadAvailable")
+                    : t("common.requiresData")
+                }
+                variant={status.payload_available ? "success" : "warning"}
+              />
+            </div>
+            <h3>{status.module}</h3>
+            <p>
+              {t("common.dataSource")}: {sourceLabel(status.data_source, t)}
+            </p>
+            {status.generated_at ? (
+              <p>
+                {t("common.generatedAt")}:{" "}
+                {new Date(status.generated_at).toLocaleString()}
+              </p>
+            ) : null}
+            {status.required_data.length ? (
+              <p>
+                {t("common.missingData")}: {status.required_data.join(", ")}
+              </p>
+            ) : null}
+            {status.warnings.slice(0, 2).map((warning) => (
+              <p key={warning}>{warning}</p>
+            ))}
+          </article>
+        ))}
+      </div>
+    </RiskSectionCard>
+  );
+}
+
 function RiskSectionCard({
   title,
   description,
@@ -1007,6 +1068,27 @@ function sourceLabel(source: string | undefined, t: (key: string) => string) {
   if (source === "partial_data") {
     return t("riskMonitor.badges.partialData");
   }
+  if (source === "rates_lab" || source === "rates_lab_payload") {
+    return t("common.ratesLabConnected");
+  }
+  if (
+    source === "options_pricing_lab" ||
+    source === "options_pricing_payload"
+  ) {
+    return t("common.optionsPricingConnected");
+  }
+  if (source === "volatility_lab" || source === "volatility_lab_payload") {
+    return t("common.volatilityLabConnected");
+  }
+  if (source === "trade_simulator") {
+    return t("common.tradeSimulatorReady");
+  }
+  if (source === "portfolio_builder") {
+    return t("common.portfolioBuilderConnected");
+  }
+  if (source === "market_data") {
+    return t("common.marketDataConnected");
+  }
   return t("riskMonitor.badges.placeholder");
 }
 
@@ -1041,6 +1123,13 @@ function severityLabel(severity: string, t: (key: string) => string) {
 function severityVariant(severity: string): BadgeVariant {
   if (severity === "critical" || severity === "high") return "danger";
   if (severity === "medium") return "warning";
+  return "info";
+}
+
+function integrationStatusVariant(status: ModuleIntegrationStatus): BadgeVariant {
+  const normalized = status.status.toLowerCase();
+  if (status.payload_available || normalized.includes("connected")) return "success";
+  if (status.required_data.length || normalized.includes("fallback")) return "warning";
   return "info";
 }
 
