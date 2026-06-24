@@ -38,6 +38,10 @@ def test_volatility_lab_analyze_asset_returns_cfa_metrics() -> None:
     assert body["var_models"]["horizon_days"] == 1
     assert body["risk_monitor_payload"]["annualized_volatility"] > 0
     assert body["risk_monitor_payload"]["source_module"] == "volatility_lab"
+    assert body["risk_monitor_payload"]["module_name"] == "volatility_lab"
+    assert body["risk_monitor_payload"]["methodology"]["ewma"].startswith("exponentially")
+    assert body["risk_monitor_payload"]["assumptions"]
+    assert body["risk_monitor_payload"]["limitations"]
     assert body["methodology"]["ewma"]["method"] == "ewma"
     assert body["methodology"]["parametric_var"]["method"] == "parametric_normal"
     assert body["var_backtest"]["status"] in {"acceptable", "review", "insufficient_data"}
@@ -97,6 +101,7 @@ def test_volatility_lab_analyze_portfolio_returns_covariance_metrics() -> None:
     assert body["ewma_volatility"]["latest_volatility"] > 0
     assert body["var_models"]["parametric_cvar"] >= body["var_models"]["parametric_var"]
     assert body["risk_monitor_payload"]["risk_contribution"]
+    assert body["risk_monitor_payload"]["coverage_ratio"] == body["portfolio_coverage"]["coverage_ratio"]
 
 
 def test_volatility_lab_analyze_portfolio_accepts_date_range() -> None:

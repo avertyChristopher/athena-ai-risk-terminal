@@ -34,6 +34,9 @@ def test_rates_lab_bond_price_endpoint() -> None:
     assert body["clean_price"] == pytest.approx(1000)
     assert body["price_status"] == "par"
     assert len(body["cash_flow_schedule"]) == 10
+    assert body["rates_risk_payload"]["module_name"] == "rates_lab"
+    assert body["rates_risk_payload"]["clean_price"] == pytest.approx(body["clean_price"])
+    assert body["rates_risk_payload"]["ytm"] == 0.05
 
 
 def test_rates_lab_dated_bond_price_and_data_quality() -> None:
@@ -96,6 +99,8 @@ def test_rates_lab_duration_convexity_endpoint() -> None:
     assert body["dv01"] > 0
     assert body["estimated_price_change_duration"] < 0
     assert body["risk_monitor_payload"]["module"] == "rates_lab"
+    assert body["rates_risk_payload"]["modified_duration"] == pytest.approx(body["modified_duration"])
+    assert body["rates_risk_payload"]["dv01"] == pytest.approx(body["dv01"])
 
 
 def test_rates_lab_yield_curve_endpoint() -> None:
@@ -121,6 +126,8 @@ def test_rates_lab_rate_scenario_endpoint() -> None:
     assert body["price_change"] < 0
     assert body["stressed_curve"]
     assert body["stress_testing_payload"]["status"] == "ready_for_future_stress_testing"
+    assert body["rates_risk_payload"]["curve_scenario_impact"] == pytest.approx(body["price_change"])
+    assert body["rates_risk_payload"]["rate_shock_bps"] == pytest.approx(body["effective_shock_bps"])
 
 
 def test_rates_lab_nonparallel_scenario_curve_matches_repricing_shock() -> None:
@@ -155,6 +162,8 @@ def test_rates_lab_portfolio_exposure_identifies_demo_bond_etf() -> None:
     assert body["estimated_portfolio_dv01"] > 0
     assert body["estimated_rate_shock_loss"] < 0
     assert body["risk_monitor_payload"]["status"] == "risk_monitor_ready"
+    assert body["rates_risk_payload"]["portfolio_id"] == "pf_001"
+    assert body["rates_risk_payload"]["dv01"] == pytest.approx(body["estimated_portfolio_dv01"])
 
 
 def test_rates_lab_demo_endpoint() -> None:

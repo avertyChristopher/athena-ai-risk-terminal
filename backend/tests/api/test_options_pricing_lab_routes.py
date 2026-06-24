@@ -46,6 +46,10 @@ def test_options_pricing_lab_prices_single_option() -> None:
     assert body["pricing_summary"]["moneyness"] == "at_the_money"
     assert body["payoff_summary"]["payoff_table"]
     assert body["greeks"]["delta"] > 0
+    assert body["risk_payload"]["module_name"] == "options_pricing_lab"
+    assert body["risk_payload"]["underlying_symbol"] == "AAPL"
+    assert body["risk_payload"]["delta_adjusted_exposure"] == body["greeks"]["delta_adjusted_exposure"]
+    assert body["risk_payload"]["max_loss"] == body["payoff_summary"]["max_loss"]
     assert body["parity_check"]["status"] == "aligned"
     assert body["data_sources"]["underlying_price_source"] == "manual_input"
     assert body["data_sources"]["volatility_source"] == "manual_input"
@@ -73,6 +77,9 @@ def test_options_pricing_lab_strategy_endpoint_returns_analytics() -> None:
     assert body["net_premium"] > 0
     assert body["payoff_table"]
     assert body["aggregate_greeks"]["gamma"] > 0
+    assert body["risk_payload"]["strategy_name"] == "long_straddle"
+    assert body["risk_payload"]["gamma"] == body["aggregate_greeks"]["aggregate_gamma"]
+    assert body["risk_payload"]["breakeven_points"] == body["breakeven_points"]
     assert "cfa_explanation" in body["risk_summary"]
     assert body["commentary"]["key_points"]
 

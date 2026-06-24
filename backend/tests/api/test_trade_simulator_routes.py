@@ -51,6 +51,14 @@ def test_trade_simulator_returns_full_pre_trade_analysis() -> None:
     assert body["risk_impact"]["observations"] >= 2
     assert "Simulation only" in body["simulation_result"]["notice"]
     assert body["transaction_cost_analysis"]["total_estimated_cost"] > 0
+    assert any(
+        status["module"] == "Portfolio Builder" and status["payload_available"] is True
+        for status in body["module_source_metadata"]
+    )
+    assert body["trade_impact_payload"]["module_name"] == "trade_simulator"
+    assert body["trade_impact_payload"]["portfolio_id"] == "pf_001"
+    assert body["trade_impact_payload"]["before_weights"]
+    assert body["trade_impact_payload"]["after_risk"]["portfolio_volatility"] is not None
 
 
 def test_trade_simulator_falls_back_when_market_returns_are_missing() -> None:
@@ -76,6 +84,10 @@ def test_trade_simulator_falls_back_when_market_returns_are_missing() -> None:
     assert body["risk_impact"]["fallback_used"] is True
     assert "XYZ" in body["risk_impact"]["symbols_missing"]
     assert "Requires Market Data" in body["risk_impact"]["badges"]
+    assert any(
+        status["module"] == "Market Data" and status["required_data"]
+        for status in body["module_source_metadata"]
+    )
     assert (
         "Realized Market Data return series unavailable. Falling back to deterministic demo assumptions."
         in body["risk_impact"]["message"]
