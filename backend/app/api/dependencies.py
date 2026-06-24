@@ -28,6 +28,8 @@ from app.modules.rates_lab.repository import RatesLabRepository
 from app.modules.rates_lab.service import RatesLabService
 from app.modules.risk_monitor.repository import RiskMonitorRepository
 from app.modules.risk_monitor.service import RiskMonitorService
+from app.modules.stress_testing.repository import StressTestingRepository
+from app.modules.stress_testing.service import StressTestingService
 from app.modules.trade_simulator.repository import TradeSimulatorRepository
 from app.modules.trade_simulator.service import TradeSimulatorService
 from app.modules.volatility_lab.repository import VolatilityLabRepository
@@ -98,6 +100,12 @@ def get_rates_lab_service(
     db: Session = Depends(get_db_session),
 ) -> RatesLabService:
     return RatesLabService(RatesLabRepository(db))
+
+
+def get_stress_testing_service(
+    db: Session = Depends(get_db_session),
+) -> StressTestingService:
+    return StressTestingService(StressTestingRepository(db))
 
 
 def get_pricing_service() -> PricingService:
