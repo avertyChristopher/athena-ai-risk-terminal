@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -6,19 +7,109 @@ from app.main import app
 client = TestClient(app)
 
 
+DEMO_PORTFOLIO_IDS = ("pf_001", "pf_002", "pf_003", "pf_004")
+
+
 def test_portfolio_summary_uses_demo_positions() -> None:
     response = client.get("/api/portfolios/pf_001/summary")
 
     assert response.status_code == 200
     body = response.json()
     assert body["portfolio_id"] == "pf_001"
-    assert body["name"] == "Athena Demo Portfolio"
-    assert body["total_value"] == 77692.0
-    assert body["total_market_value"] == 77692.0
-    assert body["invested_value"] == 72692.0
-    assert body["largest_position"] == "NVDA"
+    assert body["name"] == "Athena Balanced Growth Portfolio"
+    assert body["total_value"] == pytest.approx(250000.0, rel=1e-5)
+    assert body["total_market_value"] == pytest.approx(250000.0, rel=1e-5)
+    assert body["invested_value"] == pytest.approx(237500.0, rel=1e-5)
+    assert body["cash_weight"] == pytest.approx(0.05, rel=1e-5)
+    assert body["largest_position"] == "SPY"
     assert body["data_source"] == "Athena SQLite portfolio store seeded from demo data"
-    assert body["number_of_positions"] == 5
+    assert body["number_of_positions"] == 9
+
+
+def test_portfolio_list_includes_realistic_demo_profiles() -> None:
+    response = client.get("/api/portfolios")
+
+    assert response.status_code == 200
+    portfolios = response.json()["items"]
+    by_id = {portfolio["id"]: portfolio for portfolio in portfolios}
+    assert set(DEMO_PORTFOLIO_IDS) <= set(by_id)
+    assert by_id["pf_001"]["name"] == "Athena Balanced Growth Portfolio"
+    assert by_id["pf_001"]["demo_profile"] is True
+    assert by_id["pf_001"]["strategy_type"] == "Balanced Growth"
+    assert by_id["pf_002"]["strategy_type"] == "Conservative Income"
+    assert by_id["pf_003"]["strategy_type"] == "Tech Concentration"
+    assert by_id["pf_004"]["strategy_type"] == "Multi-Asset Institutional"
+    assert by_id["pf_001"]["target_allocation"]
+    assert by_id["pf_001"]["transaction_history"]
+    assert "Market Data coverage" in by_id["pf_001"]["data_source_badges"]
+
+
+def test_balanced_growth_portfolio_has_diversified_allocation() -> None:
+    summary = client.get("/api/portfolios/pf_001/summary").json()
+    concentration = client.get("/api/portfolios/pf_001/concentration").json()
+    policy = client.get("/api/portfolios/pf_001/policy").json()
+
+    assert summary["cash_weight"] == pytest.approx(0.05, rel=1e-5)
+    assert summary["number_of_asset_classes"] >= 5
+    assert concentration["largest_position_weight"] < 0.25
+    assert concentration["top_3_holdings_weight"] < 0.65
+    assert concentration["warnings"] == []
+    assert policy["breaches"] == []
+    assert {item["status"] for item in policy["comparison"]} == {"Within tolerance"}
+
+
+def test_tech_concentration_portfolio_triggers_concentration_warning() -> None:
+    concentration = client.get("/api/portfolios/pf_003/concentration").json()
+    sectors = client.get("/api/portfolios/pf_003/allocation/sectors").json()["items"]
+    technology = next(item for item in sectors if item["name"] == "Technology")
+
+    assert concentration["largest_position_weight"] > 0.25
+    assert concentration["top_3_holdings_weight"] > 0.65
+    assert concentration["concentration_level"] == "High concentration"
+    assert concentration["warnings"]
+    assert technology["weight"] > 0.85
+
+
+def test_conservative_income_portfolio_has_fixed_income_exposure() -> None:
+    exposure = client.post(
+        "/api/rates-lab/portfolio-exposure",
+        json={"portfolio_id": "pf_002", "shock_bps": 100},
+    )
+
+    assert exposure.status_code == 200
+    body = exposure.json()
+    symbols = {holding["symbol"] for holding in body["fixed_income_holdings"]}
+    assert {"BND", "IEF", "TLT"} <= symbols
+    assert body["fixed_income_allocation"] == pytest.approx(0.55, rel=1e-4)
+    assert body["weighted_average_duration"] > 7
+    assert body["estimated_rate_shock_loss"] < 0
+
+
+def test_multi_asset_demo_has_multiple_asset_classes() -> None:
+    summary = client.get("/api/portfolios/pf_004/summary").json()
+    positions = client.get("/api/portfolios/pf_004/positions").json()["items"]
+    asset_classes = {position["asset_class"] for position in positions}
+    symbols = {position["symbol"] for position in positions}
+
+    assert summary["total_value"] == pytest.approx(500000.0, rel=1e-5)
+    assert summary["number_of_asset_classes"] >= 5
+    assert {"SPY", "VXUS", "BND", "IEF", "TLT", "GLD"} <= symbols
+    assert {"US Equity", "International Equity", "Fixed Income", "Alternatives"} <= asset_classes
+
+
+def test_demo_portfolio_allocation_cash_and_sector_sums() -> None:
+    for portfolio_id in DEMO_PORTFOLIO_IDS:
+        summary = client.get(f"/api/portfolios/{portfolio_id}/summary").json()
+        sectors = client.get(
+            f"/api/portfolios/{portfolio_id}/allocation/sectors",
+        ).json()["items"]
+        asset_types = client.get(
+            f"/api/portfolios/{portfolio_id}/allocation/asset-types",
+        ).json()["items"]
+
+        assert summary["cash_weight"] >= 0
+        assert sum(item["weight"] for item in sectors) == pytest.approx(1)
+        assert sum(item["weight"] for item in asset_types) == pytest.approx(1)
 
 
 def test_portfolio_management_foundation_endpoints_return_data() -> None:

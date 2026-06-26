@@ -153,4 +153,22 @@ def test_risk_monitor_demo_endpoint_uses_demo_portfolio() -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["portfolio_id"] == "pf_001"
-    assert body["portfolio_name"] == "Athena Demo Portfolio"
+    assert body["portfolio_name"] == "Athena Balanced Growth Portfolio"
+
+
+def test_risk_monitor_ranks_tech_concentration_above_balanced_growth() -> None:
+    balanced = client.post(
+        "/api/risk-monitor/analyze",
+        json={"portfolio_id": "pf_001", "benchmark_symbol": "SPY"},
+    ).json()
+    tech = client.post(
+        "/api/risk-monitor/analyze",
+        json={"portfolio_id": "pf_003", "benchmark_symbol": "SPY"},
+    ).json()
+
+    assert balanced["global_risk_status"] == "Moderate Risk"
+    assert tech["global_risk_status"] in {"High Risk", "Critical Risk"}
+    assert tech["global_risk_score"] > balanced["global_risk_score"]
+    assert len(tech["limit_breaches"]) > len(balanced["limit_breaches"])
+    assert tech["concentration"]["top_3_weight"] > balanced["concentration"]["top_3_weight"]
+    assert tech["concentration"]["largest_position"]["status"] == "breach"

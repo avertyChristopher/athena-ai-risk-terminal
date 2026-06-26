@@ -100,3 +100,44 @@ def test_stress_testing_invalid_custom_shock_returns_validation_error() -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_stress_testing_runs_risk_off_for_all_demo_portfolios() -> None:
+    for portfolio_id in ("pf_001", "pf_002", "pf_003", "pf_004"):
+        response = client.post(
+            "/api/stress-testing/run",
+            json={
+                "portfolio_id": portfolio_id,
+                "scenario_id": "risk_off_combined",
+                "benchmark_symbol": "SPY",
+            },
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["selected_portfolio"]["portfolio_id"] == portfolio_id
+        assert body["dollar_loss"] > 0
+        assert body["risk_monitor_payload"]["portfolio_id"] == portfolio_id
+
+
+def test_technology_shock_hits_tech_concentration_more_than_balanced_growth() -> None:
+    balanced = client.post(
+        "/api/stress-testing/run",
+        json={
+            "portfolio_id": "pf_001",
+            "scenario_id": "technology_shock",
+            "benchmark_symbol": "SPY",
+        },
+    ).json()
+    tech = client.post(
+        "/api/stress-testing/run",
+        json={
+            "portfolio_id": "pf_003",
+            "scenario_id": "technology_shock",
+            "benchmark_symbol": "SPY",
+        },
+    ).json()
+
+    assert tech["percent_loss"] > balanced["percent_loss"]
+    assert tech["severity"]["severity"] in {"High", "Severe", "Critical"}
+    assert tech["sector_impacts"][0]["name"] == "Technology"

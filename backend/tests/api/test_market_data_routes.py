@@ -66,6 +66,40 @@ def test_market_data_latest_prices_batch_response() -> None:
     assert body["items"][0]["adjusted_close"] > 0
 
 
+def test_market_data_covers_all_demo_portfolio_symbols() -> None:
+    portfolio_response = client.get("/api/portfolios")
+    assert portfolio_response.status_code == 200
+
+    symbols: set[str] = set()
+    for portfolio in portfolio_response.json()["items"]:
+        if portfolio["id"].startswith("pf_"):
+            positions_response = client.get(f"/api/portfolios/{portfolio['id']}/positions")
+            assert positions_response.status_code == 200
+            symbols.update(
+                position["symbol"]
+                for position in positions_response.json()["items"]
+                if position["symbol"] != "CASH"
+            )
+
+    coverage_response = client.get(
+        f"/api/market-data/coverage?symbols={','.join(sorted(symbols))}",
+    )
+    batch_response = client.get(
+        f"/api/market-data/latest-prices?symbols={','.join(sorted(symbols))}",
+    )
+
+    assert coverage_response.status_code == 200
+    coverage = coverage_response.json()
+    assert coverage["missing_symbols"] == []
+    assert coverage["coverage_ratio"] == pytest.approx(1)
+    assert set(coverage["covered_symbols"]) == symbols
+
+    assert batch_response.status_code == 200
+    latest = batch_response.json()
+    assert latest["missing_symbols"] == []
+    assert {item["symbol"] for item in latest["items"]} == symbols
+
+
 def test_market_data_price_and_returns_panels_are_aligned() -> None:
     price_response = client.get("/api/market-data/price-panel?symbols=AAPL,MSFT,NVDA")
     returns_response = client.get("/api/market-data/returns-panel?symbols=AAPL,MSFT,NVDA")

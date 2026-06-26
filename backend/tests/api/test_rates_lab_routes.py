@@ -171,6 +171,28 @@ def test_rates_lab_portfolio_exposure_identifies_demo_bond_etf() -> None:
     assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
 
 
+def test_rates_lab_conservative_income_portfolio_has_higher_duration_sensitivity() -> None:
+    balanced = client.post(
+        "/api/rates-lab/portfolio-exposure",
+        json={"portfolio_id": "pf_001", "shock_bps": 100},
+    ).json()
+    conservative = client.post(
+        "/api/rates-lab/portfolio-exposure",
+        json={"portfolio_id": "pf_002", "shock_bps": 100},
+    ).json()
+
+    assert conservative["fixed_income_allocation"] > balanced["fixed_income_allocation"]
+    assert conservative["weighted_average_duration"] > balanced["weighted_average_duration"]
+    assert abs(conservative["estimated_rate_shock_loss"]) > abs(
+        balanced["estimated_rate_shock_loss"],
+    )
+    assert {holding["symbol"] for holding in conservative["fixed_income_holdings"]} == {
+        "BND",
+        "IEF",
+        "TLT",
+    }
+
+
 def test_rates_lab_demo_endpoint() -> None:
     response = client.get("/api/rates-lab/demo")
 

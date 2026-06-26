@@ -127,6 +127,21 @@ def test_volatility_lab_analyze_portfolio_accepts_date_range() -> None:
     assert body["methodology"]["covariance"]["method"] == "sample_covariance"
 
 
+def test_volatility_lab_analyzes_all_demo_portfolios() -> None:
+    for portfolio_id in ("pf_001", "pf_002", "pf_003", "pf_004"):
+        response = client.post(
+            "/api/volatility-lab/analyze-portfolio",
+            json={"portfolio_id": portfolio_id, "benchmark_symbol": "SPY", "rolling_window": 5},
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["portfolio_id"] == portfolio_id
+        assert body["portfolio_coverage"]["coverage_ratio"] == pytest.approx(1)
+        assert body["portfolio_risk"]["covariance_based_volatility"] > 0
+        assert body["risk_monitor_payload"]["portfolio_id"] == portfolio_id
+
+
 def test_volatility_lab_rejects_invalid_date_range() -> None:
     response = client.post(
         "/api/volatility-lab/analyze-asset",
@@ -175,4 +190,4 @@ def test_volatility_lab_demo_endpoint_uses_demo_portfolio() -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["portfolio_id"] == "pf_001"
-    assert body["portfolio_name"] == "Athena Demo Portfolio"
+    assert body["portfolio_name"] == "Athena Balanced Growth Portfolio"

@@ -312,8 +312,43 @@ def test_limit_center_demo_endpoint_returns_commentary() -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["portfolio_id"] == "pf_001"
-    assert body["breaches"]
+    assert body["breaches"] == []
+    assert body["overall_status"] in {"within_limits", "watchlist"}
     assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
+
+
+def test_limit_center_flags_tech_concentration_but_not_balanced_growth() -> None:
+    balanced_risk = client.post(
+        "/api/risk-monitor/analyze",
+        json={"portfolio_id": "pf_001", "benchmark_symbol": "SPY"},
+    ).json()
+    tech_risk = client.post(
+        "/api/risk-monitor/analyze",
+        json={"portfolio_id": "pf_003", "benchmark_symbol": "SPY"},
+    ).json()
+
+    balanced = client.post(
+        "/api/limit-center/evaluate",
+        json={
+            "portfolio_id": "pf_001",
+            "source_module": "risk_monitor",
+            "payload": balanced_risk,
+        },
+    ).json()
+    tech = client.post(
+        "/api/limit-center/evaluate",
+        json={
+            "portfolio_id": "pf_003",
+            "source_module": "risk_monitor",
+            "payload": tech_risk,
+        },
+    ).json()
+
+    tech_rule_ids = {breach["rule_id"] for breach in tech["breaches"]}
+    assert balanced["overall_status"] in {"within_limits", "watchlist"}
+    assert balanced["breaches"] == []
+    assert tech["overall_status"] == "critical_breach"
+    assert {"max_single_position_weight", "max_sector_exposure", "max_risk_score"} <= tech_rule_ids
 
 
 def test_limit_center_missing_payload_fields_warn_without_crashing() -> None:
