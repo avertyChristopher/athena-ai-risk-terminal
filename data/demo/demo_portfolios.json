@@ -1,0 +1,152 @@
+[
+  {
+    "id": "pf_001",
+    "name": "Athena Balanced Growth Portfolio",
+    "base_currency": "USD",
+    "benchmark": "SPY",
+    "cash": 12500.0,
+    "strategy_type": "Balanced Growth",
+    "investment_objective": "Diversified long-term growth with meaningful fixed income ballast and a small defensive reserve.",
+    "risk_tolerance": "Moderate",
+    "time_horizon": "7-10 years",
+    "risk_profile": "Moderate",
+    "strategy_description": "Diversified long-term growth portfolio with broad equity exposure, fixed income ballast, small alternative allocation and cash reserve.",
+    "ips_summary": "Target roughly 60% equities, 30% fixed income, 5% alternatives and 5% cash while avoiding excessive single-name concentration.",
+    "target_allocation": [
+      { "name": "Equities", "target_weight": 0.60, "tolerance_band": 0.05 },
+      { "name": "Fixed Income", "target_weight": 0.30, "tolerance_band": 0.05 },
+      { "name": "Alternatives", "target_weight": 0.05, "tolerance_band": 0.03 },
+      { "name": "Cash", "target_weight": 0.05, "tolerance_band": 0.02 }
+    ],
+    "data_source": "demo",
+    "demo_profile": true,
+    "data_source_badges": ["Demo data", "Market Data coverage", "Risk workflow ready"],
+    "market_data_coverage": "All holdings use deterministic Market Data demo price histories.",
+    "fixed_income_assumptions": "BND and IEF use demo duration, modified duration and DV01 assumptions.",
+    "commentary_focus": [
+      "Diversification across broad equity, international equity, fixed income, gold and cash.",
+      "Moderate equity risk with manageable concentration.",
+      "Fixed income provides stabilizing ballast but adds rate sensitivity."
+    ],
+    "transaction_history": [
+      { "date": "2026-04-01", "type": "cash_deposit", "symbol": "CASH", "description": "Initial funding", "amount": 250000.0, "currency": "USD" },
+      { "date": "2026-04-02", "type": "buy", "symbol": "SPY", "description": "Buy broad US equity ETF", "quantity": 97.6563, "price": 512.0, "amount": -50000.0, "currency": "USD" },
+      { "date": "2026-04-02", "type": "buy", "symbol": "BND", "description": "Buy aggregate bond ETF", "quantity": 699.3007, "price": 71.5, "amount": -50000.0, "currency": "USD" },
+      { "date": "2026-04-03", "type": "buy", "symbol": "VXUS", "description": "Buy international equity ETF", "quantity": 489.7959, "price": 61.25, "amount": -30000.0, "currency": "USD" },
+      { "date": "2026-05-15", "type": "dividend", "symbol": "SPY", "description": "Dividend received placeholder", "amount": 210.0, "currency": "USD" },
+      { "date": "2026-05-22", "type": "rebalance", "symbol": "QQQ", "description": "Trim growth tilt and add fixed income", "amount": 5000.0, "currency": "USD" }
+    ]
+  },
+  {
+    "id": "pf_002",
+    "name": "Athena Conservative Income Portfolio",
+    "base_currency": "USD",
+    "benchmark": "BND",
+    "cash": 12500.0,
+    "strategy_type": "Conservative Income",
+    "investment_objective": "Income-oriented allocation with lower equity beta and diversified fixed income exposure.",
+    "risk_tolerance": "Low to Moderate",
+    "time_horizon": "3-6 years",
+    "risk_profile": "Conservative",
+    "strategy_description": "Income-oriented portfolio with higher fixed income exposure and lower equity beta, designed to demonstrate duration and rate sensitivity.",
+    "ips_summary": "Target roughly 35% equities, 55% fixed income, 5% alternatives and 5% cash with controlled single-position risk.",
+    "target_allocation": [
+      { "name": "Equities", "target_weight": 0.35, "tolerance_band": 0.05 },
+      { "name": "Fixed Income", "target_weight": 0.55, "tolerance_band": 0.06 },
+      { "name": "Alternatives", "target_weight": 0.05, "tolerance_band": 0.03 },
+      { "name": "Cash", "target_weight": 0.05, "tolerance_band": 0.02 }
+    ],
+    "data_source": "demo",
+    "demo_profile": true,
+    "data_source_badges": ["Demo data", "Fixed income assumptions", "Rates Lab ready"],
+    "market_data_coverage": "All holdings use deterministic Market Data demo price histories.",
+    "fixed_income_assumptions": "BND, IEF and TLT use demo ETF duration and DV01 assumptions.",
+    "commentary_focus": [
+      "Lower equity risk than growth-oriented portfolios.",
+      "Higher fixed income exposure makes duration and rate shock sensitivity visible.",
+      "Single-name concentration is intentionally low."
+    ],
+    "transaction_history": [
+      { "date": "2026-04-01", "type": "cash_deposit", "symbol": "CASH", "description": "Initial funding", "amount": 250000.0, "currency": "USD" },
+      { "date": "2026-04-02", "type": "buy", "symbol": "BND", "description": "Buy core bond ETF", "quantity": 811.1888, "price": 71.5, "amount": -58000.0, "currency": "USD" },
+      { "date": "2026-04-02", "type": "buy", "symbol": "IEF", "description": "Buy intermediate Treasury ETF", "quantity": 469.4093, "price": 94.8, "amount": -44500.0, "currency": "USD" },
+      { "date": "2026-04-03", "type": "buy", "symbol": "TLT", "description": "Buy long Treasury ETF", "quantity": 382.9322, "price": 91.4, "amount": -35000.0, "currency": "USD" },
+      { "date": "2026-05-16", "type": "coupon_income", "symbol": "BND", "description": "Bond ETF distribution placeholder", "amount": 390.0, "currency": "USD" }
+    ]
+  },
+  {
+    "id": "pf_003",
+    "name": "Athena Tech Concentration Portfolio",
+    "base_currency": "USD",
+    "benchmark": "QQQ",
+    "cash": 5000.0,
+    "strategy_type": "Tech Concentration",
+    "investment_objective": "High-growth concentrated equity exposure used to demonstrate risk warnings, stress losses and limit breaches.",
+    "risk_tolerance": "Aggressive",
+    "time_horizon": "5-8 years",
+    "risk_profile": "High",
+    "strategy_description": "High-growth concentrated portfolio designed to demonstrate sector concentration, single-name risk and stress testing.",
+    "ips_summary": "Purposefully concentrated in technology and growth holdings; not designed as a prudent diversified allocation.",
+    "target_allocation": [
+      { "name": "Equities", "target_weight": 0.90, "tolerance_band": 0.05 },
+      { "name": "Fixed Income", "target_weight": 0.03, "tolerance_band": 0.03 },
+      { "name": "Alternatives", "target_weight": 0.00, "tolerance_band": 0.02 },
+      { "name": "Cash", "target_weight": 0.07, "tolerance_band": 0.04 }
+    ],
+    "data_source": "demo",
+    "demo_profile": true,
+    "data_source_badges": ["Demo data", "Breach demo", "Stress testing ready"],
+    "market_data_coverage": "All holdings use deterministic Market Data demo price histories.",
+    "fixed_income_assumptions": "Small BND allocation uses demo duration assumptions.",
+    "commentary_focus": [
+      "High technology exposure and top-three concentration.",
+      "Higher volatility and drawdown sensitivity.",
+      "Designed to trigger Risk Monitor and Limit Center warnings."
+    ],
+    "transaction_history": [
+      { "date": "2026-04-01", "type": "cash_deposit", "symbol": "CASH", "description": "Initial funding", "amount": 250000.0, "currency": "USD" },
+      { "date": "2026-04-02", "type": "buy", "symbol": "NVDA", "description": "Buy concentrated AI semiconductor exposure", "quantity": 93.4066, "price": 910.0, "amount": -85000.0, "currency": "USD" },
+      { "date": "2026-04-02", "type": "buy", "symbol": "AAPL", "description": "Buy technology mega-cap", "quantity": 235.6021, "price": 191.0, "amount": -45000.0, "currency": "USD" },
+      { "date": "2026-04-03", "type": "buy", "symbol": "MSFT", "description": "Buy software mega-cap", "quantity": 106.8884, "price": 421.0, "amount": -45000.0, "currency": "USD" },
+      { "date": "2026-05-20", "type": "rebalance", "symbol": "QQQ", "description": "Add further growth ETF exposure", "amount": -10000.0, "currency": "USD" }
+    ]
+  },
+  {
+    "id": "pf_004",
+    "name": "Athena Multi-Asset Institutional Demo",
+    "base_currency": "USD",
+    "benchmark": "SPY",
+    "cash": 25000.0,
+    "strategy_type": "Multi-Asset Institutional",
+    "investment_objective": "Cross-asset analytics showcase across equities, international exposure, duration, alternatives and cash.",
+    "risk_tolerance": "Moderate",
+    "time_horizon": "5-10 years",
+    "risk_profile": "Moderate Institutional",
+    "strategy_description": "Cross-asset demo portfolio designed to showcase Athena's full workflow across market data, portfolio analytics, rates, volatility, stress and limit governance.",
+    "ips_summary": "Institutional-style demo allocation with diversified equity sleeves, fixed income duration, gold exposure and explicit liquidity reserve.",
+    "target_allocation": [
+      { "name": "Equities", "target_weight": 0.60, "tolerance_band": 0.06 },
+      { "name": "Fixed Income", "target_weight": 0.30, "tolerance_band": 0.05 },
+      { "name": "Alternatives", "target_weight": 0.05, "tolerance_band": 0.03 },
+      { "name": "Cash", "target_weight": 0.05, "tolerance_band": 0.02 }
+    ],
+    "data_source": "demo",
+    "demo_profile": true,
+    "data_source_badges": ["Demo data", "Cross-asset", "Full workflow ready"],
+    "market_data_coverage": "All holdings use deterministic Market Data demo price histories.",
+    "fixed_income_assumptions": "BND, IEF and TLT use demo duration, modified duration and DV01 assumptions.",
+    "commentary_focus": [
+      "Cross-asset diversification across equity, rates, gold and cash.",
+      "Useful for stress testing and limit governance demos.",
+      "Rates and equity exposures both matter for risk interpretation."
+    ],
+    "transaction_history": [
+      { "date": "2026-04-01", "type": "cash_deposit", "symbol": "CASH", "description": "Initial institutional demo funding", "amount": 500000.0, "currency": "USD" },
+      { "date": "2026-04-02", "type": "buy", "symbol": "SPY", "description": "Buy broad US equity core", "quantity": 224.6094, "price": 512.0, "amount": -115000.0, "currency": "USD" },
+      { "date": "2026-04-02", "type": "buy", "symbol": "VXUS", "description": "Buy international equity sleeve", "quantity": 1306.1224, "price": 61.25, "amount": -80000.0, "currency": "USD" },
+      { "date": "2026-04-03", "type": "buy", "symbol": "BND", "description": "Buy core bond sleeve", "quantity": 1188.8112, "price": 71.5, "amount": -85000.0, "currency": "USD" },
+      { "date": "2026-04-03", "type": "buy", "symbol": "IEF", "description": "Buy Treasury duration sleeve", "quantity": 474.6835, "price": 94.8, "amount": -45000.0, "currency": "USD" },
+      { "date": "2026-05-24", "type": "dividend", "symbol": "VXUS", "description": "International ETF distribution placeholder", "amount": 460.0, "currency": "USD" }
+    ]
+  }
+]

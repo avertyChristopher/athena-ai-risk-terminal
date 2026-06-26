@@ -1,7 +1,33 @@
 {
   "id": "pf_001",
-  "name": "Athena Demo Portfolio",
+  "name": "Athena Balanced Growth Portfolio",
   "base_currency": "USD",
   "benchmark": "SPY",
-  "cash": 5000.0
+  "cash": 12500.0,
+  "strategy_type": "Balanced Growth",
+  "investment_objective": "Diversified long-term growth with meaningful fixed income ballast and a small defensive reserve.",
+  "risk_tolerance": "Moderate",
+  "time_horizon": "7-10 years",
+  "risk_profile": "Moderate",
+  "strategy_description": "Diversified long-term growth portfolio with broad equity exposure, fixed income ballast, small alternative allocation and cash reserve.",
+  "ips_summary": "Target roughly 60% equities, 30% fixed income, 5% alternatives and 5% cash while avoiding excessive single-name concentration.",
+  "target_allocation": [
+    { "name": "Equities", "target_weight": 0.60, "tolerance_band": 0.05 },
+    { "name": "Fixed Income", "target_weight": 0.30, "tolerance_band": 0.05 },
+    { "name": "Alternatives", "target_weight": 0.05, "tolerance_band": 0.03 },
+    { "name": "Cash", "target_weight": 0.05, "tolerance_band": 0.02 }
+  ],
+  "data_source": "demo",
+  "demo_profile": true,
+  "data_source_badges": ["Demo data", "Market Data coverage", "Risk workflow ready"],
+  "market_data_coverage": "All holdings use deterministic Market Data demo price histories.",
+  "fixed_income_assumptions": "BND and IEF use demo duration, modified duration and DV01 assumptions.",
+  "commentary_focus": [
+    "Diversification across broad equity, international equity, fixed income, gold and cash.",
+    "Moderate equity risk with manageable concentration.",
+    "Fixed income provides stabilizing ballast but adds rate sensitivity."
+  ],
+  "transaction_history": [
+    { "date": "2026-04-01", "type": "cash_deposit", "symbol": "CASH", "description": "Initial funding", "amount": 250000.0, "currency": "USD" }
+  ]
 }
