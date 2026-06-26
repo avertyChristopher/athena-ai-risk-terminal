@@ -214,6 +214,9 @@ def _asset_expected_return(asset_type: str) -> float:
         "etf": 0.06,
         "fixed_income": 0.035,
         "bond": 0.035,
+        "bond_etf": 0.035,
+        "treasury_etf": 0.032,
+        "commodity_etf": 0.04,
         "cash": 0.02,
     }.get(asset_type.lower(), 0.05)
 
@@ -225,13 +228,20 @@ def _asset_volatility(symbol: str, asset_type: str) -> float:
         "NVDA": 0.42,
         "SPY": 0.16,
         "QQQ": 0.22,
+        "VXUS": 0.18,
         "BND": 0.06,
+        "IEF": 0.075,
+        "TLT": 0.14,
+        "GLD": 0.17,
     }
     asset_volatilities = {
         "equity": 0.22,
         "etf": 0.16,
         "fixed_income": 0.06,
         "bond": 0.06,
+        "bond_etf": 0.06,
+        "treasury_etf": 0.08,
+        "commodity_etf": 0.17,
         "cash": 0.01,
     }
     return known_volatilities.get(
@@ -247,13 +257,20 @@ def _asset_beta(symbol: str, asset_type: str) -> float:
         "NVDA": 1.60,
         "SPY": 1.00,
         "QQQ": 1.15,
+        "VXUS": 0.95,
         "BND": 0.20,
+        "IEF": 0.10,
+        "TLT": -0.05,
+        "GLD": 0.05,
     }
     asset_betas = {
         "equity": 1.05,
         "etf": 0.95,
         "fixed_income": 0.20,
         "bond": 0.20,
+        "bond_etf": 0.20,
+        "treasury_etf": 0.10,
+        "commodity_etf": 0.05,
         "cash": 0.0,
     }
     return known_betas.get(symbol.upper(), asset_betas.get(asset_type.lower(), 1.0))

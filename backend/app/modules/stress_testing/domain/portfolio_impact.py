@@ -67,7 +67,11 @@ def calculate_position_stress_value(
         portfolio_base_currency,
         float(scenario.get("fx_shock", 0.0)),
     )
-    duration, duration_source = duration_assumption(symbol, asset_type)
+    if position.get("duration_assumption") is not None:
+        duration = float(position["duration_assumption"])
+        duration_source = "Demo Duration"
+    else:
+        duration, duration_source = duration_assumption(symbol, asset_type)
     rate_impact = estimate_bond_price_impact_from_duration(
         base_value,
         duration,

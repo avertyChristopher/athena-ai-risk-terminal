@@ -410,8 +410,10 @@ class PortfolioService:
 
     def get_policy(self, portfolio_id: str) -> PolicyResponse:
         portfolio = self._get_portfolio_or_404(portfolio_id)
-        policy_data = self.repository.get_policy(portfolio_id) or create_default_policy(
-            str(portfolio["benchmark"]),
+        policy_data = (
+            self.repository.get_policy(portfolio_id)
+            or self._policy_from_portfolio_profile(portfolio)
+            or create_default_policy(str(portfolio["benchmark"]))
         )
         policy = PortfolioPolicy.model_validate(policy_data)
         comparison = self._policy_comparison(portfolio_id, policy)
@@ -929,12 +931,13 @@ class PortfolioService:
     ) -> dict[str, float]:
         summary = self.get_summary(portfolio_id)
         positions = self._decorated_positions(portfolio_id)
-        allocation: dict[str, float] = {"cash": summary.cash_weight}
+        allocation: dict[str, float] = {"cash": summary.cash_weight, "Cash": summary.cash_weight}
         for position in positions:
             asset_type = str(position["asset_type"])
-            allocation[asset_type] = allocation.get(asset_type, 0.0) + float(
-                position["portfolio_weight"],
-            )
+            weight = float(position["portfolio_weight"])
+            allocation[asset_type] = allocation.get(asset_type, 0.0) + weight
+            broad_bucket = self._broad_allocation_bucket(position)
+            allocation[broad_bucket] = allocation.get(broad_bucket, 0.0) + weight
         return allocation
 
     def _policy_comparison(
@@ -981,6 +984,9 @@ class PortfolioService:
             "etf": 0.06,
             "fixed_income": 0.035,
             "bond": 0.035,
+            "bond_etf": 0.035,
+            "treasury_etf": 0.032,
+            "commodity_etf": 0.04,
             "cash": 0.02,
         }.get(asset_type.lower(), 0.05)
 
@@ -990,6 +996,9 @@ class PortfolioService:
             "etf": 0.16,
             "fixed_income": 0.06,
             "bond": 0.06,
+            "bond_etf": 0.06,
+            "treasury_etf": 0.08,
+            "commodity_etf": 0.17,
             "cash": 0.01,
         }.get(asset_type.lower(), 0.15)
 
@@ -1038,6 +1047,9 @@ class PortfolioService:
             "etf": 0.95,
             "fixed_income": 0.20,
             "bond": 0.20,
+            "bond_etf": 0.20,
+            "treasury_etf": 0.10,
+            "commodity_etf": 0.05,
             "cash": 0.0,
         }
         known_betas = {
@@ -1046,7 +1058,11 @@ class PortfolioService:
             "NVDA": 1.60,
             "SPY": 1.00,
             "QQQ": 1.15,
+            "VXUS": 0.95,
             "BND": 0.20,
+            "IEF": 0.10,
+            "TLT": -0.05,
+            "GLD": 0.05,
         }
         return {
             str(position["symbol"]).upper(): known_betas.get(
@@ -1055,6 +1071,71 @@ class PortfolioService:
             )
             for position in positions
         }
+
+    def _policy_from_portfolio_profile(
+        self,
+        portfolio: dict[str, object],
+    ) -> dict[str, object] | None:
+        target_allocation = portfolio.get("target_allocation")
+        if not isinstance(target_allocation, list) or not target_allocation:
+            return None
+        return {
+            "investor_type": "Individual" if str(portfolio.get("strategy_type", "")).lower() != "multi-asset institutional" else "Institutional",
+            "investment_objective": str(
+                portfolio.get("investment_objective")
+                or "Demo portfolio objective from Athena profile.",
+            ),
+            "return_objective": str(
+                portfolio.get("strategy_description")
+                or "Seek return consistent with the demo strategy profile.",
+            ),
+            "risk_objective": str(
+                portfolio.get("ips_summary")
+                or "Maintain allocation, concentration and liquidity within demo policy tolerance.",
+            ),
+            "risk_tolerance": str(portfolio.get("risk_tolerance") or "Moderate"),
+            "ability_to_take_risk": str(portfolio.get("risk_tolerance") or "Moderate"),
+            "willingness_to_take_risk": str(portfolio.get("risk_tolerance") or "Moderate"),
+            "risk_aversion_coefficient": (
+                2.0
+                if str(portfolio.get("risk_profile", "")).lower().startswith("high")
+                else 4.0
+                if "conservative" in str(portfolio.get("risk_profile", "")).lower()
+                else 3.0
+            ),
+            "time_horizon": str(portfolio.get("time_horizon") or "Long term"),
+            "liability_profile": "No explicit liability schedule modeled.",
+            "liquidity_needs": "Maintain the stated cash reserve for liquidity and workflow testing.",
+            "tax_considerations": "Placeholder: tax constraints are not modeled.",
+            "legal_regulatory_constraints": "Placeholder: legal constraints are not modeled.",
+            "unique_circumstances": str(
+                portfolio.get("ips_summary")
+                or "Athena deterministic demo portfolio.",
+            ),
+            "permitted_asset_classes": [
+                "equity",
+                "etf",
+                "bond_etf",
+                "treasury_etf",
+                "commodity_etf",
+                "cash",
+            ],
+            "prohibited_asset_classes": [],
+            "benchmark": str(portfolio.get("benchmark") or "SPY"),
+            "target_allocation": target_allocation,
+        }
+
+    @staticmethod
+    def _broad_allocation_bucket(position: dict[str, object]) -> str:
+        asset_class = str(position.get("asset_class") or "").lower()
+        asset_type = str(position.get("asset_type") or "").lower()
+        if "fixed" in asset_class or asset_type in {"fixed_income", "bond", "bond_etf", "treasury_etf"}:
+            return "Fixed Income"
+        if "alternative" in asset_class or asset_type in {"commodity_etf"}:
+            return "Alternatives"
+        if asset_type == "cash":
+            return "Cash"
+        return "Equities"
 
 
 class PositionService:

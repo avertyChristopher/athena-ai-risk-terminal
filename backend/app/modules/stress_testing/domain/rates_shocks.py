@@ -15,7 +15,14 @@ _DURATION_ASSUMPTIONS = {
 def is_fixed_income(asset_type: str | None, symbol: str | None = None) -> bool:
     normalized_type = (asset_type or "").strip().lower()
     normalized_symbol = (symbol or "").strip().upper()
-    return normalized_type in {"fixed_income", "bond", "bonds"} or normalized_symbol in _DURATION_ASSUMPTIONS
+    return normalized_type in {
+        "fixed_income",
+        "fixed income",
+        "bond",
+        "bonds",
+        "bond_etf",
+        "treasury_etf",
+    } or normalized_symbol in _DURATION_ASSUMPTIONS
 
 
 def duration_assumption(symbol: str, asset_type: str | None = None) -> tuple[float | None, str]:

@@ -159,25 +159,26 @@ class LimitCenterService:
                 source_module="risk_monitor",
                 payload={
                     "source_module": "risk_monitor",
-                    "global_risk_score": 78,
+                    "global_risk_score": 45,
                     "concentration": {
-                        "largest_position": {"name": "NVDA", "weight": 0.31},
-                        "top_3_weight": 0.72,
+                        "largest_position": {"name": "SPY", "weight": 0.21},
+                        "top_3_weight": 0.55,
                         "sector_exposures": [
-                            {"name": "Technology", "weight": 0.64},
-                            {"name": "Fixed Income", "weight": 0.14},
+                            {"name": "Fixed Income", "weight": 0.30},
+                            {"name": "Technology", "weight": 0.29},
+                            {"name": "International Equity", "weight": 0.12},
                         ],
-                        "cash_weight": 0.03,
+                        "cash_weight": 0.05,
                     },
                     "risk_metrics": [
-                        {"name": "Portfolio volatility", "value": 0.24},
-                        {"name": "VaR 95%", "value": 0.038},
-                        {"name": "CVaR 95%", "value": 0.055},
-                        {"name": "Max drawdown", "value": 0.17},
+                        {"name": "Portfolio volatility", "value": 0.12},
+                        {"name": "VaR 95%", "value": 0.014},
+                        {"name": "CVaR 95%", "value": 0.018},
+                        {"name": "Max drawdown", "value": 0.08},
                     ],
                     "benchmark_risk": {
-                        "tracking_error": 0.09,
-                        "beta": 1.42,
+                        "tracking_error": 0.03,
+                        "beta": 0.88,
                     },
                     "assumptions": {
                         "ruleset": "Default deterministic demo ruleset.",

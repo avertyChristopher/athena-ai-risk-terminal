@@ -552,7 +552,7 @@ class RatesLabService:
             total_market_value += market_value
             if not self._is_fixed_income(position):
                 continue
-            duration_value = self.repository.get_duration_metadata(str(position["symbol"]))
+            duration_value = self._duration_for_position(position)
             warning = None
             if duration_value is None:
                 warning = (
@@ -767,9 +767,17 @@ class RatesLabService:
     def _is_fixed_income(position: dict[str, object]) -> bool:
         asset_type = str(position.get("asset_type", "")).lower()
         sector = str(position.get("sector", "")).lower()
+        asset_class = str(position.get("asset_class", "")).lower()
         symbol = str(position.get("symbol", "")).upper()
         return (
-            asset_type in {"bond", "fixed_income", "fixed income"}
+            asset_type in {"bond", "fixed_income", "fixed income", "bond_etf", "treasury_etf"}
+            or "fixed income" in asset_class
             or "fixed income" in sector
+            or "treasury" in sector
             or symbol in {"BND", "AGG", "IEF", "TLT", "LQD", "HYG"}
         )
+
+    def _duration_for_position(self, position: dict[str, object]) -> float | None:
+        if position.get("duration_assumption") is not None:
+            return float(position["duration_assumption"])
+        return self.repository.get_duration_metadata(str(position["symbol"]))
