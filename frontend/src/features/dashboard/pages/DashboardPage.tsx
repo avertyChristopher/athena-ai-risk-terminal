@@ -284,7 +284,7 @@ export function DashboardPage() {
       ? "API Connected"
       : "Demo Data Online";
   const workflowPortfolioName =
-    selectedPortfolioName || "Athena Demo Portfolio";
+    selectedPortfolioName || "Athena Balanced Growth Portfolio";
   const workflowSymbol = selectedSymbol || selectedHolding?.symbol || "--";
   const workflowModules: WorkflowModule[] = [
     {

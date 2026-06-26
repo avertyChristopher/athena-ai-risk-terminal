@@ -449,6 +449,15 @@ export function PortfolioPage() {
               name: t("portfolio.form.name"),
               currency: t("portfolio.form.currency"),
               benchmark: t("portfolio.form.benchmark"),
+              strategyType: t("portfolio.profile.strategyType"),
+              investmentObjective: t("portfolio.profile.investmentObjective"),
+              riskTolerance: t("portfolio.profile.riskTolerance"),
+              timeHorizon: t("portfolio.profile.timeHorizon"),
+              targetAllocation: t("portfolio.profile.targetAllocation"),
+              ipsSummary: t("portfolio.profile.ipsSummary"),
+              dataSource: t("portfolio.profile.dataSource"),
+              demoProfile: t("portfolio.profile.demoProfile"),
+              portfolioProfile: t("portfolio.profile.portfolioProfile"),
             }}
           />
         ) : null}
@@ -522,6 +531,12 @@ export function PortfolioPage() {
                   exchange: t("portfolio.positions.exchange"),
                   industry: t("portfolio.positions.industry"),
                   region: t("portfolio.positions.region"),
+                  assetClass: t("portfolio.positions.assetClass"),
+                  riskBucket: t("portfolio.positions.riskBucket"),
+                  liquidity: t("portfolio.positions.liquidity"),
+                  beta: t("portfolio.positions.beta"),
+                  volatility: t("portfolio.positions.volatility"),
+                  duration: t("portfolio.positions.duration"),
                   actions: t("portfolio.positions.actions"),
                   edit: t("portfolio.positions.edit"),
                   marketData: t("portfolio.positions.marketData"),

@@ -346,7 +346,7 @@ export function LimitCenterPage() {
         {activeTab === "overview" ? (
           <OverviewTab
             evaluation={evaluation}
-            portfolioName={selectedPortfolioName || "Athena Demo Portfolio"}
+            portfolioName={selectedPortfolioName || "Athena Balanced Growth Portfolio"}
             t={t}
           />
         ) : null}

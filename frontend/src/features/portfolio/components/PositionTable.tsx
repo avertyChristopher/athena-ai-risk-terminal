@@ -33,6 +33,12 @@ type PositionTableProps = {
     exchange?: string;
     industry?: string;
     region?: string;
+    assetClass?: string;
+    riskBucket?: string;
+    liquidity?: string;
+    beta?: string;
+    volatility?: string;
+    duration?: string;
     actions: string;
     edit?: string;
     marketData?: string;
@@ -94,6 +100,12 @@ export function PositionTable({
                 <th>{labels.exchange ?? "Exchange"}</th>
                 <th>{labels.industry ?? "Industry"}</th>
                 <th>{labels.region ?? "Region"}</th>
+                <th>{labels.assetClass ?? "Asset class"}</th>
+                <th>{labels.riskBucket ?? "Risk bucket"}</th>
+                <th>{labels.liquidity ?? "Liquidity"}</th>
+                <th>{labels.beta ?? "Beta"}</th>
+                <th>{labels.volatility ?? "Volatility"}</th>
+                <th>{labels.duration ?? "Duration"}</th>
                 <th>{labels.actions}</th>
               </tr>
             </thead>
@@ -156,6 +168,19 @@ export function PositionTable({
                   <td>{position.exchange ?? "--"}</td>
                   <td>{position.industry ?? "--"}</td>
                   <td>{position.region ?? "--"}</td>
+                  <td>{position.asset_class ?? "--"}</td>
+                  <td>{position.risk_bucket ?? "--"}</td>
+                  <td>{position.liquidity_profile ?? "--"}</td>
+                  <td>{formatOptionalNumber(position.beta_assumption)}</td>
+                  <td>
+                    {position.volatility_assumption === null ||
+                    position.volatility_assumption === undefined ? (
+                      "--"
+                    ) : (
+                      <PercentValue value={position.volatility_assumption} />
+                    )}
+                  </td>
+                  <td>{formatOptionalNumber(position.duration_assumption)}</td>
                   <td className="data-table__actions">
                     <button
                       className="button button--ghost button--compact"
@@ -203,4 +228,8 @@ export function PositionTable({
       )}
     </section>
   );
+}
+
+function formatOptionalNumber(value: number | null | undefined) {
+  return value === null || value === undefined ? "--" : value.toFixed(2);
 }

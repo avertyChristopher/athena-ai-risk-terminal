@@ -1069,6 +1069,65 @@ select {
   align-items: stretch;
 }
 
+.portfolio-profile-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.portfolio-profile-panel dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.portfolio-profile-panel dl div,
+.portfolio-profile-panel__note,
+.portfolio-profile-panel__targets {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.portfolio-profile-panel dt,
+.portfolio-profile-panel__note strong,
+.portfolio-profile-panel__targets strong {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.portfolio-profile-panel dd,
+.portfolio-profile-panel__note p,
+.portfolio-profile-panel__description {
+  margin: 0;
+}
+
+.portfolio-profile-panel__description,
+.portfolio-profile-panel__note p {
+  color: var(--text);
+  line-height: 1.55;
+}
+
+.portfolio-profile-panel__targets div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.portfolio-profile-panel__targets span {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 9px;
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
 .portfolio-tabs {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
@@ -3163,6 +3222,10 @@ ul.portfolio-note-list {
   font-weight: 760;
 }
 
+.workflow-stat-list__wide {
+  grid-column: 1 / -1;
+}
+
 .workflow-warning,
 .workflow-notice {
   border: 1px solid rgba(138, 106, 67, 0.22);
@@ -4819,6 +4882,7 @@ ul.portfolio-note-list {
 
   .portfolio-metric-grid,
   .portfolio-metric-grid--compact,
+  .portfolio-profile-panel dl,
   .portfolio-endpoint-grid,
   .portfolio-diagnostics-grid,
   .trade-ticket-cost-strip,

@@ -32,6 +32,10 @@ export function PortfolioSelector({
     onPortfolioChange?.(portfolioId);
   }
 
+  const selectedTotalValue =
+    (selectedPortfolio?.cash ?? 0) +
+    holdings.reduce((total, holding) => total + holding.market_value, 0);
+
   return (
     <section
       className={`workflow-panel ${compact ? "workflow-panel--compact" : ""} ${className}`.trim()}
@@ -69,6 +73,8 @@ export function PortfolioSelector({
           {portfolios.map((portfolio) => (
             <option key={portfolio.id} value={portfolio.id}>
               {portfolio.name}
+              {portfolio.strategy_type ? ` - ${portfolio.strategy_type}` : ""}
+              {portfolio.risk_profile ? ` - ${portfolio.risk_profile}` : ""}
             </option>
           ))}
         </select>
@@ -82,6 +88,24 @@ export function PortfolioSelector({
 
       {showDetails && selectedPortfolio ? (
         <dl className="workflow-stat-list">
+          <div className="workflow-stat-list__wide">
+            <dt>{t("workflow.strategyType")}</dt>
+            <dd>{selectedPortfolio.strategy_type ?? t("common.unavailable")}</dd>
+          </div>
+          <div>
+            <dt>{t("workflow.totalValue")}</dt>
+            <dd>
+              {selectedTotalValue.toLocaleString(undefined, {
+                style: "currency",
+                currency: selectedPortfolio.base_currency,
+                maximumFractionDigits: 0,
+              })}
+            </dd>
+          </div>
+          <div>
+            <dt>{t("workflow.riskProfile")}</dt>
+            <dd>{selectedPortfolio.risk_profile ?? t("common.unavailable")}</dd>
+          </div>
           <div>
             <dt>{t("workflow.baseCurrency")}</dt>
             <dd>{selectedPortfolio.base_currency}</dd>

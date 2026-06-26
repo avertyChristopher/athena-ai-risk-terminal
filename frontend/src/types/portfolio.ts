@@ -25,6 +25,25 @@ export type PortfolioRead = {
   base_currency: string;
   benchmark: string;
   cash: number;
+  strategy_type?: string | null;
+  investment_objective?: string | null;
+  risk_tolerance?: string | null;
+  time_horizon?: string | null;
+  target_allocation?: {
+    name: string;
+    target_weight: number;
+    tolerance_band?: number;
+  }[];
+  strategy_description?: string | null;
+  ips_summary?: string | null;
+  data_source?: string | null;
+  risk_profile?: string | null;
+  demo_profile?: boolean;
+  data_source_badges?: string[];
+  market_data_coverage?: string | null;
+  fixed_income_assumptions?: string | null;
+  transaction_history?: Record<string, unknown>[];
+  commentary_focus?: string[];
 };
 
 export type PortfolioCreate = {
@@ -61,6 +80,16 @@ export type PositionRead = {
   exchange?: string | null;
   industry?: string | null;
   region?: string | null;
+  asset_class?: string | null;
+  risk_bucket?: string | null;
+  liquidity_profile?: string | null;
+  beta_assumption?: number | null;
+  volatility_assumption?: number | null;
+  duration_assumption?: number | null;
+  modified_duration_assumption?: number | null;
+  dv01_assumption?: number | null;
+  dividend_yield?: number | null;
+  data_source?: string | null;
   cost_basis: number;
   unrealized_pnl: number;
   unrealized_pnl_percent: number;
@@ -80,6 +109,16 @@ export type PositionCreate = {
   exchange?: string | null;
   industry?: string | null;
   region?: string | null;
+  asset_class?: string | null;
+  risk_bucket?: string | null;
+  liquidity_profile?: string | null;
+  beta_assumption?: number | null;
+  volatility_assumption?: number | null;
+  duration_assumption?: number | null;
+  modified_duration_assumption?: number | null;
+  dv01_assumption?: number | null;
+  dividend_yield?: number | null;
+  data_source?: string | null;
 };
 
 export type PositionUpdate = Partial<PositionCreate>;
