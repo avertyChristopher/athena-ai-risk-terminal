@@ -6,6 +6,21 @@ class PortfolioBase(BaseModel):
     base_currency: str = Field(min_length=3, max_length=3)
     benchmark: str = Field(default="SPY", min_length=1, max_length=32)
     cash: float = Field(default=0.0, ge=0)
+    strategy_type: str | None = None
+    investment_objective: str | None = None
+    risk_tolerance: str | None = None
+    time_horizon: str | None = None
+    target_allocation: list[dict[str, object]] = Field(default_factory=list)
+    strategy_description: str | None = None
+    ips_summary: str | None = None
+    data_source: str | None = None
+    risk_profile: str | None = None
+    demo_profile: bool = False
+    data_source_badges: list[str] = Field(default_factory=list)
+    market_data_coverage: str | None = None
+    fixed_income_assumptions: str | None = None
+    transaction_history: list[dict[str, object]] = Field(default_factory=list)
+    commentary_focus: list[str] = Field(default_factory=list)
 
 
 class PortfolioCreate(PortfolioBase):
@@ -17,6 +32,21 @@ class PortfolioUpdate(BaseModel):
     base_currency: str | None = Field(default=None, min_length=3, max_length=3)
     benchmark: str | None = Field(default=None, min_length=1, max_length=32)
     cash: float | None = Field(default=None, ge=0)
+    strategy_type: str | None = None
+    investment_objective: str | None = None
+    risk_tolerance: str | None = None
+    time_horizon: str | None = None
+    target_allocation: list[dict[str, object]] | None = None
+    strategy_description: str | None = None
+    ips_summary: str | None = None
+    data_source: str | None = None
+    risk_profile: str | None = None
+    demo_profile: bool | None = None
+    data_source_badges: list[str] | None = None
+    market_data_coverage: str | None = None
+    fixed_income_assumptions: str | None = None
+    transaction_history: list[dict[str, object]] | None = None
+    commentary_focus: list[str] | None = None
 
 
 class PortfolioRead(PortfolioBase):
@@ -96,6 +126,16 @@ class PositionBase(BaseModel):
     exchange: str | None = None
     industry: str | None = None
     region: str | None = None
+    asset_class: str | None = None
+    risk_bucket: str | None = None
+    liquidity_profile: str | None = None
+    beta_assumption: float | None = None
+    volatility_assumption: float | None = None
+    duration_assumption: float | None = None
+    modified_duration_assumption: float | None = None
+    dv01_assumption: float | None = None
+    dividend_yield: float | None = None
+    data_source: str | None = None
 
 
 class PositionCreate(PositionBase):
@@ -116,6 +156,16 @@ class PositionUpdate(BaseModel):
     exchange: str | None = None
     industry: str | None = None
     region: str | None = None
+    asset_class: str | None = None
+    risk_bucket: str | None = None
+    liquidity_profile: str | None = None
+    beta_assumption: float | None = None
+    volatility_assumption: float | None = None
+    duration_assumption: float | None = None
+    modified_duration_assumption: float | None = None
+    dv01_assumption: float | None = None
+    dividend_yield: float | None = None
+    data_source: str | None = None
 
 
 class PositionRead(PositionBase):
@@ -279,7 +329,16 @@ class PortfolioConstraints(BaseModel):
     max_asset_type_weight: float = Field(default=0.80, ge=0, le=1)
     max_currency_weight: float = Field(default=1.0, ge=0, le=1)
     minimum_cash_weight: float = Field(default=0.02, ge=0, le=1)
-    allowed_asset_types: list[str] = ["equity", "etf", "fixed_income", "cash"]
+    allowed_asset_types: list[str] = [
+        "equity",
+        "etf",
+        "fixed_income",
+        "bond",
+        "bond_etf",
+        "treasury_etf",
+        "commodity_etf",
+        "cash",
+    ]
     benchmark_required: bool = False
     max_number_of_positions: int | None = None
 

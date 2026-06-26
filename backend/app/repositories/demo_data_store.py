@@ -22,8 +22,8 @@ class DemoDataStore:
         cls._assets = _load_json_list("demo_assets.json")
         cls._prices = _load_price_csv("demo_prices.csv")
 
-        portfolio = _load_json("demo_portfolio.json")
-        cls._portfolios = {str(portfolio["id"]): portfolio}
+        portfolios = _load_demo_portfolios()
+        cls._portfolios = {str(portfolio["id"]): portfolio for portfolio in portfolios}
 
         positions = _load_json_list("demo_positions.json")
         cls._positions = {str(position["id"]): position for position in positions}
@@ -173,6 +173,17 @@ def _load_json_list(file_name: str) -> list[dict[str, Any]]:
     return data
 
 
+def _load_demo_portfolios() -> list[dict[str, Any]]:
+    portfolio_list_path = DEMO_DATA_DIR / "demo_portfolios.json"
+    if portfolio_list_path.exists():
+        return _load_json_list("demo_portfolios.json")
+
+    portfolio = _load_json("demo_portfolio.json")
+    if not isinstance(portfolio, dict):
+        raise ValueError("demo_portfolio.json must contain an object.")
+    return [portfolio]
+
+
 def _load_price_csv(file_name: str) -> list[dict[str, Any]]:
     with (DEMO_DATA_DIR / file_name).open(encoding="utf-8", newline="") as file:
         reader = csv.DictReader(file)
@@ -217,6 +228,10 @@ def _extend_price_history(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         "SPY": [0.003, 0.004, -0.002, 0.005, 0.002, -0.003, 0.004, 0.001],
         "BND": [0.001, -0.0005, 0.0008, 0.0012, -0.0007, 0.0006, 0.0009, -0.0004],
         "QQQ": [0.006, 0.008, -0.005, 0.009, 0.004, -0.006, 0.008, 0.003],
+        "VXUS": [0.002, 0.004, -0.003, 0.005, -0.001, 0.003, 0.002, -0.002],
+        "IEF": [0.0006, -0.0008, 0.0004, -0.001, 0.0007, 0.0005, -0.0006, 0.0003],
+        "TLT": [0.0012, -0.002, 0.0015, -0.0018, 0.0022, 0.001, -0.0015, 0.0008],
+        "GLD": [0.004, 0.002, -0.001, 0.006, -0.003, 0.004, 0.002, -0.001],
     }
     grouped_rows: dict[str, list[dict[str, Any]]] = {}
 
