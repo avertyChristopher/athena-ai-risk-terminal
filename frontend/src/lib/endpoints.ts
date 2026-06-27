@@ -138,4 +138,16 @@ export const endpoints = {
     `/api/limit-center/breaches/${breachId}/review`,
   limitCenterSourceModules: "/api/limit-center/source-modules",
   limitCenterDemo: "/api/limit-center/demo",
+  reportsCenterStatus: "/api/reports-center/status",
+  reportsCenterTemplates: "/api/reports-center/templates",
+  reportsCenterGenerate: "/api/reports-center/generate",
+  reportsCenterReports: "/api/reports-center/reports",
+  reportsCenterReport: (reportId: string) => `/api/reports-center/reports/${reportId}`,
+  reportsCenterExportJson: (reportId: string) =>
+    `/api/reports-center/reports/${reportId}/export/json`,
+  reportsCenterExportMarkdown: (reportId: string) =>
+    `/api/reports-center/reports/${reportId}/export/markdown`,
+  reportsCenterExportCsv: (reportId: string) =>
+    `/api/reports-center/reports/${reportId}/export/csv`,
+  reportsCenterDemo: "/api/reports-center/demo",
 } as const;
