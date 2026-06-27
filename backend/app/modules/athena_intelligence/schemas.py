@@ -13,6 +13,7 @@ AthenaModuleName = Literal[
     "options_pricing_lab",
     "rates_lab",
     "trade_simulator",
+    "pnl_attribution",
     "market_data",
     "equity_analysis",
     "limit_center",
@@ -25,6 +26,7 @@ AthenaAnalysisMode = Literal[
     "rates",
     "risk",
     "limit",
+    "pnl",
 ]
 AthenaLanguage = Literal["en", "fr"]
 AthenaStyle = Literal["concise", "professional", "educational", "executive"]

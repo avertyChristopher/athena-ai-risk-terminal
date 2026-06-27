@@ -27,6 +27,8 @@ from app.modules.portfolio_builder.repository import (
     PositionRepository,
 )
 from app.modules.portfolio_builder.service import PortfolioService, PositionService
+from app.modules.pnl_attribution.repository import PnlAttributionRepository
+from app.modules.pnl_attribution.service import PnlAttributionService
 from app.modules.rates_lab.repository import RatesLabRepository
 from app.modules.rates_lab.service import RatesLabService
 from app.modules.reports_center.repository import ReportsCenterRepository
@@ -125,6 +127,12 @@ def get_reports_center_service(
     db: Session = Depends(get_db_session),
 ) -> ReportsCenterService:
     return ReportsCenterService(ReportsCenterRepository(), db)
+
+
+def get_pnl_attribution_service(
+    db: Session = Depends(get_db_session),
+) -> PnlAttributionService:
+    return PnlAttributionService(PnlAttributionRepository(db))
 
 
 def get_pricing_service() -> PricingService:

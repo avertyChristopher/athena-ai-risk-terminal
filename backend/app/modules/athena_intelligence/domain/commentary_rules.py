@@ -324,6 +324,68 @@ def trade_points(
     }
 
 
+def pnl_points(
+    payload: dict[str, Any],
+    language: str,
+    max_points: int,
+) -> dict[str, list[str] | str]:
+    total_pnl = as_float(payload.get("total_pnl"))
+    total_return = as_float(payload.get("total_pnl_percent"))
+    realized = as_float(payload.get("realized_pnl"))
+    unrealized = as_float(payload.get("unrealized_pnl"))
+    income = as_float(payload.get("income_pnl"))
+    active_return = as_float(nested_get(payload, "benchmark_comparison", "active_return"))
+    winners = payload.get("top_winners") if isinstance(payload.get("top_winners"), list) else []
+    losers = payload.get("top_losers") if isinstance(payload.get("top_losers"), list) else []
+    top_winner = winners[0].get("symbol") if winners and isinstance(winners[0], dict) else None
+    top_loser = losers[0].get("symbol") if losers and isinstance(losers[0], dict) else None
+    warnings = list_strings(payload.get("warnings"))
+
+    if language == "fr":
+        direction = "positif" if (total_pnl or 0) >= 0 else "negatif"
+        summary = f"Le portefeuille affiche un P&L {direction} de {total_pnl or 0:,.0f}, soit {total_return or 0:.2%} sur la periode."
+        drivers = [
+            f"Meilleur contributeur: {top_winner}." if top_winner else "",
+            f"Pire contributeur: {top_loser}." if top_loser else "",
+            f"Rendement actif vs benchmark: {active_return:.2%}." if active_return is not None else "",
+            f"P&L realise: {realized:,.0f}; P&L non realise: {unrealized:,.0f}." if realized is not None and unrealized is not None else "",
+            f"Revenus estimes: {income:,.0f}." if income is not None else "",
+        ]
+        risks = [
+            "Performance concentree sur peu de lignes." if top_winner and top_loser else "",
+            "Certaines donnees sources reposent sur des hypotheses demo." if warnings else "",
+        ]
+        actions = [
+            "Verifier les hypotheses de prix, revenus, couts et benchmark avant interpretation.",
+            "Comparer les contributions par position, secteur et classe d'actifs.",
+        ]
+    else:
+        direction = "positive" if (total_pnl or 0) >= 0 else "negative"
+        summary = f"The portfolio generated {direction} P&L of {total_pnl or 0:,.0f}, or {total_return or 0:.2%}, over the period."
+        drivers = [
+            f"Top contributor: {top_winner}." if top_winner else "",
+            f"Worst contributor: {top_loser}." if top_loser else "",
+            f"Active return versus benchmark: {active_return:.2%}." if active_return is not None else "",
+            f"Realized P&L: {realized:,.0f}; unrealized P&L: {unrealized:,.0f}." if realized is not None and unrealized is not None else "",
+            f"Estimated income: {income:,.0f}." if income is not None else "",
+        ]
+        risks = [
+            "Performance may be concentrated in a small number of positions." if top_winner and top_loser else "",
+            "Some source data relies on deterministic demo assumptions." if warnings else "",
+        ]
+        actions = [
+            "Review price, income, cost and benchmark assumptions before interpretation.",
+            "Compare position, sector and asset-class contributions.",
+        ]
+    return {
+        "summary": summary,
+        "main_risks": compact_points(risks + warnings, max_points),
+        "risk_drivers": compact_points(drivers, max_points),
+        "breaches": [],
+        "suggested_actions": compact_points(actions, max_points),
+    }
+
+
 def generic_points(
     payload: dict[str, Any],
     module_name: str,

@@ -7,6 +7,7 @@ from app.modules.athena_intelligence.domain.commentary_rules import (
     generic_points,
     options_points,
     provider_unavailable_limitation,
+    pnl_points,
     rates_points,
     risk_monitor_points,
     trade_points,
@@ -121,6 +122,8 @@ def _module_points(request: AthenaIntelligenceRequest) -> dict[str, Any]:
         return rates_points(request.payload, request.language, request.max_points)
     if request.module_name == "trade_simulator":
         return trade_points(request.payload, request.language, request.max_points)
+    if request.module_name == "pnl_attribution":
+        return pnl_points(request.payload, request.language, request.max_points)
     return generic_points(
         request.payload,
         request.module_name,
