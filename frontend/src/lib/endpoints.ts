@@ -150,4 +150,12 @@ export const endpoints = {
   reportsCenterExportCsv: (reportId: string) =>
     `/api/reports-center/reports/${reportId}/export/csv`,
   reportsCenterDemo: "/api/reports-center/demo",
+  pnlAttributionStatus: "/api/pnl-attribution/status",
+  pnlAttributionAnalyze: "/api/pnl-attribution/analyze",
+  pnlAttributionDemo: "/api/pnl-attribution/demo",
+  pnlAttributionHistory: "/api/pnl-attribution/history",
+  pnlAttributionHistoryItem: (analysisId: string) =>
+    `/api/pnl-attribution/history/${analysisId}`,
+  pnlAttributionExportCsv: (analysisId: string) =>
+    `/api/pnl-attribution/history/${analysisId}/export/csv`,
 } as const;

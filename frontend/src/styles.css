@@ -1252,6 +1252,182 @@ select {
   margin: 0;
 }
 
+.pnl-attribution-page {
+  gap: 18px;
+}
+
+.pnl-command-panel {
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.16), rgba(138, 106, 67, 0.1)),
+    rgba(255, 255, 255, 0.92);
+}
+
+.pnl-control-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 246, 242, 0.86)),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.pnl-control-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(220px, 0.9fr);
+  gap: 12px;
+  align-items: end;
+}
+
+.pnl-control-actions,
+.pnl-toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.pnl-control-actions {
+  justify-content: flex-end;
+}
+
+.pnl-toggle {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid rgba(107, 150, 195, 0.2);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.pnl-kpi-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.pnl-metric-card strong {
+  overflow-wrap: anywhere;
+}
+
+.pnl-metric-card--positive {
+  border-left-color: rgba(29, 127, 95, 0.5);
+}
+
+.pnl-metric-card--negative {
+  border-left-color: rgba(176, 58, 72, 0.5);
+}
+
+.pnl-metric-card--warning {
+  border-left-color: rgba(138, 106, 67, 0.52);
+}
+
+.pnl-overview-grid,
+.pnl-three-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pnl-three-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pnl-definition-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pnl-definition {
+  display: grid;
+  gap: 5px;
+  border: 1px solid rgba(107, 150, 195, 0.18);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.pnl-definition span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.pnl-definition strong {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.pnl-table {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.pnl-table table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+}
+
+.pnl-table th,
+.pnl-table td {
+  border-bottom: 1px solid rgba(107, 150, 195, 0.13);
+  padding: 11px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pnl-table th {
+  background: rgba(107, 150, 195, 0.08);
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pnl-table td span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.pnl-list-block {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(107, 150, 195, 0.18);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.pnl-list-block h3,
+.pnl-list-block ul {
+  margin: 0;
+}
+
+.pnl-list-block ul {
+  padding-left: 18px;
+}
+
+.pnl-csv-preview {
+  overflow: auto;
+  min-height: 280px;
+  max-height: 520px;
+  border: 1px solid rgba(107, 150, 195, 0.18);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(19, 37, 58, 0.04);
+  color: var(--text);
+  font-size: 0.82rem;
+  white-space: pre-wrap;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -5375,7 +5551,10 @@ ul.portfolio-note-list {
   .dashboard-split-grid,
   .dashboard-split-grid--wide,
   .reports-center-hero,
-  .reports-center-layout {
+  .reports-center-layout,
+  .pnl-control-grid,
+  .pnl-overview-grid,
+  .pnl-three-grid {
     grid-template-columns: 1fr;
   }
 
@@ -5386,7 +5565,9 @@ ul.portfolio-note-list {
   .reports-center-kpi-grid,
   .reports-center-template-grid,
   .reports-center-source-grid,
-  .reports-center-methodology-grid {
+  .reports-center-methodology-grid,
+  .pnl-kpi-grid,
+  .pnl-definition-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -5571,7 +5752,9 @@ ul.portfolio-note-list {
   .reports-center-template-grid,
   .reports-center-source-grid,
   .reports-center-option-grid,
-  .reports-center-methodology-grid {
+  .reports-center-methodology-grid,
+  .pnl-kpi-grid,
+  .pnl-definition-grid {
     grid-template-columns: 1fr;
   }
 
