@@ -82,8 +82,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "11/12",
-    detail: "Core analytics, governance and reporting online",
+    value: "12/12",
+    detail: "Core analytics, governance, reporting and P&L online",
     tone: "neutral",
   },
 ];
@@ -221,28 +221,28 @@ const modules: Module[] = [
     maturity: "Governance Beta",
     path: "/limit-center",
     connectedInputs: ["Portfolio Builder", "Risk Monitor", "Stress Testing", "Volatility Lab", "Options Pricing Lab", "Rates Lab", "Trade Simulator"],
-    connectedOutputs: ["Risk governance workflow", "Reports Center future", "P&L Attribution future"],
+    connectedOutputs: ["Risk governance workflow", "Reports Center", "P&L Attribution"],
     features: ["Limit rules", "Breach register", "Exception workflow", "Severity engine"],
     badges: ["Risk Governance", "Breach Register", "Exceptions", "Athena Intelligence", "Beta"],
   },
   {
     name: "P&L Attribution",
-    description: "Explain daily P&L by position, factor, market move and trade activity.",
-    status: "Coming Soon",
-    maturity: "Roadmap",
+    description: "Explain portfolio gains and losses by position, asset class, sector, income, trades, rates and options drivers.",
+    status: "Beta",
+    maturity: "Performance Beta",
     path: "/pnl-attribution",
-    connectedInputs: [],
-    connectedOutputs: [],
-    features: ["Factor attribution", "Trade attribution"],
-    badges: ["Coming Soon"],
+    connectedInputs: ["Portfolio Builder", "Market Data", "Trade Simulator", "Rates Lab", "Options Pricing Lab"],
+    connectedOutputs: ["Reports Center", "Athena Intelligence"],
+    features: ["Position P&L", "Group attribution", "Benchmark active return", "Rates/options hooks"],
+    badges: ["Performance Attribution", "Portfolio Connected", "Market Data", "Reports Ready", "Athena Intelligence", "Beta"],
   },
   {
     name: "Reports Center",
-    description: "Generate structured portfolio, risk, stress, limits, trade, rates and options reports from Athena analytics.",
+    description: "Generate structured portfolio, P&L, risk, stress, limits, trade, rates and options reports from Athena analytics.",
     status: "Beta",
     maturity: "Snapshot Based",
     path: "/reports-center",
-    connectedInputs: ["Portfolio Builder", "Risk Monitor", "Stress Testing", "Limit Center", "Athena Intelligence"],
+    connectedInputs: ["Portfolio Builder", "P&L Attribution", "Risk Monitor", "Stress Testing", "Limit Center", "Athena Intelligence"],
     connectedOutputs: ["JSON export", "Markdown export", "CSV tables"],
     features: ["Report templates", "Snapshot builder", "Risk pack"],
     badges: ["Reporting", "Export", "Risk Pack", "Athena Intelligence", "Snapshot Based", "Beta"],
@@ -361,8 +361,14 @@ export function DashboardPage() {
       meta: "Breach workflow",
     },
     {
+      name: "P&L Attribution",
+      description: "Explain portfolio gains and losses by position, sector, asset class, trades, rates and options drivers.",
+      path: "/pnl-attribution",
+      meta: workflowPortfolioName,
+    },
+    {
       name: "Reports Center",
-      description: "Generate snapshot-based portfolio, risk, stress, limits, rates, options and trade reports.",
+      description: "Generate snapshot-based portfolio, P&L, risk, stress, limits, rates, options and trade reports.",
       path: "/reports-center",
       meta: "Risk pack",
     },
@@ -374,7 +380,7 @@ export function DashboardPage() {
   }> = [
     {
       title: "Research to portfolio",
-      modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator"],
+      modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator", "P&L Attribution"],
     },
     {
       title: "Derivatives risk",
@@ -386,12 +392,17 @@ export function DashboardPage() {
     },
     {
       title: "Institutional stress workflow",
-      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center", "Reports Center"],
+      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center", "P&L Attribution", "Reports Center"],
     },
     {
       title: "Governance workflow",
-      modules: ["Portfolio Builder", "Trade Simulator", "Risk Monitor", "Stress Testing", "Limit Center", "Reports Center"],
+      modules: ["Portfolio Builder", "Trade Simulator", "Risk Monitor", "Stress Testing", "Limit Center", "P&L Attribution", "Reports Center"],
       destination: "Report pack",
+    },
+    {
+      title: "Performance attribution",
+      modules: ["Market Data", "Portfolio Builder", "Trade Simulator", "Rates Lab", "Options Pricing Lab", "P&L Attribution", "Reports Center"],
+      destination: "P&L report",
     },
   ];
   const demoPortfolioUniverse: DemoPortfolio[] = [
@@ -547,7 +558,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Eleven connected workstations are active today, with P&L Attribution staged for a future increment."
+        description="Twelve connected workstations are active today, including P&L Attribution and Reports Center."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
