@@ -9,6 +9,6 @@ class PnlService:
     def get_module_status(self) -> PnlModuleStatus:
         return PnlModuleStatus(
             module="pnl",
-            detail="P&L attribution routes are in place. Calculation flows and storage come later.",
+            detail="P&L Attribution is active at /api/pnl-attribution for portfolio performance explainability.",
             attribution_enabled=self.repository.attribution_enabled(),
         )

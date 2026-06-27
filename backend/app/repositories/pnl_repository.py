@@ -6,4 +6,4 @@ class PnlRepository:
         self.db = db
 
     def attribution_enabled(self) -> bool:
-        return False
+        return True
