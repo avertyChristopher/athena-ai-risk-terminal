@@ -6,4 +6,4 @@ class ReportRepository:
         self.db = db
 
     def list_report_formats(self) -> list[str]:
-        return ["pdf", "csv"]
+        return ["json", "markdown", "csv"]

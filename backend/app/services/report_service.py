@@ -9,6 +9,10 @@ class ReportService:
     def get_module_status(self) -> ReportModuleStatus:
         return ReportModuleStatus(
             module="reports",
-            detail="Report generation endpoints are scaffolded. PDF and CSV generation will be added later.",
+            status="ready",
+            detail=(
+                "Reports Center is active at /api/reports-center for snapshot-based "
+                "portfolio, risk, stress, limits and trade reporting."
+            ),
             formats=self.repository.list_report_formats(),
         )
