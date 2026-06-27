@@ -20,6 +20,7 @@ from app.modules.market_data.routes import router as market_data_router
 from app.modules.options_pricing_lab.routes import router as options_pricing_lab_router
 from app.modules.portfolio_builder.routes import router as portfolio_router
 from app.modules.rates_lab.routes import router as rates_lab_router
+from app.modules.reports_center.routes import router as reports_center_router
 from app.modules.risk_monitor.routes import router as risk_monitor_router
 from app.modules.stress_testing.routes import router as stress_testing_router
 from app.modules.trade_simulator.routes import router as trade_simulator_router
@@ -58,6 +59,7 @@ def create_app() -> FastAPI:
     app.include_router(stress_testing_router, prefix=settings.api_prefix)
     app.include_router(athena_intelligence_router, prefix=settings.api_prefix)
     app.include_router(limit_center_router, prefix=settings.api_prefix)
+    app.include_router(reports_center_router, prefix=settings.api_prefix)
     app.include_router(trade_router, prefix=settings.api_prefix)
     app.include_router(risk_router, prefix=settings.api_prefix)
     app.include_router(pricing_router, prefix=settings.api_prefix)

@@ -29,6 +29,8 @@ from app.modules.portfolio_builder.repository import (
 from app.modules.portfolio_builder.service import PortfolioService, PositionService
 from app.modules.rates_lab.repository import RatesLabRepository
 from app.modules.rates_lab.service import RatesLabService
+from app.modules.reports_center.repository import ReportsCenterRepository
+from app.modules.reports_center.service import ReportsCenterService
 from app.modules.risk_monitor.repository import RiskMonitorRepository
 from app.modules.risk_monitor.service import RiskMonitorService
 from app.modules.stress_testing.repository import StressTestingRepository
@@ -117,6 +119,12 @@ def get_athena_intelligence_service() -> AthenaIntelligenceService:
 
 def get_limit_center_service() -> LimitCenterService:
     return LimitCenterService(LimitCenterRepository())
+
+
+def get_reports_center_service(
+    db: Session = Depends(get_db_session),
+) -> ReportsCenterService:
+    return ReportsCenterService(ReportsCenterRepository(), db)
 
 
 def get_pricing_service() -> PricingService:
