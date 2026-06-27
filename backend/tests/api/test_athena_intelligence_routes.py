@@ -81,6 +81,37 @@ def test_athena_intelligence_risk_synthesis_endpoint() -> None:
     assert "not investment advice" in body["disclaimer"]
 
 
+def test_athena_intelligence_commentary_differs_by_demo_portfolio_profile() -> None:
+    balanced = client.post(
+        "/api/risk-monitor/analyze",
+        json={"portfolio_id": "pf_001", "benchmark_symbol": "SPY"},
+    ).json()
+    tech = client.post(
+        "/api/risk-monitor/analyze",
+        json={"portfolio_id": "pf_003", "benchmark_symbol": "SPY"},
+    ).json()
+    conservative_rates = client.post(
+        "/api/rates-lab/portfolio-exposure",
+        json={"portfolio_id": "pf_002", "shock_bps": 100},
+    ).json()
+
+    balanced_commentary = balanced["athena_ai_commentary"]
+    tech_commentary = tech["athena_ai_commentary"]
+    rates_commentary = conservative_rates["athena_ai_commentary"]
+
+    assert balanced["portfolio_name"] == "Athena Balanced Growth Portfolio"
+    assert tech["portfolio_name"] == "Athena Tech Concentration Portfolio"
+    assert conservative_rates["portfolio_name"] == "Athena Conservative Income Portfolio"
+    assert balanced_commentary["summary"] != tech_commentary["summary"]
+    assert "Moderate Risk" in balanced_commentary["summary"]
+    assert "Critical Risk" in tech_commentary["summary"]
+    assert any("concentration" in item.lower() for item in tech_commentary["main_risks"])
+    assert any("nvda" in item.lower() for item in tech_commentary["breaches"])
+    assert any("duration" in item.lower() for item in rates_commentary["main_risks"])
+    assert any("dv01" in item.lower() for item in rates_commentary["risk_drivers"])
+    assert "not investment advice" in tech_commentary["disclaimer"]
+
+
 def test_athena_intelligence_explain_metric_endpoint() -> None:
     response = client.post(
         "/api/athena-intelligence/explain-metric",
