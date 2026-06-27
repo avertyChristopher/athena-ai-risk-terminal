@@ -82,8 +82,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "10/12",
-    detail: "Core analytics and governance online",
+    value: "11/12",
+    detail: "Core analytics, governance and reporting online",
     tone: "neutral",
   },
 ];
@@ -238,14 +238,14 @@ const modules: Module[] = [
   },
   {
     name: "Reports Center",
-    description: "Generate portfolio, risk and analytics reports for review workflows.",
-    status: "Coming Soon",
-    maturity: "Roadmap",
+    description: "Generate structured portfolio, risk, stress, limits, trade, rates and options reports from Athena analytics.",
+    status: "Beta",
+    maturity: "Snapshot Based",
     path: "/reports-center",
-    connectedInputs: [],
-    connectedOutputs: [],
-    features: ["Portfolio reports", "Risk reports"],
-    badges: ["Coming Soon"],
+    connectedInputs: ["Portfolio Builder", "Risk Monitor", "Stress Testing", "Limit Center", "Athena Intelligence"],
+    connectedOutputs: ["JSON export", "Markdown export", "CSV tables"],
+    features: ["Report templates", "Snapshot builder", "Risk pack"],
+    badges: ["Reporting", "Export", "Risk Pack", "Athena Intelligence", "Snapshot Based", "Beta"],
   },
 ];
 
@@ -360,6 +360,12 @@ export function DashboardPage() {
       path: "/limit-center",
       meta: "Breach workflow",
     },
+    {
+      name: "Reports Center",
+      description: "Generate snapshot-based portfolio, risk, stress, limits, rates, options and trade reports.",
+      path: "/reports-center",
+      meta: "Risk pack",
+    },
   ];
   const workflowTracks: Array<{
     title: string;
@@ -380,12 +386,12 @@ export function DashboardPage() {
     },
     {
       title: "Institutional stress workflow",
-      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center"],
+      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center", "Reports Center"],
     },
     {
       title: "Governance workflow",
-      modules: ["Portfolio Builder", "Trade Simulator", "Risk Monitor", "Stress Testing", "Limit Center"],
-      destination: "Limit review",
+      modules: ["Portfolio Builder", "Trade Simulator", "Risk Monitor", "Stress Testing", "Limit Center", "Reports Center"],
+      destination: "Report pack",
     },
   ];
   const demoPortfolioUniverse: DemoPortfolio[] = [
@@ -541,7 +547,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Ten connected workstations are active today, with P&L Attribution and Reports Center staged for future increments."
+        description="Eleven connected workstations are active today, with P&L Attribution staged for a future increment."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
