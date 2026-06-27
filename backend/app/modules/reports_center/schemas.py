@@ -14,6 +14,7 @@ ReportType = Literal[
     "trade_suitability",
     "fixed_income_exposure",
     "options_risk",
+    "pnl_attribution",
     "full_portfolio_risk_pack",
 ]
 ReportLanguage = Literal["en", "fr"]

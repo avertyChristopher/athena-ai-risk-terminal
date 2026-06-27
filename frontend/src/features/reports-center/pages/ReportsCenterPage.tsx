@@ -35,6 +35,7 @@ const reportTypes: ReportType[] = [
   "trade_suitability",
   "fixed_income_exposure",
   "options_risk",
+  "pnl_attribution",
   "full_portfolio_risk_pack",
 ];
 
@@ -636,6 +637,7 @@ function reportTypeLabel(type: ReportType, t: (key: string) => string) {
     trade_suitability: t("reportsCenter.types.tradeSuitability"),
     fixed_income_exposure: t("reportsCenter.types.fixedIncomeExposure"),
     options_risk: t("reportsCenter.types.optionsRisk"),
+    pnl_attribution: t("reportsCenter.types.pnlAttribution"),
     full_portfolio_risk_pack: t("reportsCenter.types.fullPortfolioRiskPack"),
   };
   return labels[type];

@@ -14,6 +14,7 @@ def build_report_sections(report_type: ReportType, payloads: dict[str, Any]) -> 
         "trade_suitability": _trade_sections,
         "fixed_income_exposure": _rates_sections,
         "options_risk": _options_sections,
+        "pnl_attribution": _pnl_sections,
         "full_portfolio_risk_pack": _full_pack_sections,
     }
     return builders[report_type](payloads)
@@ -95,6 +96,23 @@ def _options_sections(payloads: dict[str, Any]) -> list[ReportSection]:
         _section("greeks", "Greeks", "Delta, gamma, theta, vega and rho risk snapshot.", ["Options Pricing Lab"], options.get("greeks") or {}),
         _section("payoff", "Payoff profile", "Payoff, max profit/loss and breakeven analytics.", ["Options Pricing Lab"], options.get("payoff_summary") or {}),
         _section("risk_payload", "Risk payload", "Options payload prepared for Risk Monitor and Limit Center.", ["Options Pricing Lab", "Risk Monitor"], options.get("risk_payload") or {}),
+    ]
+
+
+def _pnl_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    pnl = payloads.get("pnl_attribution") or {}
+    return [
+        _section("portfolio_period", "Portfolio and period", "Portfolio, reporting period and generated snapshot.", ["P&L Attribution"], _pick(pnl, ["portfolio_id", "portfolio_name", "period", "generated_at"])),
+        _section("total_pnl", "Total P&L", "Starting value, ending value, total P&L and return.", ["P&L Attribution"], _pick(pnl, ["starting_value", "ending_value", "total_pnl", "total_pnl_percent", "price_pnl", "income_pnl", "fees_and_costs", "fx_pnl"])),
+        _section("realized_unrealized", "Realized vs unrealized P&L", "Realized, unrealized, income and cost split.", ["P&L Attribution"], _pick(pnl, ["realized_pnl", "unrealized_pnl", "income_pnl", "fees_and_costs"])),
+        _section("position_pnl", "Position-level P&L", "Position-level P&L contributions and data source notes.", ["P&L Attribution", "Portfolio Builder", "Market Data"], table=pnl.get("position_contributions") or []),
+        _section("asset_class_attribution", "Asset class attribution", "P&L aggregated by asset class.", ["P&L Attribution"], table=pnl.get("asset_class_contributions") or []),
+        _section("sector_attribution", "Sector attribution", "P&L aggregated by sector.", ["P&L Attribution"], table=pnl.get("sector_contributions") or []),
+        _section("benchmark_comparison", "Benchmark comparison", "Portfolio return, benchmark return and active return.", ["P&L Attribution", "Market Data"], pnl.get("benchmark_comparison") or {}),
+        _section("fixed_income", "Fixed income contribution", "Duration, convexity, coupon income and residual rates P&L.", ["P&L Attribution", "Rates Lab"], table=pnl.get("fixed_income_effects") or []),
+        _section("options", "Options contribution", "Greeks contribution and options availability notes.", ["P&L Attribution", "Options Pricing Lab"], pnl.get("options_effects") or {}),
+        _section("trade_impact", "Trade impact", "Transaction costs, turnover, slippage and trade blotter status.", ["P&L Attribution", "Trade Simulator"], pnl.get("trade_effects") or {}),
+        _section("methodology", "Methodology and limitations", "P&L attribution assumptions, data sources and limitations.", ["P&L Attribution"], {"methodology": pnl.get("methodology"), "limitations": pnl.get("limitations", []), "warnings": pnl.get("warnings", [])}),
     ]
 
 

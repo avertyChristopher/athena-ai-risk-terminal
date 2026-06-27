@@ -15,6 +15,9 @@ from app.modules.market_data.service import MarketDataService
 from app.modules.options_pricing_lab.repository import OptionsPricingLabRepository
 from app.modules.options_pricing_lab.schemas import OptionPricingRequest
 from app.modules.options_pricing_lab.service import OptionsPricingLabService
+from app.modules.pnl_attribution.repository import PnlAttributionRepository
+from app.modules.pnl_attribution.schemas import PnlAttributionRequest
+from app.modules.pnl_attribution.service import PnlAttributionService
 from app.modules.portfolio_builder.repository import PortfolioRepository, PositionRepository
 from app.modules.portfolio_builder.service import PortfolioService, PositionService
 from app.modules.rates_lab.repository import RatesLabRepository
@@ -64,6 +67,7 @@ SOURCE_MODULES = [
     "Volatility Lab",
     "Rates Lab",
     "Options Pricing Lab",
+    "P&L Attribution",
     "Stress Testing",
     "Limit Center",
     "Trade Simulator",
@@ -96,12 +100,13 @@ class ReportsCenterService:
         self.trade_service = TradeSimulatorService(TradeSimulatorRepository(db))
         self.options_service = OptionsPricingLabService(OptionsPricingLabRepository(db))
         self.athena_service = AthenaIntelligenceService()
+        self.pnl_service = PnlAttributionService(PnlAttributionRepository(db), self.athena_service)
 
     def get_status(self) -> ReportsCenterStatus:
         templates = list_report_templates()
         return ReportsCenterStatus(
             detail=(
-                "Reports Center generates snapshot-based portfolio, risk, stress, "
+                "Reports Center generates snapshot-based portfolio, P&L, risk, stress, "
                 "limits, trade, rates and options reports from Athena analytics."
             ),
             templates_available=len(templates),
@@ -296,6 +301,7 @@ class ReportsCenterService:
         needs_stress = report_type in {"stress_testing", "full_portfolio_risk_pack"}
         needs_options = report_type in {"options_risk", "full_portfolio_risk_pack"}
         needs_trade = report_type in {"trade_suitability"}
+        needs_pnl = report_type in {"pnl_attribution"}
 
         if needs_risk and "risk_monitor" not in payloads:
             payloads["risk_monitor"] = self._safe_call(
@@ -362,6 +368,18 @@ class ReportsCenterService:
                         quantity=5,
                         estimated_price=200,
                         trade_rationale="Rebalancing",
+                    ),
+                ),
+            )
+        if needs_pnl and "pnl_attribution" not in payloads:
+            payloads["pnl_attribution"] = self._safe_call(
+                "P&L Attribution",
+                warnings,
+                lambda: self.pnl_service.analyze(
+                    PnlAttributionRequest(
+                        portfolio_id=portfolio_id,
+                        benchmark_symbol=str(benchmark),
+                        attribution_method="Brinson-lite",
                     ),
                 ),
             )

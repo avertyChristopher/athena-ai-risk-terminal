@@ -6,6 +6,7 @@ export type ReportType =
   | "trade_suitability"
   | "fixed_income_exposure"
   | "options_risk"
+  | "pnl_attribution"
   | "full_portfolio_risk_pack";
 
 export type ReportLanguage = "en" | "fr";
