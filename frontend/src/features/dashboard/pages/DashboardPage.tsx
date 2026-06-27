@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
-import { StatusBadge } from "../../../components/ui/StatusBadge";
+import { StatusBadge, type StatusBadgeVariant } from "../../../components/ui/StatusBadge";
 import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { useHealth } from "../../../hooks/useHealth";
 import { useTranslation } from "../../../hooks/useTranslation";
@@ -34,6 +34,19 @@ type WorkflowModule = {
   description: string;
   path: string;
   meta: string;
+};
+
+type DemoPortfolio = {
+  name: string;
+  strategyType: string;
+  riskProfile: string;
+  riskVariant: StatusBadgeVariant;
+  targetAllocation: string;
+  holdings: string;
+  baseCurrency: string;
+  benchmark: string;
+  description: string;
+  bestShowcase: string[];
 };
 
 const kpis: Kpi[] = [
@@ -375,6 +388,56 @@ export function DashboardPage() {
       destination: "Limit review",
     },
   ];
+  const demoPortfolioUniverse: DemoPortfolio[] = [
+    {
+      name: t("dashboard.demoUniverse.balanced.name"),
+      strategyType: t("dashboard.demoUniverse.balanced.strategy"),
+      riskProfile: t("dashboard.demoUniverse.balanced.risk"),
+      riskVariant: "warning",
+      targetAllocation: "60 / 30 / 5 / 5",
+      holdings: "9",
+      baseCurrency: "USD",
+      benchmark: "SPY",
+      description: t("dashboard.demoUniverse.balanced.description"),
+      bestShowcase: ["Portfolio Builder", "Risk Monitor"],
+    },
+    {
+      name: t("dashboard.demoUniverse.conservative.name"),
+      strategyType: t("dashboard.demoUniverse.conservative.strategy"),
+      riskProfile: t("dashboard.demoUniverse.conservative.risk"),
+      riskVariant: "success",
+      targetAllocation: "35 / 55 / 5 / 5",
+      holdings: "7",
+      baseCurrency: "USD",
+      benchmark: "BND",
+      description: t("dashboard.demoUniverse.conservative.description"),
+      bestShowcase: ["Rates Lab", "Risk Monitor"],
+    },
+    {
+      name: t("dashboard.demoUniverse.tech.name"),
+      strategyType: t("dashboard.demoUniverse.tech.strategy"),
+      riskProfile: t("dashboard.demoUniverse.tech.risk"),
+      riskVariant: "danger",
+      targetAllocation: "96 / 2 / 0 / 2",
+      holdings: "6",
+      baseCurrency: "USD",
+      benchmark: "QQQ",
+      description: t("dashboard.demoUniverse.tech.description"),
+      bestShowcase: ["Limit Center", "Stress Testing"],
+    },
+    {
+      name: t("dashboard.demoUniverse.multiAsset.name"),
+      strategyType: t("dashboard.demoUniverse.multiAsset.strategy"),
+      riskProfile: t("dashboard.demoUniverse.multiAsset.risk"),
+      riskVariant: "info",
+      targetAllocation: "60 / 30 / 5 / 5",
+      holdings: "10",
+      baseCurrency: "USD",
+      benchmark: "SPY",
+      description: t("dashboard.demoUniverse.multiAsset.description"),
+      bestShowcase: [t("dashboard.demoUniverse.fullWorkflow")],
+    },
+  ];
 
   return (
     <div className="page dashboard-page">
@@ -448,6 +511,30 @@ export function DashboardPage() {
                 })}
               </div>
             </div>
+          ))}
+        </div>
+      </DashboardSection>
+
+      <DashboardSection
+        title={t("dashboard.demoUniverse.title")}
+        description={t("dashboard.demoUniverse.description")}
+      >
+        <div className="dashboard-demo-universe-grid">
+          {demoPortfolioUniverse.map((portfolio) => (
+            <DemoPortfolioCard
+              key={portfolio.name}
+              portfolio={portfolio}
+              labels={{
+                demoBadge: t("dashboard.demoUniverse.demoBadge"),
+                strategyType: t("workflow.strategyType"),
+                targetAllocation: t("portfolio.profile.targetAllocation"),
+                holdings: t("workflow.positions"),
+                baseCurrency: t("workflow.baseCurrency"),
+                benchmark: t("workflow.benchmark"),
+                bestShowcase: t("dashboard.demoUniverse.bestShowcase"),
+                openPortfolioBuilder: t("dashboard.demoUniverse.openPortfolioBuilder"),
+              }}
+            />
           ))}
         </div>
       </DashboardSection>
@@ -634,6 +721,66 @@ function WorkflowCard({
         <span>{module.meta}</span>
         <strong>{actionLabel}</strong>
       </div>
+    </Link>
+  );
+}
+
+function DemoPortfolioCard({
+  portfolio,
+  labels,
+}: {
+  portfolio: DemoPortfolio;
+  labels: {
+    demoBadge: string;
+    strategyType: string;
+    targetAllocation: string;
+    holdings: string;
+    baseCurrency: string;
+    benchmark: string;
+    bestShowcase: string;
+    openPortfolioBuilder: string;
+  };
+}) {
+  return (
+    <Link className="dashboard-demo-card" to="/portfolio-builder">
+      <div className="dashboard-demo-card__header">
+        <span className="equity-kicker">{labels.demoBadge}</span>
+        <StatusBadge label={portfolio.riskProfile} variant={portfolio.riskVariant} />
+      </div>
+      <div>
+        <p className="dashboard-demo-card__strategy">
+          {labels.strategyType}: <strong>{portfolio.strategyType}</strong>
+        </p>
+        <h3>{portfolio.name}</h3>
+        <p>{portfolio.description}</p>
+      </div>
+      <dl className="dashboard-demo-card__facts">
+        <div>
+          <dt>{labels.targetAllocation}</dt>
+          <dd>{portfolio.targetAllocation}</dd>
+        </div>
+        <div>
+          <dt>{labels.holdings}</dt>
+          <dd>{portfolio.holdings}</dd>
+        </div>
+        <div>
+          <dt>{labels.baseCurrency}</dt>
+          <dd>{portfolio.baseCurrency}</dd>
+        </div>
+        <div>
+          <dt>{labels.benchmark}</dt>
+          <dd>{portfolio.benchmark}</dd>
+        </div>
+      </dl>
+      <div className="dashboard-demo-card__showcase">
+        <span>{labels.bestShowcase}</span>
+        <div>
+          {portfolio.bestShowcase.map((module) => (
+            <strong key={module}>{module}</strong>
+          ))}
+        </div>
+      </div>
+      <span className="dashboard-demo-card__action">{labels.openPortfolioBuilder}</span>
     </Link>
   );
 }

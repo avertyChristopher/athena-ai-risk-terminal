@@ -80,6 +80,40 @@
       "high": "High"
     }
   },
+  "dashboard": {
+    "demoUniverse": {
+      "title": "Demo Portfolio Universe",
+      "description": "Four realistic demo profiles show how Athena handles diversified wealth portfolios, income portfolios, concentration risk and institutional multi-asset workflows.",
+      "demoBadge": "Demo portfolio",
+      "bestShowcase": "Best module showcase",
+      "openPortfolioBuilder": "Open in Portfolio Builder",
+      "fullWorkflow": "Full Athena workflow",
+      "balanced": {
+        "name": "Athena Balanced Growth Portfolio",
+        "strategy": "Balanced Growth",
+        "risk": "Moderate",
+        "description": "Diversified long-term growth portfolio with broad equity exposure, fixed income ballast, small alternative allocation and cash reserve."
+      },
+      "conservative": {
+        "name": "Athena Conservative Income Portfolio",
+        "strategy": "Conservative Income",
+        "risk": "Conservative",
+        "description": "Income-oriented portfolio with higher fixed income exposure and lower equity beta, designed to demonstrate duration and rate sensitivity."
+      },
+      "tech": {
+        "name": "Athena Tech Concentration Portfolio",
+        "strategy": "Tech Concentration",
+        "risk": "High",
+        "description": "High-growth concentrated portfolio designed to demonstrate sector concentration, single-name risk and stress testing."
+      },
+      "multiAsset": {
+        "name": "Athena Multi-Asset Institutional Demo",
+        "strategy": "Multi-Asset Institutional",
+        "risk": "Moderate Institutional",
+        "description": "Cross-asset demo portfolio designed to showcase Athena's full workflow across market data, portfolio analytics, rates, volatility, stress and limit governance."
+      }
+    }
+  },
   "nav": {
     "dashboard": "Dashboard",
     "marketData": "Market Data",

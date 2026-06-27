@@ -80,6 +80,40 @@
       "high": "Elevee"
     }
   },
+  "dashboard": {
+    "demoUniverse": {
+      "title": "Univers des portefeuilles de demonstration",
+      "description": "Quatre profils demo realistes montrent comment Athena traite les portefeuilles diversifies, les portefeuilles de revenu, le risque de concentration et les workflows multi-actifs institutionnels.",
+      "demoBadge": "Portefeuille de demonstration",
+      "bestShowcase": "Meilleure demonstration de module",
+      "openPortfolioBuilder": "Ouvrir dans Portfolio Builder",
+      "fullWorkflow": "Workflow Athena complet",
+      "balanced": {
+        "name": "Portefeuille Athena Croissance equilibree",
+        "strategy": "Croissance equilibree",
+        "risk": "Modere",
+        "description": "Portefeuille de croissance long terme diversifie avec exposition actions large, ballast fixed income, petite allocation alternative et reserve de cash."
+      },
+      "conservative": {
+        "name": "Portefeuille Athena Revenu conservateur",
+        "strategy": "Revenu conservateur",
+        "risk": "Conservateur",
+        "description": "Portefeuille oriente revenu avec exposition fixed income plus elevee et beta actions plus faible, concu pour demontrer la duration et la sensibilite aux taux."
+      },
+      "tech": {
+        "name": "Portefeuille Athena Concentration technologique",
+        "strategy": "Concentration technologique",
+        "risk": "Eleve",
+        "description": "Portefeuille de croissance concentre concu pour demontrer la concentration sectorielle, le risque single-name et les stress tests."
+      },
+      "multiAsset": {
+        "name": "Demo Athena Multi-actifs institutionnel",
+        "strategy": "Multi-actifs institutionnel",
+        "risk": "Institutionnel modere",
+        "description": "Portefeuille demo cross-asset concu pour montrer le workflow Athena complet entre Market Data, analytics portefeuille, taux, volatilite, stress et gouvernance des limites."
+      }
+    }
+  },
   "nav": {
     "dashboard": "Tableau de bord",
     "marketData": "Données de marché",

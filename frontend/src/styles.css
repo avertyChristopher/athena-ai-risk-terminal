@@ -591,6 +591,121 @@ select {
   font-size: 0.9rem;
 }
 
+.dashboard-demo-universe-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dashboard-demo-card {
+  display: grid;
+  align-content: space-between;
+  gap: 16px;
+  min-height: 360px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.82)),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.dashboard-demo-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.dashboard-demo-card__header,
+.dashboard-demo-card__showcase div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.dashboard-demo-card__header {
+  justify-content: space-between;
+}
+
+.dashboard-demo-card h3,
+.dashboard-demo-card p,
+.dashboard-demo-card dl {
+  margin: 0;
+}
+
+.dashboard-demo-card h3 {
+  margin-top: 8px;
+  font-size: 1.08rem;
+}
+
+.dashboard-demo-card p {
+  color: var(--muted);
+}
+
+.dashboard-demo-card__strategy {
+  font-size: 0.82rem;
+}
+
+.dashboard-demo-card__strategy strong {
+  color: var(--text);
+}
+
+.dashboard-demo-card__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.dashboard-demo-card__facts div,
+.dashboard-demo-card__showcase {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.dashboard-demo-card__facts dt,
+.dashboard-demo-card__showcase > span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.dashboard-demo-card__facts dd {
+  margin: 4px 0 0;
+  color: var(--text);
+  font-weight: 850;
+}
+
+.dashboard-demo-card__showcase {
+  display: grid;
+  gap: 8px;
+}
+
+.dashboard-demo-card__showcase strong {
+  border: 1px solid rgba(107, 150, 195, 0.24);
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: rgba(107, 150, 195, 0.12);
+  color: var(--accent-strong);
+  font-size: 0.74rem;
+}
+
+.dashboard-demo-card__action {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  color: var(--accent-strong);
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
 .dashboard-module-status {
   border: 1px solid rgba(107, 150, 195, 0.2);
   background: var(--accent-soft);
@@ -4953,6 +5068,7 @@ ul.portfolio-note-list {
 
   .dashboard-kpi-grid,
   .dashboard-module-grid,
+  .dashboard-demo-universe-grid,
   .dashboard-workflow-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -5129,6 +5245,7 @@ ul.portfolio-note-list {
 
   .dashboard-kpi-grid,
   .dashboard-module-grid,
+  .dashboard-demo-universe-grid,
   .dashboard-workflow-grid,
   .dashboard-workflow-summary,
   .dashboard-risk-grid {
