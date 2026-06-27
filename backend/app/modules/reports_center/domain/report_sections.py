@@ -1,0 +1,154 @@
+from __future__ import annotations
+
+from typing import Any
+
+from app.modules.reports_center.schemas import ReportSection, ReportType
+
+
+def build_report_sections(report_type: ReportType, payloads: dict[str, Any]) -> list[ReportSection]:
+    builders = {
+        "portfolio_overview": _portfolio_sections,
+        "risk_monitor": _risk_sections,
+        "stress_testing": _stress_sections,
+        "limit_breach": _limit_sections,
+        "trade_suitability": _trade_sections,
+        "fixed_income_exposure": _rates_sections,
+        "options_risk": _options_sections,
+        "full_portfolio_risk_pack": _full_pack_sections,
+    }
+    return builders[report_type](payloads)
+
+
+def _portfolio_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    summary = payloads.get("portfolio_summary") or {}
+    portfolio = payloads.get("portfolio") or {}
+    allocations = payloads.get("allocations") or {}
+    return [
+        _section("executive_summary", "Executive summary", _portfolio_summary(summary), ["Portfolio Builder"], summary),
+        _section("portfolio_profile", "Portfolio profile", str(portfolio.get("strategy_description") or "Portfolio profile snapshot."), ["Portfolio Builder"], portfolio),
+        _section("holdings", "Holdings overview", "Current portfolio holdings captured at report generation.", ["Portfolio Builder"], table=payloads.get("holdings") or []),
+        _section("asset_allocation", "Asset allocation", "Invested allocation by asset type.", ["Portfolio Builder"], table=allocations.get("asset_types") or []),
+        _section("sector_allocation", "Sector allocation", "Invested allocation by sector.", ["Portfolio Builder"], table=allocations.get("sectors") or []),
+        _section("geographic_allocation", "Geographic allocation", "Invested allocation by country.", ["Portfolio Builder"], table=allocations.get("countries") or []),
+        _section("currency_allocation", "Currency allocation", "Invested allocation by currency.", ["Portfolio Builder"], table=allocations.get("currencies") or []),
+        _section("concentration", "Concentration analysis", "Issuer and top-holdings concentration snapshot.", ["Portfolio Builder"], payloads.get("concentration") or {}),
+        _section("data_quality", "Data quality", "Market Data coverage for report symbols.", ["Market Data"], payloads.get("market_data_coverage") or {}),
+    ]
+
+
+def _risk_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    risk = payloads.get("risk_monitor") or {}
+    return [
+        _section("risk_score", "Risk score", f"Risk status: {risk.get('global_risk_status', 'Unavailable')}.", ["Risk Monitor"], {"global_risk_score": risk.get("global_risk_score"), "global_risk_status": risk.get("global_risk_status")}),
+        _section("risk_metrics", "Risk metrics", "Volatility, VaR, CVaR, drawdown and tracking metrics.", ["Risk Monitor"], table=risk.get("risk_metrics") or []),
+        _section("risk_contribution", "Risk contribution", "Largest risk contributors by asset and sector.", ["Risk Monitor", "Volatility Lab"], risk.get("risk_contribution") or {}),
+        _section("benchmark_risk", "Benchmark active risk", "Benchmark beta, active exposure and tracking error.", ["Risk Monitor"], risk.get("benchmark_risk") or {}),
+        _section("drivers", "Main risk drivers", "Primary deterministic risk drivers and warnings.", ["Risk Monitor"], {"main_drivers": risk.get("main_drivers", []), "alerts": risk.get("alerts", [])}),
+        _section("breaches", "Risk warnings and breaches", "Risk Monitor limit breaches captured in the snapshot.", ["Risk Monitor", "Limit Center"], table=risk.get("limit_breaches") or []),
+    ]
+
+
+def _stress_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    stress = payloads.get("stress_testing") or {}
+    return [
+        _section("scenario", "Scenario selected", "Selected stress scenario and shock assumptions.", ["Stress Testing"], stress.get("selected_scenario") or {}),
+        _section("portfolio_impact", "Portfolio impact", "Base value, stressed value and loss estimate.", ["Stress Testing"], _pick(stress, ["base_portfolio_value", "stressed_portfolio_value", "dollar_loss", "percent_loss"])),
+        _section("worst_contributors", "Worst contributors", "Positions with the largest stressed losses.", ["Stress Testing"], table=stress.get("worst_contributors") or []),
+        _section("sector_impact", "Sector impact", "Sector-level stress impacts.", ["Stress Testing"], table=stress.get("sector_impacts") or []),
+        _section("asset_class_impact", "Asset class impact", "Asset-class stress impacts.", ["Stress Testing"], table=stress.get("asset_class_impacts") or []),
+        _section("severity", "Stress severity", "Stress severity and limit breaches triggered.", ["Stress Testing", "Limit Center"], {"severity": stress.get("severity"), "limit_breaches": stress.get("limit_breaches", [])}),
+    ]
+
+
+def _limit_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    limits = payloads.get("limit_center") or {}
+    return [
+        _section("overall_status", "Overall limit status", f"Overall status: {limits.get('overall_status', 'Unavailable')}.", ["Limit Center"], {"overall_status": limits.get("overall_status"), "breach_count": len(limits.get("breaches", []))}),
+        _section("breach_register", "Breach register", "Limit Center breach register captured for this report.", ["Limit Center"], table=limits.get("breaches") or []),
+        _section("governance_actions", "Suggested governance actions", "Deterministic governance actions and commentary.", ["Limit Center", "Athena Intelligence"], {"warnings": limits.get("warnings", []), "commentary": limits.get("athena_ai_commentary")}),
+    ]
+
+
+def _trade_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    trade = payloads.get("trade_simulator") or {}
+    return [
+        _section("trade_ticket", "Trade ticket", "Simulated trade ticket captured from Trade Simulator.", ["Trade Simulator"], trade.get("trade_ticket") or {}),
+        _section("cost_analysis", "Cost analysis", "Estimated transaction and implementation costs.", ["Trade Simulator"], trade.get("transaction_cost_analysis") or {}),
+        _section("suitability", "Suitability review", "Trade suitability and constraints.", ["Trade Simulator"], {"suitability_review": trade.get("suitability_review"), "constraints_warnings": trade.get("constraints_warnings", [])}),
+        _section("post_trade_risk", "Projected post-trade risk", "Before/after risk impact from Trade Simulator.", ["Trade Simulator", "Risk Monitor"], trade.get("risk_impact") or {}),
+    ]
+
+
+def _rates_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    rates = payloads.get("rates") or {}
+    return [
+        _section("fixed_income_holdings", "Fixed income holdings", "Bond-like portfolio exposures and duration assumptions.", ["Rates Lab"], table=rates.get("fixed_income_holdings") or []),
+        _section("duration", "Duration and DV01", "Weighted duration, DV01/PVBP and rate-shock loss.", ["Rates Lab"], _pick(rates, ["fixed_income_allocation", "weighted_average_duration", "estimated_portfolio_dv01", "estimated_rate_shock_loss", "shock_bps"])),
+        _section("data_quality", "Rates data quality", "Demo duration, curve and metadata quality notes.", ["Rates Lab"], rates.get("data_quality") or {}),
+    ]
+
+
+def _options_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    options = payloads.get("options") or {}
+    return [
+        _section("pricing", "Option pricing model", "Black-Scholes, binomial and pricing summary.", ["Options Pricing Lab"], options.get("pricing_summary") or {}),
+        _section("greeks", "Greeks", "Delta, gamma, theta, vega and rho risk snapshot.", ["Options Pricing Lab"], options.get("greeks") or {}),
+        _section("payoff", "Payoff profile", "Payoff, max profit/loss and breakeven analytics.", ["Options Pricing Lab"], options.get("payoff_summary") or {}),
+        _section("risk_payload", "Risk payload", "Options payload prepared for Risk Monitor and Limit Center.", ["Options Pricing Lab", "Risk Monitor"], options.get("risk_payload") or {}),
+    ]
+
+
+def _full_pack_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    sections: list[ReportSection] = []
+    sections.extend(_portfolio_sections(payloads)[:3])
+    sections.extend(_risk_sections(payloads)[:4])
+    sections.extend(_rates_sections(payloads)[:2])
+    sections.extend(_stress_sections(payloads)[:4])
+    sections.extend(_limit_sections(payloads)[:2])
+    return sections
+
+
+def unavailable_section(section_id: str, title: str, source_modules: list[str]) -> ReportSection:
+    return ReportSection(
+        section_id=section_id,
+        title=title,
+        status="unavailable",
+        summary="Unavailable. Requires source data.",
+        source_modules=source_modules,
+        warnings=["Requires source data."],
+    )
+
+
+def _section(
+    section_id: str,
+    title: str,
+    summary: str,
+    source_modules: list[str],
+    metrics: dict[str, Any] | None = None,
+    table: list[dict[str, Any]] | None = None,
+) -> ReportSection:
+    metrics = metrics or {}
+    table = table or []
+    if not metrics and not table:
+        return unavailable_section(section_id, title, source_modules)
+    return ReportSection(
+        section_id=section_id,
+        title=title,
+        summary=summary,
+        source_modules=source_modules,
+        metrics=metrics,
+        table=table,
+    )
+
+
+def _portfolio_summary(summary: dict[str, Any]) -> str:
+    name = summary.get("name", "Selected portfolio")
+    value = summary.get("total_value")
+    risk_hint = "Snapshot includes holdings, allocation, concentration and Market Data coverage."
+    if value is None:
+        return f"{name}: portfolio summary unavailable. {risk_hint}"
+    return f"{name} total value is {value:,.2f}. {risk_hint}"
+
+
+def _pick(payload: dict[str, Any], keys: list[str]) -> dict[str, Any]:
+    return {key: payload.get(key) for key in keys if key in payload}
