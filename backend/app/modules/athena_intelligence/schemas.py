@@ -18,6 +18,7 @@ AthenaModuleName = Literal[
     "market_data",
     "equity_analysis",
     "limit_center",
+    "ai_anomaly_center",
 ]
 AthenaAnalysisMode = Literal[
     "portfolio",
@@ -29,6 +30,7 @@ AthenaAnalysisMode = Literal[
     "limit",
     "pnl",
     "reconciliation",
+    "anomaly_monitoring",
 ]
 AthenaLanguage = Literal["en", "fr"]
 AthenaStyle = Literal["concise", "professional", "educational", "executive"]

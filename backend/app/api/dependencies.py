@@ -14,6 +14,8 @@ from app.services.rates_service import RatesService
 from app.services.report_service import ReportService
 from app.services.risk_service import RiskService
 from app.services.riskdna_service import RiskDnaService
+from app.modules.ai_anomaly_center.repository import AIAnomalyCenterRepository
+from app.modules.ai_anomaly_center.service import AIAnomalyCenterService
 from app.modules.athena_intelligence.service import AthenaIntelligenceService
 from app.modules.equity_analysis.service import EquityAnalysisService
 from app.modules.limit_center.repository import LimitCenterRepository
@@ -127,6 +129,15 @@ def get_stress_testing_service(
 
 def get_athena_intelligence_service() -> AthenaIntelligenceService:
     return AthenaIntelligenceService()
+
+
+def get_ai_anomaly_center_service(
+    db: Session = Depends(get_db_session),
+) -> AIAnomalyCenterService:
+    return AIAnomalyCenterService(
+        AIAnomalyCenterRepository(db),
+        AthenaIntelligenceService(),
+    )
 
 
 def get_limit_center_service(
