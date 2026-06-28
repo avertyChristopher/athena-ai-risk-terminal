@@ -40,25 +40,31 @@ The goal is to build a serious GitHub project that can be shown on a resume, Lin
 The project has moved beyond the original repository-initialization phase. The
 current working foundation includes:
 
-- FastAPI backend with module-based architecture for Market Data, Equity
-  Analysis, Portfolio Builder, Risk Monitor and Trade Simulator.
-- React/TypeScript/Vite frontend with pages for `/market-data`,
-  `/equity-analysis`, `/portfolio-builder`, `/risk-monitor` and
-  `/trade-simulator`.
-- SQLite persistence through SQLAlchemy for portfolios, positions and imported
-  Market Data rows.
+- FastAPI backend with module-based architecture for the current Athena
+  workstations: Market Data, Equity Analysis, Portfolio Builder, Trade
+  Simulator, Trade Blotter, Risk Monitor, Volatility Lab, Options Pricing Lab,
+  Rates Lab, Stress Testing, Limit Center, P&L Attribution, Reconciliation
+  Center, Reports Center, AI Anomaly Center, Athena Intelligence and Demo
+  Workflow orchestration.
+- React/TypeScript/Vite frontend with routed pages for the active workstations,
+  including `/architecture` for the system map.
+- SQLite persistence through SQLAlchemy for demo portfolios, positions, Market
+  Data imports, trades, P&L, reconciliation, limits, stress, anomalies and
+  report snapshots.
 - Editable Athena Demo Portfolio positions.
 - Shared frontend portfolio context with selected portfolio/symbol persisted in
   localStorage.
-- Cross-module workflow actions from portfolio positions into Market Data,
-  Equity Analysis and Trade Simulator.
+- Cross-module workflow actions from the dashboard and portfolio context into
+  research, trading, risk, P&L, reconciliation, reporting and AI monitoring.
 - Market Data portfolio coverage checks and CSV price import workflow.
-- Risk Monitor connected to the selected portfolio with configurable limits and
-  stress shocks.
+- Risk Monitor connected to the selected portfolio with configurable limits,
+  stress shocks and downstream governance/reporting workflows.
 - Equity Analysis analyst scorecard derived from existing valuation,
   profitability, growth, quality and risk metrics.
 - Backend pytest and frontend production build currently used as validation
   gates.
+- Recruiter-ready demo workflow available through `/api/demo/*` and the
+  dashboard action `Run Athena Demo Portfolio`.
 
 Immediate project phase:
 
