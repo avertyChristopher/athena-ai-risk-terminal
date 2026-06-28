@@ -82,8 +82,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "13/13",
-    detail: "Core analytics, governance, P&L, reconciliation and reporting online",
+    value: "14/14",
+    detail: "Core analytics, persistence, trade workflow, P&L, reconciliation and reporting online",
     tone: "neutral",
   },
 ];
@@ -129,9 +129,20 @@ const modules: Module[] = [
     maturity: "Connected",
     path: "/trade-simulator",
     connectedInputs: ["Portfolio Builder", "Market Data"],
-    connectedOutputs: ["Portfolio impact preview", "Reconciliation Center"],
+    connectedOutputs: ["Trade Blotter", "Portfolio impact preview", "Reconciliation Center"],
     features: ["Order simulation", "Before/after impact", "Suitability"],
-    badges: ["Portfolio Ready", "No Execution"],
+    badges: ["Portfolio Ready", "No Execution", "Blotter Ready"],
+  },
+  {
+    name: "Trade Blotter",
+    description: "Persistent simulated trade register with review workflow, costs, suitability status and downstream P&L/reconciliation integration.",
+    status: "Beta",
+    maturity: "Persistent",
+    path: "/trade-blotter",
+    connectedInputs: ["Trade Simulator", "Manual trade tickets"],
+    connectedOutputs: ["P&L Attribution", "Reconciliation Center", "Reports Center", "Risk Monitor", "Limit Center"],
+    features: ["Trade register", "Review workflow", "Costs", "Audit trail"],
+    badges: ["Trade Workflow", "Persistent", "Review", "P&L Ready", "Reconciliation Ready", "Beta"],
   },
   {
     name: "Risk Monitor",
@@ -231,7 +242,7 @@ const modules: Module[] = [
     status: "Beta",
     maturity: "Performance Beta",
     path: "/pnl-attribution",
-    connectedInputs: ["Portfolio Builder", "Market Data", "Trade Simulator", "Rates Lab", "Options Pricing Lab"],
+    connectedInputs: ["Portfolio Builder", "Market Data", "Trade Blotter", "Rates Lab", "Options Pricing Lab"],
     connectedOutputs: ["Reconciliation Center", "Reports Center", "Athena Intelligence"],
     features: ["Position P&L", "Group attribution", "Benchmark active return", "Rates/options hooks"],
     badges: ["Performance Attribution", "Portfolio Connected", "Market Data", "Reports Ready", "Athena Intelligence", "Beta"],
@@ -242,7 +253,7 @@ const modules: Module[] = [
     status: "Beta",
     maturity: "Middle Office Beta",
     path: "/reconciliation",
-    connectedInputs: ["Portfolio Builder", "Market Data", "Trade Simulator", "P&L Attribution", "Athena Intelligence"],
+    connectedInputs: ["Portfolio Builder", "Market Data", "Trade Blotter", "P&L Attribution", "Athena Intelligence"],
     connectedOutputs: ["Break Register", "Review Workflow", "Reports Center"],
     features: ["Position breaks", "Cash & FX checks", "Price controls", "Review workflow"],
     badges: ["Middle Office", "Data Quality", "Break Register", "P&L Control", "Reports Ready", "Athena Intelligence", "Beta"],
@@ -279,6 +290,7 @@ const marketRows = [
 ] as const;
 
 const activityRows = [
+  ["09:50", "Trade Blotter persistence and review workflow available"],
   ["09:48", "Reconciliation Center break register available"],
   ["09:45", "Limit Center governance workflow available"],
   ["09:42", "Market data refreshed"],
@@ -361,6 +373,12 @@ export function DashboardPage() {
       meta: workflowPortfolioName,
     },
     {
+      name: "Trade Blotter",
+      description: "Persist simulated trades, review decisions, cost estimates and downstream trade records.",
+      path: "/trade-blotter",
+      meta: "Persistent workflow",
+    },
+    {
       name: "Risk Monitor",
       description: "Review limits, stress shocks, risk contribution and benchmark active risk.",
       path: "/risk-monitor",
@@ -398,7 +416,7 @@ export function DashboardPage() {
   }> = [
     {
       title: "Research to portfolio",
-      modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator", "P&L Attribution", "Reconciliation Center"],
+      modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator", "Trade Blotter", "P&L Attribution", "Reconciliation Center"],
     },
     {
       title: "Derivatives risk",
@@ -414,17 +432,17 @@ export function DashboardPage() {
     },
     {
       title: "Governance workflow",
-      modules: ["Portfolio Builder", "Trade Simulator", "Risk Monitor", "Stress Testing", "Limit Center", "P&L Attribution", "Reconciliation Center", "Reports Center"],
+      modules: ["Portfolio Builder", "Trade Simulator", "Trade Blotter", "Risk Monitor", "Stress Testing", "Limit Center", "P&L Attribution", "Reconciliation Center", "Reports Center"],
       destination: "Report pack",
     },
     {
       title: "Performance attribution",
-      modules: ["Market Data", "Portfolio Builder", "Trade Simulator", "Rates Lab", "Options Pricing Lab", "P&L Attribution", "Reconciliation Center", "Reports Center"],
+      modules: ["Market Data", "Portfolio Builder", "Trade Simulator", "Trade Blotter", "Rates Lab", "Options Pricing Lab", "P&L Attribution", "Reconciliation Center", "Reports Center"],
       destination: "P&L report",
     },
     {
       title: "Middle-office reconciliation",
-      modules: ["Portfolio Builder", "Market Data", "P&L Attribution", "Reconciliation Center", "Reports Center"],
+      modules: ["Portfolio Builder", "Market Data", "Trade Blotter", "P&L Attribution", "Reconciliation Center", "Reports Center"],
       destination: "Reconciliation report",
     },
   ];
@@ -581,7 +599,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Thirteen connected workstations are active today, including P&L Attribution, Reconciliation Center and Reports Center."
+        description="Fourteen connected workstations are active today, including persistent Trade Blotter, P&L Attribution, Reconciliation Center and Reports Center."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
@@ -641,7 +659,7 @@ export function DashboardPage() {
           </div>
           <p>
             Central synthesis layer for Risk Monitor, Volatility Lab, Options Pricing Lab,
-            Rates Lab, Trade Simulator, Limit Center, P&L Attribution and Reconciliation Center. It generates structured commentary from module
+            Rates Lab, Trade Simulator, Trade Blotter, Limit Center, P&L Attribution and Reconciliation Center. It generates structured commentary from module
             payloads only, with deterministic fallback and no investment-advice wording.
           </p>
           <div className="dashboard-intelligence-list">
