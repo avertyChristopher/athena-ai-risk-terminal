@@ -82,8 +82,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "14/14",
-    detail: "Core analytics, persistence, trade workflow, P&L, reconciliation and reporting online",
+    value: "15/15",
+    detail: "Core analytics, persistence, anomaly monitoring, trade workflow, P&L, reconciliation and reporting online",
     tone: "neutral",
   },
 ];
@@ -259,12 +259,23 @@ const modules: Module[] = [
     badges: ["Middle Office", "Data Quality", "Break Register", "P&L Control", "Reports Ready", "Athena Intelligence", "Beta"],
   },
   {
+    name: "AI Anomaly Center",
+    description: "Detect unusual risk, P&L, trade, market data, limit and reconciliation patterns across Athena's persisted history.",
+    status: "Beta",
+    maturity: "Monitoring Beta",
+    path: "/ai-anomaly-center",
+    connectedInputs: ["Market Data", "Trade Blotter", "P&L Attribution", "Reconciliation Center", "Limit Center", "Stress Testing"],
+    connectedOutputs: ["Review workflow", "Reports Center", "Athena Intelligence"],
+    features: ["Rule-based scan", "Anomaly register", "Scoring", "Review workflow"],
+    badges: ["Monitoring", "Rule-Based AI", "Persisted History", "Review Workflow", "Reports Ready", "Athena Intelligence", "Beta"],
+  },
+  {
     name: "Reports Center",
-    description: "Generate structured portfolio, reconciliation, P&L, risk, stress, limits, trade, rates and options reports from Athena analytics.",
+    description: "Generate structured portfolio, anomaly, reconciliation, P&L, risk, stress, limits, trade, rates and options reports from Athena analytics.",
     status: "Beta",
     maturity: "Snapshot Based",
     path: "/reports-center",
-    connectedInputs: ["Portfolio Builder", "Reconciliation Center", "P&L Attribution", "Risk Monitor", "Stress Testing", "Limit Center", "Athena Intelligence"],
+    connectedInputs: ["Portfolio Builder", "AI Anomaly Center", "Reconciliation Center", "P&L Attribution", "Risk Monitor", "Stress Testing", "Limit Center", "Athena Intelligence"],
     connectedOutputs: ["JSON export", "Markdown export", "CSV tables"],
     features: ["Report templates", "Snapshot builder", "Risk pack"],
     badges: ["Reporting", "Export", "Risk Pack", "Athena Intelligence", "Snapshot Based", "Beta"],
@@ -290,6 +301,7 @@ const marketRows = [
 ] as const;
 
 const activityRows = [
+  ["09:55", "AI Anomaly Center scan, persistence and review workflow available"],
   ["09:50", "Trade Blotter persistence and review workflow available"],
   ["09:48", "Reconciliation Center break register available"],
   ["09:45", "Limit Center governance workflow available"],
@@ -403,8 +415,14 @@ export function DashboardPage() {
       meta: "Break register",
     },
     {
+      name: "AI Anomaly Center",
+      description: "Scan persisted history for unusual market data, trade, P&L, risk, limit, stress and reconciliation patterns.",
+      path: "/ai-anomaly-center",
+      meta: "Monitoring workflow",
+    },
+    {
       name: "Reports Center",
-      description: "Generate snapshot-based portfolio, reconciliation, P&L, risk, stress, limits, rates, options and trade reports.",
+      description: "Generate snapshot-based portfolio, anomaly, reconciliation, P&L, risk, stress, limits, rates, options and trade reports.",
       path: "/reports-center",
       meta: "Risk pack",
     },
@@ -416,34 +434,39 @@ export function DashboardPage() {
   }> = [
     {
       title: "Research to portfolio",
-      modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator", "Trade Blotter", "P&L Attribution", "Reconciliation Center"],
+      modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator", "Trade Blotter", "P&L Attribution", "Reconciliation Center", "AI Anomaly Center"],
     },
     {
       title: "Derivatives risk",
-      modules: ["Market Data", "Volatility Lab", "Options Pricing Lab", "Stress Testing", "Risk Monitor", "Limit Center"],
+      modules: ["Market Data", "Volatility Lab", "Options Pricing Lab", "Stress Testing", "Risk Monitor", "Limit Center", "AI Anomaly Center"],
     },
     {
       title: "Fixed-income risk",
-      modules: ["Market Data", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center"],
+      modules: ["Market Data", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center", "AI Anomaly Center"],
     },
     {
       title: "Institutional stress workflow",
-      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center", "P&L Attribution", "Reconciliation Center", "Reports Center"],
+      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center", "P&L Attribution", "Reconciliation Center", "AI Anomaly Center", "Reports Center"],
     },
     {
       title: "Governance workflow",
-      modules: ["Portfolio Builder", "Trade Simulator", "Trade Blotter", "Risk Monitor", "Stress Testing", "Limit Center", "P&L Attribution", "Reconciliation Center", "Reports Center"],
+      modules: ["Portfolio Builder", "Trade Simulator", "Trade Blotter", "Risk Monitor", "Stress Testing", "Limit Center", "P&L Attribution", "Reconciliation Center", "AI Anomaly Center", "Reports Center"],
       destination: "Report pack",
     },
     {
       title: "Performance attribution",
-      modules: ["Market Data", "Portfolio Builder", "Trade Simulator", "Trade Blotter", "Rates Lab", "Options Pricing Lab", "P&L Attribution", "Reconciliation Center", "Reports Center"],
+      modules: ["Market Data", "Portfolio Builder", "Trade Simulator", "Trade Blotter", "Rates Lab", "Options Pricing Lab", "P&L Attribution", "Reconciliation Center", "AI Anomaly Center", "Reports Center"],
       destination: "P&L report",
     },
     {
       title: "Middle-office reconciliation",
-      modules: ["Portfolio Builder", "Market Data", "Trade Blotter", "P&L Attribution", "Reconciliation Center", "Reports Center"],
+      modules: ["Portfolio Builder", "Market Data", "Trade Blotter", "P&L Attribution", "Reconciliation Center", "AI Anomaly Center", "Reports Center"],
       destination: "Reconciliation report",
+    },
+    {
+      title: "Anomaly monitoring workflow",
+      modules: ["Market Data", "Trade Blotter", "P&L Attribution", "Reconciliation Center", "Limit Center", "Stress Testing", "AI Anomaly Center", "Reports Center"],
+      destination: "Anomaly report",
     },
   ];
   const demoPortfolioUniverse: DemoPortfolio[] = [
@@ -599,7 +622,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Fourteen connected workstations are active today, including persistent Trade Blotter, P&L Attribution, Reconciliation Center and Reports Center."
+        description="Fifteen connected workstations are active today, including AI Anomaly Center, persistent Trade Blotter, P&L Attribution, Reconciliation Center and Reports Center."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
@@ -659,7 +682,7 @@ export function DashboardPage() {
           </div>
           <p>
             Central synthesis layer for Risk Monitor, Volatility Lab, Options Pricing Lab,
-            Rates Lab, Trade Simulator, Trade Blotter, Limit Center, P&L Attribution and Reconciliation Center. It generates structured commentary from module
+            Rates Lab, Trade Simulator, Trade Blotter, Limit Center, P&L Attribution, Reconciliation Center and AI Anomaly Center. It generates structured commentary from module
             payloads only, with deterministic fallback and no investment-advice wording.
           </p>
           <div className="dashboard-intelligence-list">
