@@ -15,7 +15,7 @@ class Settings(BaseModel):
     debug: bool = True
     log_level: str = "INFO"
     api_prefix: str = "/api"
-    database_url: str = "sqlite+pysqlite:///./athena.db"
+    database_url: str = "sqlite+pysqlite:///./athena_dev.db"
     redis_url: str = "redis://localhost:6379/0"
     secret_key: str = "athena-dev-secret"
     athena_ai_provider: str = "fallback"
@@ -38,7 +38,10 @@ def get_settings() -> Settings:
         debug=os.getenv("DEBUG", "true").lower() in {"1", "true", "yes", "on"},
         log_level=os.getenv("LOG_LEVEL", "INFO"),
         api_prefix=os.getenv("API_PREFIX", "/api"),
-        database_url=os.getenv("DATABASE_URL", "sqlite+pysqlite:///./athena.db"),
+        database_url=os.getenv(
+            "ATHENA_DATABASE_URL",
+            os.getenv("DATABASE_URL", "sqlite+pysqlite:///./athena_dev.db"),
+        ),
         redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
         secret_key=os.getenv("SECRET_KEY", "athena-dev-secret"),
         athena_ai_provider=os.getenv("ATHENA_AI_PROVIDER", "fallback"),
