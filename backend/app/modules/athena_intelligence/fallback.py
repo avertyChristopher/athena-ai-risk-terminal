@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from app.modules.athena_intelligence.domain.commentary_rules import (
+    anomaly_points,
     fallback_disclaimer,
     generic_points,
     options_points,
@@ -127,6 +128,8 @@ def _module_points(request: AthenaIntelligenceRequest) -> dict[str, Any]:
         return pnl_points(request.payload, request.language, request.max_points)
     if request.module_name == "reconciliation":
         return reconciliation_points(request.payload, request.language, request.max_points)
+    if request.module_name == "ai_anomaly_center":
+        return anomaly_points(request.payload, request.language, request.max_points)
     return generic_points(
         request.payload,
         request.module_name,

@@ -464,3 +464,50 @@ def generic_points(
         "breaches": [],
         "suggested_actions": actions,
     }
+
+
+def anomaly_points(
+    payload: dict[str, Any],
+    language: str,
+    max_points: int,
+) -> dict[str, list[str] | str]:
+    top = payload.get("top_anomalies") if isinstance(payload.get("top_anomalies"), list) else []
+    anomalies_detected = as_float(payload.get("anomalies_detected")) or 0
+    highest = payload.get("highest_severity") or "none"
+    if language == "fr":
+        summary = (
+            f"Athena a detecte {anomalies_detected:.0f} anomalie(s) avec une severite maximale {highest}. "
+            "Le scan est deterministe et sert a prioriser la revue risque et operationnelle."
+        )
+        fallback_action = "Prioriser les anomalies critiques et documenter les decisions de revue."
+    else:
+        summary = (
+            f"Athena detected {anomalies_detected:.0f} anomaly/anomalies with highest severity {highest}. "
+            "The scan is deterministic and supports risk and operational review prioritization."
+        )
+        fallback_action = "Prioritize critical anomalies and document review decisions."
+    risks = []
+    drivers = []
+    breaches = []
+    actions = []
+    for item in top:
+        if not isinstance(item, dict):
+            continue
+        title = str(item.get("title") or "Anomaly")
+        severity = str(item.get("severity") or "unknown")
+        source = str(item.get("source_module") or "source")
+        category = str(item.get("category") or "category")
+        risks.append(f"{severity}: {title} ({source})")
+        drivers.append(f"{category} / {source}")
+        if severity in {"high", "critical"}:
+            breaches.append(f"{severity}: {title}")
+        action = item.get("suggested_action")
+        if action:
+            actions.append(str(action))
+    return {
+        "summary": summary,
+        "main_risks": compact_points(risks, max_points),
+        "risk_drivers": compact_points(drivers, max_points),
+        "breaches": compact_points(breaches, max_points),
+        "suggested_actions": compact_points(actions or [fallback_action], max_points),
+    }
