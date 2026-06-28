@@ -19,6 +19,7 @@ from app.modules.reports_center.schemas import GeneratedReport
 from app.modules.stress_testing.schemas import StressTestingResponse
 from app.persistence.models import (
     AthenaCommentaryModel,
+    AnomalyRecordModel,
     LimitBreachModel,
     PnlAnalysisModel,
     PortfolioSnapshotModel,
@@ -587,6 +588,83 @@ class TradeBlotterPersistenceRepository:
         _clear_table(self.db, TradeBlotterEntryModel)
 
 
+class AnomalyRecordPersistenceRepository:
+    def __init__(self, db: Session | None = None) -> None:
+        self.db = db
+
+    def save(self, payload: dict[str, Any]) -> bool:
+        try:
+            with managed_session(self.db) as session:
+                anomaly_id = str(payload["anomaly_id"])
+                session.execute(delete(AnomalyRecordModel).where(AnomalyRecordModel.anomaly_id == anomaly_id))
+                session.add(_anomaly_model_from_payload(payload))
+                _commit(session)
+                return True
+        except (KeyError, SQLAlchemyError):
+            return False
+
+    def save_many(self, payloads: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        saved: list[dict[str, Any]] = []
+        for payload in payloads:
+            if self.save(payload):
+                saved.append(payload)
+        return saved
+
+    def list(
+        self,
+        *,
+        portfolio_id: str | None = None,
+        severity: str | None = None,
+        module_name: str | None = None,
+        status: str | None = None,
+    ) -> list[dict[str, Any]]:
+        try:
+            with managed_session(self.db) as session:
+                statement = select(AnomalyRecordModel)
+                if portfolio_id:
+                    statement = statement.where(AnomalyRecordModel.portfolio_id == portfolio_id)
+                if severity:
+                    statement = statement.where(AnomalyRecordModel.severity == severity)
+                if module_name:
+                    statement = statement.where(AnomalyRecordModel.module_name == module_name)
+                if status:
+                    statement = statement.where(AnomalyRecordModel.status == status)
+                rows = session.scalars(statement.order_by(AnomalyRecordModel.detected_at.desc())).all()
+                return [_anomaly_payload_from_model(row) for row in rows]
+        except SQLAlchemyError:
+            return []
+
+    def recent(self, limit: int = 50) -> list[dict[str, Any]]:
+        try:
+            with managed_session(self.db) as session:
+                rows = session.scalars(
+                    select(AnomalyRecordModel).order_by(AnomalyRecordModel.detected_at.desc()).limit(limit),
+                ).all()
+                return [_anomaly_payload_from_model(row) for row in rows]
+        except SQLAlchemyError:
+            return []
+
+    def get(self, anomaly_id: str) -> dict[str, Any] | None:
+        try:
+            with managed_session(self.db) as session:
+                row = session.scalar(select(AnomalyRecordModel).where(AnomalyRecordModel.anomaly_id == anomaly_id))
+                return _anomaly_payload_from_model(row) if row else None
+        except SQLAlchemyError:
+            return None
+
+    def delete(self, anomaly_id: str) -> bool:
+        try:
+            with managed_session(self.db) as session:
+                result = session.execute(delete(AnomalyRecordModel).where(AnomalyRecordModel.anomaly_id == anomaly_id))
+                _commit(session)
+                return bool(result.rowcount)
+        except SQLAlchemyError:
+            return False
+
+    def clear(self) -> None:
+        _clear_table(self.db, AnomalyRecordModel)
+
+
 def _trade_model_from_payload(payload: dict[str, Any]) -> TradeBlotterEntryModel:
     trade_date = payload.get("trade_date")
     settlement_date = payload.get("settlement_date")
@@ -648,6 +726,68 @@ def _trade_payload_from_model(row: TradeBlotterEntryModel) -> dict[str, Any]:
         },
     )
     return payload
+
+
+def _anomaly_model_from_payload(payload: dict[str, Any]) -> AnomalyRecordModel:
+    detected_at = payload.get("detected_at")
+    updated_at = payload.get("updated_at")
+    return AnomalyRecordModel(
+        anomaly_id=str(payload["anomaly_id"]),
+        portfolio_id=payload.get("portfolio_id"),
+        module_name=str(payload.get("module_name") or payload.get("source_module") or "unknown"),
+        anomaly_type=str(payload.get("anomaly_type") or "rule_based"),
+        category=str(payload.get("category") or "operational"),
+        severity=str(payload.get("severity") or "low"),
+        status=str(payload.get("status") or "open"),
+        title=str(payload.get("title") or "Anomaly detected"),
+        description=str(payload.get("description") or ""),
+        metric_name=str(payload.get("metric_name") or "metric"),
+        observed_value=value_to_text(payload.get("observed_value")),
+        expected_value=value_to_text(payload.get("expected_value")) if payload.get("expected_value") is not None else None,
+        threshold=value_to_text(payload.get("threshold")) if payload.get("threshold") is not None else None,
+        z_score=float(payload["z_score"]) if payload.get("z_score") is not None else None,
+        anomaly_score=float(payload.get("anomaly_score") or 0.0),
+        confidence=str(payload.get("confidence") or "medium"),
+        source_record_id=payload.get("source_record_id"),
+        source_module=str(payload.get("source_module") or payload.get("module_name") or "unknown"),
+        source_payload_json=to_json(payload.get("source_payload") or {}),
+        suggested_action=str(payload.get("suggested_action") or "Review anomaly and source module records."),
+        explanation=str(payload.get("explanation") or ""),
+        review_history_json=to_json(payload.get("review_history") or []),
+        generated_by=str(payload.get("generated_by") or "rule_based_detection"),
+        detected_at=coerce_datetime(detected_at) if detected_at else datetime.now(UTC),
+        updated_at=coerce_datetime(updated_at) if updated_at else datetime.now(UTC),
+    )
+
+
+def _anomaly_payload_from_model(row: AnomalyRecordModel) -> dict[str, Any]:
+    return {
+        "anomaly_id": row.anomaly_id,
+        "portfolio_id": row.portfolio_id,
+        "module_name": row.module_name,
+        "anomaly_type": row.anomaly_type,
+        "category": row.category,
+        "severity": row.severity,
+        "status": row.status,
+        "title": row.title,
+        "description": row.description,
+        "metric_name": row.metric_name,
+        "observed_value": text_to_value(row.observed_value),
+        "expected_value": text_to_value(row.expected_value),
+        "threshold": text_to_value(row.threshold),
+        "z_score": row.z_score,
+        "anomaly_score": row.anomaly_score,
+        "confidence": row.confidence,
+        "source_record_id": row.source_record_id,
+        "source_module": row.source_module,
+        "source_payload": from_json(row.source_payload_json, {}),
+        "suggested_action": row.suggested_action,
+        "explanation": row.explanation,
+        "review_history": from_json(row.review_history_json, []),
+        "generated_by": row.generated_by,
+        "detected_at": row.detected_at.isoformat() if row.detected_at else None,
+        "updated_at": row.updated_at.isoformat() if row.updated_at else None,
+    }
 
 
 def _stress_row(row: StressRunModel) -> dict[str, Any]:

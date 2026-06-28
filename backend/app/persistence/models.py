@@ -184,3 +184,33 @@ class AthenaCommentaryModel(Base):
     summary: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
 
+
+class AnomalyRecordModel(Base):
+    __tablename__ = "anomaly_records"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    anomaly_id: Mapped[str] = mapped_column(String(80), unique=True, index=True)
+    portfolio_id: Mapped[str | None] = mapped_column(String(80), nullable=True, index=True)
+    module_name: Mapped[str] = mapped_column(String(120), index=True)
+    anomaly_type: Mapped[str] = mapped_column(String(120), index=True)
+    category: Mapped[str] = mapped_column(String(80), index=True)
+    severity: Mapped[str] = mapped_column(String(32), index=True)
+    status: Mapped[str] = mapped_column(String(32), index=True)
+    title: Mapped[str] = mapped_column(String(255))
+    description: Mapped[str] = mapped_column(Text)
+    metric_name: Mapped[str] = mapped_column(String(120))
+    observed_value: Mapped[str] = mapped_column(Text)
+    expected_value: Mapped[str | None] = mapped_column(Text, nullable=True)
+    threshold: Mapped[str | None] = mapped_column(Text, nullable=True)
+    z_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    anomaly_score: Mapped[float] = mapped_column(Float, default=0.0)
+    confidence: Mapped[str] = mapped_column(String(32), default="medium")
+    source_record_id: Mapped[str | None] = mapped_column(String(120), nullable=True, index=True)
+    source_module: Mapped[str] = mapped_column(String(120), index=True)
+    source_payload_json: Mapped[str] = mapped_column(Text, default="{}")
+    suggested_action: Mapped[str] = mapped_column(Text)
+    explanation: Mapped[str] = mapped_column(Text)
+    review_history_json: Mapped[str] = mapped_column(Text, default="[]")
+    generated_by: Mapped[str] = mapped_column(String(120), default="rule_based_detection")
+    detected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
