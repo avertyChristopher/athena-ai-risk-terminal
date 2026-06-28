@@ -6,6 +6,8 @@ from statistics import stdev
 from sqlalchemy.orm import Session
 
 from app.modules.market_data.repository import MarketDataRepository
+from app.modules.stress_testing.schemas import StressTestingResponse
+from app.persistence.repositories import StressRunPersistenceRepository
 from app.repositories.persistent_portfolio_store import PersistentPortfolioStore
 
 
@@ -13,6 +15,7 @@ class StressTestingRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
         self.market_data = MarketDataRepository(db)
+        self.persistence = StressRunPersistenceRepository(db)
 
     def get_portfolio(self, portfolio_id: str) -> dict[str, object] | None:
         return PersistentPortfolioStore.get_portfolio(self.db, portfolio_id)
@@ -72,3 +75,19 @@ class StressTestingRepository:
             return 0.186, symbols_found, symbols_missing
 
         return max(weighted_variance**0.5, 0.03), symbols_found, symbols_missing
+
+    def save_run(self, run_id: str, response: StressTestingResponse) -> StressTestingResponse:
+        self.persistence.save(run_id, response)
+        return response
+
+    def list_runs(self) -> list[dict[str, object]]:
+        return self.persistence.list()
+
+    def get_run(self, run_id: str) -> StressTestingResponse | None:
+        return self.persistence.get(run_id)
+
+    def delete_run(self, run_id: str) -> bool:
+        return self.persistence.delete(run_id)
+
+    def clear(self) -> None:
+        self.persistence.clear()

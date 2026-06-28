@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.modules.market_data.repository import MarketDataRepository
 from app.modules.pnl_attribution.schemas import PnlAttributionResult
 from app.modules.portfolio_builder.repository import PortfolioRepository, PositionRepository
+from app.persistence.repositories import PnlAnalysisPersistenceRepository, TradeBlotterPersistenceRepository
 
 
 class PnlAttributionRepository:
@@ -18,6 +19,8 @@ class PnlAttributionRepository:
         self.portfolios = PortfolioRepository(db) if db is not None else None
         self.positions = PositionRepository(db) if db is not None else None
         self.market_data = MarketDataRepository(db) if db is not None else None
+        self.persistence = PnlAnalysisPersistenceRepository(db)
+        self.trade_blotter = TradeBlotterPersistenceRepository(db)
 
     def get_portfolio(self, portfolio_id: str) -> dict[str, Any] | None:
         if self.portfolios is None:
@@ -65,9 +68,13 @@ class PnlAttributionRepository:
 
     def save(self, analysis: PnlAttributionResult) -> PnlAttributionResult:
         self._history[analysis.analysis_id] = analysis
+        self.persistence.save(analysis)
         return analysis
 
     def list_history(self) -> list[PnlAttributionResult]:
+        persisted = self.persistence.list()
+        if persisted:
+            return persisted
         return sorted(
             self._history.values(),
             key=lambda analysis: analysis.generated_at,
@@ -75,10 +82,32 @@ class PnlAttributionRepository:
         )
 
     def get(self, analysis_id: str) -> PnlAttributionResult | None:
-        return self._history.get(analysis_id)
+        return self.persistence.get(analysis_id) or self._history.get(analysis_id)
 
     def delete(self, analysis_id: str) -> bool:
-        return self._history.pop(analysis_id, None) is not None
+        deleted_from_memory = self._history.pop(analysis_id, None) is not None
+        return self.persistence.delete(analysis_id) or deleted_from_memory
 
     def clear(self) -> None:
         self._history.clear()
+        self.persistence.clear()
+
+    def list_trade_blotter_entries(
+        self,
+        portfolio_id: str,
+        start_date: date,
+        end_date: date,
+    ) -> list[dict[str, Any]]:
+        rows = self.trade_blotter.list()
+        allowed_statuses = {"approved", "simulated", "pending_review"}
+        selected: list[dict[str, Any]] = []
+        for row in rows:
+            if str(row.get("portfolio_id")) != portfolio_id:
+                continue
+            if str(row.get("status") or "").lower() not in allowed_statuses:
+                continue
+            trade_date = str(row.get("trade_date") or "")[:10]
+            if trade_date and not (start_date.isoformat() <= trade_date <= end_date.isoformat()):
+                continue
+            selected.append(row)
+        return selected

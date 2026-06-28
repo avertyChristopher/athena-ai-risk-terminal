@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from sqlalchemy.orm import Session
+
 from app.modules.limit_center.domain.limit_rules import default_limit_rule_payloads
 from app.modules.limit_center.schemas import (
     BreachReviewEvent,
@@ -11,6 +13,7 @@ from app.modules.limit_center.schemas import (
     LimitRuleCreate,
     LimitRuleUpdate,
 )
+from app.persistence.repositories import LimitBreachPersistenceRepository
 
 
 _RULES: dict[str, LimitRule] = {}
@@ -18,7 +21,9 @@ _BREACHES: dict[str, LimitBreach] = {}
 
 
 class LimitCenterRepository:
-    def __init__(self) -> None:
+    def __init__(self, db: Session | None = None) -> None:
+        self.db = db
+        self.persistence = LimitBreachPersistenceRepository(db)
         self._ensure_defaults()
 
     def list_rules(self) -> list[LimitRule]:
@@ -59,12 +64,19 @@ class LimitCenterRepository:
     def save_breaches(self, breaches: list[LimitBreach]) -> list[LimitBreach]:
         for breach in breaches:
             _BREACHES[breach.breach_id] = breach
+        self.persistence.save_many(breaches)
         return [breach.model_copy(deep=True) for breach in breaches]
 
     def list_breaches(self) -> list[LimitBreach]:
+        persisted = self.persistence.list()
+        if persisted:
+            return persisted
         return [breach.model_copy(deep=True) for breach in _BREACHES.values()]
 
     def get_breach(self, breach_id: str) -> LimitBreach | None:
+        persisted = self.persistence.get(breach_id)
+        if persisted:
+            return persisted
         breach = _BREACHES.get(breach_id)
         return breach.model_copy(deep=True) if breach else None
 
@@ -84,11 +96,13 @@ class LimitCenterRepository:
         updated.review_note = event.note
         updated.review_history.append(event)
         _BREACHES[breach_id] = updated
+        self.persistence.save(updated)
         return updated.model_copy(deep=True)
 
     def reset_demo_state(self) -> None:
         _RULES.clear()
         _BREACHES.clear()
+        self.persistence.clear()
         self._ensure_defaults()
 
     def _ensure_defaults(self) -> None:

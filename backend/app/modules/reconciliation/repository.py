@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.modules.market_data.repository import MarketDataRepository
 from app.modules.portfolio_builder.repository import PortfolioRepository, PositionRepository
 from app.modules.reconciliation.schemas import ReconciliationBreak, ReconciliationRunResult
+from app.persistence.repositories import ReconciliationPersistenceRepository, TradeBlotterPersistenceRepository
 
 
 class ReconciliationRepository:
@@ -20,6 +21,8 @@ class ReconciliationRepository:
         self.portfolios = PortfolioRepository(db) if db is not None else None
         self.positions = PositionRepository(db) if db is not None else None
         self.market_data = MarketDataRepository(db) if db is not None else None
+        self.persistence = ReconciliationPersistenceRepository(db)
+        self.trade_blotter = TradeBlotterPersistenceRepository(db)
 
     def get_portfolio(self, portfolio_id: str) -> dict[str, Any] | None:
         if self.portfolios is None:
@@ -105,27 +108,37 @@ class ReconciliationRepository:
         self._runs[run.run_id] = run
         for item in run.breaks:
             self._breaks[item.break_id] = item
+        self.persistence.save_run(run)
         return run
 
     def list_runs(self) -> list[ReconciliationRunResult]:
+        persisted = self.persistence.list_runs()
+        if persisted:
+            return persisted
         return sorted(self._runs.values(), key=lambda item: item.generated_at, reverse=True)
 
     def get_run(self, run_id: str) -> ReconciliationRunResult | None:
-        return self._runs.get(run_id)
+        return self.persistence.get_run(run_id) or self._runs.get(run_id)
 
     def delete_run(self, run_id: str) -> bool:
         run = self._runs.pop(run_id, None)
+        deleted_from_persistence = self.persistence.delete_run(run_id)
         if run is None:
+            return deleted_from_persistence
+        if run is None and not deleted_from_persistence:
             return False
         for item in run.breaks:
             self._breaks.pop(item.break_id, None)
         return True
 
     def list_breaks(self) -> list[ReconciliationBreak]:
+        persisted = self.persistence.list_breaks()
+        if persisted:
+            return persisted
         return sorted(self._breaks.values(), key=lambda item: item.created_at, reverse=True)
 
     def get_break(self, break_id: str) -> ReconciliationBreak | None:
-        return self._breaks.get(break_id)
+        return self.persistence.get_break(break_id) or self._breaks.get(break_id)
 
     def save_break(self, item: ReconciliationBreak) -> ReconciliationBreak:
         self._breaks[item.break_id] = item
@@ -133,11 +146,35 @@ class ReconciliationRepository:
         if run is not None:
             updated_breaks = [item if row.break_id == item.break_id else row for row in run.breaks]
             self._runs[item.run_id] = run.model_copy(update={"breaks": updated_breaks})
+        self.persistence.save_break(item)
         return item
 
     def clear(self) -> None:
         self._runs.clear()
         self._breaks.clear()
+        self.persistence.clear()
+
+    def list_trade_blotter_entries(
+        self,
+        portfolio_id: str,
+        start_date: date | None = None,
+        end_date: date | None = None,
+    ) -> list[dict[str, Any]]:
+        rows = self.trade_blotter.list()
+        allowed_statuses = {"approved", "simulated", "pending_review"}
+        selected: list[dict[str, Any]] = []
+        for row in rows:
+            if str(row.get("portfolio_id")) != portfolio_id:
+                continue
+            if str(row.get("status") or "").lower() not in allowed_statuses:
+                continue
+            trade_date = str(row.get("trade_date") or "")[:10]
+            if start_date and trade_date and trade_date < start_date.isoformat():
+                continue
+            if end_date and trade_date and trade_date > end_date.isoformat():
+                continue
+            selected.append(row)
+        return selected
 
     def _external_position(
         self,

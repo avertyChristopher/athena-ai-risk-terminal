@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from uuid import uuid4
+
+from fastapi import HTTPException
 
 from app.modules.stress_testing.domain.commentary import generate_stress_commentary
 from app.modules.stress_testing.domain.contributors import (
@@ -31,6 +34,9 @@ from app.modules.stress_testing.schemas import (
     ScenarioLibraryResponse,
     SelectedPortfolio,
     ShockAssumptions,
+    StressRunDeleteResponse,
+    StressRunHistoryItem,
+    StressRunHistoryResponse,
     StressMethodology,
     StressScenarioDefinition,
     StressSeverityAssessment,
@@ -135,7 +141,7 @@ class StressTestingService:
 
         risk_metrics = self._risk_metrics(risk_snapshot) if payload.include_risk_metrics else []
         generated_at = datetime.now(UTC)
-        return StressTestingResponse(
+        response = StressTestingResponse(
             selected_portfolio=SelectedPortfolio(
                 portfolio_id=str(portfolio["id"]),
                 name=str(portfolio["name"]),
@@ -203,6 +209,7 @@ class StressTestingService:
             if payload.include_module_links
             else {},
         )
+        return self.repository.save_run(f"stress_{uuid4().hex[:12]}", response)
 
     def demo(self) -> StressTestingResponse:
         return self.run(
@@ -211,6 +218,37 @@ class StressTestingService:
                 scenario_id="risk_off_combined",
             )
         )
+
+    def list_history(self) -> StressRunHistoryResponse:
+        rows = self.repository.list_runs()
+        return StressRunHistoryResponse(
+            total_runs=len(rows),
+            items=[
+                StressRunHistoryItem(
+                    run_id=str(row["run_id"]),
+                    portfolio_id=str(row["portfolio_id"]),
+                    portfolio_name=str(row["portfolio_name"]),
+                    scenario_id=str(row["scenario_id"]),
+                    scenario_name=str(row["scenario_name"]),
+                    severity=str(row["severity"]),
+                    estimated_loss=float(row["estimated_loss"]),
+                    estimated_loss_percent=float(row["estimated_loss_percent"]),
+                    generated_at=row["generated_at"],
+                )
+                for row in rows
+            ],
+        )
+
+    def get_history_item(self, run_id: str) -> StressTestingResponse:
+        item = self.repository.get_run(run_id)
+        if item is None:
+            raise HTTPException(status_code=404, detail=f"Stress run '{run_id}' not found.")
+        return item
+
+    def delete_history_item(self, run_id: str) -> StressRunDeleteResponse:
+        if not self.repository.delete_run(run_id):
+            raise HTTPException(status_code=404, detail=f"Stress run '{run_id}' not found.")
+        return StressRunDeleteResponse(deleted=True, run_id=run_id)
 
     def _resolve_scenario(self, payload: StressTestingRunRequest) -> dict[str, object]:
         if payload.custom_scenario is not None:

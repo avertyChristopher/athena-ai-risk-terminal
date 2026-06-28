@@ -231,5 +231,29 @@ class StressTestingResponse(BaseModel):
     module_links: dict[str, str] = Field(default_factory=dict)
 
 
+class StressRunHistoryItem(BaseModel):
+    run_id: str
+    portfolio_id: str
+    portfolio_name: str
+    scenario_id: str
+    scenario_name: str
+    severity: str
+    estimated_loss: float
+    estimated_loss_percent: float
+    generated_at: datetime
+
+
+class StressRunHistoryResponse(BaseModel):
+    status: str = "ready"
+    module: str = "stress-testing"
+    total_runs: int
+    items: list[StressRunHistoryItem]
+
+
+class StressRunDeleteResponse(BaseModel):
+    deleted: bool
+    run_id: str
+
+
 class ErrorDetail(BaseModel):
     detail: str

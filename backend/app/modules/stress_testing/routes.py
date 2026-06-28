@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.api.dependencies import get_stress_testing_service
 from app.modules.stress_testing.schemas import (
     ScenarioLibraryResponse,
+    StressRunDeleteResponse,
+    StressRunHistoryResponse,
     StressTestingResponse,
     StressTestingRunRequest,
     StressTestingStatus,
@@ -34,6 +36,29 @@ def list_scenarios(
     service: StressTestingService = Depends(get_stress_testing_service),
 ) -> ScenarioLibraryResponse:
     return service.list_scenarios()
+
+
+@router.get("/history", response_model=StressRunHistoryResponse)
+def list_history(
+    service: StressTestingService = Depends(get_stress_testing_service),
+) -> StressRunHistoryResponse:
+    return service.list_history()
+
+
+@router.get("/history/{run_id}", response_model=StressTestingResponse)
+def get_history_item(
+    run_id: str,
+    service: StressTestingService = Depends(get_stress_testing_service),
+) -> StressTestingResponse:
+    return service.get_history_item(run_id)
+
+
+@router.delete("/history/{run_id}", response_model=StressRunDeleteResponse)
+def delete_history_item(
+    run_id: str,
+    service: StressTestingService = Depends(get_stress_testing_service),
+) -> StressRunDeleteResponse:
+    return service.delete_history_item(run_id)
 
 
 @router.post("/run", response_model=StressTestingResponse)
