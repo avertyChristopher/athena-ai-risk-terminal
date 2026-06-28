@@ -55,4 +55,4 @@ def test_missing_trade_blotter_returns_prepared_warning() -> None:
     effect = calculate_trade_effects([], 100000, True)
 
     assert effect.status == "unavailable"
-    assert "Future Trade Blotter integration prepared." in effect.warnings
+    assert "No portfolio transactions or persisted Trade Blotter entries found" in effect.warnings[0]

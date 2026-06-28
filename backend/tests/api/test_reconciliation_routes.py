@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.modules.reconciliation.repository import ReconciliationRepository
 from app.modules.reports_center.repository import ReportsCenterRepository
+from app.modules.trade_blotter.repository import TradeBlotterRepository
 
 
 client = TestClient(app)
@@ -11,6 +12,7 @@ client = TestClient(app)
 def setup_function() -> None:
     ReconciliationRepository().clear()
     ReportsCenterRepository().clear()
+    TradeBlotterRepository().clear()
 
 
 def test_reconciliation_status_endpoint() -> None:
@@ -36,7 +38,7 @@ def test_reconciliation_run_default_portfolio_returns_minor_demo_breaks() -> Non
     assert body["breaks_by_type"]["price"] == 1
     assert body["critical_breaks"] == 0
     assert body["athena_ai_commentary"]["generated_by"] == "deterministic_fallback"
-    assert any("Trade blotter persistence unavailable" in warning for warning in body["warnings"])
+    assert any("No internal or external trades available" in warning for warning in body["warnings"])
 
 
 def test_reconciliation_run_handles_placeholder_source_with_warning() -> None:

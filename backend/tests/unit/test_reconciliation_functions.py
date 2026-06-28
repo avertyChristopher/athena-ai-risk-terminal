@@ -128,7 +128,7 @@ def test_trade_reconciliation_warns_without_blotter_and_detects_missing_trades()
     assert len(rows) == 2
     assert {row.status for row in rows} == {"missing_external_trade", "missing_internal_trade"}
     assert len(breaks) == 2
-    assert warnings
+    assert warnings == []
 
 
 def test_pnl_reconciliation_detects_matching_and_unexplained_pnl() -> None:

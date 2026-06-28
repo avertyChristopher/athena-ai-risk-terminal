@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.modules.pnl_attribution.repository import PnlAttributionRepository
 from app.modules.reports_center.repository import ReportsCenterRepository
+from app.modules.trade_blotter.repository import TradeBlotterRepository
 
 
 client = TestClient(app)
@@ -13,6 +14,7 @@ client = TestClient(app)
 def setup_function() -> None:
     PnlAttributionRepository().clear()
     ReportsCenterRepository().clear()
+    TradeBlotterRepository().clear()
 
 
 def test_pnl_attribution_status_endpoint() -> None:
