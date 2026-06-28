@@ -146,10 +146,17 @@ class ReconciliationService:
             breaks.extend(price_breaks)
             warnings.extend(price_warnings)
         if "trades" in checks:
+            internal_trades = self._internal_trade_candidates(portfolio)
+            blotter_trades = self.repository.list_trade_blotter_entries(
+                request.portfolio_id,
+                end_date=request.reconciliation_date,
+            )
+            if blotter_trades:
+                internal_trades = [_trade_blotter_candidate(row) for row in blotter_trades] + internal_trades
             trade_rows, trade_breaks, trade_warnings = reconcile_trades(
                 run_id=run_id,
                 portfolio_id=request.portfolio_id,
-                internal_trades=self._internal_trade_candidates(portfolio),
+                internal_trades=internal_trades,
                 external_trades=external.get("pending_trades", []),
             )
             breaks.extend(trade_breaks)
@@ -179,7 +186,7 @@ class ReconciliationService:
 
         limitations = [
             "External reference data is deterministic demo custodian data, not a real broker or custodian feed.",
-            "Trade reconciliation uses portfolio transaction history and demo pending trades only.",
+            "Trade reconciliation uses persistent Trade Blotter, portfolio transaction history and demo pending trades.",
             "P&L reconciliation uses P&L Attribution demo calculations and deterministic external value movement.",
         ]
         unresolved_items = [
@@ -215,6 +222,7 @@ class ReconciliationService:
                 data_sources=[
                     "Portfolio Builder internal positions and cash",
                     "Market Data latest demo prices",
+                    "Persistent Trade Blotter internal trades",
                     "P&L Attribution calculated P&L",
                     "Demo custodian external reference data",
                 ],
@@ -368,3 +376,17 @@ def _stringify(value: Any) -> str:
     if value is None:
         return ""
     return str(value).replace("\n", " ")
+
+
+def _trade_blotter_candidate(row: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "trade_id": row.get("trade_id"),
+        "symbol": row.get("symbol"),
+        "action": str(row.get("action") or "").upper(),
+        "quantity": row.get("quantity"),
+        "price": row.get("price"),
+        "cost": row.get("cost_estimate"),
+        "slippage": row.get("slippage_estimate"),
+        "status": row.get("status"),
+        "source_module": "trade_blotter",
+    }
