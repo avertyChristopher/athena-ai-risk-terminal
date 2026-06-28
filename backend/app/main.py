@@ -21,6 +21,7 @@ from app.modules.options_pricing_lab.routes import router as options_pricing_lab
 from app.modules.pnl_attribution.routes import router as pnl_attribution_router
 from app.modules.portfolio_builder.routes import router as portfolio_router
 from app.modules.rates_lab.routes import router as rates_lab_router
+from app.modules.reconciliation.routes import router as reconciliation_router
 from app.modules.reports_center.routes import router as reports_center_router
 from app.modules.risk_monitor.routes import router as risk_monitor_router
 from app.modules.stress_testing.routes import router as stress_testing_router
@@ -62,6 +63,7 @@ def create_app() -> FastAPI:
     app.include_router(limit_center_router, prefix=settings.api_prefix)
     app.include_router(reports_center_router, prefix=settings.api_prefix)
     app.include_router(pnl_attribution_router, prefix=settings.api_prefix)
+    app.include_router(reconciliation_router, prefix=settings.api_prefix)
     app.include_router(trade_router, prefix=settings.api_prefix)
     app.include_router(risk_router, prefix=settings.api_prefix)
     app.include_router(pricing_router, prefix=settings.api_prefix)

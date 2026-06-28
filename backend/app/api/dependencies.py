@@ -31,6 +31,8 @@ from app.modules.pnl_attribution.repository import PnlAttributionRepository
 from app.modules.pnl_attribution.service import PnlAttributionService
 from app.modules.rates_lab.repository import RatesLabRepository
 from app.modules.rates_lab.service import RatesLabService
+from app.modules.reconciliation.repository import ReconciliationRepository
+from app.modules.reconciliation.service import ReconciliationService
 from app.modules.reports_center.repository import ReportsCenterRepository
 from app.modules.reports_center.service import ReportsCenterService
 from app.modules.risk_monitor.repository import RiskMonitorRepository
@@ -133,6 +135,17 @@ def get_pnl_attribution_service(
     db: Session = Depends(get_db_session),
 ) -> PnlAttributionService:
     return PnlAttributionService(PnlAttributionRepository(db))
+
+
+def get_reconciliation_service(
+    db: Session = Depends(get_db_session),
+) -> ReconciliationService:
+    athena_service = AthenaIntelligenceService()
+    return ReconciliationService(
+        ReconciliationRepository(db),
+        PnlAttributionService(PnlAttributionRepository(db), athena_service),
+        athena_service,
+    )
 
 
 def get_pricing_service() -> PricingService:
