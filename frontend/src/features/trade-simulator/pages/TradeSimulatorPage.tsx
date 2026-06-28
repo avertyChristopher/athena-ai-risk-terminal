@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 
 import { AthenaAICommentaryCard } from "../../../components/ai/AthenaAICommentaryCard";
@@ -86,6 +87,7 @@ export function TradeSimulatorPage() {
     limit_price: null,
     time_in_force: "Day",
     trade_rationale: "Growth opportunity",
+    save_to_blotter: false,
   });
 
   useEffect(() => {
@@ -404,6 +406,16 @@ export function TradeSimulatorPage() {
                   ))}
                 </select>
               </label>
+              <label className="form-field trade-save-toggle">
+                <span>{t("tradeBlotter.saveToTradeBlotter")}</span>
+                <input
+                  checked={Boolean(formState.save_to_blotter)}
+                  type="checkbox"
+                  onChange={(event) =>
+                    updateForm("save_to_blotter", event.target.checked)
+                  }
+                />
+              </label>
             </div>
 
             <div className="trade-ticket-cost-strip">
@@ -628,6 +640,23 @@ function SimulationSummary({
       {simulation.simulation_result.key_warnings.length ? (
         <div className="trade-warning-list">
           {simulation.simulation_result.key_warnings.map((warning) => (
+            <p key={warning}>{warning}</p>
+          ))}
+        </div>
+      ) : null}
+      {simulation.save_status ? (
+        <div className="trade-saved-blotter-banner">
+          <strong>{simulation.save_status}</strong>
+          {simulation.trade_id ? (
+            <Link to="/trade-blotter">
+              {t("tradeBlotter.tradeId")}: {simulation.trade_id}
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+      {simulation.warnings.length ? (
+        <div className="trade-warning-list">
+          {simulation.warnings.map((warning) => (
             <p key={warning}>{warning}</p>
           ))}
         </div>

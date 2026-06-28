@@ -21,6 +21,11 @@ const TradeSimulatorPage = lazy(() =>
     default: module.TradeSimulatorPage,
   })),
 );
+const TradeBlotterPage = lazy(() =>
+  import("../features/trade-blotter/pages/TradeBlotterPage").then((module) => ({
+    default: module.TradeBlotterPage,
+  })),
+);
 const VolatilityLabPage = lazy(() =>
   import("../features/volatility-lab/pages/VolatilityLabPage").then((module) => ({
     default: module.VolatilityLabPage,
@@ -81,6 +86,7 @@ export const router = createBrowserRouter([
       { path: "equity-analysis", element: <EquityAnalysisPage /> },
       { path: "portfolio-builder", element: <PortfolioPage /> },
       { path: "trade-simulator", element: lazyRoute(<TradeSimulatorPage />) },
+      { path: "trade-blotter", element: lazyRoute(<TradeBlotterPage />) },
       { path: "risk-monitor", element: lazyRoute(<RiskMonitorPage />) },
       { path: "volatility-lab", element: lazyRoute(<VolatilityLabPage />) },
       { path: "options-pricing-lab", element: lazyRoute(<OptionsPricingPage />) },

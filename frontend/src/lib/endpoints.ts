@@ -94,6 +94,13 @@ export const endpoints = {
     `/api/portfolios/${portfolioId}/cfa-concepts`,
   tradeSimulatorStatus: "/api/trade-simulator/status",
   tradeSimulatorSimulate: "/api/trade-simulator/simulate",
+  tradeBlotterStatus: "/api/trade-blotter/status",
+  tradeBlotterTrades: "/api/trade-blotter/trades",
+  tradeBlotterTrade: (tradeId: string) => `/api/trade-blotter/trades/${tradeId}`,
+  tradeBlotterReview: (tradeId: string) =>
+    `/api/trade-blotter/trades/${tradeId}/review`,
+  tradeBlotterFromSimulation: "/api/trade-blotter/from-simulation",
+  tradeBlotterDemo: "/api/trade-blotter/demo",
   riskMonitorStatus: "/api/risk-monitor/status",
   riskMonitorAnalyze: "/api/risk-monitor/analyze",
   riskMonitorAnalyzeFromVolatility: "/api/risk-monitor/analyze-from-volatility",

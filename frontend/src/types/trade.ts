@@ -6,6 +6,7 @@ export type TradeModuleStatus = {
   module: string;
   detail: string;
   simulation_ready: boolean;
+  trade_blotter_ready: boolean;
 };
 
 export type TradeAction = "BUY" | "SELL";
@@ -33,6 +34,7 @@ export type TradeSimulationRequest = {
   limit_price?: number | null;
   time_in_force: TimeInForce;
   trade_rationale: TradeRationale;
+  save_to_blotter?: boolean;
 };
 
 export type ImpactMetric = {
@@ -169,4 +171,8 @@ export type TradeSimulationResponse = {
   athena_commentary: AthenaTradeCommentaryResponse;
   athena_ai_commentary?: AthenaAICommentary | null;
   simulation_result: SimulationResultSummary;
+  trade_blotter_ready: boolean;
+  save_status: string | null;
+  trade_id: string | null;
+  warnings: string[];
 };

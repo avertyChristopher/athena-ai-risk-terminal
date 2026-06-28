@@ -9,6 +9,7 @@ export const navigationItems: NavigationItem[] = [
   { path: "/equity-analysis", labelKey: "nav.equityAnalysis" },
   { path: "/portfolio-builder", labelKey: "nav.portfolioBuilder" },
   { path: "/trade-simulator", labelKey: "nav.tradeSimulator" },
+  { path: "/trade-blotter", labelKey: "nav.tradeBlotter" },
   { path: "/risk-monitor", labelKey: "nav.riskMonitor" },
   { path: "/volatility-lab", labelKey: "nav.volatilityLab" },
   { path: "/options-pricing-lab", labelKey: "nav.optionsPricingLab" },

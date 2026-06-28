@@ -3903,6 +3903,194 @@ ul.portfolio-note-list {
   margin-top: 2px;
 }
 
+.trade-blotter-command-panel {
+  border-color: rgba(37, 99, 235, 0.18);
+}
+
+.trade-blotter-controls,
+.trade-blotter-kpi-grid,
+.trade-blotter-two-column,
+.trade-blotter-status-grid,
+.trade-blotter-link-grid,
+.trade-blotter-form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.trade-blotter-controls {
+  align-items: end;
+  grid-template-columns: minmax(220px, 1.4fr) minmax(180px, 1fr) minmax(160px, 0.8fr) auto auto;
+  margin: 20px 0;
+}
+
+.trade-blotter-kpi-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 20px;
+}
+
+.trade-blotter-kpi {
+  min-height: 132px;
+}
+
+.trade-blotter-kpi span,
+.trade-blotter-section-card span,
+.trade-blotter-detail-list dt {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.trade-blotter-kpi strong {
+  color: var(--text-primary);
+  display: block;
+  font-size: 1.45rem;
+  margin-top: 10px;
+}
+
+.trade-blotter-kpi p {
+  color: var(--text-muted);
+  margin-bottom: 0;
+}
+
+.trade-blotter-panel {
+  margin-top: 18px;
+}
+
+.trade-blotter-two-column {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.trade-blotter-section-card,
+.trade-blotter-table-card {
+  border: 1px solid var(--border-color);
+}
+
+.trade-blotter-status-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.trade-blotter-status-grid > div {
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.trade-blotter-status-grid strong {
+  color: var(--text-primary);
+  display: block;
+  font-size: 1.25rem;
+  margin-top: 6px;
+}
+
+.trade-blotter-mini-list,
+.trade-blotter-history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.trade-blotter-mini-list span,
+.trade-blotter-history-list > div {
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.trade-blotter-table {
+  display: grid;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.trade-blotter-table__head,
+.trade-blotter-table__row {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1.3fr 0.8fr 0.7fr 0.65fr 0.65fr 0.8fr 0.9fr 1fr 0.85fr 1fr;
+  min-width: 1080px;
+}
+
+.trade-blotter-table__head {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0 12px;
+  text-transform: uppercase;
+}
+
+.trade-blotter-table__row {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.trade-blotter-table__row--selected {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.16);
+}
+
+.trade-blotter-table__row button,
+.trade-blotter-review-actions .button {
+  margin-right: 8px;
+}
+
+.trade-blotter-detail-list,
+.trade-blotter-review-actions {
+  display: grid;
+  gap: 12px;
+}
+
+.trade-blotter-detail-list div {
+  border-bottom: 1px solid var(--border-color);
+  display: grid;
+  gap: 4px;
+  padding-bottom: 10px;
+}
+
+.trade-blotter-detail-list dd {
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.trade-blotter-review-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+.trade-blotter-link-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.trade-blotter-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+
+.trade-save-toggle {
+  align-items: center;
+  grid-template-columns: 1fr auto;
+}
+
+.trade-save-toggle input {
+  height: 20px;
+  justify-self: start;
+  width: 20px;
+}
+
+.trade-saved-blotter-banner {
+  align-items: center;
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.24);
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 12px;
+}
+
 @media print {
   body {
     background: #ffffff;
@@ -6109,6 +6297,12 @@ ul.portfolio-note-list {
   .dashboard-workflow-grid,
   .dashboard-workflow-summary,
   .dashboard-risk-grid,
+  .trade-blotter-controls,
+  .trade-blotter-kpi-grid,
+  .trade-blotter-two-column,
+  .trade-blotter-status-grid,
+  .trade-blotter-link-grid,
+  .trade-blotter-form-grid,
   .reports-center-command-panel,
   .reports-center-kpi-grid,
   .reports-center-template-grid,
