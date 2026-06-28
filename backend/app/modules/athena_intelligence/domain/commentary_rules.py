@@ -386,6 +386,62 @@ def pnl_points(
     }
 
 
+def reconciliation_points(
+    payload: dict[str, Any],
+    language: str,
+    max_points: int,
+) -> dict[str, list[str] | str]:
+    status = str(payload.get("overall_status") or "unknown")
+    total_breaks = as_float(payload.get("total_breaks")) or 0.0
+    critical_breaks = as_float(payload.get("critical_breaks")) or 0.0
+    breaks_by_type = payload.get("breaks_by_type") if isinstance(payload.get("breaks_by_type"), dict) else {}
+    breaks_by_severity = payload.get("breaks_by_severity") if isinstance(payload.get("breaks_by_severity"), dict) else {}
+    unresolved = list_strings(payload.get("unresolved_items"))
+    warnings = list_strings(payload.get("warnings"))
+    top_types = sorted(breaks_by_type.items(), key=lambda item: int(item[1]), reverse=True)
+    top_severities = sorted(breaks_by_severity.items(), key=lambda item: int(item[1]), reverse=True)
+
+    if language == "fr":
+        summary = f"Le run de reconciliation affiche le statut {status} avec {total_breaks:.0f} ecart(s), dont {critical_breaks:.0f} critique(s)."
+        drivers = [
+            f"Type d'ecart dominant: {top_types[0][0]} ({top_types[0][1]})." if top_types else "",
+            f"Severite dominante: {top_severities[0][0]} ({top_severities[0][1]})." if top_severities else "",
+            "Les ecarts ouverts doivent etre revus avant de considerer le portefeuille reconcilie." if total_breaks else "",
+        ]
+        risks = [
+            "Ecart critique a traiter immediatement." if critical_breaks else "",
+            "Ecarts de position ou P&L peuvent indiquer un trade manquant ou un decalage de settlement." if unresolved else "",
+            "Donnees demo custodian utilisees." if warnings else "",
+        ]
+        actions = [
+            "Prioriser les ecarts high/critical et documenter les decisions de revue.",
+            "Verifier les trades, le cash, les prix et le P&L inexplique.",
+        ]
+    else:
+        summary = f"The reconciliation run is {status} with {total_breaks:.0f} break(s), including {critical_breaks:.0f} critical break(s)."
+        drivers = [
+            f"Dominant break type: {top_types[0][0]} ({top_types[0][1]})." if top_types else "",
+            f"Dominant severity: {top_severities[0][0]} ({top_severities[0][1]})." if top_severities else "",
+            "Open breaks should be reviewed before considering the portfolio reconciled." if total_breaks else "",
+        ]
+        risks = [
+            "Critical break requires immediate review." if critical_breaks else "",
+            "Position or P&L breaks may indicate missing trades or settlement timing." if unresolved else "",
+            "Demo custodian reference data is being used." if warnings else "",
+        ]
+        actions = [
+            "Prioritize high and critical breaks and document review decisions.",
+            "Review trades, cash, prices and unexplained P&L drivers.",
+        ]
+    return {
+        "summary": summary,
+        "main_risks": compact_points(risks + unresolved + warnings, max_points),
+        "risk_drivers": compact_points(drivers, max_points),
+        "breaches": compact_points(unresolved, max_points),
+        "suggested_actions": compact_points(actions, max_points),
+    }
+
+
 def generic_points(
     payload: dict[str, Any],
     module_name: str,
