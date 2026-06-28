@@ -15,6 +15,7 @@ def build_report_sections(report_type: ReportType, payloads: dict[str, Any]) -> 
         "fixed_income_exposure": _rates_sections,
         "options_risk": _options_sections,
         "pnl_attribution": _pnl_sections,
+        "reconciliation": _reconciliation_sections,
         "full_portfolio_risk_pack": _full_pack_sections,
     }
     return builders[report_type](payloads)
@@ -113,6 +114,22 @@ def _pnl_sections(payloads: dict[str, Any]) -> list[ReportSection]:
         _section("options", "Options contribution", "Greeks contribution and options availability notes.", ["P&L Attribution", "Options Pricing Lab"], pnl.get("options_effects") or {}),
         _section("trade_impact", "Trade impact", "Transaction costs, turnover, slippage and trade blotter status.", ["P&L Attribution", "Trade Simulator"], pnl.get("trade_effects") or {}),
         _section("methodology", "Methodology and limitations", "P&L attribution assumptions, data sources and limitations.", ["P&L Attribution"], {"methodology": pnl.get("methodology"), "limitations": pnl.get("limitations", []), "warnings": pnl.get("warnings", [])}),
+    ]
+
+
+def _reconciliation_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    recon = payloads.get("reconciliation") or {}
+    return [
+        _section("overview", "Overall status", "Reconciliation status, break counts and source reference.", ["Reconciliation Center"], _pick(recon, ["overall_status", "total_breaks", "open_breaks", "critical_breaks", "reconciliation_date", "external_source"])),
+        _section("checks", "Checks performed", "Checks selected for this reconciliation run.", ["Reconciliation Center"], {"checks_performed": recon.get("checks_performed", []), "breaks_by_type": recon.get("breaks_by_type", {}), "breaks_by_severity": recon.get("breaks_by_severity", {})}),
+        _section("position_breaks", "Position breaks", "Position quantity and market value reconciliation results.", ["Portfolio Builder", "Reconciliation Center"], table=recon.get("position_breaks") or []),
+        _section("cash_breaks", "Cash breaks", "Cash balance reconciliation against external reference.", ["Portfolio Builder", "Reconciliation Center"], table=recon.get("cash_breaks") or []),
+        _section("price_breaks", "Price breaks", "Internal Market Data prices compared with external custodian prices.", ["Market Data", "Reconciliation Center"], table=recon.get("price_breaks") or []),
+        _section("trade_breaks", "Trade breaks", "Trade blotter and pending trade reconciliation.", ["Trade Simulator", "Reconciliation Center"], table=recon.get("trade_breaks") or []),
+        _section("pnl_breaks", "P&L breaks", "Calculated P&L compared with external value movement.", ["P&L Attribution", "Reconciliation Center"], table=recon.get("pnl_breaks") or []),
+        _section("fx_breaks", "FX breaks", "FX rate and translation reconciliation.", ["Market Data", "Reconciliation Center"], table=recon.get("fx_breaks") or []),
+        _section("break_register", "Break severity summary", "Break register with severity and review status.", ["Reconciliation Center"], table=recon.get("breaks") or []),
+        _section("methodology", "Methodology and limitations", "Reconciliation tolerances, data sources, warnings and limitations.", ["Reconciliation Center"], {"methodology": recon.get("methodology"), "warnings": recon.get("warnings", []), "limitations": recon.get("limitations", [])}),
     ]
 
 

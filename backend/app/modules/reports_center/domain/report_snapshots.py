@@ -47,6 +47,7 @@ def _source_modules(payloads: dict[str, Any]) -> set[str]:
         "rates": "Rates Lab",
         "options": "Options Pricing Lab",
         "pnl_attribution": "P&L Attribution",
+        "reconciliation": "Reconciliation Center",
         "stress_testing": "Stress Testing",
         "limit_center": "Limit Center",
         "trade_simulator": "Trade Simulator",
@@ -64,4 +65,6 @@ def _data_sources(payloads: dict[str, Any]) -> list[str]:
         sources.append("portfolio_builder")
     if payloads.get("pnl_attribution") is not None:
         sources.append("pnl_attribution")
+    if payloads.get("reconciliation") is not None:
+        sources.append("reconciliation")
     return sources

@@ -66,6 +66,8 @@ def _commentary_target(report_type: ReportType, payloads: dict[str, Any]) -> tup
         return "options_pricing_lab", "options", payloads.get("options") or {}
     if report_type == "pnl_attribution":
         return "pnl_attribution", "pnl", payloads.get("pnl_attribution") or {}
+    if report_type == "reconciliation":
+        return "reconciliation", "reconciliation", payloads.get("reconciliation") or {}
     return "portfolio_builder", "portfolio", {
         "portfolio": payloads.get("portfolio"),
         "summary": payloads.get("portfolio_summary"),

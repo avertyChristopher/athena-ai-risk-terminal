@@ -23,6 +23,9 @@ from app.modules.portfolio_builder.service import PortfolioService, PositionServ
 from app.modules.rates_lab.repository import RatesLabRepository
 from app.modules.rates_lab.schemas import PortfolioRatesExposureRequest
 from app.modules.rates_lab.service import RatesLabService
+from app.modules.reconciliation.repository import ReconciliationRepository
+from app.modules.reconciliation.schemas import ReconciliationRequest
+from app.modules.reconciliation.service import ReconciliationService
 from app.modules.reports_center.domain.commentary import build_report_commentary
 from app.modules.reports_center.domain.export_formatters import (
     report_to_csv,
@@ -68,6 +71,7 @@ SOURCE_MODULES = [
     "Rates Lab",
     "Options Pricing Lab",
     "P&L Attribution",
+    "Reconciliation Center",
     "Stress Testing",
     "Limit Center",
     "Trade Simulator",
@@ -101,13 +105,18 @@ class ReportsCenterService:
         self.options_service = OptionsPricingLabService(OptionsPricingLabRepository(db))
         self.athena_service = AthenaIntelligenceService()
         self.pnl_service = PnlAttributionService(PnlAttributionRepository(db), self.athena_service)
+        self.reconciliation_service = ReconciliationService(
+            ReconciliationRepository(db),
+            self.pnl_service,
+            self.athena_service,
+        )
 
     def get_status(self) -> ReportsCenterStatus:
         templates = list_report_templates()
         return ReportsCenterStatus(
             detail=(
-                "Reports Center generates snapshot-based portfolio, P&L, risk, stress, "
-                "limits, trade, rates and options reports from Athena analytics."
+            "Reports Center generates snapshot-based portfolio, P&L, risk, stress, "
+                "limits, reconciliation, trade, rates and options reports from Athena analytics."
             ),
             templates_available=len(templates),
             export_formats=["json", "markdown", "csv"],
@@ -302,6 +311,7 @@ class ReportsCenterService:
         needs_options = report_type in {"options_risk", "full_portfolio_risk_pack"}
         needs_trade = report_type in {"trade_suitability"}
         needs_pnl = report_type in {"pnl_attribution"}
+        needs_reconciliation = report_type in {"reconciliation"}
 
         if needs_risk and "risk_monitor" not in payloads:
             payloads["risk_monitor"] = self._safe_call(
@@ -380,6 +390,17 @@ class ReportsCenterService:
                         portfolio_id=portfolio_id,
                         benchmark_symbol=str(benchmark),
                         attribution_method="Brinson-lite",
+                    ),
+                ),
+            )
+        if needs_reconciliation and "reconciliation" not in payloads:
+            payloads["reconciliation"] = self._safe_call(
+                "Reconciliation Center",
+                warnings,
+                lambda: self.reconciliation_service.run(
+                    ReconciliationRequest(
+                        portfolio_id=portfolio_id,
+                        language="en",
                     ),
                 ),
             )
