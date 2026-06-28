@@ -8,6 +8,7 @@ export type ReportType =
   | "options_risk"
   | "pnl_attribution"
   | "reconciliation"
+  | "ai_anomaly"
   | "full_portfolio_risk_pack";
 
 export type ReportLanguage = "en" | "fr";

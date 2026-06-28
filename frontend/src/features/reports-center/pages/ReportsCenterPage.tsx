@@ -37,6 +37,7 @@ const reportTypes: ReportType[] = [
   "options_risk",
   "pnl_attribution",
   "reconciliation",
+  "ai_anomaly",
   "full_portfolio_risk_pack",
 ];
 
@@ -640,6 +641,7 @@ function reportTypeLabel(type: ReportType, t: (key: string) => string) {
     options_risk: t("reportsCenter.types.optionsRisk"),
     pnl_attribution: t("reportsCenter.types.pnlAttribution"),
     reconciliation: t("reportsCenter.types.reconciliation"),
+    ai_anomaly: t("reportsCenter.types.aiAnomaly"),
     full_portfolio_risk_pack: t("reportsCenter.types.fullPortfolioRiskPack"),
   };
   return labels[type];

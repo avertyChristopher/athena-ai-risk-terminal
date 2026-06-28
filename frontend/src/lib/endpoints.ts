@@ -178,4 +178,14 @@ export const endpoints = {
     `/api/reconciliation/history/${runId}`,
   reconciliationExportCsv: (runId: string) =>
     `/api/reconciliation/history/${runId}/export/csv`,
+  aiAnomalyCenterStatus: "/api/ai-anomaly-center/status",
+  aiAnomalyCenterScan: "/api/ai-anomaly-center/scan",
+  aiAnomalyCenterAnomalies: "/api/ai-anomaly-center/anomalies",
+  aiAnomalyCenterAnomaly: (anomalyId: string) =>
+    `/api/ai-anomaly-center/anomalies/${anomalyId}`,
+  aiAnomalyCenterReview: (anomalyId: string) =>
+    `/api/ai-anomaly-center/anomalies/${anomalyId}/review`,
+  aiAnomalyCenterHistory: "/api/ai-anomaly-center/history",
+  aiAnomalyCenterDemo: "/api/ai-anomaly-center/demo",
+  aiAnomalyCenterExportCsv: "/api/ai-anomaly-center/anomalies/export/csv",
 } as const;

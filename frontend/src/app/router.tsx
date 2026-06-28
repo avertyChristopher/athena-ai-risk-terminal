@@ -4,7 +4,6 @@ import type { ReactNode } from "react";
 
 import { AppShell } from "../components/layout/AppShell";
 import { LoadingState } from "../components/ui/LoadingState";
-import { AiAnomaliesPage } from "../features/ai-anomalies/pages/AiAnomaliesPage";
 import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
 import { EquityAnalysisPage } from "../features/equity-analysis/pages/EquityAnalysisPage";
 import { MarketDataPage } from "../features/market-data/pages/MarketDataPage";
@@ -66,6 +65,11 @@ const ReconciliationPage = lazy(() =>
     default: module.ReconciliationPage,
   })),
 );
+const AIAnomalyCenterPage = lazy(() =>
+  import("../features/ai-anomaly-center/pages/AIAnomalyCenterPage").then((module) => ({
+    default: module.AIAnomalyCenterPage,
+  })),
+);
 
 function lazyRoute(element: ReactNode) {
   return (
@@ -95,7 +99,7 @@ export const router = createBrowserRouter([
       { path: "limit-center", element: lazyRoute(<LimitCenterPage />) },
       { path: "pnl-attribution", element: lazyRoute(<PnlAttributionPage />) },
       { path: "reconciliation", element: lazyRoute(<ReconciliationPage />) },
-      { path: "ai-anomaly-center", element: <AiAnomaliesPage /> },
+      { path: "ai-anomaly-center", element: lazyRoute(<AIAnomalyCenterPage />) },
       { path: "reports-center", element: lazyRoute(<ReportsCenterPage />) },
       { path: "settings", element: <SettingsPage /> },
     ],

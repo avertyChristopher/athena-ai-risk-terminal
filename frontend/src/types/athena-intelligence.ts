@@ -11,6 +11,7 @@ export type AthenaAIModuleName =
   | "limit_center"
   | "pnl_attribution"
   | "reconciliation"
+  | "ai_anomaly_center"
   | "reports_center";
 
 export type AthenaAIAnalysisMode =
@@ -27,6 +28,7 @@ export type AthenaAIAnalysisMode =
   | "limit"
   | "pnl"
   | "reconciliation"
+  | "anomaly_monitoring"
   | "report";
 
 export type AthenaAIProviderMode = "disabled" | "fallback" | "openai";
