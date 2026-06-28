@@ -10,6 +10,7 @@ export type AthenaAIModuleName =
   | "stress_testing"
   | "limit_center"
   | "pnl_attribution"
+  | "reconciliation"
   | "reports_center";
 
 export type AthenaAIAnalysisMode =
@@ -25,6 +26,7 @@ export type AthenaAIAnalysisMode =
   | "stress"
   | "limit"
   | "pnl"
+  | "reconciliation"
   | "report";
 
 export type AthenaAIProviderMode = "disabled" | "fallback" | "openai";

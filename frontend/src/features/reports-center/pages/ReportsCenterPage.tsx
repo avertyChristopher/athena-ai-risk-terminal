@@ -36,6 +36,7 @@ const reportTypes: ReportType[] = [
   "fixed_income_exposure",
   "options_risk",
   "pnl_attribution",
+  "reconciliation",
   "full_portfolio_risk_pack",
 ];
 
@@ -638,6 +639,7 @@ function reportTypeLabel(type: ReportType, t: (key: string) => string) {
     fixed_income_exposure: t("reportsCenter.types.fixedIncomeExposure"),
     options_risk: t("reportsCenter.types.optionsRisk"),
     pnl_attribution: t("reportsCenter.types.pnlAttribution"),
+    reconciliation: t("reportsCenter.types.reconciliation"),
     full_portfolio_risk_pack: t("reportsCenter.types.fullPortfolioRiskPack"),
   };
   return labels[type];

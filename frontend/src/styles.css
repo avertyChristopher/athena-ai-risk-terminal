@@ -1428,6 +1428,359 @@ select {
   white-space: pre-wrap;
 }
 
+.reconciliation-page {
+  display: grid;
+  gap: 22px;
+}
+
+.reconciliation-command-panel {
+  align-items: flex-start;
+}
+
+.reconciliation-control-card,
+.reconciliation-table,
+.reconciliation-source-card,
+.reconciliation-break-list__item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(248, 246, 242, 0.92)),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.reconciliation-control-card {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+}
+
+.reconciliation-control-grid,
+.reconciliation-tolerance-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: end;
+}
+
+.reconciliation-action-row,
+.reconciliation-export-actions,
+.reconciliation-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.reconciliation-check-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+  align-items: center;
+}
+
+.reconciliation-check,
+.reconciliation-filter-row .form-field {
+  min-width: 0;
+}
+
+.reconciliation-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: rgba(107, 150, 195, 0.07);
+  font-weight: 700;
+}
+
+.reconciliation-check input {
+  accent-color: var(--accent-strong);
+}
+
+.reconciliation-kpi-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.reconciliation-metric-card strong {
+  font-size: 1.3rem;
+  line-height: 1.18;
+}
+
+.reconciliation-metric-card--positive {
+  border-color: rgba(29, 127, 95, 0.22);
+}
+
+.reconciliation-metric-card--negative {
+  border-color: rgba(176, 58, 72, 0.24);
+}
+
+.reconciliation-metric-card--warning {
+  border-color: rgba(138, 106, 67, 0.26);
+}
+
+.reconciliation-overview-grid,
+.reconciliation-two-column,
+.reconciliation-review-grid,
+.reconciliation-methodology-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reconciliation-status-strip,
+.reconciliation-filter-row,
+.reconciliation-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.reconciliation-status-strip {
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.reconciliation-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reconciliation-definition {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(107, 150, 195, 0.06);
+}
+
+.reconciliation-definition span,
+.reconciliation-list-block li,
+.reconciliation-history-list span,
+.reconciliation-break-list__item small,
+.reconciliation-source-card span {
+  color: var(--muted);
+}
+
+.reconciliation-definition strong {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: 0.98rem;
+}
+
+.reconciliation-break-list,
+.reconciliation-source-grid,
+.reconciliation-history-list,
+.reconciliation-list-block {
+  display: grid;
+  gap: 10px;
+}
+
+.reconciliation-break-list__item {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  padding: 12px;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.reconciliation-break-list__item:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+.reconciliation-break-list__item span {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 3px 8px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.reconciliation-break-list__item--critical,
+.reconciliation-break-list__item--high {
+  border-color: rgba(176, 58, 72, 0.26);
+}
+
+.reconciliation-break-list__item--medium {
+  border-color: rgba(138, 106, 67, 0.28);
+}
+
+.reconciliation-source-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.reconciliation-source-card {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+.reconciliation-table {
+  overflow-x: auto;
+}
+
+.reconciliation-table table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+}
+
+.reconciliation-table th,
+.reconciliation-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.reconciliation-table th {
+  color: var(--muted);
+  background: rgba(107, 150, 195, 0.08);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.reconciliation-table td {
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.reconciliation-table td strong {
+  color: var(--text);
+}
+
+.reconciliation-table-empty {
+  padding: 18px;
+  color: var(--muted);
+}
+
+.reconciliation-link-button {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: var(--accent-strong);
+  background: rgba(107, 150, 195, 0.08);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.reconciliation-break-detail {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.reconciliation-explanation-box {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  border-left: 4px solid var(--accent);
+  padding: 14px 16px;
+  background: rgba(107, 150, 195, 0.08);
+}
+
+.reconciliation-explanation-box h3,
+.reconciliation-history-list h3,
+.reconciliation-list-block h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.98rem;
+}
+
+.reconciliation-explanation-box p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.reconciliation-review-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reconciliation-review-note,
+.reconciliation-review-actions {
+  grid-column: 1 / -1;
+}
+
+.reconciliation-review-note textarea {
+  min-height: 120px;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.82);
+  font: inherit;
+}
+
+.reconciliation-history-list > div,
+.reconciliation-history-list > button {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: left;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.reconciliation-history-list > button {
+  cursor: pointer;
+}
+
+.reconciliation-history-list p,
+.reconciliation-list-block p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.reconciliation-list-block ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.reconciliation-csv-preview {
+  min-height: 280px;
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(19, 37, 58, 0.04);
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.reconciliation-disclaimer {
+  border: 1px solid rgba(138, 106, 67, 0.24);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(138, 106, 67, 0.08);
+  color: var(--warm-brown-dark);
+  font-weight: 800;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -5554,7 +5907,12 @@ ul.portfolio-note-list {
   .reports-center-layout,
   .pnl-control-grid,
   .pnl-overview-grid,
-  .pnl-three-grid {
+  .pnl-three-grid,
+  .reconciliation-control-grid,
+  .reconciliation-overview-grid,
+  .reconciliation-two-column,
+  .reconciliation-review-grid,
+  .reconciliation-methodology-grid {
     grid-template-columns: 1fr;
   }
 
@@ -5567,7 +5925,11 @@ ul.portfolio-note-list {
   .reports-center-source-grid,
   .reports-center-methodology-grid,
   .pnl-kpi-grid,
-  .pnl-definition-grid {
+  .pnl-definition-grid,
+  .reconciliation-kpi-grid,
+  .reconciliation-check-grid,
+  .reconciliation-tolerance-grid,
+  .reconciliation-source-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -5754,7 +6116,14 @@ ul.portfolio-note-list {
   .reports-center-option-grid,
   .reports-center-methodology-grid,
   .pnl-kpi-grid,
-  .pnl-definition-grid {
+  .pnl-definition-grid,
+  .reconciliation-kpi-grid,
+  .reconciliation-check-grid,
+  .reconciliation-tolerance-grid,
+  .reconciliation-source-grid,
+  .reconciliation-summary-grid,
+  .reconciliation-break-detail,
+  .reconciliation-review-form {
     grid-template-columns: 1fr;
   }
 

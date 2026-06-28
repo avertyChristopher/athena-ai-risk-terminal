@@ -158,4 +158,17 @@ export const endpoints = {
     `/api/pnl-attribution/history/${analysisId}`,
   pnlAttributionExportCsv: (analysisId: string) =>
     `/api/pnl-attribution/history/${analysisId}/export/csv`,
+  reconciliationStatus: "/api/reconciliation/status",
+  reconciliationRun: "/api/reconciliation/run",
+  reconciliationDemo: "/api/reconciliation/demo",
+  reconciliationBreaks: "/api/reconciliation/breaks",
+  reconciliationBreak: (breakId: string) =>
+    `/api/reconciliation/breaks/${breakId}`,
+  reconciliationReviewBreak: (breakId: string) =>
+    `/api/reconciliation/breaks/${breakId}/review`,
+  reconciliationHistory: "/api/reconciliation/history",
+  reconciliationHistoryItem: (runId: string) =>
+    `/api/reconciliation/history/${runId}`,
+  reconciliationExportCsv: (runId: string) =>
+    `/api/reconciliation/history/${runId}/export/csv`,
 } as const;
