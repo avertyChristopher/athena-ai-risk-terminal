@@ -25,8 +25,10 @@ from app.modules.reconciliation.routes import router as reconciliation_router
 from app.modules.reports_center.routes import router as reports_center_router
 from app.modules.risk_monitor.routes import router as risk_monitor_router
 from app.modules.stress_testing.routes import router as stress_testing_router
+from app.modules.trade_blotter.routes import router as trade_blotter_router
 from app.modules.trade_simulator.routes import router as trade_simulator_router
 from app.modules.volatility_lab.routes import router as volatility_lab_router
+from app.persistence.init_db import init_db
 
 
 def create_app() -> FastAPI:
@@ -49,11 +51,16 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    @app.on_event("startup")
+    def _initialize_persistence() -> None:
+        init_db()
+
     app.include_router(health_router, prefix=settings.api_prefix)
     app.include_router(market_data_router, prefix=settings.api_prefix)
     app.include_router(equity_router, prefix=settings.api_prefix)
     app.include_router(portfolio_router, prefix=settings.api_prefix)
     app.include_router(trade_simulator_router, prefix=settings.api_prefix)
+    app.include_router(trade_blotter_router, prefix=settings.api_prefix)
     app.include_router(risk_monitor_router, prefix=settings.api_prefix)
     app.include_router(volatility_lab_router, prefix=settings.api_prefix)
     app.include_router(options_pricing_lab_router, prefix=settings.api_prefix)

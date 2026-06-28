@@ -39,6 +39,8 @@ from app.modules.risk_monitor.repository import RiskMonitorRepository
 from app.modules.risk_monitor.service import RiskMonitorService
 from app.modules.stress_testing.repository import StressTestingRepository
 from app.modules.stress_testing.service import StressTestingService
+from app.modules.trade_blotter.repository import TradeBlotterRepository
+from app.modules.trade_blotter.service import TradeBlotterService
 from app.modules.trade_simulator.repository import TradeSimulatorRepository
 from app.modules.trade_simulator.service import TradeSimulatorService
 from app.modules.volatility_lab.repository import VolatilityLabRepository
@@ -75,6 +77,12 @@ def get_trade_simulator_service(
     db: Session = Depends(get_db_session),
 ) -> TradeSimulatorService:
     return TradeSimulatorService(TradeSimulatorRepository(db))
+
+
+def get_trade_blotter_service(
+    db: Session = Depends(get_db_session),
+) -> TradeBlotterService:
+    return TradeBlotterService(TradeBlotterRepository(db))
 
 
 def get_trade_service(
@@ -121,14 +129,16 @@ def get_athena_intelligence_service() -> AthenaIntelligenceService:
     return AthenaIntelligenceService()
 
 
-def get_limit_center_service() -> LimitCenterService:
-    return LimitCenterService(LimitCenterRepository())
+def get_limit_center_service(
+    db: Session = Depends(get_db_session),
+) -> LimitCenterService:
+    return LimitCenterService(LimitCenterRepository(db))
 
 
 def get_reports_center_service(
     db: Session = Depends(get_db_session),
 ) -> ReportsCenterService:
-    return ReportsCenterService(ReportsCenterRepository(), db)
+    return ReportsCenterService(ReportsCenterRepository(db), db)
 
 
 def get_pnl_attribution_service(
