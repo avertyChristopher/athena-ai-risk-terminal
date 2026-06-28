@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.modules.ai_anomaly_center.repository import AIAnomalyCenterRepository
 from app.modules.reports_center.repository import ReportsCenterRepository
 
 
@@ -8,6 +9,7 @@ client = TestClient(app)
 
 
 def setup_function() -> None:
+    AIAnomalyCenterRepository().clear()
     ReportsCenterRepository().clear()
 
 
@@ -35,6 +37,7 @@ def test_reports_center_templates_endpoint_returns_required_templates() -> None:
         "trade_suitability",
         "fixed_income_exposure",
         "options_risk",
+        "ai_anomaly",
         "full_portfolio_risk_pack",
     } <= template_types
 
@@ -66,6 +69,7 @@ def test_reports_center_generates_risk_stress_limit_and_full_pack_reports() -> N
         "fixed_income_exposure",
         "options_risk",
         "trade_suitability",
+        "ai_anomaly",
         "full_portfolio_risk_pack",
     ]
 
