@@ -82,8 +82,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "12/12",
-    detail: "Core analytics, governance, reporting and P&L online",
+    value: "13/13",
+    detail: "Core analytics, governance, P&L, reconciliation and reporting online",
     tone: "neutral",
   },
 ];
@@ -96,7 +96,7 @@ const modules: Module[] = [
     maturity: "Connected",
     path: "/market-data",
     connectedInputs: ["CSV imports", "Demo market feed"],
-    connectedOutputs: ["Equity", "Portfolio", "Volatility", "Rates", "Stress Testing"],
+    connectedOutputs: ["Equity", "Portfolio", "Volatility", "Rates", "Stress Testing", "Reconciliation"],
     features: ["Price history", "Returns", "Data quality"],
     badges: ["Market Data", "Demo", "Connected"],
   },
@@ -118,7 +118,7 @@ const modules: Module[] = [
     maturity: "Connected",
     path: "/portfolio-builder",
     connectedInputs: ["Market Data", "Equity Analysis"],
-    connectedOutputs: ["Trade Simulator", "Risk Monitor", "Rates Lab", "Stress Testing"],
+    connectedOutputs: ["Trade Simulator", "Risk Monitor", "Rates Lab", "Stress Testing", "Reconciliation"],
     features: ["Allocation", "Constraints", "Performance"],
     badges: ["Portfolio Ready", "In-Memory Store"],
   },
@@ -129,7 +129,7 @@ const modules: Module[] = [
     maturity: "Connected",
     path: "/trade-simulator",
     connectedInputs: ["Portfolio Builder", "Market Data"],
-    connectedOutputs: ["Portfolio impact preview"],
+    connectedOutputs: ["Portfolio impact preview", "Reconciliation Center"],
     features: ["Order simulation", "Before/after impact", "Suitability"],
     badges: ["Portfolio Ready", "No Execution"],
   },
@@ -232,17 +232,28 @@ const modules: Module[] = [
     maturity: "Performance Beta",
     path: "/pnl-attribution",
     connectedInputs: ["Portfolio Builder", "Market Data", "Trade Simulator", "Rates Lab", "Options Pricing Lab"],
-    connectedOutputs: ["Reports Center", "Athena Intelligence"],
+    connectedOutputs: ["Reconciliation Center", "Reports Center", "Athena Intelligence"],
     features: ["Position P&L", "Group attribution", "Benchmark active return", "Rates/options hooks"],
     badges: ["Performance Attribution", "Portfolio Connected", "Market Data", "Reports Ready", "Athena Intelligence", "Beta"],
   },
   {
+    name: "Reconciliation Center",
+    description: "Detect position, cash, price, trade and P&L breaks between Athena records and demo custodian reference data.",
+    status: "Beta",
+    maturity: "Middle Office Beta",
+    path: "/reconciliation",
+    connectedInputs: ["Portfolio Builder", "Market Data", "Trade Simulator", "P&L Attribution", "Athena Intelligence"],
+    connectedOutputs: ["Break Register", "Review Workflow", "Reports Center"],
+    features: ["Position breaks", "Cash & FX checks", "Price controls", "Review workflow"],
+    badges: ["Middle Office", "Data Quality", "Break Register", "P&L Control", "Reports Ready", "Athena Intelligence", "Beta"],
+  },
+  {
     name: "Reports Center",
-    description: "Generate structured portfolio, P&L, risk, stress, limits, trade, rates and options reports from Athena analytics.",
+    description: "Generate structured portfolio, reconciliation, P&L, risk, stress, limits, trade, rates and options reports from Athena analytics.",
     status: "Beta",
     maturity: "Snapshot Based",
     path: "/reports-center",
-    connectedInputs: ["Portfolio Builder", "P&L Attribution", "Risk Monitor", "Stress Testing", "Limit Center", "Athena Intelligence"],
+    connectedInputs: ["Portfolio Builder", "Reconciliation Center", "P&L Attribution", "Risk Monitor", "Stress Testing", "Limit Center", "Athena Intelligence"],
     connectedOutputs: ["JSON export", "Markdown export", "CSV tables"],
     features: ["Report templates", "Snapshot builder", "Risk pack"],
     badges: ["Reporting", "Export", "Risk Pack", "Athena Intelligence", "Snapshot Based", "Beta"],
@@ -268,6 +279,7 @@ const marketRows = [
 ] as const;
 
 const activityRows = [
+  ["09:48", "Reconciliation Center break register available"],
   ["09:45", "Limit Center governance workflow available"],
   ["09:42", "Market data refreshed"],
   ["09:40", "Portfolio summary updated"],
@@ -367,8 +379,14 @@ export function DashboardPage() {
       meta: workflowPortfolioName,
     },
     {
+      name: "Reconciliation Center",
+      description: "Compare Athena portfolio, price, trade and P&L records with demo custodian reference data and review breaks.",
+      path: "/reconciliation",
+      meta: "Break register",
+    },
+    {
       name: "Reports Center",
-      description: "Generate snapshot-based portfolio, P&L, risk, stress, limits, rates, options and trade reports.",
+      description: "Generate snapshot-based portfolio, reconciliation, P&L, risk, stress, limits, rates, options and trade reports.",
       path: "/reports-center",
       meta: "Risk pack",
     },
@@ -380,7 +398,7 @@ export function DashboardPage() {
   }> = [
     {
       title: "Research to portfolio",
-      modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator", "P&L Attribution"],
+      modules: ["Market Data", "Equity Analysis", "Portfolio Builder", "Trade Simulator", "P&L Attribution", "Reconciliation Center"],
     },
     {
       title: "Derivatives risk",
@@ -392,17 +410,22 @@ export function DashboardPage() {
     },
     {
       title: "Institutional stress workflow",
-      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center", "P&L Attribution", "Reports Center"],
+      modules: ["Portfolio Builder", "Volatility Lab", "Rates Lab", "Stress Testing", "Risk Monitor", "Limit Center", "P&L Attribution", "Reconciliation Center", "Reports Center"],
     },
     {
       title: "Governance workflow",
-      modules: ["Portfolio Builder", "Trade Simulator", "Risk Monitor", "Stress Testing", "Limit Center", "P&L Attribution", "Reports Center"],
+      modules: ["Portfolio Builder", "Trade Simulator", "Risk Monitor", "Stress Testing", "Limit Center", "P&L Attribution", "Reconciliation Center", "Reports Center"],
       destination: "Report pack",
     },
     {
       title: "Performance attribution",
-      modules: ["Market Data", "Portfolio Builder", "Trade Simulator", "Rates Lab", "Options Pricing Lab", "P&L Attribution", "Reports Center"],
+      modules: ["Market Data", "Portfolio Builder", "Trade Simulator", "Rates Lab", "Options Pricing Lab", "P&L Attribution", "Reconciliation Center", "Reports Center"],
       destination: "P&L report",
+    },
+    {
+      title: "Middle-office reconciliation",
+      modules: ["Portfolio Builder", "Market Data", "P&L Attribution", "Reconciliation Center", "Reports Center"],
+      destination: "Reconciliation report",
     },
   ];
   const demoPortfolioUniverse: DemoPortfolio[] = [
@@ -472,7 +495,7 @@ export function DashboardPage() {
           </p>
           <p className="dashboard-hero__body">
             Athena brings together market data, single-stock analysis, portfolio
-            construction, options and fixed-income analytics, risk monitoring and limit governance in one clean
+            construction, options and fixed-income analytics, P&L attribution, reconciliation, risk monitoring and limit governance in one clean
             research terminal for finance and risk management workflows.
           </p>
         </div>
@@ -491,7 +514,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title={t("workflow.connectedWorkflow")}
-        description="Market Data and Portfolio Builder feed volatility, options, fixed-income and stress analytics into Risk Monitor and Limit Center governance workflows."
+        description="Market Data and Portfolio Builder feed volatility, options, fixed-income, P&L and reconciliation analytics into Risk Monitor, Limit Center and reporting workflows."
       >
         <div className="dashboard-workflow-summary">
           <div>
@@ -558,7 +581,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Twelve connected workstations are active today, including P&L Attribution and Reports Center."
+        description="Thirteen connected workstations are active today, including P&L Attribution, Reconciliation Center and Reports Center."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
@@ -618,7 +641,7 @@ export function DashboardPage() {
           </div>
           <p>
             Central synthesis layer for Risk Monitor, Volatility Lab, Options Pricing Lab,
-            Rates Lab, Trade Simulator and Limit Center. It generates structured commentary from module
+            Rates Lab, Trade Simulator, Limit Center, P&L Attribution and Reconciliation Center. It generates structured commentary from module
             payloads only, with deterministic fallback and no investment-advice wording.
           </p>
           <div className="dashboard-intelligence-list">
