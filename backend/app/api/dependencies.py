@@ -17,6 +17,8 @@ from app.services.riskdna_service import RiskDnaService
 from app.modules.ai_anomaly_center.repository import AIAnomalyCenterRepository
 from app.modules.ai_anomaly_center.service import AIAnomalyCenterService
 from app.modules.athena_intelligence.service import AthenaIntelligenceService
+from app.modules.demo_workflow.repository import DemoWorkflowRepository
+from app.modules.demo_workflow.service import DemoWorkflowService
 from app.modules.equity_analysis.service import EquityAnalysisService
 from app.modules.limit_center.repository import LimitCenterRepository
 from app.modules.limit_center.service import LimitCenterService
@@ -138,6 +140,12 @@ def get_ai_anomaly_center_service(
         AIAnomalyCenterRepository(db),
         AthenaIntelligenceService(),
     )
+
+
+def get_demo_workflow_service(
+    db: Session = Depends(get_db_session),
+) -> DemoWorkflowService:
+    return DemoWorkflowService(DemoWorkflowRepository(), db)
 
 
 def get_limit_center_service(

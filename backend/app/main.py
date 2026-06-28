@@ -15,6 +15,7 @@ from app.core.exceptions import AthenaError, athena_exception_handler
 from app.core.logging import configure_logging
 from app.modules.ai_anomaly_center.routes import router as ai_anomaly_center_router
 from app.modules.athena_intelligence.routes import router as athena_intelligence_router
+from app.modules.demo_workflow.routes import router as demo_workflow_router
 from app.modules.equity_analysis.routes import router as equity_router
 from app.modules.limit_center.routes import router as limit_center_router
 from app.modules.market_data.routes import router as market_data_router
@@ -57,6 +58,7 @@ def create_app() -> FastAPI:
         init_db()
 
     app.include_router(health_router, prefix=settings.api_prefix)
+    app.include_router(demo_workflow_router, prefix=settings.api_prefix)
     app.include_router(market_data_router, prefix=settings.api_prefix)
     app.include_router(equity_router, prefix=settings.api_prefix)
     app.include_router(portfolio_router, prefix=settings.api_prefix)
