@@ -1,5 +1,8 @@
 export const endpoints = {
   health: "/api/health",
+  demoWorkflowStatus: "/api/demo/status",
+  demoWorkflowRun: "/api/demo/run-athena-demo",
+  demoWorkflowHistory: "/api/demo/history",
   marketDataAssets: "/api/market-data/assets",
   marketDataPrices: (symbol: string) => `/api/market-data/prices/${symbol}`,
   marketDataReturns: (symbol: string) => `/api/market-data/returns/${symbol}`,

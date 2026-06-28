@@ -941,6 +941,348 @@ select {
   align-content: start;
 }
 
+.dashboard-demo-run-card,
+.dashboard-system-health-card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.15), rgba(138, 106, 67, 0.1)),
+    rgba(255, 255, 255, 0.92);
+}
+
+.dashboard-demo-run-card h2,
+.dashboard-demo-run-card p,
+.dashboard-system-health-card h2 {
+  margin: 0;
+}
+
+.dashboard-demo-run-card p {
+  max-width: 82ch;
+  color: var(--muted);
+}
+
+.dashboard-demo-run-actions,
+.dashboard-demo-run-pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.dashboard-demo-run-pipeline span {
+  border: 1px solid rgba(107, 150, 195, 0.22);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.dashboard-system-health-grid,
+.dashboard-demo-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dashboard-system-health-grid div,
+.dashboard-demo-summary-grid article {
+  display: grid;
+  gap: 5px;
+  min-height: 88px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.dashboard-system-health-grid span,
+.dashboard-demo-summary-grid span,
+.dashboard-demo-module-strip span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.dashboard-system-health-grid strong,
+.dashboard-demo-summary-grid strong {
+  overflow-wrap: anywhere;
+}
+
+.dashboard-demo-module-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dashboard-demo-module-strip article {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.dashboard-recruiter-tour {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dashboard-recruiter-tour a {
+  display: grid;
+  gap: 8px;
+  min-height: 110px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.76)),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.dashboard-recruiter-tour a:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.dashboard-recruiter-tour span {
+  width: fit-content;
+  border: 1px solid rgba(107, 150, 195, 0.26);
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: rgba(107, 150, 195, 0.12);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.persistence-panel {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.11), rgba(138, 106, 67, 0.07)),
+    rgba(255, 255, 255, 0.76);
+  box-shadow: var(--shadow-soft);
+}
+
+.persistence-panel p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.persistence-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.persistence-panel__grid article {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.persistence-panel__grid article > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.persistence-panel__grid span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.persistence-panel--compact .persistence-panel__grid article {
+  min-height: 96px;
+}
+
+.architecture-page {
+  gap: 18px;
+}
+
+.architecture-hero {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(107, 150, 195, 0.18), rgba(138, 106, 67, 0.1)),
+    rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.architecture-hero h1,
+.architecture-hero p {
+  margin: 0;
+}
+
+.architecture-hero h1 {
+  font-size: clamp(2rem, 4vw, 4.2rem);
+  line-height: 0.98;
+}
+
+.architecture-hero p {
+  max-width: 84ch;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+
+.architecture-hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.architecture-overview-grid,
+.architecture-flow-grid,
+.architecture-limitations-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.architecture-overview-grid article,
+.architecture-flow-grid article,
+.architecture-limitations-grid span {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--shadow-soft);
+}
+
+.architecture-overview-grid article {
+  display: grid;
+  gap: 8px;
+}
+
+.architecture-overview-grid span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.architecture-overview-grid strong {
+  font-size: 1.35rem;
+}
+
+.architecture-overview-grid p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.architecture-module-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.architecture-module-grid article {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-height: 360px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.74)),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.architecture-module-grid article > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.architecture-module-grid h3,
+.architecture-flow-grid h3 {
+  margin: 0;
+}
+
+.architecture-module-grid p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.architecture-module-grid dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.architecture-module-grid dt {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.architecture-module-grid dd {
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.architecture-module-grid ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.architecture-flow-grid article {
+  display: grid;
+  gap: 12px;
+}
+
+.architecture-flow-grid article > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.architecture-flow-grid span,
+.architecture-limitations-grid span {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.architecture-flow-grid span {
+  border: 1px solid rgba(107, 150, 195, 0.22);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(107, 150, 195, 0.1);
+  color: var(--accent-strong);
+}
+
 .reports-center-page {
   gap: 18px;
 }
@@ -6498,6 +6840,7 @@ ul.portfolio-note-list {
   .dashboard-hero,
   .dashboard-split-grid,
   .dashboard-split-grid--wide,
+  .architecture-overview-grid,
   .reports-center-hero,
   .reports-center-layout,
   .pnl-control-grid,
@@ -6515,6 +6858,14 @@ ul.portfolio-note-list {
   .dashboard-module-grid,
   .dashboard-demo-universe-grid,
   .dashboard-workflow-grid,
+  .dashboard-system-health-grid,
+  .dashboard-demo-summary-grid,
+  .dashboard-demo-module-strip,
+  .dashboard-recruiter-tour,
+  .persistence-panel__grid,
+  .architecture-module-grid,
+  .architecture-flow-grid,
+  .architecture-limitations-grid,
   .reports-center-kpi-grid,
   .reports-center-template-grid,
   .reports-center-source-grid,
@@ -6702,6 +7053,15 @@ ul.portfolio-note-list {
   .dashboard-module-grid,
   .dashboard-demo-universe-grid,
   .dashboard-workflow-grid,
+  .dashboard-system-health-grid,
+  .dashboard-demo-summary-grid,
+  .dashboard-demo-module-strip,
+  .dashboard-recruiter-tour,
+  .persistence-panel__grid,
+  .architecture-overview-grid,
+  .architecture-module-grid,
+  .architecture-flow-grid,
+  .architecture-limitations-grid,
   .dashboard-workflow-summary,
   .dashboard-risk-grid,
   .trade-blotter-controls,

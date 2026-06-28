@@ -1,14 +1,18 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import type { ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { MoneyValue } from "../../../components/finance/MoneyValue";
 import { PercentValue } from "../../../components/finance/PercentValue";
+import { PersistenceStatusPanel } from "../../../components/ui/PersistenceStatusPanel";
 import { StatusBadge, type StatusBadgeVariant } from "../../../components/ui/StatusBadge";
 import { usePortfolioContext } from "../../../context/PortfolioContext";
 import { useHealth } from "../../../hooks/useHealth";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { athenaIntelligenceApi } from "../../../services/athenaIntelligenceApi";
+import { demoWorkflowApi } from "../../../services/demoWorkflowApi";
+import type { DemoRunSummary } from "../../../types/demo-workflow";
 
 type Kpi = {
   label: string;
@@ -82,8 +86,8 @@ const kpis: Kpi[] = [
   },
   {
     label: "Active Modules",
-    value: "15/15",
-    detail: "Core analytics, persistence, anomaly monitoring, trade workflow, P&L, reconciliation and reporting online",
+    value: "16/16",
+    detail: "Core analytics, persistence, AI commentary, anomaly monitoring, trade workflow, P&L, reconciliation and reporting online",
     tone: "neutral",
   },
 ];
@@ -312,7 +316,7 @@ const activityRows = [
 ];
 
 export function DashboardPage() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const {
     holdings,
     selectedHolding,
@@ -324,6 +328,27 @@ export function DashboardPage() {
     queryKey: ["athena-intelligence-status"],
     queryFn: athenaIntelligenceApi.status,
   });
+  const demoStatusQuery = useQuery({
+    queryKey: ["demo-workflow-status"],
+    queryFn: demoWorkflowApi.status,
+  });
+  const demoHistoryQuery = useQuery({
+    queryKey: ["demo-workflow-history"],
+    queryFn: demoWorkflowApi.history,
+  });
+  const [lastDemoRun, setLastDemoRun] = useState<DemoRunSummary | null>(null);
+  const demoMutation = useMutation({
+    mutationFn: () =>
+      demoWorkflowApi.run({
+        portfolio_id: "pf_004",
+        language: i18n.language?.startsWith("fr") ? "fr" : "en",
+        include_report: true,
+      }),
+    onSuccess: async (summary) => {
+      setLastDemoRun(summary);
+      await demoHistoryQuery.refetch();
+    },
+  });
   const isConnected = !healthQuery.isError;
   const athenaStatus = athenaStatusQuery.data;
   const athenaProviderMode = athenaStatus?.provider_mode ?? "fallback";
@@ -334,6 +359,7 @@ export function DashboardPage() {
       : "Demo Data Online";
   const workflowPortfolioName =
     selectedPortfolioName || "Athena Balanced Growth Portfolio";
+  const demoRun = lastDemoRun ?? demoHistoryQuery.data?.items[0] ?? null;
   const workflowSymbol = selectedSymbol || selectedHolding?.symbol || "--";
   const workflowModules: WorkflowModule[] = [
     {
@@ -553,6 +579,46 @@ export function DashboardPage() {
         ))}
       </section>
 
+      <div className="dashboard-split-grid dashboard-split-grid--wide">
+        <DemoWorkflowCard
+          isRunning={demoMutation.isPending}
+          run={demoRun}
+          statusReady={demoStatusQuery.data?.status === "ready"}
+          onRun={() => demoMutation.mutate()}
+        />
+        <SystemHealthCard
+          activeModules={demoStatusQuery.data?.active_modules ?? 16}
+          apiConnected={isConnected}
+          databaseConnected={demoStatusQuery.data?.database_connected ?? false}
+          lastDemoRun={demoRun}
+          openAnomalies={demoRun?.anomalies_detected ?? 0}
+          openBreaks={demoRun?.open_breaks ?? 0}
+          reportsGenerated={demoRun?.generated_report_id ? 1 : 0}
+        />
+      </div>
+
+      {demoMutation.isError ? (
+        <section className="analytics-section">
+          <header className="analytics-section__header">
+            <h2>Demo workflow unavailable</h2>
+            <p>The demo run could not complete. Check that the backend process is still running.</p>
+          </header>
+        </section>
+      ) : null}
+
+      {demoRun ? <DemoRunSummaryPanel run={demoRun} /> : null}
+
+      <RecruiterQuickTour />
+
+      {demoStatusQuery.data?.persistence?.length ? (
+        <PersistenceStatusPanel
+          compact
+          title="Persistence Status"
+          description="Local SQLite demo persistence and fallback behavior are explicit across the institutional workflow."
+          items={demoStatusQuery.data.persistence}
+        />
+      ) : null}
+
       <DashboardSection
         title={t("workflow.connectedWorkflow")}
         description="Market Data and Portfolio Builder feed volatility, options, fixed-income, P&L and reconciliation analytics into Risk Monitor, Limit Center and reporting workflows."
@@ -622,7 +688,7 @@ export function DashboardPage() {
 
       <DashboardSection
         title="Platform Overview"
-        description="Fifteen connected workstations are active today, including AI Anomaly Center, persistent Trade Blotter, P&L Attribution, Reconciliation Center and Reports Center."
+        description="Sixteen connected workstations are active today, including the Architecture map, AI Anomaly Center, persistent Trade Blotter, P&L Attribution, Reconciliation Center and Reports Center."
       >
         <div className="dashboard-module-grid">
           {modules.map((module) => (
@@ -739,6 +805,189 @@ function KpiCard({ kpi }: { kpi: Kpi }) {
       <p>{kpi.detail}</p>
     </section>
   );
+}
+
+function DemoWorkflowCard({
+  isRunning,
+  run,
+  statusReady,
+  onRun,
+}: {
+  isRunning: boolean;
+  run: DemoRunSummary | null;
+  statusReady: boolean;
+  onRun: () => void;
+}) {
+  return (
+    <section className="card dashboard-demo-run-card">
+      <span className="equity-kicker">Demo Workflow</span>
+      <div className="section-heading">
+        <h2>Run Athena Demo Portfolio</h2>
+        <StatusBadge label={statusReady ? "Ready" : "Backend check"} variant={statusReady ? "success" : "warning"} />
+      </div>
+      <p>
+        Launch a coherent recruiter tour across Market Data, Portfolio Builder, Risk Monitor,
+        P&L Attribution, Reconciliation, Limit Center, AI Anomaly Center and Reports Center.
+      </p>
+      <div className="dashboard-demo-run-actions">
+        <button className="button button--primary" disabled={isRunning} type="button" onClick={onRun}>
+          {isRunning ? "Running demo" : "Run Athena Demo Portfolio"}
+        </button>
+        {run?.generated_report_id ? (
+          <Link className="button" to="/reports-center">
+            View Generated Report
+          </Link>
+        ) : null}
+      </div>
+      <div className="dashboard-demo-run-pipeline">
+        {["Market Data", "Portfolio", "Risk", "P&L", "Reconciliation", "Limits", "Anomalies", "Reports"].map((step) => (
+          <span key={step}>{step}</span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SystemHealthCard({
+  activeModules,
+  apiConnected,
+  databaseConnected,
+  lastDemoRun,
+  openAnomalies,
+  openBreaks,
+  reportsGenerated,
+}: {
+  activeModules: number;
+  apiConnected: boolean;
+  databaseConnected: boolean;
+  lastDemoRun: DemoRunSummary | null;
+  openAnomalies: number;
+  openBreaks: number;
+  reportsGenerated: number;
+}) {
+  const rows = [
+    ["Backend ready", apiConnected ? "Yes" : "Demo fallback"],
+    ["Database connected", databaseConnected ? "SQLite demo" : "Unknown"],
+    ["Active modules", String(activeModules)],
+    ["Last demo run", lastDemoRun ? formatDate(lastDemoRun.generated_at) : "Not run"],
+    ["Reports generated", String(reportsGenerated)],
+    ["Open anomalies / breaks", `${openAnomalies} / ${openBreaks}`],
+  ];
+  return (
+    <section className="card dashboard-system-health-card">
+      <span className="equity-kicker">System Health</span>
+      <h2>Institutional demo readiness</h2>
+      <div className="dashboard-system-health-grid">
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <span>{label}</span>
+            <strong>{value}</strong>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function DemoRunSummaryPanel({ run }: { run: DemoRunSummary }) {
+  const quickLinks = [
+    ["View Portfolio", run.quick_links.portfolio],
+    ["View Risk Monitor", run.quick_links.risk_monitor],
+    ["View P&L", run.quick_links.pnl_attribution],
+    ["View Reconciliation", run.quick_links.reconciliation],
+    ["View Limit Center", run.quick_links.limit_center],
+    ["View AI Anomalies", run.quick_links.ai_anomaly_center],
+    ["View Generated Report", run.quick_links.reports_center],
+  ];
+  return (
+    <DashboardSection
+      title="Demo Run Summary"
+      description="Point-in-time summary produced by the recruiter-ready Athena demo workflow."
+    >
+      <div className="dashboard-demo-summary-grid">
+        <article>
+          <span>Demo run ID</span>
+          <strong>{run.demo_run_id}</strong>
+        </article>
+        <article>
+          <span>Portfolio</span>
+          <strong>{run.portfolio_name ?? run.portfolio_id}</strong>
+        </article>
+        <article>
+          <span>Risk score</span>
+          <strong>{run.risk_score ?? "n/a"}</strong>
+        </article>
+        <article>
+          <span>Risk status</span>
+          <strong>{run.highest_risk_status ?? "n/a"}</strong>
+        </article>
+        <article>
+          <span>Total P&L</span>
+          <strong>{run.total_pnl !== null && run.total_pnl !== undefined ? <MoneyValue value={run.total_pnl} /> : "n/a"}</strong>
+        </article>
+        <article>
+          <span>Breaks / breaches / anomalies</span>
+          <strong>{run.open_breaks ?? 0} / {run.limit_breaches ?? 0} / {run.anomalies_detected ?? 0}</strong>
+        </article>
+      </div>
+      <div className="dashboard-demo-module-strip">
+        {run.module_results.map((module) => (
+          <article key={module.module}>
+            <StatusBadge label={module.status} variant={module.status === "completed" ? "success" : "warning"} />
+            <strong>{module.module}</strong>
+            <span>{module.records_created} records</span>
+          </article>
+        ))}
+      </div>
+      {run.warnings.length ? (
+        <div className="model-warning-list">
+          {run.warnings.map((warning) => (
+            <p key={warning}>{warning}</p>
+          ))}
+        </div>
+      ) : null}
+      <div className="dashboard-demo-run-actions">
+        {quickLinks.map(([label, path]) => (
+          <Link className="button" key={label} to={path}>
+            {label}
+          </Link>
+        ))}
+      </div>
+    </DashboardSection>
+  );
+}
+
+function RecruiterQuickTour() {
+  const steps = [
+    ["01", "View Dashboard", "/"],
+    ["02", "Open Portfolio Builder", "/portfolio-builder"],
+    ["03", "Run Risk Monitor", "/risk-monitor"],
+    ["04", "Review P&L Attribution", "/pnl-attribution"],
+    ["05", "Check Reconciliation", "/reconciliation"],
+    ["06", "Generate Report", "/reports-center"],
+    ["07", "Read Athena AI Commentary", "/ai-anomaly-center"],
+  ];
+  return (
+    <DashboardSection
+      title="Recruiter Quick Tour"
+      description="A short path that shows the project value without requiring a deep code walkthrough."
+    >
+      <div className="dashboard-recruiter-tour">
+        {steps.map(([index, label, path]) => (
+          <Link key={index} to={path}>
+            <span>{index}</span>
+            <strong>{label}</strong>
+          </Link>
+        ))}
+      </div>
+    </DashboardSection>
+  );
+}
+
+function formatDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString();
 }
 
 function ModuleCard({ module }: { module: Module }) {
