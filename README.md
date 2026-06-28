@@ -26,6 +26,9 @@ and the demo workflow can run a full Athena portfolio risk pack from one button.
 
 Athena currently exposes 16 connected workstations or services:
 
+All active modules are presented at `Functional` level in the dashboard,
+architecture map and module documentation.
+
 1. Market Data
 2. Equity Analysis
 3. Portfolio Builder

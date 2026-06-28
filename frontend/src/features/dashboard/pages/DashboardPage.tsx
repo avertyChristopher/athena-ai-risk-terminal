@@ -24,7 +24,7 @@ type Kpi = {
 type Module = {
   name: string;
   description: string;
-  status: "Solid" | "Functional" | "Beta" | "Beta+" | "Coming Soon";
+  status: "Functional";
   maturity: string;
   path: string;
   connectedInputs: string[];
@@ -96,7 +96,7 @@ const modules: Module[] = [
   {
     name: "Market Data",
     description: "Clean prices, returns, volatility, benchmarks and data quality metrics.",
-    status: "Solid",
+    status: "Functional",
     maturity: "Connected",
     path: "/market-data",
     connectedInputs: ["CSV imports", "Demo market feed"],
@@ -107,7 +107,7 @@ const modules: Module[] = [
   {
     name: "Equity Analysis",
     description: "Analyze valuation, profitability, growth, risk and CFA-style diagnostics.",
-    status: "Solid",
+    status: "Functional",
     maturity: "Connected",
     path: "/equity-analysis",
     connectedInputs: ["Market Data", "Selected symbol"],
@@ -118,7 +118,7 @@ const modules: Module[] = [
   {
     name: "Portfolio Builder",
     description: "Build portfolios, monitor allocation, drift, concentration and policy fit.",
-    status: "Solid",
+    status: "Functional",
     maturity: "Connected",
     path: "/portfolio-builder",
     connectedInputs: ["Market Data", "Equity Analysis"],
@@ -140,29 +140,29 @@ const modules: Module[] = [
   {
     name: "Trade Blotter",
     description: "Persistent simulated trade register with review workflow, costs, suitability status and downstream P&L/reconciliation integration.",
-    status: "Beta",
+    status: "Functional",
     maturity: "Persistent",
     path: "/trade-blotter",
     connectedInputs: ["Trade Simulator", "Manual trade tickets"],
     connectedOutputs: ["P&L Attribution", "Reconciliation Center", "Reports Center", "Risk Monitor", "Limit Center"],
     features: ["Trade register", "Review workflow", "Costs", "Audit trail"],
-    badges: ["Trade Workflow", "Persistent", "Review", "P&L Ready", "Reconciliation Ready", "Beta"],
+    badges: ["Trade Workflow", "Persistent", "Review", "P&L Ready", "Reconciliation Ready", "Functional"],
   },
   {
     name: "Risk Monitor",
     description: "Track VaR, CVaR, drawdown, configurable limits and stress shocks.",
-    status: "Beta",
-    maturity: "Beta",
+    status: "Functional",
+    maturity: "Functional",
     path: "/risk-monitor",
     connectedInputs: ["Portfolio", "Volatility", "Options", "Rates"],
     connectedOutputs: ["Limit Center", "Stress Testing"],
     features: ["VaR/CVaR", "Drawdown", "Risk limits"],
-    badges: ["Beta", "Portfolio Ready"],
+    badges: ["Functional", "Portfolio Ready"],
   },
   {
     name: "Volatility Lab",
     description: "Institutional volatility workstation with realized, EWMA, VaR/CVaR, beta, correlation and Risk Monitor-ready outputs.",
-    status: "Beta+",
+    status: "Functional",
     maturity: "Payload Ready",
     path: "/volatility-lab",
     features: [
@@ -179,8 +179,8 @@ const modules: Module[] = [
   {
     name: "Options Pricing Lab",
     description: "Financially corrected beta for option pricing, observed parity, implied volatility and typed multi-leg strategies.",
-    status: "Beta+",
-    maturity: "Beta+",
+    status: "Functional",
+    maturity: "Functional",
     path: "/options-pricing-lab",
     features: [
       "Black-Scholes",
@@ -195,7 +195,7 @@ const modules: Module[] = [
       "Greeks",
       "Strategy Lab",
       "Implied Volatility",
-      "Beta+",
+      "Functional",
       "Bilingual",
     ],
     connectedInputs: ["Market Data", "Volatility Lab"],
@@ -204,7 +204,7 @@ const modules: Module[] = [
   {
     name: "Rates Lab",
     description: "Analyze bond pricing, yield, duration, convexity, DV01 and curve scenarios.",
-    status: "Beta+",
+    status: "Functional",
     maturity: "Payload Ready",
     path: "/rates-lab",
     features: [
@@ -221,68 +221,68 @@ const modules: Module[] = [
   {
     name: "Stress Testing",
     description: "Run portfolio stress scenarios across equities, rates, volatility, FX and credit shocks.",
-    status: "Beta",
-    maturity: "Beta",
+    status: "Functional",
+    maturity: "Functional",
     path: "/stress-testing",
     connectedInputs: ["Portfolio Builder", "Market Data", "Volatility Lab", "Rates Lab", "Options Pricing Lab"],
     connectedOutputs: ["Risk Monitor payload", "Limit Center"],
     features: ["Scenario library", "Portfolio shocks", "Worst contributors", "Risk payload"],
-    badges: ["Risk Management", "Scenario Analysis", "Portfolio Connected", "Risk Monitor Ready", "Beta"],
+    badges: ["Risk Management", "Scenario Analysis", "Portfolio Connected", "Risk Monitor Ready", "Functional"],
   },
   {
     name: "Limit Center",
     description: "Centralize portfolio, market, stress, rates, options and trade limits with breach review.",
-    status: "Beta",
-    maturity: "Governance Beta",
+    status: "Functional",
+    maturity: "Governance Functional",
     path: "/limit-center",
     connectedInputs: ["Portfolio Builder", "Risk Monitor", "Stress Testing", "Volatility Lab", "Options Pricing Lab", "Rates Lab", "Trade Simulator"],
     connectedOutputs: ["Risk governance workflow", "Reports Center", "P&L Attribution"],
     features: ["Limit rules", "Breach register", "Exception workflow", "Severity engine"],
-    badges: ["Risk Governance", "Breach Register", "Exceptions", "Athena Intelligence", "Beta"],
+    badges: ["Risk Governance", "Breach Register", "Exceptions", "Athena Intelligence", "Functional"],
   },
   {
     name: "P&L Attribution",
     description: "Explain portfolio gains and losses by position, asset class, sector, income, trades, rates and options drivers.",
-    status: "Beta",
-    maturity: "Performance Beta",
+    status: "Functional",
+    maturity: "Performance Functional",
     path: "/pnl-attribution",
     connectedInputs: ["Portfolio Builder", "Market Data", "Trade Blotter", "Rates Lab", "Options Pricing Lab"],
     connectedOutputs: ["Reconciliation Center", "Reports Center", "Athena Intelligence"],
     features: ["Position P&L", "Group attribution", "Benchmark active return", "Rates/options hooks"],
-    badges: ["Performance Attribution", "Portfolio Connected", "Market Data", "Reports Ready", "Athena Intelligence", "Beta"],
+    badges: ["Performance Attribution", "Portfolio Connected", "Market Data", "Reports Ready", "Athena Intelligence", "Functional"],
   },
   {
     name: "Reconciliation Center",
     description: "Detect position, cash, price, trade and P&L breaks between Athena records and demo custodian reference data.",
-    status: "Beta",
-    maturity: "Middle Office Beta",
+    status: "Functional",
+    maturity: "Middle Office Functional",
     path: "/reconciliation",
     connectedInputs: ["Portfolio Builder", "Market Data", "Trade Blotter", "P&L Attribution", "Athena Intelligence"],
     connectedOutputs: ["Break Register", "Review Workflow", "Reports Center"],
     features: ["Position breaks", "Cash & FX checks", "Price controls", "Review workflow"],
-    badges: ["Middle Office", "Data Quality", "Break Register", "P&L Control", "Reports Ready", "Athena Intelligence", "Beta"],
+    badges: ["Middle Office", "Data Quality", "Break Register", "P&L Control", "Reports Ready", "Athena Intelligence", "Functional"],
   },
   {
     name: "AI Anomaly Center",
     description: "Detect unusual risk, P&L, trade, market data, limit and reconciliation patterns across Athena's persisted history.",
-    status: "Beta",
-    maturity: "Monitoring Beta",
+    status: "Functional",
+    maturity: "Monitoring Functional",
     path: "/ai-anomaly-center",
     connectedInputs: ["Market Data", "Trade Blotter", "P&L Attribution", "Reconciliation Center", "Limit Center", "Stress Testing"],
     connectedOutputs: ["Review workflow", "Reports Center", "Athena Intelligence"],
     features: ["Rule-based scan", "Anomaly register", "Scoring", "Review workflow"],
-    badges: ["Monitoring", "Rule-Based AI", "Persisted History", "Review Workflow", "Reports Ready", "Athena Intelligence", "Beta"],
+    badges: ["Monitoring", "Rule-Based AI", "Persisted History", "Review Workflow", "Reports Ready", "Athena Intelligence", "Functional"],
   },
   {
     name: "Reports Center",
     description: "Generate structured portfolio, anomaly, reconciliation, P&L, risk, stress, limits, trade, rates and options reports from Athena analytics.",
-    status: "Beta",
+    status: "Functional",
     maturity: "Snapshot Based",
     path: "/reports-center",
     connectedInputs: ["Portfolio Builder", "AI Anomaly Center", "Reconciliation Center", "P&L Attribution", "Risk Monitor", "Stress Testing", "Limit Center", "Athena Intelligence"],
     connectedOutputs: ["JSON export", "Markdown export", "CSV tables"],
     features: ["Report templates", "Snapshot builder", "Risk pack"],
-    badges: ["Reporting", "Export", "Risk Pack", "Athena Intelligence", "Snapshot Based", "Beta"],
+    badges: ["Reporting", "Export", "Risk Pack", "Athena Intelligence", "Snapshot Based", "Functional"],
   },
 ];
 
@@ -991,16 +991,11 @@ function formatDate(value: string) {
 }
 
 function ModuleCard({ module }: { module: Module }) {
-  const statusVariant = module.status === "Solid" || module.status === "Functional"
-    ? "success"
-    : module.status === "Beta" || module.status === "Beta+"
-      ? "warning"
-      : "neutral";
   return (
     <Link className="dashboard-module-card" to={module.path}>
       <div>
         <div className="dashboard-module-badges">
-          <StatusBadge label={module.status} variant={statusVariant} />
+          <StatusBadge label={module.status} variant="success" />
           <StatusBadge label={module.maturity} variant="info" />
         </div>
         <h3>{module.name}</h3>

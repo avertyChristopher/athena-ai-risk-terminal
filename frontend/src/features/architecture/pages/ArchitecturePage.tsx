@@ -7,7 +7,7 @@ import { demoWorkflowApi } from "../../../services/demoWorkflowApi";
 
 type ArchitectureModule = {
   name: string;
-  status: string;
+  status: "Functional";
   role: string;
   inputs: string[];
   outputs: string[];
@@ -19,7 +19,7 @@ type ArchitectureModule = {
 const modules: ArchitectureModule[] = [
   {
     name: "Market Data",
-    status: "Solid",
+    status: "Functional",
     role: "Clean demo prices, returns, volatility and coverage checks.",
     inputs: ["Demo market feed", "CSV imports"],
     outputs: ["Portfolio coverage", "Returns", "Risk inputs"],
@@ -29,7 +29,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Equity Analysis",
-    status: "Solid",
+    status: "Functional",
     role: "Single-stock fundamentals, ratios, valuation, growth and analyst diagnostics.",
     inputs: ["Market Data", "Selected symbol", "Demo fundamentals"],
     outputs: ["Valuation view", "Quality diagnostics", "Portfolio research input"],
@@ -39,7 +39,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Portfolio Builder",
-    status: "Solid",
+    status: "Functional",
     role: "Portfolio universe, holdings, allocation, concentration and policy context.",
     inputs: ["Market Data", "Demo portfolio store"],
     outputs: ["Positions", "Summary", "Allocation"],
@@ -59,7 +59,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Trade Blotter",
-    status: "Beta",
+    status: "Functional",
     role: "Persistent simulated trade register and review workflow.",
     inputs: ["Trade Simulator", "Manual tickets"],
     outputs: ["Trades", "Costs", "P&L/Reconciliation inputs"],
@@ -69,7 +69,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Risk Monitor",
-    status: "Beta",
+    status: "Functional",
     role: "Portfolio risk score, VaR/CVaR, drawdown, concentration and alerts.",
     inputs: ["Portfolio Builder", "Market Data", "Volatility/Rates/Options payloads"],
     outputs: ["Risk score", "Limit payload", "Athena commentary"],
@@ -79,7 +79,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Volatility Lab",
-    status: "Beta+",
+    status: "Functional",
     role: "Realized/EWMA volatility, beta, correlation and VaR source workbench.",
     inputs: ["Market Data", "Portfolio Builder"],
     outputs: ["Volatility payload", "Risk Monitor payload"],
@@ -89,7 +89,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Options Pricing Lab",
-    status: "Beta+",
+    status: "Functional",
     role: "Black-Scholes, Greeks, put-call parity, payoff and option strategy analytics.",
     inputs: ["Market Data", "Volatility Lab"],
     outputs: ["Greeks payload", "Risk/Limit payload"],
@@ -99,7 +99,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Rates Lab",
-    status: "Beta+",
+    status: "Functional",
     role: "Bond pricing, yield, duration, convexity, DV01 and curve scenarios.",
     inputs: ["Manual bond inputs", "Demo curve", "Portfolio Builder"],
     outputs: ["Rates risk payload", "Stress/Limit inputs"],
@@ -109,7 +109,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Stress Testing",
-    status: "Beta",
+    status: "Functional",
     role: "Scenario losses, contributors, severity and limit-ready stress payloads.",
     inputs: ["Portfolio Builder", "Market Data", "Rates/Options/Volatility"],
     outputs: ["Stress run", "Limit Center payload"],
@@ -119,7 +119,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Limit Center",
-    status: "Beta",
+    status: "Functional",
     role: "Governance rules, breach detection, exception workflow and review state.",
     inputs: ["Risk Monitor", "Stress Testing", "Rates", "Options", "Trades"],
     outputs: ["Breach register", "Reports payload"],
@@ -129,7 +129,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "P&L Attribution",
-    status: "Beta",
+    status: "Functional",
     role: "Position, sector, asset class, benchmark, trade, rates and options attribution.",
     inputs: ["Portfolio Builder", "Market Data", "Trade Blotter"],
     outputs: ["P&L analysis", "Reports/Reconciliation payload"],
@@ -139,7 +139,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Reconciliation Center",
-    status: "Beta",
+    status: "Functional",
     role: "Position, cash, price, trade, P&L and FX breaks vs demo custodian reference.",
     inputs: ["Portfolio", "Market Data", "P&L", "Trade Blotter"],
     outputs: ["Break register", "Review workflow", "Reports payload"],
@@ -149,7 +149,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Reports Center",
-    status: "Beta",
+    status: "Functional",
     role: "Snapshot-based reports with JSON, Markdown and CSV exports.",
     inputs: ["Risk", "P&L", "Reconciliation", "Limits", "Stress", "AI Anomaly"],
     outputs: ["Reports", "Exports"],
@@ -159,7 +159,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "AI Anomaly Center",
-    status: "Beta",
+    status: "Functional",
     role: "Rule-based anomaly monitoring across persisted history.",
     inputs: ["Trades", "P&L", "Reconciliation", "Limits", "Stress", "Market Data"],
     outputs: ["Anomaly register", "Review workflow", "AI Anomaly Report"],
@@ -169,7 +169,7 @@ const modules: ArchitectureModule[] = [
   },
   {
     name: "Athena Intelligence Engine",
-    status: "Beta",
+    status: "Functional",
     role: "Structured commentary and synthesis from Athena payloads.",
     inputs: ["Structured module payloads"],
     outputs: ["Commentary", "Report summaries", "Anomaly explanations"],
@@ -238,7 +238,7 @@ export function ArchitecturePage() {
             <article key={module.name}>
               <div>
                 <h3>{module.name}</h3>
-                <StatusBadge label={module.status} variant={module.status === "Solid" ? "success" : "warning"} />
+                <StatusBadge label={module.status} variant="success" />
               </div>
               <p>{module.role}</p>
               <dl>
