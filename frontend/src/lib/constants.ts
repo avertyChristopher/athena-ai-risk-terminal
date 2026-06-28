@@ -5,6 +5,7 @@ export type NavigationItem = {
 
 export const navigationItems: NavigationItem[] = [
   { path: "/", labelKey: "nav.dashboard" },
+  { path: "/architecture", labelKey: "nav.architecture" },
   { path: "/market-data", labelKey: "nav.marketData" },
   { path: "/equity-analysis", labelKey: "nav.equityAnalysis" },
   { path: "/portfolio-builder", labelKey: "nav.portfolioBuilder" },
@@ -20,5 +21,5 @@ export const navigationItems: NavigationItem[] = [
   { path: "/reconciliation", labelKey: "nav.reconciliation" },
   { path: "/ai-anomaly-center", labelKey: "nav.aiAnomalyCenter" },
   { path: "/reports-center", labelKey: "nav.reportsCenter" },
-  { path: "/settings", labelKey: "nav.settings" }
+  { path: "/settings", labelKey: "nav.settings" },
 ];

@@ -724,6 +724,7 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "architecture": "Architecture",
     "marketData": "Market Data",
     "equityAnalysis": "Equity Analysis",
     "portfolioBuilder": "Portfolio Builder",
@@ -740,6 +741,24 @@
     "aiAnomalyCenter": "AI Anomaly Center",
     "reportsCenter": "Reports Center",
     "settings": "Settings"
+  },
+  "architecture": {
+    "eyebrow": "System map",
+    "title": "Athena Architecture",
+    "subtitle": "A recruiter-ready view of the modular backend, frontend workstations, data flow, persistence status and current project limitations.",
+    "platformOverview": "Platform overview",
+    "activeModules": "Active modules",
+    "persistenceStatus": "Persistence status",
+    "databaseConnected": "Database connected",
+    "moduleMap": "Module map",
+    "moduleMapDescription": "Each workstation keeps routes thin, business logic in services, pure calculations in domain code and shared infrastructure centralized.",
+    "mainEndpoints": "Main endpoints",
+    "dataFlow": "Workflow data flow",
+    "dataFlowDescription": "Athena is organized around portfolio, market, risk, control, reporting and AI monitoring workflows.",
+    "persistenceMap": "Persistence map",
+    "persistenceMapDescription": "The demo workflow labels which objects use SQLite persistence, local snapshots or fallback behavior.",
+    "projectLimitations": "Current limitations",
+    "projectLimitationsDescription": "These limits are explicit so the project stays credible for a portfolio walkthrough."
   },
   "workflow": {
     "portfolioSelector": "Portfolio workflow",

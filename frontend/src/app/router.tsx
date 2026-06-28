@@ -4,12 +4,32 @@ import type { ReactNode } from "react";
 
 import { AppShell } from "../components/layout/AppShell";
 import { LoadingState } from "../components/ui/LoadingState";
-import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
-import { EquityAnalysisPage } from "../features/equity-analysis/pages/EquityAnalysisPage";
-import { MarketDataPage } from "../features/market-data/pages/MarketDataPage";
-import { PortfolioPage } from "../features/portfolio/pages/PortfolioPage";
-import { SettingsPage } from "../features/settings/pages/SettingsPage";
 
+const DashboardPage = lazy(() =>
+  import("../features/dashboard/pages/DashboardPage").then((module) => ({
+    default: module.DashboardPage,
+  })),
+);
+const ArchitecturePage = lazy(() =>
+  import("../features/architecture/pages/ArchitecturePage").then((module) => ({
+    default: module.ArchitecturePage,
+  })),
+);
+const MarketDataPage = lazy(() =>
+  import("../features/market-data/pages/MarketDataPage").then((module) => ({
+    default: module.MarketDataPage,
+  })),
+);
+const EquityAnalysisPage = lazy(() =>
+  import("../features/equity-analysis/pages/EquityAnalysisPage").then((module) => ({
+    default: module.EquityAnalysisPage,
+  })),
+);
+const PortfolioPage = lazy(() =>
+  import("../features/portfolio/pages/PortfolioPage").then((module) => ({
+    default: module.PortfolioPage,
+  })),
+);
 const RiskMonitorPage = lazy(() =>
   import("../features/risk-monitor/pages/RiskMonitorPage").then((module) => ({
     default: module.RiskMonitorPage,
@@ -70,6 +90,11 @@ const AIAnomalyCenterPage = lazy(() =>
     default: module.AIAnomalyCenterPage,
   })),
 );
+const SettingsPage = lazy(() =>
+  import("../features/settings/pages/SettingsPage").then((module) => ({
+    default: module.SettingsPage,
+  })),
+);
 
 function lazyRoute(element: ReactNode) {
   return (
@@ -84,11 +109,12 @@ export const router = createBrowserRouter([
     path: "/",
     element: <AppShell />,
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: "dashboard", element: <DashboardPage /> },
-      { path: "market-data", element: <MarketDataPage /> },
-      { path: "equity-analysis", element: <EquityAnalysisPage /> },
-      { path: "portfolio-builder", element: <PortfolioPage /> },
+      { index: true, element: lazyRoute(<DashboardPage />) },
+      { path: "dashboard", element: lazyRoute(<DashboardPage />) },
+      { path: "architecture", element: lazyRoute(<ArchitecturePage />) },
+      { path: "market-data", element: lazyRoute(<MarketDataPage />) },
+      { path: "equity-analysis", element: lazyRoute(<EquityAnalysisPage />) },
+      { path: "portfolio-builder", element: lazyRoute(<PortfolioPage />) },
       { path: "trade-simulator", element: lazyRoute(<TradeSimulatorPage />) },
       { path: "trade-blotter", element: lazyRoute(<TradeBlotterPage />) },
       { path: "risk-monitor", element: lazyRoute(<RiskMonitorPage />) },
@@ -101,7 +127,7 @@ export const router = createBrowserRouter([
       { path: "reconciliation", element: lazyRoute(<ReconciliationPage />) },
       { path: "ai-anomaly-center", element: lazyRoute(<AIAnomalyCenterPage />) },
       { path: "reports-center", element: lazyRoute(<ReportsCenterPage />) },
-      { path: "settings", element: <SettingsPage /> },
+      { path: "settings", element: lazyRoute(<SettingsPage />) },
     ],
   },
 ]);

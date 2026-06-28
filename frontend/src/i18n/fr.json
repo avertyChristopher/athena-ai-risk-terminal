@@ -724,6 +724,7 @@
   },
   "nav": {
     "dashboard": "Tableau de bord",
+    "architecture": "Architecture",
     "marketData": "Données de marché",
     "equityAnalysis": "Analyse actions",
     "portfolioBuilder": "Construction de portefeuille",
@@ -740,6 +741,24 @@
     "aiAnomalyCenter": "Centre d'anomalies IA",
     "reportsCenter": "Centre de rapports",
     "settings": "Paramètres"
+  },
+  "architecture": {
+    "eyebrow": "Carte systeme",
+    "title": "Architecture Athena",
+    "subtitle": "Vue prete pour recruteur de l'architecture modulaire, des workstations frontend, des flux de donnees, de la persistance et des limites actuelles.",
+    "platformOverview": "Vue plateforme",
+    "activeModules": "Modules actifs",
+    "persistenceStatus": "Statut de persistance",
+    "databaseConnected": "Base connectee",
+    "moduleMap": "Carte des modules",
+    "moduleMapDescription": "Chaque workstation garde des routes fines, la logique metier dans les services, les calculs purs dans le domaine et l'infrastructure partagee centralisee.",
+    "mainEndpoints": "Endpoints principaux",
+    "dataFlow": "Flux de donnees",
+    "dataFlowDescription": "Athena est organise autour des workflows portefeuille, marche, risque, controle, reporting et monitoring IA.",
+    "persistenceMap": "Carte de persistance",
+    "persistenceMapDescription": "Le workflow demo indique quels objets utilisent SQLite, des snapshots locaux ou un comportement fallback.",
+    "projectLimitations": "Limites actuelles",
+    "projectLimitationsDescription": "Ces limites sont explicites pour garder le projet credible pendant une demonstration portfolio."
   },
   "workflow": {
     "portfolioSelector": "Workflow portefeuille",
