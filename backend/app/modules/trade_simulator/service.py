@@ -4,6 +4,9 @@ from app.modules.athena_intelligence.integration import attach_athena_ai_comment
 from app.modules.market_data.repository import MarketDataRepository
 from app.modules.risk_analytics.schemas import RealizedRiskResult
 from app.modules.risk_analytics.service import RiskAnalyticsService
+from app.modules.trade_blotter.repository import TradeBlotterRepository
+from app.modules.trade_blotter.schemas import TradeBlotterFromSimulationRequest
+from app.modules.trade_blotter.service import TradeBlotterService
 from app.modules.trade_simulator.domain.constraints import build_constraint_warnings
 from app.modules.trade_simulator.domain.execution_quality import (
     calculate_price_shortfall,
@@ -64,11 +67,13 @@ class TradeSimulatorService:
         self.risk_analytics_service = RiskAnalyticsService(
             MarketDataRepository(repository.db),
         )
+        self.trade_blotter_service = TradeBlotterService(TradeBlotterRepository(repository.db))
 
     def get_module_status(self) -> TradeModuleStatus:
         return TradeModuleStatus(
             detail="Trade Simulator is ready for deterministic pre-trade analysis.",
             simulation_ready=self.repository.simulation_available(),
+            trade_blotter_ready=True,
         )
 
     def simulate_trade(
@@ -393,12 +398,41 @@ class TradeSimulatorService:
                 notice="Simulation only. No trades are executed.",
             ),
         )
-        return attach_athena_ai_commentary(
+        response = attach_athena_ai_commentary(
             response,
             module_name="trade_simulator",
             analysis_mode="trade",
             payload=trade_impact_payload.model_dump(mode="json"),
         )
+        if payload.save_to_blotter:
+            response = self._save_to_trade_blotter(response)
+        return response
+
+    def _save_to_trade_blotter(self, response: TradeSimulationResponse) -> TradeSimulationResponse:
+        warnings = list(response.warnings)
+        try:
+            entry = self.trade_blotter_service.create_from_simulation(
+                TradeBlotterFromSimulationRequest(
+                    simulation=response.model_dump(mode="json"),
+                    initial_status="simulated",
+                    reviewer="trade_simulator",
+                ),
+            )
+            return response.model_copy(
+                update={
+                    "save_status": "saved_to_trade_blotter",
+                    "trade_id": entry.trade_id,
+                    "warnings": warnings,
+                },
+            )
+        except Exception as exc:  # pragma: no cover - defensive integration guard
+            warnings.append(f"Trade Blotter save failed: {exc}")
+            return response.model_copy(
+                update={
+                    "save_status": "save_failed",
+                    "warnings": warnings,
+                },
+            )
 
     def _portfolio_impact_metrics(
         self,

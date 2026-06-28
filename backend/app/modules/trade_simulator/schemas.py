@@ -26,6 +26,7 @@ class TradeModuleStatus(BaseModel):
     module: str = "trade-simulator"
     detail: str
     simulation_ready: bool = True
+    trade_blotter_ready: bool = True
 
 
 class TradeSimulationRequest(BaseModel):
@@ -40,6 +41,7 @@ class TradeSimulationRequest(BaseModel):
     limit_price: float | None = Field(default=None, gt=0)
     time_in_force: TimeInForce = "Day"
     trade_rationale: TradeRationale = "Rebalancing"
+    save_to_blotter: bool = False
 
 
 class ImpactMetric(BaseModel):
@@ -176,3 +178,7 @@ class TradeSimulationResponse(BaseModel):
     athena_commentary: AthenaTradeCommentaryResponse
     athena_ai_commentary: AthenaAICommentary | None = None
     simulation_result: SimulationResultSummary
+    trade_blotter_ready: bool = True
+    save_status: str | None = None
+    trade_id: str | None = None
+    warnings: list[str] = Field(default_factory=list)
