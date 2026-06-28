@@ -68,6 +68,8 @@ def _commentary_target(report_type: ReportType, payloads: dict[str, Any]) -> tup
         return "pnl_attribution", "pnl", payloads.get("pnl_attribution") or {}
     if report_type == "reconciliation":
         return "reconciliation", "reconciliation", payloads.get("reconciliation") or {}
+    if report_type == "ai_anomaly":
+        return "ai_anomaly_center", "anomaly_monitoring", payloads.get("ai_anomaly") or {}
     return "portfolio_builder", "portfolio", {
         "portfolio": payloads.get("portfolio"),
         "summary": payloads.get("portfolio_summary"),

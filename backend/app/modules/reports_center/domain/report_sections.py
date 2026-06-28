@@ -16,6 +16,7 @@ def build_report_sections(report_type: ReportType, payloads: dict[str, Any]) -> 
         "options_risk": _options_sections,
         "pnl_attribution": _pnl_sections,
         "reconciliation": _reconciliation_sections,
+        "ai_anomaly": _ai_anomaly_sections,
         "full_portfolio_risk_pack": _full_pack_sections,
     }
     return builders[report_type](payloads)
@@ -133,6 +134,113 @@ def _reconciliation_sections(payloads: dict[str, Any]) -> list[ReportSection]:
     ]
 
 
+def _ai_anomaly_sections(payloads: dict[str, Any]) -> list[ReportSection]:
+    anomalies = payloads.get("ai_anomaly") or {}
+    records = anomalies.get("anomaly_records") or []
+    methodology = anomalies.get("methodology") or {}
+    commentary = anomalies.get("athena_ai_commentary") or payloads.get("athena_commentary") or {}
+    source_modules = ["AI Anomaly Center"]
+    review_status = _count_records(records, "status")
+    top_anomalies = sorted(
+        records,
+        key=lambda item: float(item.get("anomaly_score") or 0),
+        reverse=True,
+    )[:10]
+    return [
+        _section(
+            "executive_summary",
+            "Executive summary",
+            "Rule-based anomaly scan summary across Athena modules.",
+            source_modules,
+            _pick(
+                anomalies,
+                [
+                    "scan_id",
+                    "portfolio_id",
+                    "scan_scope",
+                    "total_records_scanned",
+                    "anomalies_detected",
+                    "highest_severity",
+                    "generated_at",
+                ],
+            ),
+        ),
+        _section(
+            "scan_scope",
+            "Scan scope",
+            "Scope, lookback window and source modules included in the anomaly scan.",
+            source_modules,
+            {
+                "scan_scope": anomalies.get("scan_scope"),
+                "lookback_days": anomalies.get("lookback_days"),
+                "source_modules": methodology.get("source_modules", []),
+                "warnings": anomalies.get("warnings", []),
+            },
+        ),
+        _section(
+            "anomalies_by_category",
+            "Anomalies by category",
+            "Detected anomalies grouped by monitoring category.",
+            source_modules,
+            anomalies.get("anomalies_by_category") or {},
+        ),
+        _section(
+            "anomalies_by_severity",
+            "Anomalies by severity",
+            "Detected anomalies grouped by severity.",
+            source_modules,
+            anomalies.get("anomalies_by_severity") or {},
+        ),
+        _section(
+            "top_anomalies",
+            "Top anomalies",
+            "Highest-scoring anomalies requiring review priority.",
+            source_modules,
+            table=top_anomalies,
+        ),
+        _section(
+            "review_workflow",
+            "Review workflow status",
+            "Current anomaly review workflow status distribution.",
+            source_modules,
+            review_status,
+        ),
+        _section(
+            "review_priorities",
+            "Suggested review priorities",
+            "Deterministic actions suggested by anomaly rules.",
+            source_modules,
+            table=[
+                {
+                    "anomaly_id": item.get("anomaly_id"),
+                    "severity": item.get("severity"),
+                    "source_module": item.get("source_module"),
+                    "title": item.get("title"),
+                    "suggested_action": item.get("suggested_action"),
+                }
+                for item in top_anomalies
+            ],
+        ),
+        _section(
+            "athena_commentary",
+            "Athena Intelligence commentary",
+            "Athena commentary summarizing anomaly patterns and limitations.",
+            ["AI Anomaly Center", "Athena Intelligence"],
+            commentary if isinstance(commentary, dict) else {"commentary": commentary},
+        ),
+        _section(
+            "methodology",
+            "Methodology and limitations",
+            "Rule-based scoring methodology, confidence levels and demo limitations.",
+            source_modules,
+            {
+                "methodology": methodology,
+                "limitations": anomalies.get("limitations", []),
+            },
+        ),
+    ]
+
+
 def _full_pack_sections(payloads: dict[str, Any]) -> list[ReportSection]:
     sections: list[ReportSection] = []
     sections.extend(_portfolio_sections(payloads)[:3])
@@ -187,3 +295,11 @@ def _portfolio_summary(summary: dict[str, Any]) -> str:
 
 def _pick(payload: dict[str, Any], keys: list[str]) -> dict[str, Any]:
     return {key: payload.get(key) for key in keys if key in payload}
+
+
+def _count_records(records: list[dict[str, Any]], field: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for record in records:
+        value = str(record.get(field) or "unknown")
+        counts[value] = counts.get(value, 0) + 1
+    return counts

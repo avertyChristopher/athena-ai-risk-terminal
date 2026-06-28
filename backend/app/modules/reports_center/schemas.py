@@ -16,6 +16,7 @@ ReportType = Literal[
     "options_risk",
     "pnl_attribution",
     "reconciliation",
+    "ai_anomaly",
     "full_portfolio_risk_pack",
 ]
 ReportLanguage = Literal["en", "fr"]

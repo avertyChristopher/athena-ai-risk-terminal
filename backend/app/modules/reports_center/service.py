@@ -6,6 +6,9 @@ from fastapi import HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app.modules.ai_anomaly_center.repository import AIAnomalyCenterRepository
+from app.modules.ai_anomaly_center.schemas import AnomalyScanRequest
+from app.modules.ai_anomaly_center.service import AIAnomalyCenterService
 from app.modules.athena_intelligence.service import AthenaIntelligenceService
 from app.modules.limit_center.repository import LimitCenterRepository
 from app.modules.limit_center.schemas import LimitEvaluationRequest
@@ -75,6 +78,7 @@ SOURCE_MODULES = [
     "Stress Testing",
     "Limit Center",
     "Trade Simulator",
+    "AI Anomaly Center",
     "Athena Intelligence",
 ]
 
@@ -104,6 +108,10 @@ class ReportsCenterService:
         self.trade_service = TradeSimulatorService(TradeSimulatorRepository(db))
         self.options_service = OptionsPricingLabService(OptionsPricingLabRepository(db))
         self.athena_service = AthenaIntelligenceService()
+        self.ai_anomaly_service = AIAnomalyCenterService(
+            AIAnomalyCenterRepository(db),
+            self.athena_service,
+        )
         self.pnl_service = PnlAttributionService(PnlAttributionRepository(db), self.athena_service)
         self.reconciliation_service = ReconciliationService(
             ReconciliationRepository(db),
@@ -116,7 +124,7 @@ class ReportsCenterService:
         return ReportsCenterStatus(
             detail=(
             "Reports Center generates snapshot-based portfolio, P&L, risk, stress, "
-                "limits, reconciliation, trade, rates and options reports from Athena analytics."
+                "limits, reconciliation, trade, anomaly, rates and options reports from Athena analytics."
             ),
             templates_available=len(templates),
             export_formats=["json", "markdown", "csv"],
@@ -312,6 +320,7 @@ class ReportsCenterService:
         needs_trade = report_type in {"trade_suitability"}
         needs_pnl = report_type in {"pnl_attribution"}
         needs_reconciliation = report_type in {"reconciliation"}
+        needs_ai_anomaly = report_type in {"ai_anomaly"}
 
         if needs_risk and "risk_monitor" not in payloads:
             payloads["risk_monitor"] = self._safe_call(
@@ -401,6 +410,20 @@ class ReportsCenterService:
                     ReconciliationRequest(
                         portfolio_id=portfolio_id,
                         language="en",
+                    ),
+                ),
+            )
+        if needs_ai_anomaly and "ai_anomaly" not in payloads:
+            payloads["ai_anomaly"] = self._safe_call(
+                "AI Anomaly Center",
+                warnings,
+                lambda: self.ai_anomaly_service.scan(
+                    AnomalyScanRequest(
+                        portfolio_id=portfolio_id,
+                        scan_scope="all",
+                        lookback_days=60,
+                        severity_threshold="low",
+                        persist_results=True,
                     ),
                 ),
             )
