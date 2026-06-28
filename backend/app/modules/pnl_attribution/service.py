@@ -100,6 +100,17 @@ class PnlAttributionService:
             for trade in portfolio.get("transaction_history", [])
             if isinstance(trade, dict)
         ]
+        blotter_trades = (
+            self.repository.list_trade_blotter_entries(
+                request.portfolio_id,
+                request.start_date,
+                request.end_date,
+            )
+            if request.include_trades
+            else []
+        )
+        if blotter_trades:
+            transactions.extend(_trade_blotter_transactions(blotter_trades))
         trade_effects = calculate_trade_effects(
             transactions,
             preliminary_start,
@@ -195,7 +206,7 @@ class PnlAttributionService:
             data_sources=[
                 "Portfolio Builder positions",
                 "Market Data demo prices",
-                "Portfolio transaction_history when supplied",
+                "Portfolio transaction_history and persistent Trade Blotter when supplied",
                 "Deterministic rates, FX and options fallback assumptions",
             ],
             limitations=limitations,
@@ -353,3 +364,23 @@ def _as_float(value: Any) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _trade_blotter_transactions(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    transactions: list[dict[str, Any]] = []
+    for row in rows:
+        transactions.append(
+            {
+                "trade_id": row.get("trade_id"),
+                "symbol": str(row.get("symbol") or "").upper(),
+                "action": str(row.get("action") or "").upper(),
+                "quantity": row.get("quantity"),
+                "price": row.get("price"),
+                "cost": row.get("cost_estimate"),
+                "slippage": row.get("slippage_estimate"),
+                "status": row.get("status"),
+                "source_module": "trade_blotter",
+                "trade_date": row.get("trade_date"),
+            },
+        )
+    return transactions

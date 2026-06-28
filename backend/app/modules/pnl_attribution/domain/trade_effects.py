@@ -29,8 +29,7 @@ def calculate_trade_effects(
             trade_impact_on_cash=0.0,
             trades=[],
             warnings=[
-                "Trade attribution unavailable.",
-                "Future Trade Blotter integration prepared.",
+                "No portfolio transactions or persisted Trade Blotter entries found for the selected period.",
             ],
         )
 
